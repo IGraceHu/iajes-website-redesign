@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { H2Middle, Break, Banner } from "../components/graphics";
 import "../styles/organizational-structure.css";
 
 export function meta() {
@@ -13,7 +11,12 @@ export function meta() {
 // Section 1: Infographic with organizational structure
 function InfographicSection() {
     return (
-        <Banner type="dark">
+        <div className="bg-secondary-dark py-20 px-10 lg:px-40 relative overflow-hidden">
+            {/* Decorative discs */}
+            <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
+                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="../assets/landing-disc-2a.svg" />
+                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="../assets/landing-disc-4b.svg" />
+            </div>
 
             <h1 className="text-center mb-12 text-white relative z-10">Organizational Structure</h1>
 
@@ -66,7 +69,7 @@ function InfographicSection() {
                     <line x1="390" y1="420" x2="210" y2="420" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
                 </svg>
             </div>
-        </Banner>
+        </div>
     );
 }
 
@@ -126,7 +129,7 @@ function MembersSection() {
     ];
 
     const regionalMembers = [
-        { name: "Region Leader 1", university: "University 1", location: "North America", email: "leader1@example.com", region: "AJCU-US<br />North America", position: "Regional Leader" },
+        { name: "Region Leader 1", university: "University 1", location: "North America", email: "leader1@example.com", region: "AJCU-NA<br />North America", position: "Regional Leader" },
         { name: "Region Leader 2", university: "University 2", location: "Latin America", email: "leader2@example.com", region: "AUSJAL<br />Latin America", position: "Regional Leader" },
         { name: "Region Leader 3", university: "University 3", location: "Europe", email: "leader3@example.com", region: "KIRCHER<br />Europe and Near East", position: "Regional Leader" },
         { name: "Region Leader 4", university: "University 4", location: "Africa", email: "leader4@example.com", region: "AJCU - AM<br />Africa and Madagascar", position: "Regional Leader" },
@@ -150,7 +153,9 @@ function MembersSection() {
         <div className="bg-white py-20 px-10">
             {/* Governing Board */}
             <div className="mb-24">
-                <H2Middle className="text-center">Governing Board</H2Middle>
+                <div className="member-section-title">
+                    <h2 className="text-center">Governing Board</h2>
+                </div>
                 <div className="grid lg:grid-cols-6 md:grid-cols-3 min-[500px]:grid-cols-2 grid-cols-1 gap-12 mt-12 lg:mx-6 mx-0">
                     {governingBoardMembers.map((member, idx) => (
                         <MemberCard key={idx} {...member} />
@@ -160,7 +165,9 @@ function MembersSection() {
 
             {/* Regional Committee */}
             <div className="mb-24">
-                <H2Middle className="text-center">Regional Committee</H2Middle>
+                <div className="member-section-title">
+                    <h2 className="text-center">Regional Committee</h2>
+                </div>
                 <div className="grid lg:grid-cols-6 md:grid-cols-3 min-[500px]:grid-cols-2 grid-cols-1 gap-12 mt-12 lg:mx-6 mx-0">
                     {regionalMembers.map((member, idx) => (
                         <MemberCard key={idx} {...member} region={member.region} />
@@ -170,7 +177,9 @@ function MembersSection() {
 
             {/* Operational Committee */}
             <div className="mb-24">
-                <H2Middle className="text-center">Operational Committee</H2Middle>
+                <div className="member-section-title">
+                    <h2 className="text-center">Operational Committee</h2>
+                </div>
                 <div className="grid lg:grid-cols-6 md:grid-cols-3 min-[500px]:grid-cols-2 grid-cols-1 gap-12 mt-12 lg:mx-6 mx-0">
                     {operationalMembers.slice(0, 6).map((member, idx) => (
                         <MemberCard key={idx} {...member} taskForce={member.taskForce} />
@@ -186,7 +195,7 @@ function MembersSection() {
             {/* Regions and Task Forces Info */}
             <div className="bg-teal-50 py-20 px-10 lg:px-20 mt-20">
                 {/* Regions */}
-                <div className="mb-16">
+                <div className="mb-16 pb-16 border-b-2 border-primary-dark border-opacity-20">
                     <h3 className="text-center mb-8">The 6 Regions identified by IAJU</h3>
                     <div className="regions-grid">
                         <table className="regions-table">
@@ -242,10 +251,9 @@ function MembersSection() {
                         The biennial international meeting, which allows us to welcome new members, takes place in turn in the 6 regions identified by the IAJU (International Association of Jesuit Universities).
                     </p>
                 </div>
-                <Break dark />
 
                 {/* Task Forces */}
-                <div className="mt-10">
+                <div>
                     <h3 className="text-center mb-8">Task Forces</h3>
                     <div className="text-center text-gray-dark text-sm leading-relaxed">
                         <p className="font-semibold mb-4">1 Leader, several IAJES Members</p>
@@ -352,7 +360,7 @@ function LogoSection() {
 
                 <div className="flex items-stretch order-1 md:order-2">
                     <img
-                        src="../assets/logo-iajes.svg"
+                        src="../assets/landing-disc-2a.svg"
                         alt="IAJES Logo"
                         className="w-full h-[70vh] object-contain rounded-md md:h-auto"
                         style={{ minHeight: 160 }}

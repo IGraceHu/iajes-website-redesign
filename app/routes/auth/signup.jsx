@@ -105,7 +105,7 @@ export default function SignUp() {
       </div>
 
       <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
-        <h4>Create a <span className="text-primary-dark">IAJES</span> account</h4>
+        <h4>Create an <span className="text-primary-dark">IAJES</span> account</h4>
         <form action={formAction} className="lg:w-md w-full duration-200">
           <div className="w-full mb-5 grid md:grid-cols-2 grid-cols-1 gap-5">
             <div>

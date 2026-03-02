@@ -1,4 +1,5 @@
 import { Menu } from "../components/menu"
+import { Footer } from "../components/footer.jsx"
 import { Subscribe } from "../components/subscribe.jsx"
 import { NewsletterList } from "../components/newsletter-components.jsx"
 import { useState, useMemo } from "react"
@@ -200,7 +201,7 @@ export default function Newsletter() {
             <NewsletterViewer latestDate={latestDate} />
             <Subscribe />
             <NewsletterArchive />
-            
+            <Footer />
         </div>
     );
 }
