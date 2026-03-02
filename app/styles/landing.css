@@ -1,0 +1,158 @@
+.text-glow {
+    text-shadow: 0 0 15px var(--color-white), 0 0 15px var(--color-white), 0 0 15px var(--color-white), 0 0 15px var(--color-white);
+}
+
+.box-glow {
+    box-shadow: 0 0 20px var(--color-white), 0 0 20px var(--color-white), 0 0 20px var(--color-white);
+}
+
+/* DISCS **********************************************************************/
+#landing-discs {
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: auto;
+    row-gap: 100px;
+    /* opacity: 0.7; */
+}
+
+#landing-disc-1 {
+    width: 250px;
+    justify-self: end;
+    margin-top: -100px;
+    margin-right: -100px;
+}
+
+#landing-disc-2 {
+    width: 250px;
+    margin-left: -100px;
+}
+
+#landing-disc-3 {
+    width: 250px;
+    justify-self: end;
+    margin-top: 150px;
+    margin-right: -120px;
+    transform: rotateX(180deg);
+}
+
+#landing-disc-4 {
+    width: 300px;
+    margin-top: 200px;
+    margin-left: -100px;
+    transform: rotateY(180deg);
+}
+
+#landing-disc-5 {
+    width: 300px;
+    justify-self: end;
+    margin-right: -150px;
+}
+
+
+/* CAROUSEL *******************************************************************/
+.carousel-item {
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.7s;
+}
+
+.carousel-item.active {
+    opacity: 1;
+    z-index: 1;
+}
+
+.carousel-btn>svg {
+    transition: 0.2s;
+}
+
+.carousel-arrow-prev {
+    margin: auto 0 auto 10px;
+}
+
+.carousel-btn:hover .carousel-arrow-prev {
+    margin: auto 10px auto 0;
+}
+
+.carousel-arrow-next {
+    margin: auto 10px auto 0;
+}
+
+.carousel-btn:hover .carousel-arrow-next {
+    margin: auto 0 auto 10px;
+}
+
+
+/* ABOUT *******************************************************************/
+#about {
+    display: flex;
+    justify-content: space-between;
+}
+
+@media screen and (max-width: 1200px) {
+    #about {
+        flex-direction: column;
+        justify-content: center;
+    }
+}
+
+
+#about-cards-grid {
+    height: fit-content;
+    display: grid;
+    /* grid-template-columns: calc(var(--card-width) + (var(--card-margin) * 2)) calc(var(--card-width) + (var(--card-margin) * 2)); */
+    grid-template-columns: auto;
+
+    --card-width: 70vw;
+    --card-height: 150px;
+    --card-margin: 15px;
+    /* At least 15px */
+    --borders-width: calc(var(--card-width) + (var(--card-margin) * 2));
+    --borders-height: calc(var(--card-height) + (var(--card-margin) * 2));
+}
+
+@media (width >=40rem) {
+    #about-cards-grid {
+        grid-template-columns: auto auto;
+
+        --card-width: 230px;
+    }
+}
+
+.about-card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: var(--radius-md);
+    margin: var(--card-margin);
+    transition: 0.2s;
+}
+
+.about-card-border {
+    width: var(--borders-width);
+    height: var(--borders-height);
+    border-radius: var(--radius-lg);
+    border: 5px solid;
+    border-color: rgba(0, 0, 0, 0);
+    transition: 0.2s;
+}
+
+.about-card:hover {
+    width: calc(var(--card-width) + 4px);
+    height: calc(var(--card-height) + 4px);
+    margin: calc(var(--card-margin) - 2px);
+    font-size: 1.1em;
+}
+
+.about-card:hover~.about-card-border {
+    border-color: var(--color-primary-dark);
+    width: calc(var(--card-width) + 22px);
+    height: calc(var(--card-height) + 22px);
+    margin: calc(var(--card-margin) - 11px);
+}
+
+.about-card img {
+    transition: 0.4s;
+}
+
+.about-card:hover img {
+    opacity: 0;
+}

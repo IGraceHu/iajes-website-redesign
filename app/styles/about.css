@@ -1,0 +1,89 @@
+/* WHAT WE DO ************************************************************/
+
+#what-we-do-cards-grid {
+    display: grid;
+    height: fit-content;
+
+    /* Mobile: single column */
+    grid-template-columns: 1fr;
+
+    --card-width: 70vw;
+    --card-height: 150px;
+    --card-margin: 15px;
+
+    --borders-width: calc(var(--card-width) + (var(--card-margin) * 2));
+    --borders-height: calc(var(--card-height) + (var(--card-margin) * 2));
+}
+
+/* Desktop layout */
+@media (min-width: 1024px) {
+    #what-we-do-cards-grid {
+        grid-template-columns: auto auto auto;
+        grid-template-rows: 1fr 1fr;
+
+        --card-width: 230px;
+        --card-height: 180px;
+    }
+
+    /* Middle column takes full height */
+    #what-we-do-cards-grid>div:nth-child(2) {
+        /* grid-row: 1 / span 2; */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}
+
+#what-we-do-cards-grid>div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Cards (copied from About) */
+
+.about-card {
+    width: var(--card-width);
+    height: var(--card-height);
+    border-radius: var(--radius-md);
+    margin: var(--card-margin);
+    transition: 0.2s;
+}
+
+.about-card-border {
+    width: var(--borders-width);
+    height: var(--borders-height);
+    border-radius: var(--radius-lg);
+    border: 5px solid;
+    border-color: rgba(0, 0, 0, 0);
+    transition: 0.2s;
+}
+
+.about-card:hover {
+    width: calc(var(--card-width) + 4px);
+    height: calc(var(--card-height) + 4px);
+    margin: calc(var(--card-margin) - 2px);
+    font-size: 1.1em;
+}
+
+.about-card:hover~.about-card-border {
+    border-color: var(--color-primary-dark);
+    width: calc(var(--card-width) + 22px);
+    height: calc(var(--card-height) + 22px);
+    margin: calc(var(--card-margin) - 11px);
+}
+
+/* Middle card modification (make larger) */
+@media (min-width: 1024px) {
+    .what-we-do-center {
+        --card-width: 300px;
+        --card-height: 430px;
+
+        /* keep margins consistent */
+        --card-margin: 15px;
+
+        /* recompute borders */
+        --borders-width: calc(var(--card-width) + (var(--card-margin) * 2));
+        --borders-height: calc(var(--card-height) + (var(--card-margin) * 2));
+    }
+}

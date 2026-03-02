@@ -1,0 +1,328 @@
+/* ORGANIZATIONAL STRUCTURE - TRIANGLE INFOGRAPHIC ===========================*/
+
+.org-structure-container {
+    position: relative;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 480px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.org-box {
+    position: absolute;
+    width: 450px;
+    padding: 24px;
+    background-color: var(--color-white);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.org-box-top {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+}
+
+.org-box-bottom-left {
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+}
+
+.org-box-bottom-right {
+    bottom: 0;
+    right: 0;
+    z-index: 2;
+}
+
+.org-box p {
+    color: var(--color-gray-dark);
+    line-height: 1.5;
+}
+
+.org-arrows {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .org-structure-container {
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+        padding: 20px 0;
+    }
+
+    .org-box {
+        position: static;
+        transform: none !important;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .org-box-bottom-left,
+    .org-box-bottom-right {
+        position: static;
+        left: auto;
+        right: auto;
+        bottom: auto;
+    }
+
+    .org-arrows {
+        display: none;
+    }
+}
+
+/* MEMBER SECTION ================================================================*/
+
+.member-section-title {
+    text-align: center;
+    position: relative;
+    margin-bottom: 40px;
+    padding-top: 20px;
+}
+
+.member-section-title h2 {
+    display: inline-block;
+    background-color: var(--color-white);
+    padding: 0 30px;
+    position: relative;
+    z-index: 2;
+}
+
+.member-section-title::before {
+    content: '';
+    position: absolute;
+    top: 60%;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: var(--color-primary-dark);
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.member-card {
+    background-color: var(--color-white);
+    /* padding: 20px; */
+    padding-bottom: 40px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.member-image {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 0;
+    overflow: hidden;
+    background-color: var(--color-gray-light);
+    margin-bottom: 16px;
+}
+
+.member-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.member-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.member-card h5 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-gray-dark);
+    margin-bottom: 12px;
+    text-align: left;
+}
+
+.member-detail {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+
+.member-detail .label {
+    font-weight: 600;
+    color: var(--color-primary-dark);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+
+.member-detail span:not(.label) {
+    color: var(--color-gray-dark);
+    line-height: 1.4;
+}
+
+.member-detail.member-position {
+    max-height: 0em;
+    margin-top: auto;
+    padding-top: 8px;
+    border-top: 1px solid var(--color-gray-light);
+    display: flex;
+    flex-direction: column;
+}
+
+.member-detail.member-position .label {
+    order: -1;
+}
+
+/* REGIONS TABLE ================================================================*/
+
+.regions-table-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    overflow-x: auto;
+}
+
+.regions-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: var(--color-white);
+}
+
+.regions-table td {
+    padding: 16px;
+    border: 2px solid var(--color-gray-light);
+    text-align: left;
+    font-size: 0.95rem;
+    color: var(--color-gray-dark);
+}
+
+.regions-table strong {
+    color: var(--color-primary-dark);
+}
+
+.regions-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+@media (max-width: 1024px) {
+    .regions-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .regions-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .regions-table td {
+        padding: 12px 8px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ROLES GRID ====================================================================*/
+
+.roles-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.role-card {
+    background-color: var(--color-white);
+    border-radius: 0;
+    padding: 40px;
+    color: var(--color-gray-dark);
+    border: 2px solid var(--color-secondary-dark);
+}
+
+/* 1,5,9 and 0,4,8 */
+.role-card:nth-child(4n+1),
+.role-card:nth-child(4n) {
+    background-color: #f0fdf4;
+}
+
+.role-card h4 {
+    color: var(--color-primary-dark);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.role-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.role-line {
+    color: var(--color-gray-dark);
+}
+
+.role-card-last {
+    background-color: var(--color-secondary-dark) !important;
+    color: var(--color-white);
+    /* grid-column: 1 / -1; */
+}
+
+.role-card-last h4 {
+    color: var(--color-primary-light);
+    font-weight: 500;
+    text-align: left;
+}
+
+.role-card-last .role-content {
+    color: var(--color-white);
+}
+
+.role-card-last .role-line {
+    color: var(--color-white);
+}
+
+@media (max-width: 768px) {
+    .roles-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .role-card {
+        padding: 24px;
+    }
+
+    .role-card h4 {
+        font-size: 0.95rem;
+    }
+
+    .role-content {
+        font-size: 0.85rem;
+    }
+
+    .role-card:nth-child(odd) {
+        background-color: #f0fdf4;
+    }
+
+    .role-card:nth-child(even) {
+        background-color: var(--color-white);
+    }
+}

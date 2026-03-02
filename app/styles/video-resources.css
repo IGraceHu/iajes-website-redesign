@@ -1,0 +1,16 @@
+.resource-card:hover a {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.resource-card > a > h6:hover {
+    color: var(--color-secondary-light); 
+}
+
+a.link-back {
+    color: white;
+}
+
+a.link-back:hover {
+    color: var(--color-primary-light);
+}

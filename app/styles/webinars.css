@@ -1,0 +1,15 @@
+.webinar-list-button:hover > i {
+    color: var(--color-primary-dark);
+}
+
+.webinar-list-button.active {
+    background-color: var(--color-primary-dark);
+}
+
+.webinar-list-button.active p {
+    color: var(--color-white);
+}
+
+.webinar-list-button.active:hover > i {
+    color: var(--color-white);
+}
