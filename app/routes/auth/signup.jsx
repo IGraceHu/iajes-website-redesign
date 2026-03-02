@@ -69,6 +69,7 @@ async function signUp(data) {
     return { success: false, message: "An unexpected error occurred. Please try again." };
   }
 }
+module.exports = signUp;
 
 export default function SignUp() {
   let navigate = useNavigate();
