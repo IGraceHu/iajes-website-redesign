@@ -44,6 +44,7 @@ async function signIn(data) {
     return "error";
   }
 }
+module.exports = signIn;
 
 export default function SignIn() {
   let navigate = useNavigate();
