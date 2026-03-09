@@ -1,26 +1,26 @@
 import { useEffect } from 'react';
 
 // POPUP -----------------------------------------------------------------------
-    // PARAMETERS
-    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
-    //      There should only be one Popup component used in a component. 
-    //
-    // show - Determines if the popup is visible or not
-    //
-    // setShow - set function for show
-    //
-    // details - an object with properties
-    //    content - Required. An element node with the contents of the popup
-    //    buttons - Optional. An array of objects with properties 'text' and 'onclick'
-    //        text - Required. A string with the button text
-    //        onclick - Required. A function that clicking the button will execute
-    //    defaultButton - Optional. Changes the default values of the 'Close' button. An object with properties 'text' and 'onclick'
-    //        text - Required.
-    //        onclick - Optional.
-    //    closeOnBlur - Optional. Defaults to true. Determines if clicking outside the popup will close the popup or not
+// PARAMETERS
+// id - Unique ID for the popup. Ensures that popups from different components do not overlap
+//      There should only be one Popup component used in a component. 
+//
+// show - Determines if the popup is visible or not
+//
+// setShow - set function for show
+//
+// details - an object with properties
+//    content - Required. An element node with the contents of the popup
+//    buttons - Optional. An array of objects with properties 'text' and 'onclick'
+//        text - Required. A string with the button text
+//        onclick - Required. A function that clicking the button will execute
+//    defaultButton - Optional. Changes the default values of the 'Close' button. An object with properties 'text' and 'onclick'
+//        text - Required.
+//        onclick - Optional.
+//    closeOnBlur - Optional. Defaults to true. Determines if clicking outside the popup will close the popup or not
 
 
-export function Popup({id, show, setShow, details}) {
+export function Popup({ id, show, setShow, details }) {
 
     const popupId = "popup-" + id;
     useEffect(() => {
@@ -57,11 +57,11 @@ export function Popup({id, show, setShow, details}) {
     }
 
     if (details.defaultButton == null) {
-        details.defaultButton = {text: "Close", onclick: closePopup}
+        details.defaultButton = { text: "Close", onclick: closePopup }
     } else if (details.defaultButton.onclick == null) {
         details.defaultButton.onclick = closePopup;
     }
-    
+
     const buttonsEl = [];
     let i = 0;
     if (details.buttons) {
@@ -71,7 +71,10 @@ export function Popup({id, show, setShow, details}) {
             i++;
         })
     }
-    buttonsEl.push(<button key="popup-close-default" className="button mx-2" onClick={details.defaultButton.onclick}>{details.defaultButton.text}</button>)
+    // only render default button if it has non-empty text
+    if (details.defaultButton && details.defaultButton.text) {
+        buttonsEl.push(<button key="popup-close-default" className="button mx-2" onClick={details.defaultButton.onclick}>{details.defaultButton.text}</button>)
+    }
 
     if (details.closeOnBlur == null) {
         details.closeOnBlur = true;
@@ -88,7 +91,7 @@ export function Popup({id, show, setShow, details}) {
                 </div>
             </div>
 
-            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => {if(details.closeOnBlur) {closePopup}} } ></div>
+            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => { if (details.closeOnBlur) { closePopup } }} ></div>
         </div>
     )
 }
