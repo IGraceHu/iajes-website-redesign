@@ -56,9 +56,22 @@ export default function ProfileRoute({ loaderData }) {
   const [photoDraftUrl, setPhotoDraftUrl] = useState(basePerson?.avatarUrl || "");
   const [photoObjectUrl, setPhotoObjectUrl] = useState("");
   const fileInputRef = useRef(null);
-  const isCurrentUser = true;
 
-  
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUserId(session?.user.id ?? null);
+    });
+
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUserId(session?.user.id ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   useEffect(() => {
     setProfile(basePerson);
@@ -76,6 +89,7 @@ export default function ProfileRoute({ loaderData }) {
     };
   }, [photoObjectUrl]);
 
+  // If user id is invalid
   if (!basePerson || !profile) {
     return (
       <div className="min-h-screen bg-white">
@@ -90,8 +104,6 @@ export default function ProfileRoute({ loaderData }) {
       </div>
     );
   }
-
-  console.log(profile.fname)
 
   const handleOpenEdit = () => {
     setDraft(profile);
@@ -409,7 +421,7 @@ export default function ProfileRoute({ loaderData }) {
           </a>
         </div>
         <div className="relative h-[220px] rounded-md bg-gray-light" aria-label="Profile banner placeholder">
-          {isCurrentUser ? (
+          {currentUserId == profile.id ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
               <IconSquare title="Edit" icon="bi-pencil" onClick={handleOpenEdit} />
             </div>
@@ -423,7 +435,7 @@ export default function ProfileRoute({ loaderData }) {
                 <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-white bg-gray-light overflow-hidden">
                   {profilePhotoContent}
                 </div>
-                {isCurrentUser ? (
+                {currentUserId == profile.id ? (
                   <button
                     type="button"
                     className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-md border-2 border-white bg-white/90 text-secondary-dark shadow-sm transition hover:border-primary-light hover:bg-white hover:shadow-md hover:text-primary-light cursor-pointer"
