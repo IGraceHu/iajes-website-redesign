@@ -53,6 +53,7 @@ async function signUp(data) {
           id: authData.user.id,
           fname: data.fname,
           lname: data.lname,
+          email: data.email,
           created_at: authData.user.created_at,
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
         }]);

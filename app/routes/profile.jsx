@@ -1,58 +1,86 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, useParams } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup } from "../components/popup";
+import { supabase } from "../supabase";
 
-// ---- Placeholder data (same IDs as search) ----
-const PEOPLE = [
-  {
-    id: "1",
-    firstName: "John",
-    lastName: "Smith",
-    title: "Professor",
-    institution: "XIM University",
-    tagline: "Tagline",
-    email: "johnsmith@gmail.com",
-    description:
-      "Placeholder biography text. This area will be replaced with real profile data pulled from the backend. For now, it matches the intended layout and spacing from Figma.",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
+function mapUserRow(row) {
+  return {
+    id: row.id,
+    firstName: row.fname || "",
+    lastName: row.lname || "",
+    email: row.email || "",
+    title: row.title || "",
+    institution: row.institution || "",
+    tagline: row.tagline || "",
+    description: row.description || "",
+    country: row.country || "",
+    school: row.school || "",
+    major: row.major || "",
+    interests: row.interests || "",
+    taskForceRole: row.task_force_role || "",
+    taskForce: row.task_force || "",
     socials: {
-      linkedin: "#",
-      instagram: "#",
-      x: "#",
-      facebook: "#",
-      website: "#",
+      linkedin: row.linkedin || "",
+      instagram: row.instagram || "",
+      x: row.x || "",
+      facebook: row.facebook || "",
+      website: row.website || "",
     },
-    avatarUrl: "",
-  },
-];
+    avatarUrl: row.avatar_url || "",
+  };
+}
 
 export default function ProfileRoute() {
   const params = useParams();
-  const basePerson = useMemo(() => PEOPLE.find((p) => p.id === params.id), [params.id]);
-  const [profile, setProfile] = useState(basePerson);
-  const [draft, setDraft] = useState(basePerson);
+  const [profile, setProfile] = useState(null);
+  const [draft, setDraft] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [isCurrentUser, setIsCurrentUser] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [showPhotoPopup, setShowPhotoPopup] = useState(false);
-  const [photoDraftUrl, setPhotoDraftUrl] = useState(basePerson?.avatarUrl || "");
+  const [photoDraftUrl, setPhotoDraftUrl] = useState("");
   const [photoObjectUrl, setPhotoObjectUrl] = useState("");
   const fileInputRef = useRef(null);
-  const isCurrentUser = true;
 
   useEffect(() => {
-    setProfile(basePerson);
-    setDraft(basePerson);
-    setPhotoDraftUrl(basePerson?.avatarUrl || "");
-    setPhotoObjectUrl((prev) => {
-      if (prev) URL.revokeObjectURL(prev);
-      return "";
-    });
-  }, [basePerson]);
+    let cancelled = false;
+
+    async function fetchProfile() {
+      setLoading(true);
+
+      // Fetch profile from users table
+      const { data, error } = await supabase
+        .from("users")
+        .select("*")
+        .eq("id", params.id)
+        .single();
+
+      if (cancelled) return;
+
+      if (error || !data) {
+        setProfile(null);
+        setDraft(null);
+        setLoading(false);
+        return;
+      }
+
+      const mapped = mapUserRow(data);
+      setProfile(mapped);
+      setDraft(mapped);
+      setPhotoDraftUrl(mapped.avatarUrl);
+
+      // Check if this is the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!cancelled) {
+        setIsCurrentUser(user?.id === params.id);
+        setLoading(false);
+      }
+    }
+
+    fetchProfile();
+    return () => { cancelled = true; };
+  }, [params.id]);
 
   useEffect(() => {
     return () => {
@@ -60,7 +88,18 @@ export default function ProfileRoute() {
     };
   }, [photoObjectUrl]);
 
-  if (!basePerson || !profile) {
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-white">
+        <Menu />
+        <div className="mx-auto max-w-[1100px] px-6 pb-20 pt-12">
+          <p className="text-gray-dark/70">Loading profile…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!profile) {
     return (
       <div className="min-h-screen bg-white">
         <Menu />
