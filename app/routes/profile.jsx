@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef } from "react";
+import { supabase } from "../supabase";
 import { Link, useParams } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup } from "../components/popup";
@@ -7,8 +8,8 @@ import { Popup } from "../components/popup";
 const PEOPLE = [
   {
     id: "1",
-    firstName: "John",
-    lastName: "Smith",
+    fname: "John",
+    lname: "Smith",
     title: "Professor",
     institution: "XIM University",
     tagline: "Tagline",
@@ -32,9 +33,22 @@ const PEOPLE = [
   },
 ];
 
-export default function ProfileRoute() {
-  const params = useParams();
-  const basePerson = useMemo(() => PEOPLE.find((p) => p.id === params.id), [params.id]);
+
+
+
+
+export async function loader({ params }) {
+  const { data, error } = await supabase
+  .from('users')
+  .select()
+  .eq('id', params.id)
+  return data[0];
+}
+
+export default function ProfileRoute({ loaderData }) {
+  // console.log(loaderData);
+  // const params = useParams();
+  const basePerson = loaderData;
   const [profile, setProfile] = useState(basePerson);
   const [draft, setDraft] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
@@ -43,6 +57,8 @@ export default function ProfileRoute() {
   const [photoObjectUrl, setPhotoObjectUrl] = useState("");
   const fileInputRef = useRef(null);
   const isCurrentUser = true;
+
+  
 
   useEffect(() => {
     setProfile(basePerson);
@@ -74,6 +90,8 @@ export default function ProfileRoute() {
       </div>
     );
   }
+
+  console.log(profile.fname)
 
   const handleOpenEdit = () => {
     setDraft(profile);
@@ -143,8 +161,8 @@ export default function ProfileRoute() {
                   <input
                     id="first-name"
                     className="input-text w-full"
-                    value={draft.firstName}
-                    onChange={updateField("firstName")}
+                    value={draft.fname}
+                    onChange={updateField("fname")}
                   />
                 </div>
                 <div>
@@ -152,8 +170,8 @@ export default function ProfileRoute() {
                   <input
                     id="last-name"
                     className="input-text w-full"
-                    value={draft.lastName}
-                    onChange={updateField("lastName")}
+                    value={draft.lname}
+                    onChange={updateField("lname")}
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -285,7 +303,7 @@ export default function ProfileRoute() {
                   <input
                     id="linkedin"
                     className="input-text w-full"
-                    value={draft.socials.linkedin}
+                    value={draft.url_linkedin}
                     onChange={updateSocial("linkedin")}
                   />
                 </div>
@@ -294,7 +312,7 @@ export default function ProfileRoute() {
                   <input
                     id="instagram"
                     className="input-text w-full"
-                    value={draft.socials.instagram}
+                    value={draft.url_instagram}
                     onChange={updateSocial("instagram")}
                   />
                 </div>
@@ -303,7 +321,7 @@ export default function ProfileRoute() {
                   <input
                     id="x"
                     className="input-text w-full"
-                    value={draft.socials.x}
+                    value={draft.url_twitter}
                     onChange={updateSocial("x")}
                   />
                 </div>
@@ -312,7 +330,7 @@ export default function ProfileRoute() {
                   <input
                     id="facebook"
                     className="input-text w-full"
-                    value={draft.socials.facebook}
+                    value={draft.url_facebook}
                     onChange={updateSocial("facebook")}
                   />
                 </div>
@@ -321,7 +339,7 @@ export default function ProfileRoute() {
                   <input
                     id="website"
                     className="input-text w-full"
-                    value={draft.socials.website}
+                    value={draft.url_website}
                     onChange={updateSocial("website")}
                   />
                 </div>
@@ -363,7 +381,7 @@ export default function ProfileRoute() {
   const profilePhotoContent = profile.avatarUrl ? (
     <img
       src={profile.avatarUrl}
-      alt={`${profile.firstName} ${profile.lastName}`}
+      alt={`${profile.fname} ${profile.lname}`}
       className="h-full w-full object-cover"
     />
   ) : (
@@ -420,7 +438,7 @@ export default function ProfileRoute() {
                 ) : null}
               </div>
               <div className="mt-5 text-xl font-semibold text-secondary-dark">
-                {profile.firstName} {profile.lastName}
+                {profile.fname} {profile.lname}
               </div>
               <div className="mt-2 text-sm text-gray-dark/70">
                 {profile.title}, {profile.institution}
@@ -459,11 +477,11 @@ export default function ProfileRoute() {
               </div>
 
               <div className="flex items-center gap-4 text-xl text-secondary-light">
-                <SocialIcon label="LinkedIn" href={profile.socials.linkedin} icon="bi-linkedin" />
-                <SocialIcon label="Instagram" href={profile.socials.instagram} icon="bi-instagram" />
-                <SocialIcon label="X" href={profile.socials.x} icon="bi-twitter-x" />
-                <SocialIcon label="Facebook" href={profile.socials.facebook} icon="bi-facebook" />
-                <SocialIcon label="Website" href={profile.socials.website} icon="bi-globe" />
+                <SocialIcon label="LinkedIn" href={profile.url_linkedin} icon="bi-linkedin" />
+                <SocialIcon label="Instagram" href={profile.url_instagram} icon="bi-instagram" />
+                <SocialIcon label="X" href={profile.url_twitter} icon="bi-twitter-x" />
+                <SocialIcon label="Facebook" href={profile.url_facebook} icon="bi-facebook" />
+                <SocialIcon label="Website" href={profile.url_website} icon="bi-globe" />
               </div>
             </div>
           </div>
