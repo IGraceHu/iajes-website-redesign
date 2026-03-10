@@ -96,8 +96,8 @@ export function Menu() {
           <button onClick={() => setSideMenuActive(!sideMenuActive)} className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1">
             <i className="bi bi-list text-[1.7rem]"></i>
           </button>
-          <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-            IAJES Home
+          <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+            <img className="w-18 h-full" src="../assets/logo.svg" />
           </NavLink>
         </div>
 
@@ -118,6 +118,10 @@ export function Menu() {
             </div>
             <NavLink to="/task-forces" end className="p-4">
               Task Forces
+            </NavLink>
+
+            <NavLink to="/video-resources" end className="p-4">
+              Video Resources
             </NavLink>
 
             <div onBlur={() => setMeetingsDdActive(false)} tabIndex="0">
