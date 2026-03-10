@@ -21,6 +21,7 @@
   "devDependencies": {
     "@react-router/dev": "^7.9.2",
     "@tailwindcss/vite": "^4.1.13",
+    "supabase": "^2.77.1",
     "tailwindcss": "^4.1.13",
     "vite": "^7.1.7"
   }
