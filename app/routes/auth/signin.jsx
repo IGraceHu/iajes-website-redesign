@@ -2,6 +2,7 @@ import { useState, useActionState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { Popup } from "../../components/popup";
 import { updateRequired } from "../../helpers/form";
+import { supabase } from "../../supabase";
 
 export function meta() {
   return [
@@ -15,8 +16,33 @@ export function meta() {
   Returns "invalid" if email or password is incorrect
   Returns "error" if there was an error
 */
-function signIn(data) {
-  return true;
+async function signIn(data) {
+  try {
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.pwd,
+    });
+
+    if (error) {
+      if (error.message.toLowerCase().includes("invalid")) {
+        return "invalid";
+      }
+      return "error";
+    }
+
+    // Update last_sign_in in custom users table
+    if (authData.user) {
+      await supabase
+        .from('users')
+        .update({ last_sign_in: authData.user.last_sign_in_at || new Date().toISOString() })
+        .eq('id', authData.user.id);
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Sign in error:", err);
+    return "error";
+  }
 }
 
 export default function SignIn() {
@@ -27,7 +53,7 @@ export default function SignIn() {
   const [state, formAction] = useActionState(validate, { email: null, pwd: null });
   const [formRequired, setFormRequired] = useState({ email: false, pwd: false });
 
-  function validate(previousState, formData) {
+  async function validate(previousState, formData) {
     const data = { email: formData.get("email"), pwd: formData.get("pwd") };
     let validated = true;
 
@@ -45,7 +71,7 @@ export default function SignIn() {
     setFormRequired(updatedFormRequired);
 
     if (validated) {
-      const result = signIn(data);
+      const result = await signIn(data);
       if (result === true) {
         navigate("/");
       } else {

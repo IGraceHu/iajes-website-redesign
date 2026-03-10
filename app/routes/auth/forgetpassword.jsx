@@ -1,6 +1,7 @@
 import { useState, useActionState } from "react";
 import { NavLink } from "react-router";
 import { Popup } from "../../components/popup";
+import { supabase } from "../../supabase";
 
 export function meta() {
   return [
@@ -10,19 +11,35 @@ export function meta() {
 }
 
 /*
-  Returns true once user is authenticated
-  Returns "invalid" if email or password is incorrect
+  Returns true once the reset email is sent
+  Returns "invalid" if email is incorrect
   Returns "error" if there was an error
 */
-function sendReset(data) {
-  return true;
+async function sendReset(data) {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+      redirectTo: window.location.origin + "/signin",
+    });
+
+    if (error) {
+      if (error.message.toLowerCase().includes("invalid") || error.message.toLowerCase().includes("not found")) {
+        return "invalid";
+      }
+      return "error";
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Password reset error:", err);
+    return "error";
+  }
 }
 
 function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
   const [state, formAction] = useActionState(validate, { email: null });
   const [emailRequired, setEmailRequired] = useState(false);
 
-  function validate(previousState, formData) {
+  async function validate(previousState, formData) {
     const data = {
       email: formData.get("email"),
       validated: true
@@ -34,7 +51,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
     }
 
     if (data.validated) {
-      const result = sendReset(data);
+      const result = await sendReset(data);
       if (result === true) {
         setFormSuccess(true);
       } else {

@@ -2,6 +2,7 @@ import { useState, useActionState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { Popup } from "../../components/popup";
 import { updateRequired } from "../../helpers/form";
+import { supabase } from "../../supabase";
 
 export function meta() {
   return [
@@ -11,21 +12,73 @@ export function meta() {
 }
 
 /*
-  Returns true once user is authenticated
-  Returns false if an error has occured
+  Returns { success: true } once user is authenticated
+  Returns { success: false, message: "..." } if an error has occurred
 */
-function signUp(data) {
-  return true;
+async function signUp(data) {
+  try {
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.pwd,
+      options: {
+        data: {
+          fname: data.fname,
+          lname: data.lname,
+        },
+      },
+    });
+
+    if (authError) {
+      const msg = authError.message?.toLowerCase() || "";
+      if (msg.includes("already registered") || msg.includes("already been registered")) {
+        return { success: false, message: "An account with this email already exists. Please sign in instead." };
+      }
+      if (msg.includes("password") && (msg.includes("short") || msg.includes("least"))) {
+        return { success: false, message: "Password is too short. Please use at least 6 characters." };
+      }
+      if (msg.includes("valid email") || msg.includes("invalid") || msg.includes("email")) {
+        return { success: false, message: "Please enter a valid email address." };
+      }
+      if (msg.includes("rate limit") || msg.includes("too many")) {
+        return { success: false, message: "Too many sign-up attempts. Please try again later." };
+      }
+      return { success: false, message: authError.message || "An unexpected error occurred during sign up." };
+    }
+
+    // Sync to custom users table
+    if (authData.user) {
+      const { error: dbError } = await supabase
+        .from('users')
+        .insert([{
+          id: authData.user.id,
+          fname: data.fname,
+          lname: data.lname,
+          created_at: authData.user.created_at,
+          last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
+        }]);
+
+      if (dbError) {
+        console.error("Error syncing to users table:", dbError);
+        return { success: false, message: "Account was created but failed to save user profile. Please try signing in." };
+      }
+    }
+
+    return { success: true };
+  } catch (err) {
+    console.error("Sign up error:", err);
+    return { success: false, message: "An unexpected error occurred. Please try again." };
+  }
 }
 
 export default function SignUp() {
   let navigate = useNavigate();
   const [showPopup, setShowPopup] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [state, formAction] = useActionState(validate, { fname: null, lname: null, email: null, pwd: null, rePwd: null, subscribe: null });
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, email: false, pwd: false, rePwd: false });
 
-  function validate(previousState, formData) {
+  async function validate(previousState, formData) {
     const data = {
       fname: formData.get("fname"),
       lname: formData.get("lname"),
@@ -58,10 +111,11 @@ export default function SignUp() {
 
 
     if (validated) {
-      const result = signUp(data);
-      if (result) {
+      const result = await signUp(data);
+      if (result.success) {
         navigate("/");
       } else {
+        setErrorMessage(result.message);
         setShowPopup(true);
       }
     }
@@ -91,7 +145,7 @@ export default function SignUp() {
   }
 
   const errorPopup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">An error occured.</div>
+    content: <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
   }
 
   return (
