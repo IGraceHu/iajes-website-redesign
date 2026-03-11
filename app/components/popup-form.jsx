@@ -22,11 +22,11 @@ export function PopupForm({id, className, show, setShow, validate, children}) {
             popupContEl.classList.remove("opacity-0");
             popupEl.classList.remove("mt-10");
 
-            document.getElementById(popupId + "-form").reset();
+            const formEl = document.getElementById(popupId + "-form");
+            formEl.reset();
+            formEl.children[0].scrollTo(0, 0);
 
             document.body.style.overflow = "hidden";
-            // document.body.style.setProperty('--position-top', -(document.documentElement.scrollTop) + "px");
-            // document.body.classList.add('noscroll');
         } else {
             const popupContEl = document.getElementById(popupId);
             const popupEl = popupContEl.children[0].children[0];
@@ -35,12 +35,6 @@ export function PopupForm({id, className, show, setShow, validate, children}) {
             popupEl.classList.add("mt-10");
 
             document.body.style.overflow = "auto";
-            // const posTopVal = document.body.style.getPropertyValue('--position-top');
-            // const pos = Number(posTopVal.substring(1, posTopVal.length-2));
-            // document.body.classList.remove('noscroll');
-            // document.documentElement.scrollTop = pos;
-
-            // console.log(document.documentElement.scrollTop);
         }
     }, [show])
 

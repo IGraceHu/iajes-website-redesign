@@ -309,8 +309,6 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
 }
 
 export default function ProfileRoute({ loaderData }) {
-  // console.log(loaderData);
-  // const params = useParams();
   const basePerson = loaderData;
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
