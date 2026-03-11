@@ -10,7 +10,7 @@ import { useEffect } from 'react';
     // setShow - set function for show
     //
 
-export function PopupForm({id, className, show, setShow, validate, children}) {
+export function PopupForm({id, className, show, setShow, validate, hasError, children}) {
     // const [state, formAction] = useActionState(saveForm, {});
 
     const popupId = "popup-" + id;
@@ -56,9 +56,14 @@ export function PopupForm({id, className, show, setShow, validate, children}) {
                     <div className="overflow-y-scroll">
                         {children}
                     </div>
-                    <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
-                        <input id="popup-form-submit" type="submit" className="button button-light mx-2" value="Save" />
-                        <button key="popup-close-default" type="button" className="button mx-2" onClick={closePopup}>Cancel</button>
+                    <div className="h-25 flex flex-col">
+                        { hasError && 
+                            <p className="text-error text-center my-2">An error occurred. Please try again later.</p>
+                        }
+                        <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
+                            <input id="popup-form-submit" type="submit" className="button button-light mx-2" value="Save" />
+                            <button key="popup-close-default" type="button" className="button mx-2" onClick={closePopup}>Cancel</button>
+                        </div>
                     </div>
                 </form>
             </div>

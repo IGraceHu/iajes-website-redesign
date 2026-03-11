@@ -29,51 +29,49 @@ export async function loader({ params }) {
 
 
 async function updateProfile(userId, formData) {
-    const { error } = await supabase
-      .from('users')
-      .update({
-        fname: formData.get("fname"),
-        lname: formData.get("lname"),
-        tagline: formData.get("tagline"),
-        job_position: formData.get("job-position"),
-        institution: formData.get("institution"),
-        country: formData.get("country"),
-        major: formData.get("major"),
-        task_force: formData.get("task-force"),
-        task_force_role: formData.get("task-force-role"),
-        research_interests: formData.get("research-interests"),
-        biography: formData.get("biography"),
-        url_linkedin: formData.get("url-linkedin"),
-        url_instagram: formData.get("url-instagram"),
-        url_twitter: formData.get("url-twitter"),
-        url_facebook: formData.get("url-facebook"),
-        url_website: formData.get("url-website")
-      })
-      .eq('id', userId)
-    return error;
-  }
+  const { error } = await supabase
+    .from('users')
+    .update({
+      fname: formData.get("fname"),
+      lname: formData.get("lname"),
+      tagline: formData.get("tagline"),
+      job_position: formData.get("job-position"),
+      institution: formData.get("institution"),
+      country: formData.get("country"),
+      major: formData.get("major"),
+      task_force: formData.get("task-force"),
+      task_force_role: formData.get("task-force-role"),
+      research_interests: formData.get("research-interests"),
+      biography: formData.get("biography"),
+      url_linkedin: formData.get("url-linkedin"),
+      url_instagram: formData.get("url-instagram"),
+      url_twitter: formData.get("url-twitter"),
+      url_facebook: formData.get("url-facebook"),
+      url_website: formData.get("url-website")
+    })
+    .eq('id', userId)
+  return error;
+}
 
 
 function EditPopup({ showPopup, setShowPopup, userId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+  const [hasError, setHasError] = useState(false);
   const [draft, setDraft] = useState({});
 
   async function validate(formData) {
     let isValidated = true;
-
     const isRequired = {
       fname: formData.get('fname') === (null || ""),
       lname: formData.get('lname') === (null || "")
     }
-    
     for (let value of Object.values(isRequired)) {
       if (value) {
         isValidated = false;
         break;
       }
     }
-
     if (!isValidated) {
       setFormRequired(isRequired);
       return false;
@@ -83,6 +81,8 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
     if (update === null) {
       setShowPopup(false);
       navigate(0);
+    } else {
+      setHasError(true);
     }
   }
 
@@ -94,12 +94,13 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
   useEffect(() => {
     if (showPopup) {
       loadInfo();
+      setHasError(false);
     }
   }, [showPopup])
 
 
   return (
-    <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate}>
+    <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
        <h4>Edit Profile</h4>
        <div className="flex flex-col gap-6">
         <fieldset>
@@ -126,16 +127,6 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 defaultValue={draft.lname}
               />
               <div className="input-error">This field is required.</div>
-            </div>
-            <div className="md:col-span-2">
-              <label htmlFor="email">Email</label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                className="input-text w-full"
-                defaultValue={draft.email}
-              />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="tagline">Tagline</label>
