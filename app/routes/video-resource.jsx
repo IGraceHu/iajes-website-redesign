@@ -60,20 +60,18 @@ export default function VideoResource({ loaderData }) {
             </Banner>
 
             <div className="py-20 px-10 lg:px-40 duration-200">
-                <div className="grid lg:grid-cols-[32rem_auto] grid-cols-1 gap-5">
-                    <div className="lg:mr-5 mb-5 lg:h-80 w-full h-[50vw]">
+                <div className="mb-5 w-full h-[43vw]">
                         <iframe src={loaderData.video} width="100%" height="100%"></iframe>
-                    </div>
-
-                    <div className="relative lg:row-start-1 lg:col-start-2 row-start-3">
-                        <p><i><span className="font-semibold mr-2">{loaderData.speaker}</span> <span className="text-disabled-light">{loaderData.university}</span></i></p>
-                        <img className="my-5 mx-auto" src={loaderData.speakerImg} alt="" />
-                        <p>{loaderData.speakerDetails}</p>
-                    </div>
-
-                    <div className="lg:col-span-2 row-start-2">
-                    <p>{loaderData.desc}</p>
                 </div>
+                <p>{loaderData.desc}</p>
+
+                <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
+                    <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speakerImg} alt="" />
+                    <div className="w-full md:w-70 shrink-0 grow-0 m-3">
+                        <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
+                        <p className="text-disabled-light">{loaderData.university}</p>
+                    </div>
+                    <p>{loaderData.speakerDetails}</p>
                 </div>
                 
             </div>
