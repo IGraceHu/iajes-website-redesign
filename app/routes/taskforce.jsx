@@ -370,8 +370,13 @@ export default function TaskForce({ loaderData }) {
       <Popup id="taskforce" show={showPopup} setShow={setShowPopup} details={currentPopup} />
       <Menu />
       <Banner>
-        <p><strong>TASK FORCE</strong></p>
-          <h1 style={{ color: "white" }}>{loaderData.name}</h1>
+        <div className="-ml-4 flex w-fit duration-200 hover:-ml-5 hover:text-primary-light">
+              <i className="bi bi-caret-left-fill"></i>
+              <a href="/video-resources" className="link-back border-b-2 border-transparent hover:border-primary-light ml-1 hover:ml-2">
+                  <strong>TASK FORCE</strong>
+              </a>
+          </div>
+        <h1 style={{ color: "white" }}>{loaderData.name}</h1>
       </Banner>
 
       <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
@@ -415,8 +420,6 @@ export default function TaskForce({ loaderData }) {
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0">Edit</button>}
 
         </div> */}
-
-        <a href="/task-forces" className="button">Back to Task Forces</a>
 
       </div>
       <Footer />

@@ -150,6 +150,14 @@ p a:hover, li a:hover {
   color: var(--color-black);
 }
 
+a.link-back {
+    color: white;
+}
+
+a.link-back:hover {
+    color: var(--color-primary-light);
+}
+
 ul {
   list-style-type: disc;
   margin-left: 1rem;

@@ -106,7 +106,7 @@ export function Banner({className, children, type = "green"}) {
                     <img className="absolute w-60 top-15 -left-30 -rotate-20" src="../assets/landing-disc-4b.svg" />
                 </div>
             </div>
-            <div className="banner-content relative z-1">
+            <div className="banner-content relative z-1 text-white">
                 {children}
             </div>
         </div>

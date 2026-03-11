@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup } from "../components/popup";
+import { Banner } from "../components/graphics";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -44,13 +45,7 @@ export default function VideoResource({ loaderData }) {
     return (
         <>
             <Menu />
-            <div className="relative w-full lg:px-40 px-10 py-20 bg-secondary-light overflow-hidden" style={{ color: "white" }}>
-                <div className="absolute top-0 left-0 w-full z-0">
-                    <div className="relative w-full opacity-50">
-                        <img className="absolute w-50 -top-20 -right-15" src="../assets/landing-disc-2a.svg" />
-                        <img className="absolute w-60 top-15 -left-30 -rotate-20" src="../assets/landing-disc-4b.svg" />
-                    </div>
-                </div>
+            <Banner type="blue">
                 <div className="relative z-1">
                     <div className="-ml-4 flex w-fit duration-200 hover:-ml-5 hover:text-primary-light">
                         <i className="bi bi-caret-left-fill"></i>
@@ -62,7 +57,7 @@ export default function VideoResource({ loaderData }) {
                     <p className="text-sm opacity-50"><i>{loaderData.date.toLocaleDateString()}</i></p>
                     <p className="text-lg">By {loaderData.speaker}</p>
                 </div>
-            </div>
+            </Banner>
 
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="grid lg:grid-cols-[32rem_auto] grid-cols-1 gap-5">
