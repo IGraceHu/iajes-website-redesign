@@ -15,6 +15,7 @@ const resourcesTemp = [
     {
         id: 1,
         title: "Optimizing Industrial Processes with CAE",
+        date: new Date("2022-03-25"),
         speaker: "Alejandro López García",
         university: "University of Deusto, Bilbao, Spain",
         speakerDetails: "Lecturer and Programme Leader at the University of Deusto - Research in Computational Mechanics, Fluid Mechanics, Granular matter and powder flow, additive manufacturing, Erosion processes",
@@ -58,6 +59,7 @@ export default function VideoResource({ loaderData }) {
                         </a>
                     </div>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
+                    <p className="text-sm opacity-50"><i>{loaderData.date.toLocaleDateString()}</i></p>
                     <p className="text-lg">By {loaderData.speaker}</p>
                 </div>
             </div>

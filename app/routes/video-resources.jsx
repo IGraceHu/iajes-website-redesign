@@ -15,6 +15,7 @@ export function meta() {
 const resources = [
     {
         title: "Optimizing industrial processes with CAE",
+        date: new Date("2022-03-25"),
         speaker: "Alejandro López García",
         university: "University of Deusto, Bilbao, Spain",
         speakerDetails: "Lecturer and Programme Leader at the University of Deusto - Research in Computational Mechanics, Fluid Mechanics, Granular matter and powder flow, additive manufacturing, Erosion processes",
@@ -37,6 +38,7 @@ function ResourceCard({resourceInfo}) {
                         <div className="relative w-full h-full p-5">
                             <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" />
                             <h5 className="relative z-1" style={{color: "var(--color-white)"}}>{resourceInfo.title}</h5>
+                            <p style={{color: "var(--color-white)"}}>{resourceInfo.date.toLocaleDateString()}</p>
                         </div>
                     }
                 </div>
