@@ -1,12 +1,36 @@
 import { useState, useEffect } from "react";
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
+import { supabase } from "../supabase";
 
 export function Menu() {
-  const loggedIn = false;
+  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+  const loggedIn = !!currentUser;
   const [meetingsDdActive, setMeetingsDdActive] = useState(false);
   const [whatWeDoActive, setWhatWeDoActive] = useState(false);
   const [sideMenuActive, setSideMenuActive] = useState(false);
+  const [accountDdActive, setAccountDdActive] = useState(false);
 
+
+  useEffect(() => {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setCurrentUser(session?.user ?? null);
+    });
+
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setCurrentUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    await supabase.auth.signOut();
+    setCurrentUser(null);
+    navigate("/");
+  };
 
   useEffect(() => {
 
@@ -33,6 +57,20 @@ export function Menu() {
       whatWeDoEl.classList.add("invisible");
       whatWeDoEl.classList.remove("mt-0");
     }
+    if (loggedIn) {
+      if (accountDdActive) {
+        const accountDdEl = document.getElementById("account-dd");
+        accountDdEl.classList.remove("invisible");
+        accountDdEl.classList.remove("opacity-0");
+        accountDdEl.classList.add("mt-1");
+      } else {
+        const accountDdEl = document.getElementById("account-dd");
+        accountDdEl.classList.add("opacity-0");
+        accountDdEl.classList.add("invisible");
+        accountDdEl.classList.remove("mt-1");
+      }
+    }
+    
 
     if (sideMenuActive) {
       const sideMenuContEl = document.getElementById("side-menu-container");
@@ -44,7 +82,7 @@ export function Menu() {
       sideMenuContEl.children[0].classList.add("hidden");
     }
 
-  }, [meetingsDdActive, whatWeDoActive, sideMenuActive])
+  }, [meetingsDdActive, whatWeDoActive, sideMenuActive, accountDdActive])
 
 
   return (
@@ -95,9 +133,6 @@ export function Menu() {
                 <NavLink to="/regional-meetings" end className="link p-4 pr-10">
                   Regional Meetings
                 </NavLink>
-                <NavLink to="/biennal-meetings" end className="link p-4 pr-10 pb-5">
-                  Biennal Meetings
-                </NavLink>
                 <NavLink to="/international-meetings" end className="link p-4 pr-10 pb-5">
                   International Meetings
                 </NavLink>
@@ -113,16 +148,27 @@ export function Menu() {
             </NavLink>
           </div>
 
-          <div className="mx-2 flex items-center">
+          <div className="mx-2 flex items-center gap-3">
             {!loggedIn &&
               <NavLink to="/signin" end className="block button">
                 Sign In
               </NavLink>
             }
             {loggedIn &&
-              <NavLink to="/account" end className="block bg-primary-dark hover:bg-secondary-light rounded-full size-13 flex justify-center items-center">
-                <i className="bi bi-person text-[1.7rem] text-white"></i>
-              </NavLink>
+              <div onBlur={() => setAccountDdActive(false)} className="relative" tabIndex="0">
+                <div className="rounded-full bg-primary-dark w-12 h-12 p-4 hover:bg-secondary-light duration-200 cursor-pointer" onClick={() => setAccountDdActive(!accountDdActive)}>
+                </div>
+                <div id="account-dd" className="z-2 w-50 bg-white absolute right-0 flex flex-col rounded-md border border-gray-light shadow-sm duration-200 -mt-3 opacity-0 invisible">
+                  <NavLink to={"/profile/" + currentUser?.id} end className="p-4 pb-0">
+                    Profile
+                  </NavLink>
+                  <div end className="p-4">
+                    <button onClick={handleSignOut} className="block button">
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              </div>
             }
           </div>
         </div>
@@ -142,9 +188,6 @@ export function Menu() {
           </NavLink>
           <NavLink to="/biennal-meetings" end className="pt-10 px-7">
             Biennal Meetings
-          </NavLink>
-          <NavLink to="/international-meetings" end className="pt-10 px-7">
-            International Meetings
           </NavLink>
           <NavLink to="/newsletter" end className="pt-10 px-7">
             Newsletter
