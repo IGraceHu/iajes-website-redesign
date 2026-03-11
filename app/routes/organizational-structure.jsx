@@ -70,8 +70,8 @@ function InfographicSection() {
                     <line x1="450" y1="360" x2="350" y2="120" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
 
                     {/* Bottom Left to Bottom Right */}
-                    <line x1="210" y1="420" x2="390" y2="420" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                    <line x1="390" y1="420" x2="210" y2="420" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                    <line x1="210" y1="370" x2="390" y2="370" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                    <line x1="390" y1="370" x2="210" y2="370" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
                 </svg>
             </div>
         </Banner>
