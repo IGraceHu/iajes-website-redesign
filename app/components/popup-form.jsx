@@ -10,7 +10,7 @@ import { useEffect } from 'react';
     // setShow - set function for show
     //
 
-export function PopupForm({id, show, setShow, validate, children}) {
+export function PopupForm({id, className, show, setShow, validate, children}) {
     // const [state, formAction] = useActionState(saveForm, {});
 
     const popupId = "popup-" + id;
@@ -56,8 +56,8 @@ export function PopupForm({id, show, setShow, validate, children}) {
     return (
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
-                <form onSubmit={handleSubmit} className="mt-10 min-w-lg min-h-50 p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between">
-                    <div>
+                <form onSubmit={handleSubmit} className={"mt-10 min-w-lg min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
+                    <div className="overflow-y-scroll">
                         {children}
                     </div>
                     <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
