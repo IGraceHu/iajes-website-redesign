@@ -54,6 +54,7 @@ export default function VideoResources() {
     const isAdmin = true;
     const [showPopup, setShowPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
+    const today = new Date(Date.now()).toISOString().substring(0, 10);
 
     const popupDetails = {
         content: <div className="md:w-[70vw] h-[80vh]">
@@ -69,7 +70,12 @@ export default function VideoResources() {
                         <input id="upload" type="file" />
                         <div className="input-error">This field is required.</div>
                     </label>
+                    <div>
+                        <label htmlFor="vid-resource-date">Video resource date:</label><br />
+                        <input id="vid-resource-date" type="date" className="input input-text w-full" defaultValue={today} />
+                    </div>
                 </div>
+                <br/>
                 
                 <label htmlFor="vid-resource-link">Video resource link:</label><br />
                 <input id="vid-resource-link" type="text" className="input input-text w-full" />
