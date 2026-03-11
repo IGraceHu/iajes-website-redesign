@@ -126,7 +126,7 @@ p:last-of-type {
 
 a,
 .link {
-  color: var(--color-black);
+  color: var(--color-primary-dark);
   transition: 0.2s;
 }
 
@@ -136,14 +136,30 @@ a:hover,
   cursor: pointer;
 }
 
-p>a {
-  color: var(--color-primary-dark);
+p a, li a {
+  /* color: var(--color-primary-dark); */
   border-bottom: 1px solid;
   border-color: var(--color-primary-dark);
 }
 
-p>a:hover {
+p a:hover, li a:hover {
   border-color: var(--color-primary-light);
+}
+
+#menu .link {
+  color: var(--color-black);
+}
+
+ul {
+  list-style-type: disc;
+  margin-left: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
+}
+
+ol {
+  list-style-type: decimal;
+  margin-left: 1rem;
+  margin-bottom: calc(var(--spacing) * 2);
 }
 
 

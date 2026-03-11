@@ -225,7 +225,7 @@ function MembersSection() {
                         <table className="regions-table">
                             <tbody>
                                 <tr>
-                                    <td><strong>AJCU - US</strong></td>
+                                    <td><strong>AJCU - NA</strong></td>
                                     <td>North America</td>
                                 </tr>
                             </tbody>
@@ -275,43 +275,112 @@ function RolesSection() {
     const roles = [
         {
             title: "President",
-            description: "• Chairs the Governing Board.\n• Supports the actions of regional leaders.\n• Follows and encourages the committees and task forces.\n• Represents IAJES at the IAJU Board.\n• Is elected for 2 years. After that, he or she is expected to be Past President."
+            description: (
+                <ul>
+                    <li class="role-line">Chairs the Governing Board.\nSupports the actions of regional leaders.</li>
+                    <li class="role-line">Follows and encourages the committees and task forces.</li>
+                    <li class="role-line">Represents IAJES at the IAJU Board.\nIs elected for 2 years. After that, he or she is expected to be Past President.</li>
+                </ul>
+            )
         },
         {
             title: "Vice-President",
-            description: "• Assists the President in his various tasks and replaces him or her when necessary.\n• Leads the preparation group for the biennial meeting.\n• Is elected for 2 years. After that, he or she is expected to be President."
+            description: (
+                <ul>
+                    <li class="role-line">Assists the President in his various tasks and replaces him or her when necessary.</li>
+                    <li class="role-line">Leads the preparation group for the biennial meeting.</li>
+                    <li class="role-line">Is elected for 2 years. After that, he or she is expected to be President.</li>
+                </ul>
+            )
         },
         {
             title: "Chair of the Regional Committee",
-            description: "• Chairs the Regional Committee.\n• Organizes a regional event every two years, preferably during the year when there is no summit.\n• Identifies a secretary among the other regional leaders. \n• Is elected for 2 years and can be reelected once."
+            description: (
+                <ul>
+                    <li class="role-line">Chairs the Regional Committee.</li>
+                    <li class="role-line">Organizes a regional event every two years, preferably during the year when there is no summit.</li>
+                    <li class="role-line">Identifies a secretary among the other regional leaders.</li>
+                    <li class="role-line">Is elected for 2 years and can be reelected once.</li>
+                </ul>
+            )
         },
         {
             title: "Chair of the Operational Committee",
-            description: "• Chairs the Operational Committee.\n• Identify a secretary among the other task force leaders.\n• Is elected for 2 years and can be reelected once."
+            description: (
+                <ul>
+                    <li class="role-line">Chairs the Operational Committee.</li>
+                    <li class="role-line">Identify a secretary among the other task force leaders.</li>
+                    <li class="role-line">Is elected for 2 years and can be reelected once.</li>
+                </ul>
+            )
         },
         {
             title: "Secretary",
-            description: "• Assists the President or Chair to prepare the committees and special working sessions.\n• Writes and shares session minutes.\n• Is elected for 2 years and can be reelected once."
+            description: (
+                <ul>
+                    <li class="role-line">Assists the President or Chair to prepare the committees and special working sessions.</li>
+                    <li class="role-line">Writes and shares session minutes.</li>
+                    <li class="role-line">Is elected for 2 years and can be reelected once.</li>
+                </ul>
+            )
         },
         {
             title: "Past President",
-            description: "• Assists the President and the Governing Board when necessary, offering his or her experience."
+            description: (
+                <ul>
+                    <li class="role-line">Assists the President and the Governing Board when necessary, offering his or her experience.</li>
+                </ul>
+            )
         },
         {
             title: "Regional Leader",
-            description: "• Represents and facilitates the IAJES network in its region.\n• Contacts the deans to explain the IAJES network and ensure that each Jesuit engineering and science school is an active member of the network.\n• Coordinates the group of university representatives in the region.\n• Facilitates the participation of regional members in task forces.\n• Informs other regional leaders about relevant events.\n• Promotes events proposed by other regions within the region.\n• Participates in the Regional Committee meetings.\n• Is elected for 2 years and may be reelected."
+            description: (
+                <ul>
+                    <li class="role-line">Represents and facilitates the IAJES network in its region.</li>
+                    <li class="role-line">Contacts the deans to explain the IAJES network and ensure that each Jesuit engineering and science school is an active member of the network.</li>
+                    <li class="role-line">Coordinates the group of university representatives in the region.</li>
+                    <li class="role-line">Facilitates the participation of regional members in task forces.</li>
+                    <li class="role-line">Informs other regional leaders about relevant events.</li>
+                    <li class="role-line">Promotes events proposed by other regions within the region.</li>
+                    <li class="role-line">Participates in the Regional Committee meetings.</li>
+                    <li class="role-line">Is elected for 2 years and may be reelected.</li>
+                </ul>
+            )
         },
         {
             title: "Task force and project leader",
-            description: "• Constitutes and leads its work group by ensuring a good dynamic.\n• Defines the objective in line with the vision of IAJES.\n• Strives to have active members from all regions in his group (at least 3 of the 6 regions should be represented).\n• Ensures concrete results are achieved and shared with all members.\n• Reports to the Operational Committee."
+            description: (
+                <ul>
+                    <li class="role-line">Constitutes and leads its work group by ensuring a good dynamic.</li>
+                    <li class="role-line">Defines the objective in line with the vision of IAJES.</li>
+                    <li class="role-line">Strives to have active members from all regions in his group (at least 3 of the 6 regions should be represented).</li>
+                    <li class="role-line">Ensures concrete results are achieved and shared with all members.</li>
+                    <li class="role-line">Reports to the Operational Committee.</li>
+                </ul>
+            )
         },
         {
             title: "University Representative",
-            description: "• Promotes the actions of IAJES in his own university.\n• Informs its regional leader about news to be shared in IAJES.\n• Presents the network's activities at its university and encourages participation in the various actions.\n• Updates the database for members of his or her university.\n• Designated by his or her university."
+            description: (
+                <ul>
+                    <li class="role-line">Promotes the actions of IAJES in his own university.</li>
+                    <li class="role-line">Informs its regional leader about news to be shared in IAJES.</li>
+                    <li class="role-line">Presents the network's activities at its university and encourages participation in the various actions.</li>
+                    <li class="role-line">Updates the database for members of his or her university.</li>
+                    <li class="role-line">Designated by his or her university.</li>
+                </ul>
+            )
         },
         {
             title: "Remarks:",
-            description: "• The Governing Board propose a roadmap for the development of IAJES (vision, ambition, objectives, organization). This road map must find the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, the close relationship with IAJU.\n• Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.\n• This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Chair of the Regional Committee, Chair of the Operational Committee, Secretary, Past President, Regional leader, Task force and project leader, University representative.\n• It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network",
+            description: (
+                <ul>
+                    <li class="role-line">The Governing Board propose a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This road map must find the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, the close relationship with IAJU.</li>
+                    <li class="role-line">Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.</li>
+                    <li class="role-line">This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Chair of the Regional Committee, Chair of the Operational Committee, Secretary, Past President, Regional leader, Task force and project leader, University representative.</li>
+                    <li class="role-line">It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network</li>
+                </ul>
+            ),
             isLastBox: true
         }
     ];
@@ -334,9 +403,7 @@ function RolesSection() {
                     <div key={idx} className={`role-card ${role.isLastBox ? 'role-card-last' : ''}`}>
                         <h4>{role.title}</h4>
                         <div className="role-content">
-                            {role.description.split('\n').map((line, lineIdx) => (
-                                <div key={lineIdx} className="role-line">{line}</div>
-                            ))}
+                            {role.description}
                         </div>
                     </div>
                 ))}

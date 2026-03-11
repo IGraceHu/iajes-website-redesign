@@ -78,6 +78,16 @@ export default function StyleGuide() {
                     <h6>Heading 6</h6>
                     <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc in nisi venenatis, faucibus lorem eu, lobortis magna. Donec at ante vel arcu mattis sagittis. Curabitur efficitur ex aliquam sapien dictum fringilla. Vestibulum sagittis sit amet quam in congue. Cras consequat, nibh auctor dapibus ultrices, arcu ex lobortis mi, eu pharetra sem metus eget mi. Sed eget bibendum ipsum. Vivamus bibendum nulla hendrerit ligula facilisis, non euismod mi cursus. Proin nec risus vel elit ullamcorper venenatis. Donec lacinia mi eu nunc vehicula, quis ullamcorper ipsum suscipit. </p>
                     <p>Example for <a href="">inline links</a></p>
+                    <ul>
+                        <li>Unordered list item 1</li>
+                        <li>Unordered list item 2</li>
+                        <li>Unordered list item 3</li>
+                    </ul>
+                    <ol>
+                        <li>Ordered list item 1</li>
+                        <li>Ordered list item 2</li>
+                        <li>Ordered list item 3</li>
+                    </ol>
                 </div>
 
                 <div className="mt-10">
