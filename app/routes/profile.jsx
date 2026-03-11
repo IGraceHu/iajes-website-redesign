@@ -1,4 +1,5 @@
 import { useMemo, useState, useEffect, useRef, useActionState } from "react";
+import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Link, useParams } from "react-router";
 import { Menu } from "../components/menu";
@@ -34,7 +35,6 @@ const PEOPLE = [
   },
 ];
 
-
 export function meta() {
   return [
     { title: "IAJES Profile" },
@@ -52,31 +52,45 @@ export async function loader({ params }) {
 }
 
 
-async function validateProfile(previousState, formData) {
-    console.log("validate!");
-    let validated = true;
-    if (validated) {
-      // const result = await updateProfile(null);
-    }
+async function updateProfile(user_id, formData) {
+    console.log("update!");
+    const { error } = await supabase
+      .from('users')
+      .update({
+        fname: formData.get("fname"),
+        lname: formData.get("lname"),
+        tagline: formData.get("tagline"),
+        job_position: formData.get("job-position"),
+        institution: formData.get("institution"),
+        country: formData.get("country"),
+        major: formData.get("major"),
+        task_force: formData.get("task-force"),
+        task_force_role: formData.get("task-force-role"),
+        research_interests: formData.get("research-interests"),
+        biography: formData.get("biography"),
+        url_linkedin: formData.get("url-linkedin"),
+        url_instagram: formData.get("url-instagram"),
+        url_twitter: formData.get("url-twitter"),
+        url_facebook: formData.get("url-facebook"),
+        url_website: formData.get("url-website")
+      })
+      .eq('id', user_id)
+    return error;
   }
 
 
 function EditPopup({ showPopup, setShowPopup, profileData }) {
-  function validate(formData) {
-
+  const navigate = useNavigate();
+  async function validate(formData) {
+    console.log(formData);
+    const update = await updateProfile(profileData.id, formData);
+    if (update === null) {
+      setShowPopup(false);
+      navigate(0);
+    }
   }
 
   const draft = profileData;
-
-  const updateField = (field) => (event) => {
-    const value = event.target.value;
-    setDraft((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const updateSocial = (field) => (event) => {
-    const value = event.target.value;
-    setDraft((prev) => ({ ...prev, socials: { ...prev.socials, [field]: value } }));
-  };
 
   return (
     <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate}>
@@ -89,37 +103,40 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
               <label htmlFor="first-name">First Name</label>
               <input
                 id="first-name"
+                name="fname"
+                type="text"
                 className="input-text w-full"
-                value={draft.fname}
-                onChange={updateField("fname")}
+                defaultValue={draft.fname}
               />
             </div>
             <div>
               <label htmlFor="last-name">Last Name</label>
               <input
                 id="last-name"
+                name="lname"
+                type="text"
                 className="input-text w-full"
-                value={draft.lname}
-                onChange={updateField("lname")}
+                defaultValue={draft.lname}
               />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="email">Email</label>
               <input
                 id="email"
+                name="email"
                 type="email"
                 className="input-text w-full"
-                value={draft.email}
-                onChange={updateField("email")}
+                defaultValue={draft.email}
               />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="tagline">Tagline</label>
               <input
                 id="tagline"
+                name="tagline"
+                type="text"
                 className="input-text w-full"
-                value={draft.tagline}
-                onChange={updateField("tagline")}
+                defaultValue={draft.tagline}
               />
             </div>
           </div>
@@ -129,48 +146,43 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
           <div className="text-sm font-semibold text-secondary-dark">Academic Information</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
             <div>
-              <label htmlFor="title">Job/Position</label>
+              <label htmlFor="job-position">Job/Position</label>
               <input
-                id="title"
+                id="job-position"
+                name="job-position"
+                type="text"
                 className="input-text w-full"
-                value={draft.title}
-                onChange={updateField("title")}
+                defaultValue={draft.title}
               />
             </div>
             <div>
               <label htmlFor="institution">Institution</label>
               <input
                 id="institution"
+                name="institution"
+                type="text"
                 className="input-text w-full"
-                value={draft.institution}
-                onChange={updateField("institution")}
+                defaultValue={draft.institution}
               />
             </div>
             <div>
               <label htmlFor="country">Country</label>
               <input
                 id="country"
+                name="country"
+                type="text"
                 className="input-text w-full"
-                value={draft.country}
-                onChange={updateField("country")}
-              />
-            </div>
-            <div>
-              <label htmlFor="school">School</label>
-              <input
-                id="school"
-                className="input-text w-full"
-                value={draft.school}
-                onChange={updateField("school")}
+                defaultValue={draft.country}
               />
             </div>
             <div>
               <label htmlFor="major">Major</label>
               <input
                 id="major"
+                name="major"
+                type="text"
                 className="input-text w-full"
-                value={draft.major}
-                onChange={updateField("major")}
+                defaultValue={draft.major}
               />
             </div>
           </div>
@@ -180,21 +192,23 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
           <div className="text-sm font-semibold text-secondary-dark">Task Force</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
             <div>
-              <label htmlFor="task-force-role">Task Force Role</label>
-              <input
-                id="task-force-role"
-                className="input-text w-full"
-                value={draft.taskForceRole}
-                onChange={updateField("taskForceRole")}
-              />
-            </div>
-            <div>
               <label htmlFor="task-force">Task Force</label>
               <input
                 id="task-force"
+                name="task-force"
+                type="text"
                 className="input-text w-full"
-                value={draft.taskForce}
-                onChange={updateField("taskForce")}
+                defaultValue={draft.taskForce}
+              />
+            </div>
+            <div>
+              <label htmlFor="task-force-role">Task Force Role</label>
+              <input
+                id="task-force-role"
+                name="task-force-role"
+                type="text"
+                className="input-text w-full"
+                defaultValue={draft.taskForceRole}
               />
             </div>
           </div>
@@ -204,21 +218,23 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
           <div className="text-sm font-semibold text-secondary-dark">Bio</div>
           <div className="mt-3 grid gap-4">
             <div>
-              <label htmlFor="interests">Research Interests</label>
+              <label htmlFor="research-interests">Research Interests</label>
               <textarea
-                id="interests"
+                id="research-interests"
+                name="research-interests"
+                type="text"
                 className="input-text w-full"
-                value={draft.interests}
-                onChange={updateField("interests")}
+                defaultValue={draft.interests}
               />
             </div>
             <div>
-              <label htmlFor="description">Biography</label>
+              <label htmlFor="biography">Biography</label>
               <textarea
-                id="description"
+                id="biography"
+                name="biography"
+                type="text"
                 className="input-text w-full"
-                value={draft.description}
-                onChange={updateField("description")}
+                defaultValue={draft.description}
               />
             </div>
           </div>
@@ -231,45 +247,50 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
               <label htmlFor="linkedin">LinkedIn</label>
               <input
                 id="linkedin"
+                name="url-linkedin"
+                type="text"
                 className="input-text w-full"
-                value={draft.url_linkedin}
-                onChange={updateSocial("linkedin")}
+                defaultValue={draft.url_linkedin}
               />
             </div>
             <div>
               <label htmlFor="instagram">Instagram</label>
               <input
                 id="instagram"
+                name="url-instagram"
+                type="text"
                 className="input-text w-full"
-                value={draft.url_instagram}
-                onChange={updateSocial("instagram")}
+                defaultValue={draft.url_instagram}
               />
             </div>
             <div>
               <label htmlFor="x">X (Twitter)</label>
               <input
                 id="x"
+                name="url-twitter"
+                type="text"
                 className="input-text w-full"
-                value={draft.url_twitter}
-                onChange={updateSocial("x")}
+                defaultValue={draft.url_twitter}
               />
             </div>
             <div>
               <label htmlFor="facebook">Facebook</label>
               <input
                 id="facebook"
+                name="url-facebook"
+                type="text"
                 className="input-text w-full"
-                value={draft.url_facebook}
-                onChange={updateSocial("facebook")}
+                defaultValue={draft.url_facebook}
               />
             </div>
             <div className="md:col-span-2">
               <label htmlFor="website">Website</label>
               <input
                 id="website"
+                name="url-website"
+                type="text"
                 className="input-text w-full"
-                value={draft.url_website}
-                onChange={updateSocial("website")}
+                defaultValue={draft.url_website}
               />
             </div>
           </div>
@@ -469,7 +490,7 @@ export default function ProfileRoute({ loaderData }) {
                 {profile.fname} {profile.lname}
               </div>
               <div className="mt-2 text-sm text-gray-dark/70">
-                {profile.title}, {profile.institution}
+                {profile.job_position}, {profile.institution}
               </div>
               <div className="mt-2 text-sm italic text-gray-dark/60">{profile.tagline}</div>
             </div>
@@ -477,8 +498,8 @@ export default function ProfileRoute({ loaderData }) {
             <div className="flex flex-col gap-4">
               <div className="grid w-full gap-4 sm:grid-cols-2">
                 <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-                  <div className="font-semibold text-secondary-dark">{profile.taskForceRole}:</div>
-                  <div className="mt-1 text-gray-dark/70">{profile.taskForce}</div>
+                  <div className="font-semibold text-secondary-dark">{profile.task_force_role}:</div>
+                  <div className="mt-1 text-gray-dark/70">{profile.task_force}</div>
                 </div>
 
                 <button
@@ -493,15 +514,15 @@ export default function ProfileRoute({ loaderData }) {
                 </button>
               </div>
 
-              <p className="text-sm leading-relaxed text-gray-dark/80">{profile.description}</p>
+              <p className="text-sm leading-relaxed text-gray-dark/80">{profile.biography}</p>
             </div>
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
               <div className="grid gap-3 text-sm">
-                <InfoRow label="Country" value={profile.country} />
-                <InfoRow label="School" value={profile.school} />
-                <InfoRow label="Major" value={profile.major} />
-                <InfoRow label="Research Interests" value={profile.interests} />
+                <InfoRow label="Country" defaultValue={profile.country} />
+                <InfoRow label="School" defaultValue={profile.school} />
+                <InfoRow label="Major" defaultValue={profile.major} />
+                <InfoRow label="Research Interests" defaultValue={profile.research_interests} />
               </div>
 
               <div className="flex items-center gap-4 text-xl text-secondary-light">
