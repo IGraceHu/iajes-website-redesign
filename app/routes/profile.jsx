@@ -14,17 +14,21 @@ export function meta() {
 }
 
 
-export async function loader({ params }) {
+async function getProfile(userId) {
   const { data, error } = await supabase
-  .from('users')
-  .select()
-  .eq('id', params.id)
+    .from('users')
+    .select()
+    .eq('id', userId)
   return data[0];
 }
 
 
-async function updateProfile(user_id, formData) {
-    console.log("update!");
+export async function loader({ params }) {
+  return getProfile(params.id);
+}
+
+
+async function updateProfile(userId, formData) {
     const { error } = await supabase
       .from('users')
       .update({
@@ -45,14 +49,15 @@ async function updateProfile(user_id, formData) {
         url_facebook: formData.get("url-facebook"),
         url_website: formData.get("url-website")
       })
-      .eq('id', user_id)
+      .eq('id', userId)
     return error;
   }
 
 
-function EditPopup({ showPopup, setShowPopup, profileData }) {
+function EditPopup({ showPopup, setShowPopup, userId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+  const [draft, setDraft] = useState({});
 
   async function validate(formData) {
     let isValidated = true;
@@ -61,8 +66,6 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
       fname: formData.get('fname') === (null || ""),
       lname: formData.get('lname') === (null || "")
     }
-
-    console.log(isRequired);
     
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -76,14 +79,24 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
       return false;
     }
 
-    const update = await updateProfile(profileData.id, formData);
+    const update = await updateProfile(userId, formData);
     if (update === null) {
       setShowPopup(false);
       navigate(0);
     }
   }
 
-  const draft = profileData;
+  async function loadInfo() {
+      const profileInfo = await getProfile(userId);
+      setDraft(profileInfo);
+    }
+
+  useEffect(() => {
+    if (showPopup) {
+      loadInfo();
+    }
+  }, [showPopup])
+
 
   return (
     <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate}>
@@ -147,7 +160,7 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
                 name="job-position"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.title}
+                defaultValue={draft.job_position}
               />
             </div>
             <div>
@@ -219,7 +232,7 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
                 name="research-interests"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.interests}
+                defaultValue={draft.research_interests}
               />
             </div>
             <div>
@@ -229,7 +242,7 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
                 name="biography"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.description}
+                defaultValue={draft.biography}
               />
             </div>
           </div>
@@ -300,7 +313,6 @@ export default function ProfileRoute({ loaderData }) {
   // const params = useParams();
   const basePerson = loaderData;
   const [profile, setProfile] = useState(basePerson);
-  const [draft, setDraft] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
   const [showPhotoPopup, setShowPhotoPopup] = useState(false);
   const [photoDraftUrl, setPhotoDraftUrl] = useState(basePerson?.avatarUrl || "");
@@ -325,7 +337,6 @@ export default function ProfileRoute({ loaderData }) {
 
   useEffect(() => {
     setProfile(basePerson);
-    setDraft(basePerson);
     setPhotoDraftUrl(basePerson?.avatarUrl || "");
     setPhotoObjectUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
@@ -356,7 +367,6 @@ export default function ProfileRoute({ loaderData }) {
   }
 
   const handleOpenEdit = () => {
-    setDraft(profile);
     setShowPopup(true);
   };
 
@@ -383,7 +393,6 @@ export default function ProfileRoute({ loaderData }) {
 
   const handlePhotoSave = () => {
     setProfile((prev) => ({ ...prev, avatarUrl: photoDraftUrl }));
-    setDraft((prev) => ({ ...prev, avatarUrl: photoDraftUrl }));
     setShowPhotoPopup(false);
   };
 
@@ -434,7 +443,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} profileData={profile} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={currentUserId} />
       <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} details={photoPopupDetails} />
       <input
         ref={fileInputRef}
@@ -491,11 +500,13 @@ export default function ProfileRoute({ loaderData }) {
             </div>
 
             <div className="flex flex-col gap-4">
-              <div className="grid w-full gap-4 sm:grid-cols-2">
-                <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-                  <div className="font-semibold text-secondary-dark">{profile.task_force_role}:</div>
-                  <div className="mt-1 text-gray-dark/70">{profile.task_force}</div>
-                </div>
+              <div className="flex flex-col w-full gap-4 sm:flex-row">
+                { profile?.task_force &&
+                  <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
+                    <div className="font-semibold text-secondary-dark">{profile.task_force_role}:</div>
+                    <div className="mt-1 text-gray-dark/70">{profile.task_force}</div>
+                  </div>
+                }
 
                 <button
                   type="button"
@@ -536,12 +547,14 @@ export default function ProfileRoute({ loaderData }) {
 }
 
 function InfoRow({ label, value }) {
-  return (
-    <div className="grid grid-cols-[140px_1fr] gap-4">
-      <div className="italic text-gray-dark/60">{label}</div>
-      <div className="font-semibold text-secondary-dark">{value}</div>
-    </div>
-  );
+  if (value !== (null || "")) {
+    return (
+      <div className="grid grid-cols-[140px_1fr] gap-4">
+        <div className="italic text-gray-dark/60">{label}</div>
+        <div className="font-semibold text-secondary-dark">{value}</div>
+      </div>
+    );
+  }
 }
 
 function IconSquare({ title, icon, onClick }) {
@@ -558,16 +571,20 @@ function IconSquare({ title, icon, onClick }) {
 }
 
 function SocialIcon({ label, href, icon }) {
-  return (
-    <a
-      href={href}
-      aria-label={label}
-      className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-gray-light bg-white text-secondary-light transition hover:border-primary-light"
-      onClick={(event) => {
-        if (href === "#") event.preventDefault();
-      }}
-    >
-      <i className={`bi ${icon}`} aria-hidden="true" />
-    </a>
-  );
+  if (href !== (null || "")) {
+    
+    return (
+      <a
+        href={href}
+        aria-label={label}
+        className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-gray-light bg-white text-secondary-light transition hover:border-primary-light"
+        onClick={(event) => {
+          if (href === "#") event.preventDefault();
+        }}
+      >
+        <i className={`bi ${icon}`} aria-hidden="true" />
+      </a>
+    );
+
+  }
 }
