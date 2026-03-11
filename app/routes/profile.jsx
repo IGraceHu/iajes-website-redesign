@@ -475,34 +475,29 @@ export default function ProfileRoute({ loaderData }) {
                   {profilePhotoContent}
                 </div>
                 {currentUserId == profile.id ? (
-                  <button
-                    type="button"
-                    className="absolute bottom-2 right-2 flex h-9 w-9 items-center justify-center rounded-md border-2 border-white bg-white/90 text-secondary-dark shadow-sm transition hover:border-primary-light hover:bg-white hover:shadow-md hover:text-primary-light cursor-pointer"
-                    aria-label="Change profile photo"
+                  <IconSquare className="absolute bottom-1 right-1" title="Change Profile Photo" icon="bi-pencil" small
                     onClick={(event) => {
                       event.stopPropagation();
                       openPhotoPicker();
                     }}
-                  >
-                    <i className="bi bi-pencil" aria-hidden="true" />
-                  </button>
+                  />
                 ) : null}
               </div>
-              <div className="mt-5 text-xl font-semibold text-secondary-dark">
+              <h4 className="mt-5">
                 {profile.fname} {profile.lname}
-              </div>
-              <div className="mt-2 text-sm text-gray-dark/70">
+              </h4>
+              <p className="mt-1 text-sm text-gray-dark/70">
                 {profile.job_position}, {profile.institution}
-              </div>
-              <div className="mt-2 text-sm italic text-gray-dark/60">{profile.tagline}</div>
+              </p>
+              <p className="text-sm italic text-gray-dark/60">{profile.tagline}</p>
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col w-full gap-4 sm:flex-row">
                 { profile?.task_force &&
                   <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-                    <div className="font-semibold text-secondary-dark">{profile.task_force_role}:</div>
-                    <div className="mt-1 text-gray-dark/70">{profile.task_force}</div>
+                    <p className="font-semibold text-secondary-dark">{profile.task_force_role}:</p>
+                    <p className="mt-1 text-gray-dark/70">{profile.task_force}</p>
                   </div>
                 }
 
@@ -518,7 +513,7 @@ export default function ProfileRoute({ loaderData }) {
                 </button>
               </div>
 
-              <p className="text-sm leading-relaxed text-gray-dark/80">{profile.biography}</p>
+              <p className="leading-relaxed text-gray-dark/80">{profile.biography}</p>
             </div>
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
@@ -548,19 +543,20 @@ function InfoRow({ label, value }) {
   if (value !== (null || "")) {
     return (
       <div className="grid grid-cols-[140px_1fr] gap-4">
-        <div className="italic text-gray-dark/60">{label}</div>
-        <div className="font-semibold text-secondary-dark">{value}</div>
+        <p className="italic text-gray-dark/60 py-0">{label}</p>
+        <p className="font-semibold text-secondary-dark py-0">{value}</p>
       </div>
     );
   }
 }
 
-function IconSquare({ title, icon, onClick }) {
+function IconSquare({ className, title, icon, onClick, small=false }) {
+  const size = small ? "h-10 w-10 " : "h-12 w-12 ";
   return (
     <button
       type="button"
       title={title}
-      className="button button-light flex h-12 w-12 items-center justify-center text-xl shadow-sm transition hover:shadow-md"
+      className={"button button-light flex items-center justify-center text-xl shadow-sm transition hover:shadow-md " + size + className}
       onClick={onClick}
     >
       <i className={`bi ${icon}`} aria-hidden="true" />
