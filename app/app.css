@@ -150,6 +150,11 @@ p a:hover, li a:hover {
   color: var(--color-black);
 }
 
+#menu .link:hover {
+  color: var(--color-primary-light);
+  cursor: pointer;
+}
+
 a.link-back {
     color: white;
 }
