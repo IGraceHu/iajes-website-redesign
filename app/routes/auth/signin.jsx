@@ -85,7 +85,7 @@ export default function SignIn() {
       <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
         <h4>Sign in to <span className="text-primary-dark">IAJES</span></h4>
         <form action={formAction} className="md:w-md w-full duration-200">
-          <label for="email">Email:</label><br />
+          <label htmlFor="email">Email:</label><br />
           <input id="email" name="email" type="text" defaultValue={state?.email}
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
@@ -94,7 +94,7 @@ export default function SignIn() {
           <br /><br />
 
           <div className="w-full flex justify-between">
-            <label for="pwd">Password:</label>
+            <label htmlFor="pwd">Password:</label>
             <p><a href="/forget-password">Forgot password?</a></p>
           </div>
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}

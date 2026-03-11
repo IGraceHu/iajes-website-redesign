@@ -63,7 +63,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
       <p className="pb-5 text-center w-sm">Enter your email address and we will send you a password reset link.</p>
 
       <form action={formAction} className="md:w-sm w-full duration-200">
-        <label for="email">Email:</label><br />
+        <label htmlFor="email">Email:</label><br />
         <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Enter your email address"
           className={"input-text w-full " + (emailRequired && "input-required")}
           onChange={(e) => checkEmpty(e.target.value)} />

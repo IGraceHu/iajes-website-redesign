@@ -209,16 +209,16 @@ function EditPerson({ person }) {
     <div className="lg:w-[40vw] mx-10 my-5">
       <h4>Edit Team Member</h4>
       <form className="mb-5">
-        <label for="edit-person-name">Name:</label><br />
+        <label htmlFor="edit-person-name">Name:</label><br />
         <input id="edit-person-name" type="text" className="input input-text w-full" defaultValue={person.name} />
         <br /><br />
-        <label for="edit-person-loc">Location:</label><br />
+        <label htmlFor="edit-person-loc">Location:</label><br />
         <input id="edit-person-loc" type="text" className="input input-text w-full" defaultValue={person.location} />
         <br /><br />
-        <label for="edit-person-contact">Contact:</label><br />
+        <label htmlFor="edit-person-contact">Contact:</label><br />
         <input id="edit-person-contact" type="text" className="input input-text w-full" defaultValue={person.contact} />
         <br /><br />
-        <label for="edit-person-url">IAJES Profile URL:</label><br />
+        <label htmlFor="edit-person-url">IAJES Profile URL:</label><br />
         <input id="edit-person-url" type="text" className="input input-text w-full" defaultValue={person.url} />
         <br /><br />
         <label>
@@ -271,7 +271,7 @@ function EditProject({ project }) {
       <h4>Edit Project</h4>
       <form className="mb-5 flex md:flex-row flex-col gap-x-10 gap-y-5 mb-10 h-[80%]">
         <div className="shrink-5">
-          <label for="edit-project-title">Project title:</label><br />
+          <label htmlFor="edit-project-title">Project title:</label><br />
           <input id="edit-project-title" type="text" className="input input-text w-full" defaultValue={project.name} />
           <br /><br />
           <label>
@@ -281,7 +281,7 @@ function EditProject({ project }) {
           </label>
         </div>
         <div className="grow-4">
-          <label for="edit-project-desc">Project details:</label><br />
+          <label htmlFor="edit-project-desc">Project details:</label><br />
           <textarea id="edit-project-desc" className="input input-text w-full h-full" defaultValue={project.desc ? project.desc : ""}></textarea>
         </div>
       </form>

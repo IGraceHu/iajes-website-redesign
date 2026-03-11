@@ -61,7 +61,7 @@ export default function VideoResources() {
             <form className="mb-5 h-[80%] overflow-y-auto">
                 <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
                     <div>
-                        <label for="vid-resource-title">Video resource title:</label><br />
+                        <label htmlFor="vid-resource-title">Video resource title:</label><br />
                         <input id="vid-resource-title" type="text" className="input input-text w-full" />
                     </div>
                     <label>
@@ -71,21 +71,21 @@ export default function VideoResources() {
                     </label>
                 </div>
                 
-                <label for="vid-resource-link">Video resource link:</label><br />
+                <label htmlFor="vid-resource-link">Video resource link:</label><br />
                 <input id="vid-resource-link" type="text" className="input input-text w-full" />
                 <br /><br />
-                <label for="vid-resource-desc">Video description:</label><br />
+                <label htmlFor="vid-resource-desc">Video description:</label><br />
                 <textarea id="vid-resource-desc" className="input input-text w-full h-30"></textarea>
                 <br/> <br/>
 
                 <h5>Speaker Details</h5>
                 <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
                     <div>
-                        <label for="vid-resource-speaker-name">Name:</label><br />
+                        <label htmlFor="vid-resource-speaker-name">Name:</label><br />
                         <input id="vid-resource-speaker-name" type="text" className="input input-text w-full" />
                     </div>
                     <div>
-                        <label for="vid-resource-speaker-uni">University:</label><br />
+                        <label htmlFor="vid-resource-speaker-uni">University:</label><br />
                         <input id="vid-resource-speaker-uni" type="text" className="input input-text w-full" />
                     </div>
                 </div>
@@ -96,7 +96,7 @@ export default function VideoResources() {
                     <div className="input-error">This field is required.</div>
                 </label>
                 <br /><br />
-                <label for="vid-resource-speaker-desc">Description:</label><br />
+                <label htmlFor="vid-resource-speaker-desc">Description:</label><br />
                 <textarea id="vid-resource-speaker-desc" className="input input-text w-full h-20"></textarea>
             </form>
         </div>,

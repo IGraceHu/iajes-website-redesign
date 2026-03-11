@@ -109,14 +109,14 @@ export default function SignUp() {
         <form action={formAction} className="lg:w-md w-full duration-200">
           <div className="w-full mb-5 grid md:grid-cols-2 grid-cols-1 gap-5">
             <div>
-              <label for="fname">First name:</label><br />
+              <label htmlFor="fname">First name:</label><br />
               <input id="fname" name="fname" type="text" defaultValue={state?.fname}
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "fname")} />
               <div className="input-error">This field is required.</div>
             </div>
             <div>
-              <label for="lname">Last name:</label><br />
+              <label htmlFor="lname">Last name:</label><br />
               <input id="lname" name="lname" type="text" defaultValue={state?.lname}
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "lname")} />
@@ -124,7 +124,7 @@ export default function SignUp() {
             </div>
           </div>
 
-          <label for="email">Email:</label><br />
+          <label htmlFor="email">Email:</label><br />
           <input id="email" name="email" type="text" defaultValue={state?.email}
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
@@ -132,7 +132,7 @@ export default function SignUp() {
 
           <br /><br />
 
-          <label for="pwd">Create Password:</label><br />
+          <label htmlFor="pwd">Create Password:</label><br />
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => { checkPassword(); checkEmpty(e.target.value, "pwd"); }} />
@@ -140,7 +140,7 @@ export default function SignUp() {
 
           <br /><br />
 
-          <label for="re-pwd">Re-enter Password:</label><br />
+          <label htmlFor="re-pwd">Re-enter Password:</label><br />
           <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd}
             className={"input-text w-full " + (formRequired?.rePwd && "input-required")}
             onChange={checkPassword} />
@@ -148,7 +148,7 @@ export default function SignUp() {
 
           <br /><br />
 
-          <label for="subscribe" className="checkbox">
+          <label htmlFor="subscribe" className="checkbox">
             <input id="subscribe" name="subscribe" type="checkbox" defaultChecked={state?.subscribe} /><p>Subscribe to IAJES Weekly</p>
           </label>
 
