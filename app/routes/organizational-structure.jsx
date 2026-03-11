@@ -1,5 +1,7 @@
+import { useState } from "react";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { H2Middle, Break, Banner } from "../components/graphics";
 import "../styles/organizational-structure.css";
 
 export function meta() {
@@ -11,12 +13,7 @@ export function meta() {
 // Section 1: Infographic with organizational structure
 function InfographicSection() {
     return (
-        <div className="bg-secondary-dark py-20 px-10 lg:px-40 relative overflow-hidden">
-            {/* Decorative discs */}
-            <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
-                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="../assets/landing-disc-2a.svg" />
-                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="../assets/landing-disc-4b.svg" />
-            </div>
+        <Banner type="dark">
 
             <h1 className="text-center mb-12 text-white relative z-10">Organizational Structure</h1>
 
@@ -77,7 +74,7 @@ function InfographicSection() {
                     <line x1="390" y1="420" x2="210" y2="420" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
                 </svg>
             </div>
-        </div>
+        </Banner>
     );
 }
 
@@ -161,9 +158,7 @@ function MembersSection() {
         <div className="bg-white py-20 px-10">
             {/* Governing Board */}
             <div className="mb-24">
-                <div className="member-section-title">
-                    <h2 className="text-center">Governing Board</h2>
-                </div>
+                <H2Middle className="text-center">Governing Board</H2Middle>
                 <div className="grid lg:grid-cols-6 md:grid-cols-3 min-[500px]:grid-cols-2 grid-cols-1 gap-12 mt-12 lg:mx-6 mx-0">
                     {governingBoardMembers.map((member, idx) => (
                         <MemberCard key={idx} {...member} />
@@ -173,9 +168,7 @@ function MembersSection() {
 
             {/* Regional Committee */}
             <div className="mb-24">
-                <div className="member-section-title">
-                    <h2 className="text-center">Regional Committee</h2>
-                </div>
+                <H2Middle className="text-center">Regional Committee</H2Middle>
                 <div className="grid lg:grid-cols-6 md:grid-cols-3 min-[500px]:grid-cols-2 grid-cols-1 gap-12 mt-12 lg:mx-6 mx-0">
                     {regionalMembers.map((member, idx) => (
                         <MemberCard key={idx} {...member} region={member.region} />
@@ -185,9 +178,7 @@ function MembersSection() {
 
             {/* Operational Committee */}
             <div className="mb-24">
-                <div className="member-section-title">
-                    <h2 className="text-center">Operational Committee</h2>
-                </div>
+                <H2Middle className="text-center">Operational Committee</H2Middle>
                 <div className="grid lg:grid-cols-6 md:grid-cols-3 min-[500px]:grid-cols-2 grid-cols-1 gap-12 mt-12 lg:mx-6 mx-0">
                     {operationalMembers.slice(0, 6).map((member, idx) => (
                         <MemberCard key={idx} {...member} taskForce={member.taskForce} />
@@ -203,7 +194,7 @@ function MembersSection() {
             {/* Regions and Task Forces Info */}
             <div className="bg-teal-50 py-20 px-10 lg:px-20 mt-20">
                 {/* Regions */}
-                <div className="mb-16 pb-16 border-b-2 border-primary-dark border-opacity-20">
+                <div className="mb-16">
                     <h3 className="text-center mb-8">The 6 Regions identified by IAJU</h3>
                     <div className="regions-grid">
                         <table className="regions-table">
@@ -260,8 +251,10 @@ function MembersSection() {
                     </p>
                 </div>
 
+                <Break dark />
+
                 {/* Task Forces */}
-                <div>
+                <div className="mt-10">
                     <h3 className="text-center mb-8">Task Forces</h3>
                     <div className="text-center text-gray-dark text-sm leading-relaxed">
                         <p className="font-semibold mb-4">1 Leader, several IAJES Members</p>
@@ -435,7 +428,7 @@ function LogoSection() {
 
                 <div className="flex items-stretch order-1 md:order-2">
                     <img
-                        src="../assets/landing-disc-2a.svg"
+                        src="../assets/logo-iajes.svg"
                         alt="IAJES Logo"
                         className="w-full h-[70vh] object-contain rounded-md md:h-auto"
                         style={{ minHeight: 160 }}
