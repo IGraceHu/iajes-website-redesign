@@ -1,8 +1,9 @@
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, useActionState } from "react";
 import { supabase } from "../supabase";
 import { Link, useParams } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup } from "../components/popup";
+import { PopupForm } from "../components/popup-form";
 
 // ---- Placeholder data (same IDs as search) ----
 const PEOPLE = [
@@ -34,7 +35,12 @@ const PEOPLE = [
 ];
 
 
-
+export function meta() {
+  return [
+    { title: "IAJES Profile" },
+    { name: "", content: "" },
+  ];
+}
 
 
 export async function loader({ params }) {
@@ -43,6 +49,234 @@ export async function loader({ params }) {
   .select()
   .eq('id', params.id)
   return data[0];
+}
+
+
+async function validateProfile(previousState, formData) {
+    console.log("validate!");
+    let validated = true;
+    if (validated) {
+      // const result = await updateProfile(null);
+    }
+  }
+
+
+function EditPopup({ showPopup, setShowPopup, profileData }) {
+  function validate(formData) {
+
+  }
+
+  const draft = profileData;
+
+  const updateField = (field) => (event) => {
+    const value = event.target.value;
+    setDraft((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const updateSocial = (field) => (event) => {
+    const value = event.target.value;
+    setDraft((prev) => ({ ...prev, socials: { ...prev.socials, [field]: value } }));
+  };
+
+  return (
+    <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate}>
+       <h4>Edit Profile</h4>
+       <div className="flex flex-col gap-6">
+        <fieldset>
+          <div className="text-sm font-semibold text-secondary-dark">Personal Information</div>
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="first-name">First Name</label>
+              <input
+                id="first-name"
+                className="input-text w-full"
+                value={draft.fname}
+                onChange={updateField("fname")}
+              />
+            </div>
+            <div>
+              <label htmlFor="last-name">Last Name</label>
+              <input
+                id="last-name"
+                className="input-text w-full"
+                value={draft.lname}
+                onChange={updateField("lname")}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="email">Email</label>
+              <input
+                id="email"
+                type="email"
+                className="input-text w-full"
+                value={draft.email}
+                onChange={updateField("email")}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="tagline">Tagline</label>
+              <input
+                id="tagline"
+                className="input-text w-full"
+                value={draft.tagline}
+                onChange={updateField("tagline")}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="border-t-2 border-gray-light pt-4">
+          <div className="text-sm font-semibold text-secondary-dark">Academic Information</div>
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="title">Job/Position</label>
+              <input
+                id="title"
+                className="input-text w-full"
+                value={draft.title}
+                onChange={updateField("title")}
+              />
+            </div>
+            <div>
+              <label htmlFor="institution">Institution</label>
+              <input
+                id="institution"
+                className="input-text w-full"
+                value={draft.institution}
+                onChange={updateField("institution")}
+              />
+            </div>
+            <div>
+              <label htmlFor="country">Country</label>
+              <input
+                id="country"
+                className="input-text w-full"
+                value={draft.country}
+                onChange={updateField("country")}
+              />
+            </div>
+            <div>
+              <label htmlFor="school">School</label>
+              <input
+                id="school"
+                className="input-text w-full"
+                value={draft.school}
+                onChange={updateField("school")}
+              />
+            </div>
+            <div>
+              <label htmlFor="major">Major</label>
+              <input
+                id="major"
+                className="input-text w-full"
+                value={draft.major}
+                onChange={updateField("major")}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="border-t-2 border-gray-light pt-4">
+          <div className="text-sm font-semibold text-secondary-dark">Task Force</div>
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="task-force-role">Task Force Role</label>
+              <input
+                id="task-force-role"
+                className="input-text w-full"
+                value={draft.taskForceRole}
+                onChange={updateField("taskForceRole")}
+              />
+            </div>
+            <div>
+              <label htmlFor="task-force">Task Force</label>
+              <input
+                id="task-force"
+                className="input-text w-full"
+                value={draft.taskForce}
+                onChange={updateField("taskForce")}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="border-t-2 border-gray-light pt-4">
+          <div className="text-sm font-semibold text-secondary-dark">Bio</div>
+          <div className="mt-3 grid gap-4">
+            <div>
+              <label htmlFor="interests">Research Interests</label>
+              <textarea
+                id="interests"
+                className="input-text w-full"
+                value={draft.interests}
+                onChange={updateField("interests")}
+              />
+            </div>
+            <div>
+              <label htmlFor="description">Biography</label>
+              <textarea
+                id="description"
+                className="input-text w-full"
+                value={draft.description}
+                onChange={updateField("description")}
+              />
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset className="border-t-2 border-gray-light pt-4">
+          <div className="text-sm font-semibold text-secondary-dark">Social Links</div>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            <div>
+              <label htmlFor="linkedin">LinkedIn</label>
+              <input
+                id="linkedin"
+                className="input-text w-full"
+                value={draft.url_linkedin}
+                onChange={updateSocial("linkedin")}
+              />
+            </div>
+            <div>
+              <label htmlFor="instagram">Instagram</label>
+              <input
+                id="instagram"
+                className="input-text w-full"
+                value={draft.url_instagram}
+                onChange={updateSocial("instagram")}
+              />
+            </div>
+            <div>
+              <label htmlFor="x">X (Twitter)</label>
+              <input
+                id="x"
+                className="input-text w-full"
+                value={draft.url_twitter}
+                onChange={updateSocial("x")}
+              />
+            </div>
+            <div>
+              <label htmlFor="facebook">Facebook</label>
+              <input
+                id="facebook"
+                className="input-text w-full"
+                value={draft.url_facebook}
+                onChange={updateSocial("facebook")}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="website">Website</label>
+              <input
+                id="website"
+                className="input-text w-full"
+                value={draft.url_website}
+                onChange={updateSocial("website")}
+              />
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </PopupForm>
+  )
 }
 
 export default function ProfileRoute({ loaderData }) {
@@ -110,20 +344,7 @@ export default function ProfileRoute({ loaderData }) {
     setShowPopup(true);
   };
 
-  const handleSave = () => {
-    setProfile(draft);
-    setShowPopup(false);
-  };
 
-  const updateField = (field) => (event) => {
-    const value = event.target.value;
-    setDraft((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const updateSocial = (field) => (event) => {
-    const value = event.target.value;
-    setDraft((prev) => ({ ...prev, socials: { ...prev.socials, [field]: value } }));
-  };
 
   const openPhotoPicker = () => {
     if (fileInputRef.current) {
@@ -159,212 +380,7 @@ export default function ProfileRoute({ loaderData }) {
     setShowPhotoPopup(false);
   };
 
-  const popupDetails = {
-    content: (
-      <div className="flex flex-col gap-4">
-        <h4>Edit Profile</h4>
-        <div className="max-h-[60vh] overflow-y-auto pr-2">
-          <div className="flex flex-col gap-6">
-            <section>
-              <div className="text-sm font-semibold text-secondary-dark">Personal Information</div>
-              <div className="mt-3 grid gap-4 md:grid-cols-2">
-                <div>
-                  <label htmlFor="first-name">First Name</label>
-                  <input
-                    id="first-name"
-                    className="input-text w-full"
-                    value={draft.fname}
-                    onChange={updateField("fname")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="last-name">Last Name</label>
-                  <input
-                    id="last-name"
-                    className="input-text w-full"
-                    value={draft.lname}
-                    onChange={updateField("lname")}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="email">Email</label>
-                  <input
-                    id="email"
-                    type="email"
-                    className="input-text w-full"
-                    value={draft.email}
-                    onChange={updateField("email")}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="tagline">Tagline</label>
-                  <input
-                    id="tagline"
-                    className="input-text w-full"
-                    value={draft.tagline}
-                    onChange={updateField("tagline")}
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="border-t-2 border-gray-light pt-4">
-              <div className="text-sm font-semibold text-secondary-dark">Academic Information</div>
-              <div className="mt-3 grid gap-4 md:grid-cols-2">
-                <div>
-                  <label htmlFor="title">Job/Position</label>
-                  <input
-                    id="title"
-                    className="input-text w-full"
-                    value={draft.title}
-                    onChange={updateField("title")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="institution">Institution</label>
-                  <input
-                    id="institution"
-                    className="input-text w-full"
-                    value={draft.institution}
-                    onChange={updateField("institution")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="country">Country</label>
-                  <input
-                    id="country"
-                    className="input-text w-full"
-                    value={draft.country}
-                    onChange={updateField("country")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="school">School</label>
-                  <input
-                    id="school"
-                    className="input-text w-full"
-                    value={draft.school}
-                    onChange={updateField("school")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="major">Major</label>
-                  <input
-                    id="major"
-                    className="input-text w-full"
-                    value={draft.major}
-                    onChange={updateField("major")}
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="border-t-2 border-gray-light pt-4">
-              <div className="text-sm font-semibold text-secondary-dark">Task Force</div>
-              <div className="mt-3 grid gap-4 md:grid-cols-2">
-                <div>
-                  <label htmlFor="task-force-role">Task Force Role</label>
-                  <input
-                    id="task-force-role"
-                    className="input-text w-full"
-                    value={draft.taskForceRole}
-                    onChange={updateField("taskForceRole")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="task-force">Task Force</label>
-                  <input
-                    id="task-force"
-                    className="input-text w-full"
-                    value={draft.taskForce}
-                    onChange={updateField("taskForce")}
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="border-t-2 border-gray-light pt-4">
-              <div className="text-sm font-semibold text-secondary-dark">Bio</div>
-              <div className="mt-3 grid gap-4">
-                <div>
-                  <label htmlFor="interests">Research Interests</label>
-                  <textarea
-                    id="interests"
-                    className="input-text w-full"
-                    value={draft.interests}
-                    onChange={updateField("interests")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="description">Biography</label>
-                  <textarea
-                    id="description"
-                    className="input-text w-full"
-                    value={draft.description}
-                    onChange={updateField("description")}
-                  />
-                </div>
-              </div>
-            </section>
-
-            <section className="border-t-2 border-gray-light pt-4">
-              <div className="text-sm font-semibold text-secondary-dark">Social Links</div>
-              <div className="mt-3 grid gap-3 md:grid-cols-2">
-                <div>
-                  <label htmlFor="linkedin">LinkedIn</label>
-                  <input
-                    id="linkedin"
-                    className="input-text w-full"
-                    value={draft.url_linkedin}
-                    onChange={updateSocial("linkedin")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="instagram">Instagram</label>
-                  <input
-                    id="instagram"
-                    className="input-text w-full"
-                    value={draft.url_instagram}
-                    onChange={updateSocial("instagram")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="x">X (Twitter)</label>
-                  <input
-                    id="x"
-                    className="input-text w-full"
-                    value={draft.url_twitter}
-                    onChange={updateSocial("x")}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="facebook">Facebook</label>
-                  <input
-                    id="facebook"
-                    className="input-text w-full"
-                    value={draft.url_facebook}
-                    onChange={updateSocial("facebook")}
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label htmlFor="website">Website</label>
-                  <input
-                    id="website"
-                    className="input-text w-full"
-                    value={draft.url_website}
-                    onChange={updateSocial("website")}
-                  />
-                </div>
-              </div>
-            </section>
-          </div>
-        </div>
-      </div>
-    ),
-    buttons: [{ text: "Save Changes", onclick: handleSave }],
-    defaultButton: { text: "Cancel", onclick: () => setShowPopup(false) },
-    closeOnBlur: false,
-  };
+  
 
   const photoPopupDetails = {
     content: (
@@ -402,7 +418,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <Popup id="profile-edit" show={showPopup} setShow={setShowPopup} details={popupDetails} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} profileData={profile} />
       <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} details={photoPopupDetails} />
       <input
         ref={fileInputRef}
