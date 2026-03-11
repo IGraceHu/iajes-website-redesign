@@ -1,7 +1,7 @@
-import { useMemo, useState, useEffect, useRef, useActionState } from "react";
+import { useState, useEffect, useRef, useActionState } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
-import { Link, useParams } from "react-router";
+import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup } from "../components/popup";
 import { PopupForm } from "../components/popup-form";
@@ -13,20 +13,13 @@ export function meta() {
   ];
 }
 
-
 async function getProfile(userId) {
   const { data, error } = await supabase
     .from('users')
     .select()
     .eq('id', userId)
-  return data[0];
+  return data[0] || error;
 }
-
-
-export async function loader({ params }) {
-  return getProfile(params.id);
-}
-
 
 async function updateProfile(userId, formData) {
   const { error } = await supabase
@@ -53,6 +46,9 @@ async function updateProfile(userId, formData) {
   return error;
 }
 
+export async function loader({ params }) {
+  return getProfile(params.id);
+}
 
 function EditPopup({ showPopup, setShowPopup, userId }) {
   const navigate = useNavigate();

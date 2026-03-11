@@ -55,6 +55,8 @@ async function signUp(data) {
           lname: data.lname,
           created_at: authData.user.created_at,
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
+          email: data.email,
+          role: "member"
         }]);
 
       if (dbError) {
