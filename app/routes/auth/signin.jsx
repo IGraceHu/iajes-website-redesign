@@ -77,8 +77,8 @@ export default function SignIn() {
       <Popup id="sign-in" show={showPopup} setShow={setShowPopup} details={errorPopup} />
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
-        <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-          IAJES Home
+        <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+          <img className="w-18 h-full" src="../assets/logo.svg" />
         </NavLink>
       </div>
 
@@ -95,7 +95,7 @@ export default function SignIn() {
 
           <div className="w-full flex justify-between">
             <label htmlFor="pwd">Password:</label>
-            <p><a href="/forget-password">Forgot password?</a></p>
+            <p><a tabIndex="3" href="/forget-password">Forgot password?</a></p>
           </div>
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
