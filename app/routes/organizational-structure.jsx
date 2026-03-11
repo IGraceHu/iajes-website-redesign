@@ -23,30 +23,38 @@ function InfographicSection() {
             {/* Triangle infographic */}
             <div className="org-structure-container relative z-10">
                 {/* Top box - Governing Board */}
-                <div className="org-box org-box-top">
-                    <h4 className="text-center mb-4">Governing Board</h4>
-                    <p className="text-sm text-center">
-                        <strong>Who:</strong> President, Vice-President, Secretary, Chair of Regional Committee, Chair of Operational Committee, Past-President<br /><br />
-                        <strong>What:</strong> Guarantees the smooth running of IAJES. Supports projects within IAJES. Facilitates links between members.
-                    </p>
+                <div className="col-span-3">
+                    <div className="org-box org-box-top mx-auto">
+                        <h4 className="text-center mb-4">Governing Board</h4>
+                        <p className="text-sm text-center">
+                            <strong>Who:</strong> President, Vice-President, Secretary, Chair of Regional Committee, Chair of Operational Committee, Past-President<br /><br />
+                            <strong>What:</strong> Guarantees the smooth running of IAJES. Supports projects within IAJES. Facilitates links between members.
+                        </p>
+                    </div>
                 </div>
+            
 
                 {/* Bottom left box - Regional Committee */}
-                <div className="org-box org-box-bottom-left">
-                    <h4 className="text-center mb-4">Regional Committee</h4>
-                    <p className="text-sm text-center">
-                        <strong>Who:</strong> The 6 Regional Leaders<br /><br />
-                        <strong>What:</strong> Monitors the work of the regions. Guarantees inter-regional links. Each regional manager coordinates the university representatives in their region.
-                    </p>
+                <div className="relative">
+                    <div className="org-box org-box-bottom-left">
+                        <h4 className="text-center mb-4">Regional Committee</h4>
+                        <p className="text-sm text-center">
+                            <strong>Who:</strong> The 6 Regional Leaders<br /><br />
+                            <strong>What:</strong> Monitors the work of the regions. Guarantees inter-regional links. Each regional manager coordinates the university representatives in their region.
+                        </p>
+                    </div>
                 </div>
+                <div className="w-[10vw] md:block hidden"></div>
 
                 {/* Bottom right box - Operational Committee */}
-                <div className="org-box org-box-bottom-right">
-                    <h4 className="text-center mb-4">Operational Committee</h4>
-                    <p className="text-sm text-center">
-                        <strong>Who:</strong> All the Task Force Leaders<br /><br />
-                        <strong>What:</strong> Coordinates and encourages progress on current projects. Each TF leader is in charge of the active progress of their group.
-                    </p>
+                <div className="relative">
+                    <div className="org-box org-box-bottom-right">
+                        <h4 className="text-center mb-4">Operational Committee</h4>
+                        <p className="text-sm text-center">
+                            <strong>Who:</strong> All the Task Force Leaders<br /><br />
+                            <strong>What:</strong> Coordinates and encourages progress on current projects. Each TF leader is in charge of the active progress of their group.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Connecting arrows */}
