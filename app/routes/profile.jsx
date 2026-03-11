@@ -6,35 +6,6 @@ import { Menu } from "../components/menu";
 import { Popup } from "../components/popup";
 import { PopupForm } from "../components/popup-form";
 
-// ---- Placeholder data (same IDs as search) ----
-const PEOPLE = [
-  {
-    id: "1",
-    fname: "John",
-    lname: "Smith",
-    title: "Professor",
-    institution: "XIM University",
-    tagline: "Tagline",
-    email: "johnsmith@gmail.com",
-    description:
-      "Placeholder biography text. This area will be replaced with real profile data pulled from the backend. For now, it matches the intended layout and spacing from Figma.",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
-    socials: {
-      linkedin: "#",
-      instagram: "#",
-      x: "#",
-      facebook: "#",
-      website: "#",
-    },
-    avatarUrl: "",
-  },
-];
-
 export function meta() {
   return [
     { title: "IAJES Profile" },
@@ -81,8 +52,30 @@ async function updateProfile(user_id, formData) {
 
 function EditPopup({ showPopup, setShowPopup, profileData }) {
   const navigate = useNavigate();
+  const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+
   async function validate(formData) {
-    console.log(formData);
+    let isValidated = true;
+
+    const isRequired = {
+      fname: formData.get('fname') === (null || ""),
+      lname: formData.get('lname') === (null || "")
+    }
+
+    console.log(isRequired);
+    
+    for (let value of Object.values(isRequired)) {
+      if (value) {
+        isValidated = false;
+        break;
+      }
+    }
+
+    if (!isValidated) {
+      setFormRequired(isRequired);
+      return false;
+    }
+
     const update = await updateProfile(profileData.id, formData);
     if (update === null) {
       setShowPopup(false);
@@ -99,25 +92,27 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
         <fieldset>
           <div className="text-sm font-semibold text-secondary-dark">Personal Information</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
-            <div>
+            <div className="relative">
               <label htmlFor="first-name">First Name</label>
               <input
                 id="first-name"
                 name="fname"
                 type="text"
-                className="input-text w-full"
+                className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 defaultValue={draft.fname}
               />
+              <div className="input-error">This field is required.</div>
             </div>
-            <div>
+            <div className="relative">
               <label htmlFor="last-name">Last Name</label>
               <input
                 id="last-name"
                 name="lname"
                 type="text"
-                className="input-text w-full"
+                className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 defaultValue={draft.lname}
               />
+              <div className="input-error">This field is required.</div>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="email">Email</label>
@@ -198,7 +193,7 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
                 name="task-force"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.taskForce}
+                defaultValue={draft.task_force}
               />
             </div>
             <div>
@@ -208,7 +203,7 @@ function EditPopup({ showPopup, setShowPopup, profileData }) {
                 name="task-force-role"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.taskForceRole}
+                defaultValue={draft.task_force_role}
               />
             </div>
           </div>
@@ -519,10 +514,10 @@ export default function ProfileRoute({ loaderData }) {
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
               <div className="grid gap-3 text-sm">
-                <InfoRow label="Country" defaultValue={profile.country} />
-                <InfoRow label="School" defaultValue={profile.school} />
-                <InfoRow label="Major" defaultValue={profile.major} />
-                <InfoRow label="Research Interests" defaultValue={profile.research_interests} />
+                <InfoRow label="Country" value={profile.country} />
+                <InfoRow label="Institution" value={profile.institution} />
+                <InfoRow label="Major" value={profile.major} />
+                <InfoRow label="Research Interests" value={profile.research_interests} />
               </div>
 
               <div className="flex items-center gap-4 text-xl text-secondary-light">
