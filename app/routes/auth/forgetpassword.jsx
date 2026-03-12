@@ -100,13 +100,11 @@ export default function SignIn() {
 
   const [formSuccess, setFormSuccess] = useState(false);
 
-  const popup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">{popupMessage}</div>
-  }
-
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Popup id="forget-password" show={showPopup} setShow={setShowPopup} details={popup} />
+      <Popup id="forget-password" show={showPopup} setShow={setShowPopup} >
+        <div className="w-full h-30 text-center flex justify-center items-center">{popupMessage}</div>
+      </Popup>
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">

@@ -144,13 +144,11 @@ export default function SignUp() {
 
   }
 
-  const errorPopup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
-  }
-
   return (
     <div className="flex flex-col justify-between">
-      <Popup id="sign-up" show={showPopup} setShow={setShowPopup} details={errorPopup} />
+      <Popup id="sign-up" show={showPopup} setShow={setShowPopup}>
+        <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
+      </Popup>
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
