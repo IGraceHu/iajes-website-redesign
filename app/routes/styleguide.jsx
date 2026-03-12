@@ -23,36 +23,18 @@ export default function StyleGuide() {
     // The Popup component takes three parameters:
     // id - Unique ID for the popup. Ensures that popups from different components do not overlap
     //      There should only be one Popup component used in a component. 
+    // className
     // show - Determines if the popup is visible or not
     // setShow - set function for show
-    // details - an object with properties
-    //    content - Required. An element node with the contents of the popup
     //    buttons - Optional. An array of objects with properties 'text' and 'onclick'
     //        text - Required. A string with the button text
     //        onclick - Required. A function that clicking the button will execute
-    //    defaultButton - Optional. Changes the default values of the 'Close' button. An object with properties 'text' and 'onclick'
-    //        text - Required.
-    //        onclick - Optional.
-    //    closeOnBlur - Optional. Defaults to true. Determines if clicking outside the popup will close the popup or not
+    // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
 
-    const [showPopup, setShowPopup] = useState(false);
-    const [currentPopup, setCurrentPopup] = useState({}); // This is only needed if you have multiple popups in a component
+    const [showPopup1, setShowPopup1] = useState(false);
+    const [showPopup2, setShowPopup2] = useState(false);
 
-    const popupDetails1 = {
-        content: <p>This is a basic popup.</p>,
-    };
-
-    const popupDetails2 = {
-        content: <p>This is a popup with extra buttons. Clicking outside the popup will not close the popup.</p>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }, { text: "Delete", onclick: () => { console.log("deleted") } }],
-        closeOnBlur: false,
-    };
-
-    const popupDetails3 = {
-        content: <p>This is a popup with a custom default button.</p>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-        defaultButton: { text: "Exit", onclick: () => { setShowPopup(false); } }
-    };
+    const buttons = [{text: "Action", onclick: () => console.log("Action")}]
 
     // PAGINATION --------------------------------------------------------------
     const [pg1, setPg1] = useState(0);
@@ -62,7 +44,12 @@ export default function StyleGuide() {
 
     return (
         <>
-            <Popup id="style" show={showPopup} setShow={setShowPopup} details={currentPopup} />
+            <Popup id="style1" show={showPopup1} setShow={setShowPopup1} >
+                <p>This is the default popup</p>
+            </Popup>
+            <Popup id="style2" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
+                <p>This is a popup that has a custom action button and will not exit when clicked off of.</p>
+            </Popup>
 
             <Menu />
             <div className="lg:px-40 px-10 py-20 duration-200">
@@ -317,15 +304,14 @@ export default function StyleGuide() {
                 </div>
 
                 <div className="mt-10">
-                    <h2>Popup</h2>
+                    <h2>Popups</h2>
                     <p>Please refer to the Popup component for popup usage</p>
                     <br />
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails1); setShowPopup(true) }}>Popup Example 1</button>
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails2); setShowPopup(true) }}>Popup Example 2</button>
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails3); setShowPopup(true) }}>Popup Example 3</button>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowPopup1(true) }}>Popup Example 1</button>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowPopup2(true) }}>Popup Example 2</button>
                 </div>
 
-                <div className="mt-10">
+                {/* <div className="mt-10">
                     <h2>Icons</h2>
                     <p>Icons from <a href="https://icons.getbootstrap.com/">Bootstrap Icons</a>. Use icon font mode for including them in HTML.</p>
                 </div>
@@ -340,10 +326,10 @@ export default function StyleGuide() {
                     <H2Middle>Heading 2 Middle</H2Middle>
                     <H2Left>Heading 2 Left</H2Left>
                     <H2Left stretch>Heading 2 Left</H2Left>
-                </div>
+                </div> */}
 
             </div>
-            <div className="my-10">
+            {/* <div className="my-10">
                 <div className="lg:px-40 px-10 duration-200">
                     <h2>Banners</h2>
                     <p>Banner content is customizable. Default banner type is 'green', 'blue' and 'dark' need to be specificed using the 'type' prop.</p>
@@ -363,7 +349,7 @@ export default function StyleGuide() {
                     <p>But dark this time.</p>
                 </Banner>
             </div>
-            <Footer />
+            <Footer /> */}
         </>
     );
 }
