@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { redirect } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
+import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
 
@@ -19,6 +19,12 @@ export function action({ url }) {
 
 export default function StyleGuide() {
 
+    // PAGINATION --------------------------------------------------------------
+    const [pg1, setPg1] = useState(0);
+    const [pg2, setPg2] = useState(0);
+
+    const [formMode, setFormMode] = useState("");
+
     // POPUP -------------------------------------------------------------------
     // The Popup component takes three parameters:
     // id - Unique ID for the popup. Ensures that popups from different components do not overlap
@@ -33,14 +39,41 @@ export default function StyleGuide() {
 
     const [showPopup1, setShowPopup1] = useState(false);
     const [showPopup2, setShowPopup2] = useState(false);
-
+    const [showPopupForm, setShowPopupForm] = useState(false);
+    
     const buttons = [{text: "Action", onclick: () => console.log("Action")}]
 
-    // PAGINATION --------------------------------------------------------------
-    const [pg1, setPg1] = useState(0);
-    const [pg2, setPg2] = useState(0);
+    // Handling required fields in a form.
+    // formRequired: An object containing the current state of all required fields, true if they are current required, false if not
+    const [formRequired, setFormRequired] = useState({popupRequired: false})
 
-    const [formMode, setFormMode] = useState("");
+    function handleShowPopupForm() {
+        // This resets formRequired so that there are no error messages when the form is reloaded
+        setFormRequired({popupRequired: false})
+        setShowPopupForm(true);
+    }
+
+    function validatePopupForm(formData) {
+        let isValidated = true;
+        const isRequired = {
+            popupRequired: formData.get('popup-form-text-required') === (null || "")
+        }
+        for (let value of Object.values(isRequired)) {
+        if (value) {
+            isValidated = false;
+            break;
+        }
+        }
+        if (!isValidated) {
+            setFormRequired(isRequired);
+            return false;
+        }
+
+        console.log(formData);
+        setShowPopupForm(false);
+        return true;
+    }
+
 
     return (
         <>
@@ -50,6 +83,21 @@ export default function StyleGuide() {
             <Popup id="style2" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
                 <p>This is a popup that has a custom action button and will not exit when clicked off of.</p>
             </Popup>
+            <PopupForm id="styleform" className="w-200" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
+                <p>This is a popup form. Popup forms only have two buttons, 'Save' and 'Cancel'. Popup forms also do not close upon blur.</p>
+                <p>PopupForms include a form, any elements within the PopupForm goes into the form. You cannot nest PopupForms.</p>
+                <p>PopupForm requires a validate function that takes a parameter 'formData'. When 'Save' is clicked, the form is submitted and the contents of the form can be accessed in the validate function through 'formData'. Please remember that only input fields with 'name' attributes will be recognized.</p>
+                <p><strong>If there are any required fields to fill in, please refer to source code for implementing that part.</strong></p>
+                <br />
+                <p>This sample popup form takes two text fields and prints them on the console upon saving.</p>
+                <br />
+                <label for="popup-form-text">Text Input:</label><br />
+                <input id="popup-form-text" name="popup-form-text" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
+                <br /><br />
+                <label for="popup-form-text-required">Required Text Input:</label><br />
+                <input id="popup-form-text-required" name="popup-form-text-required" type="text" className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} placeholder="Enter text here..." />
+                <div className="input-error">This field is required.</div>
+            </PopupForm>
 
             <Menu />
             <div className="lg:px-40 px-10 py-20 duration-200">
@@ -309,9 +357,10 @@ export default function StyleGuide() {
                     <br />
                     <button className="button mr-5 mb-5" onClick={() => { setShowPopup1(true) }}>Popup Example 1</button>
                     <button className="button mr-5 mb-5" onClick={() => { setShowPopup2(true) }}>Popup Example 2</button>
+                    <button className="button mr-5 mb-5" onClick={handleShowPopupForm}>Popup Form</button>
                 </div>
 
-                {/* <div className="mt-10">
+                <div className="mt-10">
                     <h2>Icons</h2>
                     <p>Icons from <a href="https://icons.getbootstrap.com/">Bootstrap Icons</a>. Use icon font mode for including them in HTML.</p>
                 </div>
@@ -326,10 +375,10 @@ export default function StyleGuide() {
                     <H2Middle>Heading 2 Middle</H2Middle>
                     <H2Left>Heading 2 Left</H2Left>
                     <H2Left stretch>Heading 2 Left</H2Left>
-                </div> */}
+                </div>
 
             </div>
-            {/* <div className="my-10">
+            <div className="my-10">
                 <div className="lg:px-40 px-10 duration-200">
                     <h2>Banners</h2>
                     <p>Banner content is customizable. Default banner type is 'green', 'blue' and 'dark' need to be specificed using the 'type' prop.</p>
@@ -349,7 +398,7 @@ export default function StyleGuide() {
                     <p>But dark this time.</p>
                 </Banner>
             </div>
-            <Footer /> */}
+            <Footer />
         </>
     );
 }
