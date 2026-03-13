@@ -190,7 +190,7 @@ function SpeakerHighlightSection() {
                         “The International Association of Jesuit Universities finds its purpose and gives meaning to what it does by living and promoting collaboration and solidarity within and from the university institutions that make it up. It is a matter of making the best possible use of the enormous potential for collaboration and solidarity that exists in the universities that make up this network. Little by little we have been embarking on this path. As we move forward we recognize the advantages of collaboration and solidarity. We are learning better ways to take advantage of the resources we have, which are always scarce for the magnitude of the task...”
                     </blockquote>
                     <button className="button w-full mt-2">
-                        English Translation of Fr. Sosa's Speech
+                        View Fr. Sosa's Full Speech
                     </button>
                 </div>
             </div>

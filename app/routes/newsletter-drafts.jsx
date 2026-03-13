@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Menu } from "../components/menu.jsx";
+import { Footer } from "../components/footer.jsx"
 import { NewsletterList, Profile } from "../components/newsletter-components.jsx";
 import { NavLink } from "react-router";
 
@@ -152,6 +153,8 @@ export default function NewsletterDrafts() {
                     <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button">Next <i className="bi bi-arrow-right-short"></i></button>
                 </div>
             </main>
+
+            <Footer />
         </div>
     );
 }

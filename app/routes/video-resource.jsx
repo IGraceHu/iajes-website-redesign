@@ -46,16 +46,15 @@ export default function VideoResource({ loaderData }) {
         <>
             <Menu />
             <Banner type="blue">
-                <div className="relative z-1">
-                    <div className="-ml-4 flex w-fit duration-200 hover:-ml-5 hover:text-primary-light">
+                <div className="relative z-1"> 
+                    <a href="/video-resources" className="banner-breadcrumb">
                         <i className="bi bi-caret-left-fill"></i>
-                        <a href="/video-resources" className="link-back border-b-2 border-transparent hover:border-primary-light ml-1 hover:ml-2">
-                            <strong>VIDEO RESOURCES</strong>
-                        </a>
-                    </div>
+                        <strong>VIDEO RESOURCES</strong>
+                    </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
-                    <p className="text-sm opacity-50"><i>{loaderData.date.toLocaleDateString()}</i></p>
-                    <p className="text-lg">By {loaderData.speaker}</p>
+                    <p>
+                        <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date.toLocaleDateString()}</i></span>
+                    </p>
                 </div>
             </Banner>
 
