@@ -3,6 +3,7 @@ import { redirect } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup } from "../components/popup";
+import { PopupForm } from "../components/popup-form";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
 
@@ -38,6 +39,8 @@ export default function StyleGuide() {
     const [showPopup, setShowPopup] = useState(false);
     const [currentPopup, setCurrentPopup] = useState({}); // This is only needed if you have multiple popups in a component
 
+    const [showFormPopup, setShowFormPopup] = useState(false);
+
     const popupDetails1 = {
         content: <p>This is a basic popup.</p>,
     };
@@ -54,6 +57,11 @@ export default function StyleGuide() {
         defaultButton: { text: "Exit", onclick: () => { setShowPopup(false); } }
     };
 
+    function popupFormValidate(formData) {
+        console.log(formData);
+        setShowFormPopup(false);
+    }
+
     // PAGINATION --------------------------------------------------------------
     const [pg1, setPg1] = useState(0);
     const [pg2, setPg2] = useState(0);
@@ -63,6 +71,12 @@ export default function StyleGuide() {
     return (
         <>
             <Popup id="style" show={showPopup} setShow={setShowPopup} details={currentPopup} />
+            <PopupForm id="form-style" show={showFormPopup} setShow={setShowFormPopup} validate={popupFormValidate}>
+                <h5>Popup Form Example</h5>
+                <p>Remember that inputs need to have the 'name' tag to work.</p>
+                <label for="popup-form-text">Text Input:</label><br />
+                <input id="popup-form-text" name="popup-form-text" type="text" className={"input input-text w-full "} placeholder="Enter text here..." />
+            </PopupForm>
 
             <Menu />
             <div className="lg:px-40 px-10 py-20 duration-200">
@@ -323,6 +337,9 @@ export default function StyleGuide() {
                     <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails1); setShowPopup(true) }}>Popup Example 1</button>
                     <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails2); setShowPopup(true) }}>Popup Example 2</button>
                     <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails3); setShowPopup(true) }}>Popup Example 3</button>
+                    <p>PopupForm is for Popups that need form validation when the save/submit button is clicked. PopupForms only have two popup buttons: Save and Cancel.</p>
+                    <br/>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowFormPopup(true) }}>Form Popup Example</button>
                 </div>
 
                 <div className="mt-10">
