@@ -15,7 +15,7 @@ import { useEffect } from 'react';
     //
     // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
 
-export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, children}) {
+export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, nested=false, children}) {
 
     const popupId = "popup-" + id;
     useEffect(() => {
@@ -27,9 +27,11 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
             popupEl.classList.remove("mt-10");
 
             // Compensate for when scrollbar is visible lmao
-            if (document.body.clientHeight > window.innerHeight) {
-                document.body.style.overflow = "hidden";
-                document.body.style.paddingRight = "15px";
+            if (!nested) {
+                if (document.body.clientHeight > window.innerHeight) {
+                    document.body.style.overflow = "hidden";
+                    document.body.style.paddingRight = "15px";
+                }
             }
         } else {
             const popupContEl = document.getElementById(popupId);
@@ -39,7 +41,9 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
             popupEl.classList.add("mt-10");
 
             // Return scrollbar after popup disappears
-            setTimeout(() => {document.body.style.overflow = "auto"; document.body.style.paddingRight = "0";}, 200);
+            if (!nested) {
+                setTimeout(() => {document.body.style.overflow = "auto"; document.body.style.paddingRight = "0";}, 200);
+            }
         }
     }, [show])
 
@@ -90,7 +94,7 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
     // 
     // hasError - Optional. Default is false
 
-export function PopupForm({id, className, show, setShow, validate, hasError, children}) {
+export function PopupForm({id, className, show, setShow, validate, hasError, nested=false, children}) {
     // const [state, formAction] = useActionState(saveForm, {});
 
     const popupId = "popup-" + id;
@@ -108,9 +112,11 @@ export function PopupForm({id, className, show, setShow, validate, hasError, chi
             
 
             // Compensate for when scrollbar is visible lmao
-            if (document.body.clientHeight > window.innerHeight) {
-                document.body.style.overflow = "hidden";
-                document.body.style.paddingRight = "15px";
+            if (!nested) {
+                if (document.body.clientHeight > window.innerHeight) {
+                    document.body.style.overflow = "hidden";
+                    document.body.style.paddingRight = "15px";
+                }
             }
         } else {
             const popupContEl = document.getElementById(popupId);
@@ -120,7 +126,9 @@ export function PopupForm({id, className, show, setShow, validate, hasError, chi
             popupEl.classList.add("mt-10");
 
             // Return scrollbar after popup disappears
-            setTimeout(() => {document.body.style.overflow = "auto"; document.body.style.paddingRight = "0";}, 200);
+            if (!nested) {
+                setTimeout(() => {document.body.style.overflow = "auto"; document.body.style.paddingRight = "0";}, 200);
+            }
         }
     }, [show])
 
@@ -139,7 +147,7 @@ export function PopupForm({id, className, show, setShow, validate, hasError, chi
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
                 <form id={popupId + "-form"} onSubmit={handleSubmit} className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
-                    <div className="overflow-y-auto">
+                    <div className="overflow-y-auto w-full">
                         {children}
                     </div>
                     <div className="h-25 flex flex-col justify-end">

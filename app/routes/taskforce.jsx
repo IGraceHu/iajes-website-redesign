@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
+import { Popup, PopupForm } from "../components/popup";
 import { Banner } from "../components/graphics";
 
 
@@ -16,6 +16,7 @@ const tfInfoTemp = [
   {
     url: "research-and-academic-cooperation",
     name: "Research & Academic Cooperation",
+    shortDesc: "The Task Force on Research and Academic Cooperation, with its commendable achievements, aims to create a real network between people who perform academic work at the IAJES institutions. We strive to connect people, develop synergies, and strengthen all engineering programs within the network. To date, we have successfully conducted two projects that have provided results and potential opportunities, and we continue to work to connect more people and institutions to improve research and cooperation. ",
     textarea1: "The Task Force on Research and Academic Cooperation, with its commendable achievements, aims to create a real network between people who perform academic work at the IAJES institutions. We strive to connect people, develop synergies, and strengthen all engineering programs within the network. To date, we have successfully conducted two projects that have provided results and potential opportunities, and we continue to work to connect more people and institutions to improve research and cooperation. ",
     textarea2: `- 16-03-2021: Participation in the webinar presenting the PhD Cooperative Program of IQS. 
 - 30-03-2021: The Steering Committee Accepts Rosa Nomen as the team leader of this Task Force.
@@ -160,14 +161,14 @@ export async function loader({ params }) {
   return tf;
 }
 
-function MemberCard({ personData }) {
+function MemberCard({ memberData }) {
   return (
     <div className="text-center w-full">
       <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
-        <img className="min-w-full min-h-full" src={personData.imageURL} />
+        <img className="min-w-full min-h-full" src={memberData.imageURL} />
       </div>
-      <p>{personData.name}</p>
-      <p>{personData.position}</p>
+      <p>{memberData.name}</p>
+      <p>{memberData.position}</p>
     </div>
   )
 }
@@ -186,170 +187,165 @@ function ProjectCard({ projectData }) {
   )
 }
 
-function EditTFTextArea1({ text }) {
+function EditShortDescPopup({showPopup, setShowPopup, taskForceId, userId}) {
+  function validate(formData) {
+
+  }
+
   return (
-    <div className="md:w-[70vw] duration-200 mx-10 my-5">
+    <PopupForm id="tf-shortdesc" className="md:w-[60vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate}>
+      <h4>Edit short description:</h4>
+      <p>The short description appears in the main task force page.</p>
+      <textarea id="tf-desc-input" name="tf-desc-input" className="input-text w-full min-h-30 h-[30vh]"></textarea>
+    </PopupForm>
+  )
+}
+
+function EditTextarea1Popup({showPopup, setShowPopup, taskForceId, userId}) {
+  function validate(formData) {
+
+  }
+  
+  return (
+    <PopupForm id="tf-textarea1" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate}>
       <h4>Edit area:</h4>
-      <textarea id="tf-desc-input" className="input-text w-full min-h-50 h-[60vh] mb-10">{text}</textarea>
-    </div>
+      <textarea id="tf-textarea1-input" name="tf-textarea1-input" className="input-text w-full min-h-50 h-[50vh]"></textarea>
+    </PopupForm>
   )
 }
 
-function EditTFTextArea2({ text }) {
+function EditTextarea2Popup({showPopup, setShowPopup, taskForceId, userId}) {
+  function validate(formData) {
+
+  }
+  
   return (
-    <div className="md:w-[70vw] duration-200 mx-10 my-5">
+    <PopupForm id="tf-textarea2" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate}>
       <h4>Edit area:</h4>
-      <textarea id="tf-desc-input" className="input-text w-full min-h-50 h-[60vh] mb-10">{text}</textarea>
-    </div>
+      <textarea id="tf-textarea2-input" name="tf-textarea2-input" className="input-text w-full min-h-50 h-[50vh]"></textarea>
+    </PopupForm>
   )
 }
 
-function EditPerson({ person }) {
-  return (
-    <div className="lg:w-[40vw] mx-10 my-5">
-      <h4>Edit Team Member</h4>
-      <form className="mb-5">
-        <label for="edit-person-name">Name:</label><br />
-        <input id="edit-person-name" type="text" className="input input-text w-full" defaultValue={person.name} />
-        <br /><br />
-        <label for="edit-person-loc">Location:</label><br />
-        <input id="edit-person-loc" type="text" className="input input-text w-full" defaultValue={person.location} />
-        <br /><br />
-        <label for="edit-person-contact">Contact:</label><br />
-        <input id="edit-person-contact" type="text" className="input input-text w-full" defaultValue={person.contact} />
-        <br /><br />
-        <label for="edit-person-url">IAJES Profile URL:</label><br />
-        <input id="edit-person-url" type="text" className="input input-text w-full" defaultValue={person.url} />
-        <br /><br />
-        <label>
-          Image:<br />
-          <input id="upload" type="file" />
-          <div className="input-error">This field is required.</div>
-        </label>
-      </form>
-    </div>
-  )
-}
+function EditTeam({showPopup, setShowPopup, taskForceId, userId, people}) {
+  const [showMemberPopup, setShowMemberPopup] = useState(false);
+  const [editMember, setEditMember] = useState({});
 
-function EditTFTeam({ people, setShowMainPopup }) {
-  const [showPopup, setShowPopup] = useState(false);
-  const [editPerson, setEditPerson] = useState({});
+  function handleShowMemberPopup(memberId) {
+    setShowMemberPopup(true);
+    setEditMember(memberId);
+  }
 
-  const editPersonPopup = {
-    content: <EditPerson person={editPerson} />,
-    buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-    closeOnBlur: false,
-  };
+  function validate() {
+    
+  }
 
   return (
     <>
-      <div className="absolute top-0 left-0">
-        <Popup id="taskforce-sub" show={showPopup} setShow={setShowPopup} details={editPersonPopup} />
-      </div>
-      <div className="lg:w-[50vw] duration-200 mx-10 my-5">
+      <Popup id="tf-team" show={showPopup} setShow={setShowPopup}>
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
           {people.map(person => <div key={person.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-            <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center"
-              onClick={() => { setEditPerson(person); setShowPopup(true); }}>
+            <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(person)}>
               <p className="pr-5 mr-auto" style={{ color: "black" }}>{person.name}</p>
               <i className="bi bi-pencil-square"></i>
             </button>
             <button className="button-icon button-red"><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
           </div>)}
         </div>
-        <button className="button button-light mx-auto block my-5" onClick={() => { setEditPerson({}); setShowPopup(true); }}>Add a team member</button>
-      </div>
+        <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup()}>Add a team member</button>
+      </Popup>
+
+      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={validate} nested>
+        <h4>Edit Team Member</h4>
+        <label for="edit-member-name">Name:</label><br />
+        <input id="edit-person-name" name="edit-person-name" type="text" className="input input-text w-full" />
+        <br /><br />
+        <label for="edit-member-loc">Location:</label><br />
+        <input id="edit-member-loc" name="edit-member-loc" type="text" className="input input-text w-full" />
+        <br /><br />
+        <label for="edit-member-contact">Contact:</label><br />
+        <input id="edit-member-contact" name="edit-member-contact" type="text" className="input input-text w-full" />
+        <br /><br />
+        <label for="edit-member-url">IAJES Profile URL:</label><br />
+        <input id="edit-member-url" name="edit-member-url" type="text" className="input input-text w-full" />
+        <br /><br />
+        <label>
+          Image:<br />
+          <input id="edit-member-image" name="edit-member-image" type="file" />
+          <div className="input-error">This field is required.</div>
+        </label>
+      </PopupForm>
     </>
   )
 }
 
-function EditProject({ project }) {
+function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) {
+  const [showProjectPopup, setShowProjectPopup] = useState(false);
+  const [editProject, setEditProject] = useState({});
 
+  function handleShowProjectPopup(projectId) {
+    setShowProjectPopup(true);
+    setEditProject(projectId);
+  }
+
+  function validate() {
+    
+  }
+  
   return (
-    <div className="w-[70vw] h-[70vh] mx-10 my-5">
-      <h4>Edit Project</h4>
-      <form className="mb-5 flex md:flex-row flex-col gap-x-10 gap-y-5 mb-10 h-[80%]">
-        <div className="shrink-5">
-          <label for="edit-project-title">Project title:</label><br />
-          <input id="edit-project-title" type="text" className="input input-text w-full" defaultValue={project.name} />
-          <br /><br />
+    <>
+      <Popup id="tf-projects" show={showPopup} setShow={setShowPopup}>
+        <h4>Edit Task Force Projects</h4>
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
+            {projects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+              <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
+                <p className="pr-5 mr-auto" style={{ color: "black" }}>{project.name}</p>
+                <i className="bi bi-pencil-square"></i>
+              </button>
+              <button className="button-icon button-red"><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+            </div>)}
+          </div>
+          <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup()}>Add a project</button>
+      </Popup>
+
+      <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} nested>
+        <h4>Edit Project</h4>
+        <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
+          <div>
+            <label for="edit-project-title">Project title:</label><br />
+            <input id="edit-project-title" name="edit-project-title" type="text" className="input input-text md:w-70 w-full" />
+          </div>
           <label>
             Image:<br />
             <input id="upload" type="file" />
             <div className="input-error">This field is required.</div>
           </label>
         </div>
-        <div className="grow-4">
+        <div className="mb-5">
+          <label for="edit-project-url">Project URL:</label><br />
+          <input id="edit-project-url" name="edit-project-url" type="text" className="input input-text w-full" />
+        </div>
+        <div className="">
           <label for="edit-project-desc">Project details:</label><br />
-          <textarea id="edit-project-desc" className="input input-text w-full h-full" defaultValue={project.desc ? project.desc : ""}></textarea>
+          <textarea id="edit-project-desc" name="edit-project-desc" className="input input-text w-full h-60" ></textarea>
         </div>
-      </form>
-    </div>
-  )
-}
-
-function EditTFProjects({ projects }) {
-  const [showPopup, setShowPopup] = useState(false);
-  const [editProject, setEditProject] = useState({});
-
-  const editProjectPopup = {
-    content: <EditProject project={editProject} />,
-    buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-    closeOnBlur: false,
-  };
-
-  return (
-    <>
-      <div className="absolute top-0 left-0">
-        <Popup id="taskforce-sub" show={showPopup} setShow={setShowPopup} details={editProjectPopup} />
-      </div>
-      <div className="lg:w-[50vw] duration-200 mx-10 my-5">
-        <h4>Edit Task Force Projects</h4>
-        <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
-          {projects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-            <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center"
-              onClick={() => { setEditProject(project); setShowPopup(true); }}>
-              <p className="pr-5 mr-auto" style={{ color: "black" }}>{project.name}</p>
-              <i className="bi bi-pencil-square"></i>
-            </button>
-            <button className="button-icon button-red"><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
-          </div>)}
-        </div>
-        <button className="button button-light mx-auto block my-5" onClick={() => { setEditProject({}); setShowPopup(true); }}>Add a project</button>
-      </div>
+      </PopupForm>
     </>
-
   )
 }
 
 export default function TaskForce({ loaderData }) {
   const isAdmin = true;
 
-  const [showPopup, setShowPopup] = useState(false);
-  const [currentPopup, setCurrentPopup] = useState({});
+  const taskForceId = "";
+  const currentUserId = "";
 
-  const editTFTextArea1Popup = {
-    content: <EditTFTextArea1 text={loaderData.textarea1} />,
-    buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-    closeOnBlur: false,
-  };
-
-  const editTFTextArea2Popup = {
-    content: <EditTFTextArea2 text={loaderData?.textarea2} />,
-    buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-    closeOnBlur: false,
-  };
-
-  const editTFTeamPopup = {
-    content: <EditTFTeam people={loaderData.people} setShowMainPopup={setShowPopup} />,
-    closeOnBlur: false,
-  };
-
-  const editTFProjectsPopup = {
-    content: <EditTFProjects projects={loaderData.projects} />,
-    closeOnBlur: false,
-  };
+  const [showShortDescPopup, setShowShortDescPopup] = useState(false);
+  const [showTextarea1Popup, setShowTextarea1Popup] = useState(false);
+  const [showTextarea2Popup, setShowTextarea2Popup] = useState(false);
+  const [showTeamPopup, setShowTeamPopup] = useState(false);
+  const [showProjectsPopup, setShowProjectsPopup] = useState(false);
 
   let memberClassName = "w-full my-5 duration-200 grid gap-5 justify-items-center ";
   if (loaderData.people) {
@@ -367,7 +363,12 @@ export default function TaskForce({ loaderData }) {
 
   return (
     <>
-      <Popup id="taskforce" show={showPopup} setShow={setShowPopup} details={currentPopup} />
+      <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} taskForceId={taskForceId} userId={currentUserId} />
+      <EditTextarea1Popup showPopup={showTextarea1Popup} setShowPopup={setShowTextarea1Popup} taskForceId={taskForceId} userId={currentUserId} />
+      <EditTextarea2Popup showPopup={showTextarea2Popup} setShowPopup={setShowTextarea2Popup} taskForceId={taskForceId} userId={currentUserId} />
+      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceId={taskForceId} userId={currentUserId} people={loaderData.people} />
+      <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceId={taskForceId} userId={currentUserId} projects={loaderData.projects} />
+      
       <Menu />
       <Banner>
         <p><strong>TASK FORCE</strong></p>
@@ -377,10 +378,21 @@ export default function TaskForce({ loaderData }) {
       <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
 
         <div className="w-full text-left duration-200 mb-10">
+          <p>{loaderData.shortDesc}</p>
+          {isAdmin &&
+            <div className="w-full mt-5 text-right">
+              <button className="button button-light" onClick={() => { setShowShortDescPopup(true) }}>
+                Edit Short Description
+              </button>
+            </div>
+          }
+        </div>
+
+        <div className="w-full text-left duration-200 mb-10">
           <p>{loaderData.textarea1}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
-              <button className="button button-light" onClick={() => { setCurrentPopup(editTFTextArea1Popup); setShowPopup(true) }}>
+              <button className="button button-light" onClick={() => { setShowTextarea1Popup(true) }}>
                 Edit Area
               </button>
             </div>}
@@ -388,9 +400,9 @@ export default function TaskForce({ loaderData }) {
 
         <div className="w-full md:text-left relative duration-200 mb-10">
           <h2>Team Members</h2>
-          {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setCurrentPopup(editTFTeamPopup); setShowPopup(true) }}>Edit People</button>}
+          {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
           <div className={memberClassName}>
-            {loaderData.people.map(person => <MemberCard key={person.name} personData={person} />)}
+            {loaderData.people.map(person => <MemberCard key={person.name} memberData={person} />)}
           </div>
         </div>
 
@@ -398,7 +410,7 @@ export default function TaskForce({ loaderData }) {
           <p>{loaderData?.textarea2}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
-              <button className="button button-light" onClick={() => { setCurrentPopup(editTFTextArea2Popup); setShowPopup(true) }}>
+              <button className="button button-light" onClick={() => { setShowTextarea2Popup(true) }}>
                 Edit Area
               </button>
             </div>}
@@ -406,7 +418,7 @@ export default function TaskForce({ loaderData }) {
 
         <div className="w-full md:text-left relative duration-200 mb-10">
           <h2>Projects</h2>
-          {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setCurrentPopup(editTFProjectsPopup); setShowPopup(true) }}>Edit Projects</button>}
+          {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
           {loaderData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
         </div>
 
