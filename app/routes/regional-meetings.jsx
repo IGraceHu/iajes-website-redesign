@@ -13,6 +13,7 @@ export function meta() {
 const regionalData = [
     {
         name: "JHEASA",
+        nameFull: "Jesuit Higher Education in South Asia",
         count: 60,
         url: "JHEASA",
         location: "South Asia",
@@ -20,6 +21,7 @@ const regionalData = [
     },
     {
         name: "AJCU - NA",
+        nameFull: "Association of Jesuit Colleges and Universities of North America",
         count: 30,
         url: "AJCU-NA",
         location: "United States, District of Columbia, District of Belize, Canada",
@@ -27,6 +29,7 @@ const regionalData = [
     },
     {
         name: "AUSJAL",
+        nameFull: "Association of Universities Entrusted to the Society of Jesus in Latin America",
         count: 30,
         url: "AUSJAL",
         location: "Latin America",
@@ -34,6 +37,7 @@ const regionalData = [
     },
     {
         name: "Kircher",
+        nameFull: "Kircher Network - Jesuit Higher Education in Europe and the Near East",
         count: 28,
         url: "Kircher",
         location: "Europe, Near East",
@@ -41,6 +45,7 @@ const regionalData = [
     },
     {
         name: "AJCU - AP",
+        nameFull: "Association of Jesuit Colleges and Universities in Asia Pacific",
         count: 19,
         url: "AJCU-AP",
         location: "East Asia and Oceania",
@@ -48,6 +53,7 @@ const regionalData = [
     },
     {
         name: "AJCU - AM",
+        nameFull: "Association of Jesuit Colleges and Universities of Africa and Madagascar",
         count: 10,
         url: "AJCU-AM",
         location: "Africa, Madagascar",

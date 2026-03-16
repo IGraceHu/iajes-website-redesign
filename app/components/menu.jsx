@@ -59,7 +59,7 @@ export function Menu() {
             <i className="bi bi-list text-[1.7rem]"></i>
           </button>
           <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-            <img className="w-18 h-full" src="../assets/logo.svg" />
+            <img className="w-18 h-full" src="/assets/logo.svg" />
           </NavLink>
         </div>
 
