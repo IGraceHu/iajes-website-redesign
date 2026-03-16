@@ -26,7 +26,7 @@ function TitleSection() {
 
                 <div className="md:flex hidden items-stretch">
                     <img
-                        src="../assets/logo-iajes.svg"
+                        src="/assets/logo-iajes.svg"
                         alt="IAJES"
                         className="w-[80%] h-[70vh] object-contain rounded-md"
                         style={{ minHeight: 160 }}
@@ -116,7 +116,7 @@ function ThreeColumnSection() {
             <div className="grid lg:grid-cols-8 md:grid-cols-1 gap-10">
                 <div className="lg:col-span-3">
                     <h3>Our Mission</h3>
-                    <img src="../assets/landing-disc-2a.svg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="/assets/landing-disc-2a.svg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         To join the engineering schools in Jesuit Universities worldwide, in order to promote the development and growth of our society through academic activities, research and social action.
                         <br /><br />
@@ -136,7 +136,7 @@ function ThreeColumnSection() {
 
                 <div className="lg:col-span-2">
                     <h3>Our Vision</h3>
-                    <img src="../assets/landing-disc-4b.svg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="/assets/landing-disc-4b.svg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         Make IAJES a worldwide leader and reference organization in the promotion of a new generation of engineers, scientists, and researchers deeply rooted and trained in the spirit of the Jesuit mission and Universal Apostolic Preferences.
                     </p>
@@ -180,7 +180,7 @@ function SpeakerHighlightSection() {
                 {/* Middle: Speaker Image (thinner) */}
                 <div className="flex justify-center lg:col-span-2 order-1 lg:order-1">
                     <div className="w-45 h-60 bg-gray-light rounded-lg overflow-hidden flex items-center justify-center">
-                        <img src="../assets/landing-disc-2a.svg" alt="General Arturo Sosa SJ" className="w-full h-full object-cover" />
+                        <img src="/assets/landing-disc-2a.svg" alt="General Arturo Sosa SJ" className="w-full h-full object-cover" />
                     </div>
                 </div>
 
@@ -221,7 +221,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2015</div>
-                        <img src="../assets/landing-disc-4b.svg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="/assets/landing-disc-4b.svg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">Our initiative is both a response to a call from Pope Franciscus and Society of Jesus, especially through his secretary for higher education, Fr. Michael Garanzini and the expression of a strong shared desire to foster fruitful links of communion and cooperation among our Jesuit engineering schools.
                             <br /><br />
                             The concept was launched in July 2015 in Melbourne during the Assembly of Presidents and Rectors of Jesuit universities.</p>
@@ -235,7 +235,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2017 / 2018</div>
-                        <img src="../assets/landing-disc-2a.svg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="/assets/landing-disc-2a.svg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">A brief prospection in the fall 2017 led to the constitution of the first task force with worldwide representatives. Its main task was to prepare and promote a first founding conference for the IAJES International Association of Jesuit Engineering Schools.
                             <br /><br />
                             Foreseen in <strong>DEUSTO BILBAO in July 2018</strong>, this event would find a meaningful place just before the Assembly of Presidents and Rectors of Jesuit Universities where the IAJU (International Association of Jesuit Universities) would solemnly be founded.</p>

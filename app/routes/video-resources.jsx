@@ -36,7 +36,7 @@ function ResourceCard({resourceInfo}) {
                         <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.videoThumbnail} /> 
                         : 
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
                             <h5 className="relative z-1" style={{color: "var(--color-white)"}}>{resourceInfo.title}</h5>
                             <p style={{color: "var(--color-white)"}}>{resourceInfo.date.toLocaleDateString()}</p>
                         </div>

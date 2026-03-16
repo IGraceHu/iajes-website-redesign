@@ -104,7 +104,7 @@ export default function SignIn() {
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="w-18 h-full" src="../assets/logo.svg" />
+          <img className="w-18 h-full" src="/assets/logo.svg" />
         </NavLink>
       </div>
 

@@ -84,7 +84,7 @@ function MemberCard({ name, university, location, email, region, taskForce, posi
         <div className="member-card">
             {/* Placeholder image */}
             <div className="member-image">
-                <img src="../assets/landing-disc-2a.svg" alt={name} />
+                <img src="/assets/landing-disc-2a.svg" alt={name} />
             </div>
             <div className="member-info">
                 <h5>{name}</h5>
@@ -390,8 +390,8 @@ function RolesSection() {
         <div className="bg-secondary-dark py-20 px-0 lg:px-0 relative overflow-hidden">
             {/* Decorative discs */}
             <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
-                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="../assets/landing-disc-2a.svg" />
-                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="../assets/landing-disc-4b.svg" />
+                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="/assets/landing-disc-2a.svg" />
+                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="/assets/landing-disc-4b.svg" />
             </div>
 
             <div className="text-center mb-12 px-10 lg:px-40 relative z-10">
@@ -428,7 +428,7 @@ function LogoSection() {
 
                 <div className="flex items-stretch order-1 md:order-2">
                     <img
-                        src="../assets/logo-iajes.svg"
+                        src="/assets/logo-iajes.svg"
                         alt="IAJES Logo"
                         className="w-full h-[70vh] object-contain rounded-md md:h-auto"
                         style={{ minHeight: 160 }}
