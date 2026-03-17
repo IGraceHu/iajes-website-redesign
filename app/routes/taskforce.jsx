@@ -209,16 +209,16 @@ function EditPerson({ person }) {
     <div className="lg:w-[40vw] mx-10 my-5">
       <h4>Edit Team Member</h4>
       <form className="mb-5">
-        <label for="edit-person-name">Name:</label><br />
+        <label htmlFor="edit-person-name">Name:</label><br />
         <input id="edit-person-name" type="text" className="input input-text w-full" defaultValue={person.name} />
         <br /><br />
-        <label for="edit-person-loc">Location:</label><br />
+        <label htmlFor="edit-person-loc">Location:</label><br />
         <input id="edit-person-loc" type="text" className="input input-text w-full" defaultValue={person.location} />
         <br /><br />
-        <label for="edit-person-contact">Contact:</label><br />
+        <label htmlFor="edit-person-contact">Contact:</label><br />
         <input id="edit-person-contact" type="text" className="input input-text w-full" defaultValue={person.contact} />
         <br /><br />
-        <label for="edit-person-url">IAJES Profile URL:</label><br />
+        <label htmlFor="edit-person-url">IAJES Profile URL:</label><br />
         <input id="edit-person-url" type="text" className="input input-text w-full" defaultValue={person.url} />
         <br /><br />
         <label>
@@ -271,7 +271,7 @@ function EditProject({ project }) {
       <h4>Edit Project</h4>
       <form className="mb-5 flex md:flex-row flex-col gap-x-10 gap-y-5 mb-10 h-[80%]">
         <div className="shrink-5">
-          <label for="edit-project-title">Project title:</label><br />
+          <label htmlFor="edit-project-title">Project title:</label><br />
           <input id="edit-project-title" type="text" className="input input-text w-full" defaultValue={project.name} />
           <br /><br />
           <label>
@@ -281,7 +281,7 @@ function EditProject({ project }) {
           </label>
         </div>
         <div className="grow-4">
-          <label for="edit-project-desc">Project details:</label><br />
+          <label htmlFor="edit-project-desc">Project details:</label><br />
           <textarea id="edit-project-desc" className="input input-text w-full h-full" defaultValue={project.desc ? project.desc : ""}></textarea>
         </div>
       </form>
@@ -370,8 +370,11 @@ export default function TaskForce({ loaderData }) {
       <Popup id="taskforce" show={showPopup} setShow={setShowPopup} details={currentPopup} />
       <Menu />
       <Banner>
-        <p><strong>TASK FORCE</strong></p>
-          <h1 style={{ color: "white" }}>{loaderData.name}</h1>
+        <a href="/task-forces" className="banner-breadcrumb">
+            <i className="bi bi-caret-left-fill"></i>
+            <strong>TASK FORCES</strong>
+        </a>
+        <h1 style={{ color: "white" }}>{loaderData.name}</h1>
       </Banner>
 
       <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
@@ -415,8 +418,6 @@ export default function TaskForce({ loaderData }) {
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0">Edit</button>}
 
         </div> */}
-
-        <a href="/task-forces" className="button">Back to Task Forces</a>
 
       </div>
       <Footer />

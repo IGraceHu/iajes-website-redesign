@@ -79,7 +79,7 @@ const firstTaskForceWebinar = (
     <div>
         <a href="/task-forces/research-and-academic-cooperation" className="button block w-md">
             Research and Academic Cooperation Task Force
-            <i class="bi bi-arrow-right ml-2 mt-1"></i>
+            <i className="bi bi-arrow-right ml-2 mt-1"></i>
         </a>
         <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
             <iframe src="https://drive.google.com/file/d/1IYsGuviohJKb8AxZim83DMQocxrY7AtJ/preview" width="100%" height="100%"></iframe>

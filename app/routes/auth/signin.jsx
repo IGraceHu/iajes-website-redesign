@@ -103,15 +103,15 @@ export default function SignIn() {
       <Popup id="sign-in" show={showPopup} setShow={setShowPopup} details={errorPopup} />
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
-        <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-          IAJES Home
+        <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+          <img className="w-18 h-full" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
       <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
         <h4>Sign in to <span className="text-primary-dark">IAJES</span></h4>
         <form action={formAction} className="md:w-md w-full duration-200">
-          <label for="email">Email:</label><br />
+          <label htmlFor="email">Email:</label><br />
           <input id="email" name="email" type="text" defaultValue={state?.email}
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
@@ -120,8 +120,8 @@ export default function SignIn() {
           <br /><br />
 
           <div className="w-full flex justify-between">
-            <label for="pwd">Password:</label>
-            <p><a href="/forget-password">Forgot password?</a></p>
+            <label htmlFor="pwd">Password:</label>
+            <p><a tabIndex="3" href="/forget-password">Forgot password?</a></p>
           </div>
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}

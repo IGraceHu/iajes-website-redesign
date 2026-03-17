@@ -26,7 +26,7 @@ function TitleSection() {
 
                 <div className="md:flex hidden items-stretch">
                     <img
-                        src="../assets/logo-iajes.svg"
+                        src="/assets/logo-iajes.svg"
                         alt="IAJES"
                         className="w-[80%] h-[70vh] object-contain rounded-md"
                         style={{ minHeight: 160 }}
@@ -116,7 +116,7 @@ function ThreeColumnSection() {
             <div className="grid lg:grid-cols-8 md:grid-cols-1 gap-10">
                 <div className="lg:col-span-3">
                     <h3>Our Mission</h3>
-                    <img src="../assets/landing-disc-2a.svg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="/assets/landing-disc-2a.svg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         To join the engineering schools in Jesuit Universities worldwide, in order to promote the development and growth of our society through academic activities, research and social action.
                         <br /><br />
@@ -136,7 +136,7 @@ function ThreeColumnSection() {
 
                 <div className="lg:col-span-2">
                     <h3>Our Vision</h3>
-                    <img src="../assets/landing-disc-4b.svg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="/assets/landing-disc-4b.svg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         Make IAJES a worldwide leader and reference organization in the promotion of a new generation of engineers, scientists, and researchers deeply rooted and trained in the spirit of the Jesuit mission and Universal Apostolic Preferences.
                     </p>
@@ -177,30 +177,20 @@ function SpeakerHighlightSection() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-center">
-                {/* Left: Spanish Quote */}
-                <div className="flex flex-col items-stretch lg:col-span-2 order-2 lg:order-1">
-                    <blockquote className="italic text-sm lg:text-base text-gray-dark mb-4 leading-relaxed wrap-break-word text-pretty">
-                        “La Asociación Internacional de Universidades Jesuitas encuentra su razón de ser y da sentido a lo que hace al vivir e impulsar la colaboración y la solidaridad dentro y desde las instituciones universitarias que la conforman. Se trata de aprovechar lo mejor posible el enorme potencial de colaboración y solidaridad existente en las universidades que conforman esta red. Poco a poco hemos ido emprendiendo esa ruta. A medida que avanzamos reconocemos las ventajas de la colaboración y la solidaridad. Vamos aprendiendo mejores formas de aprovechar los recursos que tenemos, siempre escasos para la magnitud de la tarea...”
-                    </blockquote>
-                    <button className="button w-full mt-2">
-                        Traducción española del discurso del P. Sosa
-                    </button>
-                </div>
-
                 {/* Middle: Speaker Image (thinner) */}
-                <div className="flex justify-center lg:col-span-1 order-1 lg:order-2">
-                    <div className="w-36 h-48 bg-gray-light rounded-lg overflow-hidden flex items-center justify-center">
-                        <img src="../assets/landing-disc-2a.svg" alt="General Arturo Sosa SJ" className="w-full h-full object-cover" />
+                <div className="flex justify-center lg:col-span-2 order-1 lg:order-1">
+                    <div className="w-45 h-60 bg-gray-light rounded-lg overflow-hidden flex items-center justify-center">
+                        <img src="/assets/landing-disc-2a.svg" alt="General Arturo Sosa SJ" className="w-full h-full object-cover" />
                     </div>
                 </div>
 
                 {/* Right: English Quote */}
-                <div className="flex flex-col items-stretch lg:col-span-2 order-3 lg:order-3">
+                <div className="flex flex-col items-stretch lg:col-span-3 order-2 lg:order-2">
                     <blockquote className="italic text-sm lg:text-base text-gray-dark mb-4 leading-relaxed wrap-break-word text-pretty">
                         “The International Association of Jesuit Universities finds its purpose and gives meaning to what it does by living and promoting collaboration and solidarity within and from the university institutions that make it up. It is a matter of making the best possible use of the enormous potential for collaboration and solidarity that exists in the universities that make up this network. Little by little we have been embarking on this path. As we move forward we recognize the advantages of collaboration and solidarity. We are learning better ways to take advantage of the resources we have, which are always scarce for the magnitude of the task...”
                     </blockquote>
                     <button className="button w-full mt-2">
-                        English Translation of Fr. Sosa's Speech
+                        View Fr. Sosa's Full Speech
                     </button>
                 </div>
             </div>
@@ -231,7 +221,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2015</div>
-                        <img src="../assets/landing-disc-4b.svg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="/assets/landing-disc-4b.svg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">Our initiative is both a response to a call from Pope Franciscus and Society of Jesus, especially through his secretary for higher education, Fr. Michael Garanzini and the expression of a strong shared desire to foster fruitful links of communion and cooperation among our Jesuit engineering schools.
                             <br /><br />
                             The concept was launched in July 2015 in Melbourne during the Assembly of Presidents and Rectors of Jesuit universities.</p>
@@ -245,7 +235,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2017 / 2018</div>
-                        <img src="../assets/landing-disc-2a.svg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="/assets/landing-disc-2a.svg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">A brief prospection in the fall 2017 led to the constitution of the first task force with worldwide representatives. Its main task was to prepare and promote a first founding conference for the IAJES International Association of Jesuit Engineering Schools.
                             <br /><br />
                             Foreseen in <strong>DEUSTO BILBAO in July 2018</strong>, this event would find a meaningful place just before the Assembly of Presidents and Rectors of Jesuit Universities where the IAJU (International Association of Jesuit Universities) would solemnly be founded.</p>
