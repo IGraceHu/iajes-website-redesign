@@ -3,8 +3,7 @@ import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
-import { Popup } from "../components/popup";
-import { PopupForm } from "../components/popup-form";
+import { Popup, PopupForm } from "../components/popup";
 
 export function meta() {
   return [
