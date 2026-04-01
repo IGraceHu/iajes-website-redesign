@@ -55,6 +55,8 @@ async function signUp(data) {
           lname: data.lname,
           created_at: authData.user.created_at,
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
+          email: data.email,
+          role: "member"
         }]);
 
       if (dbError) {
@@ -151,24 +153,24 @@ export default function SignUp() {
       </Popup>
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
-        <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-          IAJES Home
+        <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+          <img className="w-18 h-full" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
       <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
-        <h4>Create a <span className="text-primary-dark">IAJES</span> account</h4>
+        <h4>Create an <span className="text-primary-dark">IAJES</span> account</h4>
         <form action={formAction} className="lg:w-md w-full duration-200">
           <div className="w-full mb-5 grid md:grid-cols-2 grid-cols-1 gap-5">
             <div>
-              <label for="fname">First name:</label><br />
+              <label htmlFor="fname">First name:</label><br />
               <input id="fname" name="fname" type="text" defaultValue={state?.fname}
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "fname")} />
               <div className="input-error">This field is required.</div>
             </div>
             <div>
-              <label for="lname">Last name:</label><br />
+              <label htmlFor="lname">Last name:</label><br />
               <input id="lname" name="lname" type="text" defaultValue={state?.lname}
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "lname")} />
@@ -176,7 +178,7 @@ export default function SignUp() {
             </div>
           </div>
 
-          <label for="email">Email:</label><br />
+          <label htmlFor="email">Email:</label><br />
           <input id="email" name="email" type="text" defaultValue={state?.email}
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
@@ -184,7 +186,7 @@ export default function SignUp() {
 
           <br /><br />
 
-          <label for="pwd">Create Password:</label><br />
+          <label htmlFor="pwd">Create Password:</label><br />
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => { checkPassword(); checkEmpty(e.target.value, "pwd"); }} />
@@ -192,7 +194,7 @@ export default function SignUp() {
 
           <br /><br />
 
-          <label for="re-pwd">Re-enter Password:</label><br />
+          <label htmlFor="re-pwd">Re-enter Password:</label><br />
           <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd}
             className={"input-text w-full " + (formRequired?.rePwd && "input-required")}
             onChange={checkPassword} />
@@ -200,7 +202,7 @@ export default function SignUp() {
 
           <br /><br />
 
-          <label for="subscribe" className="checkbox">
+          <label htmlFor="subscribe" className="checkbox">
             <input id="subscribe" name="subscribe" type="checkbox" defaultChecked={state?.subscribe} /><p>Subscribe to IAJES Weekly</p>
           </label>
 

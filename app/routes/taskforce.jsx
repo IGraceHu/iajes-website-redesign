@@ -371,8 +371,11 @@ export default function TaskForce({ loaderData }) {
       
       <Menu />
       <Banner>
-        <p><strong>TASK FORCE</strong></p>
-          <h1 style={{ color: "white" }}>{loaderData.name}</h1>
+        <a href="/task-forces" className="banner-breadcrumb">
+            <i className="bi bi-caret-left-fill"></i>
+            <strong>TASK FORCES</strong>
+        </a>
+        <h1 style={{ color: "white" }}>{loaderData.name}</h1>
       </Banner>
 
       <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
@@ -427,8 +430,6 @@ export default function TaskForce({ loaderData }) {
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0">Edit</button>}
 
         </div> */}
-
-        <a href="/task-forces" className="button">Back to Task Forces</a>
 
       </div>
       <Footer />

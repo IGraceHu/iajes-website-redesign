@@ -80,7 +80,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
       <p className="pb-5 text-center w-sm">Enter your email address and we will send you a password reset link.</p>
 
       <form action={formAction} className="md:w-sm w-full duration-200">
-        <label for="email">Email:</label><br />
+        <label htmlFor="email">Email:</label><br />
         <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Enter your email address"
           className={"input-text w-full " + (emailRequired && "input-required")}
           onChange={(e) => checkEmpty(e.target.value)} />
@@ -107,8 +107,8 @@ export default function SignIn() {
       </Popup>
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
-        <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-          IAJES Home
+        <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+          <img className="w-18 h-full" src="/assets/logo.svg" />
         </NavLink>
       </div>
 

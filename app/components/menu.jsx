@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { supabase } from "../supabase";
+// import iajesLogo from "../"
 
 export function Menu() {
   const navigate = useNavigate();
@@ -97,7 +98,7 @@ export function Menu() {
             <i className="bi bi-list text-[1.7rem]"></i>
           </button>
           <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-            <img className="w-18 h-full" src="../assets/logo.svg" />
+            <img className="w-18 h-full" src="/assets/logo.svg" />
           </NavLink>
         </div>
 
@@ -108,19 +109,20 @@ export function Menu() {
                 What We Do
               </div>
               <div id="what-we-do-dd" className="z-2 bg-white absolute flex flex-col rounded-md border border-gray-light shadow-sm duration-200 -mt-3 opacity-0 invisible">
-                <NavLink to="/about" end className="p-4 pr-10">
+                <NavLink to="/about" end className="link p-4 pr-10">
                   About IAJES
                 </NavLink>
-                <NavLink to="/organizational-structure" end className="p-4 pr-10 pb-5">
+                <NavLink to="/organizational-structure" end className="link p-4 pr-10 pb-5">
                   Organizational Structure
                 </NavLink>
               </div>
             </div>
-            <NavLink to="/task-forces" end className="p-4">
+
+            <NavLink to="/task-forces" end className="link p-4">
               Task Forces
             </NavLink>
 
-            <NavLink to="/video-resources" end className="p-4">
+            <NavLink to="/video-resources" end className="link p-4">
               Video Resources
             </NavLink>
 
@@ -129,20 +131,20 @@ export function Menu() {
                 Meetings
               </div>
               <div id="meetings-dd" className="z-2 bg-white absolute flex flex-col rounded-md border border-gray-light shadow-sm duration-200 -mt-3 opacity-0 invisible">
-                <NavLink to="/regional-meetings" end className="p-4 pr-10">
+                <NavLink to="/regional-meetings" end className="link p-4 pr-10">
                   Regional Meetings
                 </NavLink>
-                <NavLink to="/biennal-meetings" end className="p-4 pr-10 pb-5">
-                  Biennal Meetings
+                <NavLink to="/international-meetings" end className="link p-4 pr-10 pb-5">
+                  International Meetings
                 </NavLink>
               </div>
             </div>
 
-            <NavLink to="/newsletter" end className="p-4">
+            <NavLink to="/newsletter" end className="link p-4">
               Newsletter
             </NavLink>
 
-            <NavLink to="/search" end className="p-4">
+            <NavLink to="/search" end className="link p-4">
               People
             </NavLink>
           </div>

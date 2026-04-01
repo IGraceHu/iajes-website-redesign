@@ -23,10 +23,10 @@ function Carousel() {
     }
   ];
   const carouselEl = [];
-
+  let i = 0;
   carouselContent.map((content) => {
     carouselEl.push(
-      <div className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
+      <div key={i} className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
 
         {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 size-full object-cover" />}
 
@@ -35,7 +35,7 @@ function Carousel() {
         </div>
       </div>
     )
-
+    i++;
   })
 
   const carouselCount = carouselEl.length - 1;
