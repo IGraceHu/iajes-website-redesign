@@ -318,7 +318,7 @@ function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) 
           </div>
           <label>
             Image:<br />
-            <input id="upload" type="file" />
+            <input id="edit-project-img" name="edit-project-img" type="file" />
             <div className="input-error">This field is required.</div>
           </label>
         </div>
