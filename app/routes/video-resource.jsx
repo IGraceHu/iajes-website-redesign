@@ -1,7 +1,5 @@
-import { useState } from 'react';
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
 import "../styles/video-resources.css";
 
 export function meta() {
