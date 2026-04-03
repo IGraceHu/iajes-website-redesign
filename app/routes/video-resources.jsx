@@ -35,6 +35,7 @@ async function createVideoResource(formData) {
         .insert({ 
             title: formData.get("vid-resource-title"),
             video_url: formData.get("vid-resource-link"),
+            date: formData.get("vid-resource-date"),
             video_thumbnail: formData.get("vid-resource-thumbnail"),
             video_description: formData.get("vid-resource-desc"),
             speaker: formData.get("vid-resource-speaker-name"),
@@ -128,6 +129,8 @@ export default function VideoResources() {
         setShowPopup(true);
     }
 
+    const today = new Date(Date.now()).toISOString().substring(0,10);
+
     return (
         <>
             { isAdmin &&
@@ -139,6 +142,9 @@ export default function VideoResources() {
                                 <label for="vid-resource-title">Video resource title:</label><br />
                                 <input id="vid-resource-title" name="vid-resource-title" type="text" className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")} placeholder="Video title" />
                                 <div className="input-error">This field is required.</div>
+                                <br /><br />
+                                <label for="vid-resource-date">Video resource date:</label><br />
+                                <input id="vid-resource-date" name="vid-resource-date" type="date" className="input input-text w-full" defaultValue={today} />
                             </div>
                             <label>
                                 Video resource thumbnail image:
