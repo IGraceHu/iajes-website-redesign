@@ -29,6 +29,17 @@ const resources = [
     }
 ]
 
+async function getVideoResources() {
+    const { data, error } = await supabase
+        .from('video resources')
+        .select()
+    return data || error;
+}
+
+export async function loader({ params }) {
+  return getVideoResources();
+}
+
 async function createVideoResource(formData) {
     const { error } = await supabase
         .from('video resources')
@@ -57,7 +68,7 @@ function ResourceCard({resourceInfo}) {
                         <div className="relative w-full h-full p-5">
                             <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
                             <h5 className="relative z-1" style={{color: "var(--color-white)"}}>{resourceInfo.title}</h5>
-                            <p style={{color: "var(--color-white)"}}>{resourceInfo.date.toLocaleDateString()}</p>
+                            <p style={{color: "var(--color-white)"}}>{resourceInfo.date}</p>
                         </div>
                     }
                 </div>
@@ -69,21 +80,26 @@ function ResourceCard({resourceInfo}) {
     )
 }
 
-export default function VideoResources() {
+export default function VideoResources({ loaderData }) {
     const navigate = useNavigate();
     const isAdmin = true;
     const [showPopup, setShowPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const userId = "";
 
+    const vidResources = loaderData.sort(function(a,b) {return new Date(b.date) - new Date(a.date)})
+
     const videoResources = [];
     for (let i = (currentPage * 6); i < currentPage + 6; i++) {
-        if (i < resources.length) {
-            videoResources.push(<ResourceCard key={resources[i].id} resourceInfo={resources[i]} />)
+        if (i < vidResources.length) {
+            videoResources.push(<ResourceCard key={vidResources[i].id} resourceInfo={vidResources[i]} />)
         } else {
             break;
         }
     }
+
+
+    // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
 
     const [formRequired, setFormRequired] = useState({
         vidResourceTitle: "",

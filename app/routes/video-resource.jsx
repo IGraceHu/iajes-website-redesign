@@ -30,11 +30,12 @@ export async function loader({ params }) {
   const vid = found || {};
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
   vid.title = vid.title || "";
+  vid.date = new Date(vid.date) || "";
   vid.speaker = vid.speaker || "";
   vid.univeristy = vid.university || "";
   vid.speakerDetails = vid.speakerDetails || "";
   vid.speakerImg = vid.speakerImg || "";
-  vid.video = vid.video || "";
+  vid.video = vid.video || null;
   vid.desc = vid.desc || "";
   return vid;
 }
