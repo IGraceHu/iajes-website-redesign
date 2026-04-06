@@ -527,8 +527,8 @@ const MILESTONE_2019_BODY = MILESTONE_2019.slice(3);
 const MEETINGS = [
   {
     id: "bhubaneshwar-2024",
-    label: "4th Meeting - Bhubaneshwar 2024",
-    title: "4th IAJES Summit in Bhubaneshwar, India",
+    label: "4th Conference - Bhubaneswar 2024",
+    title: "4th Conference - Bhubaneswar 2024",
     date: "July 10-12, 2024",
     location: "XIM University, Bhubaneswar",
     heroImage: HERO_2024,
@@ -544,8 +544,8 @@ const MEETINGS = [
   },
   {
     id: "boston-2022",
-    label: "3rd Meeting - Boston 2022",
-    title: "3rd IAJES Summit in Boston, USA",
+    label: "3rd Conference - Boston 2022",
+    title: "3rd Conference - Boston 2022",
     date: "July 13-15, 2022",
     heroImage: HERO_2022,
     milestone: MILESTONE_2022,
@@ -559,8 +559,8 @@ const MEETINGS = [
   },
   {
     id: "cali-2019",
-    label: "2nd Meeting - Cali 2019",
-    title: "2nd IAJES Conference Cali July 2019",
+    label: "2nd Conference - Cali 2019",
+    title: "2nd Conference - Cali 2019",
     date: "July Wednesday 17th - Thursday 18th - Friday 19th, 2019",
     location: "Welcome in Javeriana Colombia",
     heroImage: HERO_2019,
@@ -580,8 +580,8 @@ const MEETINGS = [
   },
   {
     id: "bilbao-2018",
-    label: "1st Meeting - Bilbao 2018",
-    title: "Conference Bilbao 2018",
+    label: "1st Conference - Bilbao 2018",
+    title: "1st Conference - Bilbao 2018",
     date: "July 6th-7th 2018",
     intro: BILBAO_INTRO,
     heroImage: HERO_2018,
@@ -656,6 +656,58 @@ function SpeakerCard({ speaker }) {
   );
 }
 
+function MeetingSidebarButton({ meeting, active = false, first = false, last = false, onClick }) {
+  const stateClasses = active
+    ? "border-primary-dark bg-primary-dark"
+    : "border-gray-light bg-white hover:bg-primary-extralight";
+  const roundingClasses = `${first ? "rounded-t-md" : ""} ${last ? "rounded-b-md border-b-2" : ""}`;
+
+  return (
+    <a href="#conference-details" className="block">
+      <button
+        type="button"
+        className={`w-full border-x-2 border-t-2 p-3 text-left duration-200 ${stateClasses} ${roundingClasses}`}
+        onClick={onClick}
+        aria-pressed={active}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className={`h-14 w-20 shrink-0 overflow-hidden rounded-md border-2 ${
+              active ? "border-white/70" : "border-gray-light"
+            } bg-white`}
+          >
+            <img
+              src={meeting.heroImage}
+              alt={meeting.label}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
+          </div>
+
+          <div className="min-w-0 flex-1">
+            <p className={`mb-0 font-semibold ${active ? "text-white" : "text-secondary-dark"}`}>
+              {meeting.label}
+            </p>
+            {meeting.date ? (
+              <p className={`mb-0 ${active ? "text-white/80" : "text-disabled-light"}`}>
+                <i>{meeting.date}</i>
+              </p>
+            ) : null}
+          </div>
+
+          <i
+            className={`bi bi-chevron-double-right shrink-0 ${
+              active ? "text-white" : "text-primary-dark"
+            }`}
+            style={{ fontSize: "1.2rem" }}
+            aria-hidden="true"
+          />
+        </div>
+      </button>
+    </a>
+  );
+}
+
 function MeetingSection({ meeting }) {
   const mediaImages = meeting.media?.images ?? [];
   const mediaVideos = meeting.media?.videos ?? [];
@@ -669,8 +721,14 @@ function MeetingSection({ meeting }) {
   const mainProgramSections = meeting.mainProgram?.sections ?? [];
   const hasMainProgramSections = mainProgramSections.length > 0;
   const scheduleToneStyles = {
-    break: "bg-primary-extralight text-secondary-dark font-semibold",
-    default: "bg-white text-gray-dark/80",
+    break: {
+      title: "font-semibold text-secondary-dark",
+      subitem: "text-secondary-dark/80",
+    },
+    default: {
+      title: "text-gray-dark/80",
+      subitem: "text-gray-dark/70",
+    },
   };
 
   useEffect(() => {
@@ -699,13 +757,13 @@ function MeetingSection({ meeting }) {
       <div className="rounded-md border-2 border-gray-light bg-white p-4 shadow-sm">
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
           <div>
-            <div className="text-xs font-semibold text-secondary-dark">IAJES International Meeting</div>
+            <div className="text-xs font-semibold text-secondary-dark">International meeting</div>
             <h3 className="mt-2">{meeting.title}</h3>
             {meeting.intro ? (
-              <p className="mt-3 text-sm text-gray-dark/80">{meeting.intro}</p>
+              <p className="mt-3 text-gray-dark/80">{meeting.intro}</p>
             ) : null}
             {meeting.date || meeting.location ? (
-              <div className="mt-4 rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-sm text-gray-dark/80">
+              <div className="mt-4 rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-gray-dark/80">
                 <div className="grid gap-3 sm:grid-cols-2">
                   {meeting.date ? (
                     <div>
@@ -722,7 +780,7 @@ function MeetingSection({ meeting }) {
                 </div>
               </div>
             ) : null}
-            <div className="mt-4 text-sm text-gray-dark/70">
+            <div className="mt-4 text-gray-dark/70">
               All meeting details are included below.
             </div>
           </div>
@@ -749,7 +807,7 @@ function MeetingSection({ meeting }) {
                     return (
                       <div
                         key={`${meeting.id}-milestone-section-${index}`}
-                        className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-sm font-semibold text-secondary-dark"
+                        className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 font-semibold text-secondary-dark"
                       >
                         {section.title}
                       </div>
@@ -772,7 +830,7 @@ function MeetingSection({ meeting }) {
                           {section.details.map((detail, detailIndex) => (
                             <p
                               key={`${meeting.id}-milestone-${index}-${detailIndex}`}
-                              className="text-sm text-gray-dark/80"
+                              className="text-gray-dark/80"
                             >
                               {detail}
                             </p>
@@ -792,7 +850,7 @@ function MeetingSection({ meeting }) {
                                       {subsection.details.map((subDetail, subDetailIndex) => (
                                         <p
                                           key={`${meeting.id}-milestone-sub-${index}-${subIndex}-${subDetailIndex}`}
-                                          className="text-sm text-gray-dark/80"
+                                          className="text-gray-dark/80"
                                         >
                                           {subDetail}
                                         </p>
@@ -812,7 +870,7 @@ function MeetingSection({ meeting }) {
             ) : (
               <div className="flex flex-col gap-3">
                 {meeting.milestone.map((line, index) => (
-                  <p key={`${meeting.id}-milestone-${index}`} className="text-sm text-gray-dark/80">
+                  <p key={`${meeting.id}-milestone-${index}`} className="text-gray-dark/80">
                     {line}
                   </p>
                 ))}
@@ -833,7 +891,7 @@ function MeetingSection({ meeting }) {
                     <div className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-center">
                       <h4 className="text-secondary-dark">{section.title}</h4>
                       {section.description ? (
-                        <p className="mt-2 text-sm text-gray-dark/80">{section.description}</p>
+                        <p className="mt-2 text-gray-dark/80">{section.description}</p>
                       ) : null}
                     </div>
                     <div className={`mt-4 grid gap-4 ${columnClass}`}>
@@ -850,7 +908,7 @@ function MeetingSection({ meeting }) {
             </div>
           ) : isBhubaneswar && mainProgramLines.length ? (
             <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
-              <div className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-sm font-semibold text-secondary-dark">
+              <div className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 font-semibold text-secondary-dark">
                 {mainProgramLines[0]}
               </div>
               <div className="rounded-md border-2 border-gray-light bg-white px-4 py-3">
@@ -858,14 +916,14 @@ function MeetingSection({ meeting }) {
                   {mainProgramLines[1] || "Program details"}
                 </div>
                 {mainProgramLines[2] ? (
-                  <p className="mt-2 text-sm text-gray-dark/80">{mainProgramLines[2]}</p>
+                  <p className="mt-2 text-gray-dark/80">{mainProgramLines[2]}</p>
                 ) : null}
               </div>
             </div>
           ) : meeting.mainProgram?.text?.length ? (
             <div className="flex flex-col gap-3">
               {meeting.mainProgram.text.map((line, index) => (
-                <p key={`${meeting.id}-program-${index}`} className="text-sm text-gray-dark/80">
+                <p key={`${meeting.id}-program-${index}`} className="text-gray-dark/80">
                   {line}
                 </p>
               ))}
@@ -873,44 +931,37 @@ function MeetingSection({ meeting }) {
           ) : null}
 
           {hasMainProgramSchedule ? (
-            <div className="mt-4 overflow-hidden rounded-md border-2 border-gray-light bg-white">
-              <div className="border-b-2 border-gray-light bg-primary-extralight px-4 py-2 text-sm font-semibold text-secondary-dark">
-                Program schedule
-              </div>
-              <div className="grid gap-4 p-4 md:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 rounded-md bg-primary-extralight px-4 py-3">
+              <div className="text-sm font-semibold text-secondary-dark">Program schedule</div>
+              <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {mainProgramSchedule.map((day) => (
-                  <div
-                    key={`${meeting.id}-schedule-${day.day}`}
-                    className="flex h-full flex-col overflow-hidden rounded-md border-2 border-gray-light bg-white"
-                  >
-                    <div className="bg-secondary-dark px-3 py-2 text-xs font-semibold text-white">
-                      {day.day}
-                    </div>
+                  <div key={`${meeting.id}-schedule-${day.day}`} className="border-l-2 border-secondary-light pl-3">
+                    <p className="mb-0 font-semibold text-secondary-dark">{day.day}</p>
                     {day.theme ? (
-                      <div className="border-b-2 border-gray-light bg-secondary-light px-3 py-1 text-xs font-semibold text-white">
-                        {day.theme}
-                      </div>
+                      <p className="mb-0 text-disabled-light">
+                        <i>{day.theme}</i>
+                      </p>
                     ) : null}
-                    <div className="flex flex-1 flex-col gap-3 p-3">
+                    <div className="mt-2 flex flex-col gap-1.5">
                       {day.items.map((item, index) => {
                         const isObject = typeof item === "object";
                         const title = isObject ? item.title : item;
                         const subitems = isObject ? item.subitems : null;
                         const tone = isObject && item.tone ? item.tone : "default";
-                        const toneClass = scheduleToneStyles[tone] || scheduleToneStyles.default;
+                        const toneStyle = scheduleToneStyles[tone] || scheduleToneStyles.default;
 
                         return (
-                          <div
-                            key={`${meeting.id}-schedule-${day.day}-${index}`}
-                            className={`rounded-md border-2 border-gray-light px-3 py-2 text-xs ${toneClass}`}
-                          >
-                            <div>{title}</div>
+                          <div key={`${meeting.id}-schedule-${day.day}-${index}`}>
+                            <p className={`mb-0 ${toneStyle.title}`}>{title}</p>
                             {subitems?.length ? (
-                              <div className="mt-2 flex flex-col gap-1 text-xs text-gray-dark/70">
+                              <div className="mt-0.5 flex flex-col gap-0.5 pl-2">
                                 {subitems.map((subitem, subIndex) => (
-                                  <div key={`${meeting.id}-schedule-${day.day}-${index}-${subIndex}`}>
+                                  <p
+                                    key={`${meeting.id}-schedule-${day.day}-${index}-${subIndex}`}
+                                    className={`mb-0 ${toneStyle.subitem}`}
+                                  >
                                     - {subitem}
-                                  </div>
+                                  </p>
                                 ))}
                               </div>
                             ) : null}
@@ -954,7 +1005,7 @@ function MeetingSection({ meeting }) {
           {meeting.mainProgram?.topics ? (
             <div className="mt-4 flex flex-col gap-2">
               {meeting.mainProgram.topics.map((line, index) => (
-                <p key={`${meeting.id}-topics-${index}`} className="text-sm text-gray-dark/80">
+                <p key={`${meeting.id}-topics-${index}`} className="text-gray-dark/80">
                   {line}
                 </p>
               ))}
@@ -980,7 +1031,7 @@ function MeetingSection({ meeting }) {
           <SectionDropdown title={meeting.preConference.title}>
             <div className="flex flex-col gap-3">
               {meeting.preConference.items.map((line, index) => (
-                <p key={`${meeting.id}-preconf-${index}`} className="text-sm text-gray-dark/80">
+                <p key={`${meeting.id}-preconf-${index}`} className="text-gray-dark/80">
                   {line}
                 </p>
               ))}
@@ -1088,18 +1139,18 @@ export default function InternationalMeetings() {
   return (
     <div className="min-h-screen bg-white">
       <Menu />
-      <div className="lg:px-40 px-20 py-20 duration-200">
-        <h1>IAJES international meetings</h1>
+      <div className="lg:px-40 px-10 py-20 duration-200">
+        <h1>International meetings</h1>
 
-        <p className="mt-3 text-sm text-gray-dark/70">
+        <p className="mt-3 text-gray-dark/70">
           Explore milestone events, programs, and media from each international meeting.
         </p>
 
         <section className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
-          <aside className="rounded-md border-2 border-gray-light bg-white p-4 shadow-sm lg:sticky lg:top-24 h-fit">
-            <div className="text-sm font-semibold text-secondary-dark">Meetings</div>
+          <aside className="h-fit lg:sticky lg:top-24">
+            <h4 className="mb-3">Meetings</h4>
             <div className="mt-3 lg:hidden">
-              <label htmlFor="meeting-select" className="text-sm font-semibold text-secondary-dark">
+              <label htmlFor="meeting-select" className="font-semibold text-secondary-dark">
                 Choose a meeting
               </label>
               <select
@@ -1115,41 +1166,27 @@ export default function InternationalMeetings() {
                 ))}
               </select>
             </div>
-            <div className="mt-4 hidden lg:flex flex-col gap-2">
-              {PREVIOUS_MEETINGS.map((meeting) => {
-                const isActive = meeting.id === selectedMeetingId;
-                return (
-                  <button
-                    key={meeting.id}
-                    type="button"
-                    className={`${
-                      isActive ? "button" : "button button-light"
-                    } w-full text-left flex items-center gap-3`}
-                    onClick={() => setSelectedMeetingId(meeting.id)}
-                    aria-pressed={isActive}
-                  >
-                    <div className="h-12 w-12 overflow-hidden rounded-md border-2 border-gray-light bg-white shrink-0">
-                      <img
-                        src={meeting.heroImage}
-                        alt={meeting.label}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                    </div>
-                    <span className="text-sm font-semibold">{meeting.label}</span>
-                  </button>
-                );
-              })}
+            <div className="hidden lg:block">
+              {PREVIOUS_MEETINGS.map((meeting, index) => (
+                <MeetingSidebarButton
+                  key={meeting.id}
+                  meeting={meeting}
+                  active={meeting.id === selectedMeetingId}
+                  first={index === 0}
+                  last={index === PREVIOUS_MEETINGS.length - 1}
+                  onClick={() => setSelectedMeetingId(meeting.id)}
+                />
+              ))}
             </div>
           </aside>
 
-          <div>
+          <div id="conference-details">
             <h2 className="mb-3">Previous Conferences</h2>
             {selectedMeeting ? <MeetingSection meeting={selectedMeeting} /> : null}
           </div>
         </section>
 
-        <div className="mt-16 text-sm text-gray-dark/70">
+        <div className="mt-16 text-gray-dark/70">
           <p>IAJES works within the International Association of Jesuit Universities</p>
           <p>and in deep synergy with the Regional Associations of Jesuit Universities</p>
         </div>
