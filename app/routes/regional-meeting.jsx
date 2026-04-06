@@ -5,7 +5,7 @@ import { Banner } from "../components/graphics";
 import { Popup } from "../components/popup";
 import "../styles/regional-meetings.css";
 import "../styles/video-resources.css";
-import { useParams } from "react-router";
+import { useParams, Link } from "react-router";
 
 export function meta() {
     return [
@@ -74,6 +74,9 @@ export default function RegionalMeeting() {
             location: "Santa Clara University",
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
             agendaLink: "#",
+            agendaPdf: null,
+            reportLink: "#",
+            reportPdf: null,
             images: [],
             videos: []
         },
@@ -84,6 +87,9 @@ export default function RegionalMeeting() {
             location: "Boston College",
             description: "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
             agendaLink: "#",
+            agendaPdf: null,
+            reportLink: "#",
+            reportPdf: null,
             images: [],
             videos: []
         },
@@ -94,6 +100,9 @@ export default function RegionalMeeting() {
             location: "Georgetown University",
             description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
             agendaLink: "#",
+            agendaPdf: null,
+            reportLink: "#",
+            reportPdf: null,
             images: [],
             videos: []
         },
@@ -102,8 +111,8 @@ export default function RegionalMeeting() {
     const [showAddPopup, setShowAddPopup] = useState(false);
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
-    const [addForm, setAddForm] = useState({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportPdf: null, images: [], videos: [] });
-    const [editForm, setEditForm] = useState({ title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportPdf: null, images: [], videos: [] });
+    const [addForm, setAddForm] = useState({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportLink: '', reportPdf: null, images: [], videos: [] });
+    const [editForm, setEditForm] = useState({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportLink: '', reportPdf: null, images: [], videos: [] });
     const [editingIndex, setEditingIndex] = useState(null);
     const [deleteIndex, setDeleteIndex] = useState(null);
     const [addErrors, setAddErrors] = useState({ title: false, date: false, location: false });
@@ -143,6 +152,14 @@ export default function RegionalMeeting() {
                     <div>
                         <label>Agenda PDF:</label>
                         <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setAddForm({ ...addForm, agendaPdf: e.target.files[0] })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report Link:</label>
+                        <input className="input input-text w-full" type="url" placeholder="Meeting Report Link" value={addForm.reportLink} onChange={e => setAddForm({ ...addForm, reportLink: e.target.value })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report PDF:</label>
+                        <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setAddForm({ ...addForm, reportPdf: e.target.files[0] })} />
                     </div>
                     <div>
                         <p className="font-semibold">Photos</p>
@@ -211,6 +228,12 @@ export default function RegionalMeeting() {
                 <h4>Edit Meeting</h4>
                 <div className="space-y-4 mt-4">
                     <div>
+                        <label>Region:</label>
+                        <select className="input input-text w-full" value={editForm.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
+                            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                    </div>
+                    <div>
                         <label>Title:</label>
                         <input className="input input-text w-full" type="text" placeholder="Title" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
                     </div>
@@ -233,6 +256,14 @@ export default function RegionalMeeting() {
                     <div>
                         <label>Agenda PDF:</label>
                         <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report Link:</label>
+                        <input className="input input-text w-full" type="url" placeholder="Meeting Report Link" value={editForm.reportLink} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report PDF:</label>
+                        <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
                     </div>
                     <div>
                         <p className="font-semibold">Photos</p>
@@ -311,51 +342,46 @@ export default function RegionalMeeting() {
             <Popup id="edit" show={showEditPopup} setShow={setShowEditPopup} details={editPopupDetails} />
             <Popup id="delete" show={showDeletePopup} setShow={setShowDeletePopup} details={deletePopupDetails} />
             <Menu />
-            <div className="relative w-full lg:px-40 px-10 py-20 bg-primary-dark overflow-hidden" style={{ color: "white" }}>
-                <div className="absolute top-0 left-0 w-full z-0">
-                    <div className="relative w-full opacity-100">
-                        <img className="absolute w-50 -top-20 -right-15" src="/assets/landing-disc-2a.svg" />
-                        <img className="absolute w-60 top-15 -left-30 -rotate-20" src="/assets/landing-disc-4b.svg" />
-                    </div>
-                </div>
-                <div className="relative z-1">
-                    <div className="-ml-4 flex w-fit duration-200 hover:-ml-5 hover:text-primary-light">
-                        <i className="bi bi-caret-left-fill"></i>
-                        <a href="/regional-meetings" className="link-back border-b-2 border-transparent hover:border-primary-light ml-1 hover:ml-2">
-                            <strong>REGIONAL MEETINGS</strong>
-                        </a>
-                    </div>
-                    <h1 style={{ color: "white", textTransform: "none !important" }}>{region.name}</h1>
-                    <p>{region.nameFull}</p>
-                </div>
-            </div>
+            <Banner>
+                <a href="/regional-meetings" className="banner-breadcrumb">
+                    <i className="bi bi-caret-left-fill"></i>
+                    <strong>REGIONAL MEETINGS</strong>
+                </a>
+                <h1 style={{ color: "white" }}>{region.name}</h1>
+                <p>{region.nameFull}</p>
+            </Banner>
 
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-end mb-4">
-                    <button className="button button-light" onClick={() => { setAddForm({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, images: [], videos: [] }); setShowAddPopup(true); }}>Add Meeting <i className="bi bi-plus ml-1"></i></button>
+                    <button className="button button-light" onClick={() => { setAddForm({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportLink: '', reportPdf: null, images: [], videos: [] }); setShowAddPopup(true); }}>Add Meeting <i className="bi bi-plus ml-1"></i></button>
                 </div>
                 {/* meeting rows */}
                 {meetings.map((mtg, idx) => (
                     <div key={mtg.dateUrl} className={`meeting-row ${idx % 2 === 1 ? "bg-gray" : ""} ${idx % 2 === 1 ? "reverse" : ""}`}>
                         <div className="meeting-info">
-                            <h2>{mtg.title}</h2>
+                            <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`}>
+                                <h2>{mtg.title}</h2>
+                            </Link>
                             <div>
                                 <span className="font-bold">{mtg.date}</span>
                                 <span className="font-bold ml-4">{mtg.location}</span>
                             </div>
                             <p className="mt-2">{mtg.description}</p>
                             <div className="meeting-buttons">
+                                <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="button button-light">
+                                    View Meeting
+                                </Link>
                                 <a href={mtg.agendaLink} className="button button-light">
                                     Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
                                 </a>
-                                <a href={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="button button-light">
-                                    Full Report
+                                <a href={mtg.reportLink} className="button button-light">
+                                    Full Report <i className="bi bi-box-arrow-up-right ml-2"></i>
                                 </a>
                                 <button className="button button-light inline-flex h-11 w-11 items-center justify-center" onClick={() => { setEditingIndex(idx); setEditForm(meetings[idx]); setShowEditPopup(true); }}><i className="bi bi-pencil text-lg"></i></button>
                                 <button className="button button-light inline-flex h-11 w-11 items-center justify-center" onClick={() => { setDeleteIndex(idx); setShowDeletePopup(true); }}><i className="bi bi-trash text-lg text-red-600"></i></button>
                             </div>
                         </div>
-                        <div className="meeting-img" />
+                        <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="meeting-img" />
                     </div>
                 ))}
             </div>

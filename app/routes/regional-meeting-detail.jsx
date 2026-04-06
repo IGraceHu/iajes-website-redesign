@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useParams, useLocation } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { Banner } from "../components/graphics";
 import { Popup } from "../components/popup";
 import { Break } from "../components/graphics";
 import "../styles/regional-meetings.css";
@@ -19,30 +20,41 @@ export default function RegionalMeetingDetail() {
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
 
+    const regions = ["JHEASA", "AJCU-NA", "AUSJAL", "Kircher", "AJCU-AP", "AJCU-AM"];
+
     // placeholder meeting information
     const meetingTitle = passedTitle || `Meeting ${meetingDate}`;
     const description = "Faculty members from universities in the Kircher Region play an important role in the International Association of Jesuit Engineering Schools (IAJES) through their active participation in various task forces and projects. Among the key task forces within the region are those focused on energy, which aims to establish a dynamic international network for sustainable and equitable energy access, and the Artificial Intelligence & Humanity task force, dedicated to equipping engineers with the skills to identify and address injustices in artificial intelligence and big data systems. Additionally, the Research & Academic Cooperation task force stands out for its commitment to initiatives like mentoring programs, cooperative PhD programs, and the development of cross-disciplinary skills for scientists and engineers.\n\nAn in-person event for IAJES representatives  in the Kircher Region is scheduled for February 22-23, 2024 in Deusto. This landmark meeting marks a milestone where universities from the region will convene in one location, fostering dialogue and exploring research, exchange, and networking synergies among our institutions. The meeting will focus on discussing ambitious goals and themes, providing a platform for the exchange of experiences in these areas, and creating spaces for community building among the members of the Kircher region.";
 
     const [meetingData, setMeetingData] = useState({
+        region: regionName,
         title: meetingTitle,
         date: meetingDate,
         location: "Santa Clara University",
         description: description,
-        agendaLink: "#",
-        agendaPdf: null,
-        reportPdf: null,
+        agendaLink: "https://example.com/agenda",
+        agendaPdf: { name: "Meeting_Agenda.pdf", url: "agenda.pdf" },
+        reportLink: "https://example.com/report",
+        reportPdf: { name: "Meeting_Report.pdf", url: "report.pdf" },
         images: [],
         videos: []
     });
 
     const [editForm, setEditForm] = useState(meetingData);
     const [errors, setErrors] = useState({ title: false, date: false, location: false });
+    const [previewingPdf, setPreviewingPdf] = useState(null); // "report", "agenda", or null
 
     const editPopupDetails = {
         content: (
             <div className="p-4 max-h-[80vh] overflow-y-auto">
                 <h4>Edit Meeting</h4>
                 <div className="space-y-4 mt-4">
+                    <div>
+                        <label>Region:</label>
+                        <select className="input input-text w-full" value={editForm.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
+                            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                    </div>
                     <div>
                         <label>Title:</label>
                         <input className="input input-text w-full" type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
@@ -66,6 +78,10 @@ export default function RegionalMeetingDetail() {
                     <div>
                         <label>Agenda PDF:</label>
                         <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report Link:</label>
+                        <input className="input input-text w-full" type="url" value={editForm.reportLink} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
                     </div>
                     <div>
                         <label>Meeting Report PDF:</label>
@@ -168,30 +184,19 @@ export default function RegionalMeetingDetail() {
             <Popup id="edit" show={showEditPopup} setShow={setShowEditPopup} details={editPopupDetails} />
             <Popup id="delete" show={showDeletePopup} setShow={setShowDeletePopup} details={deletePopupDetails} />
             <Menu />
-            <div className="relative w-full lg:px-40 px-10 py-20 bg-primary-dark overflow-hidden" style={{ color: "white" }}>
-                <div className="absolute top-0 left-0 w-full z-0">
-                    <div className="relative w-full opacity-100">
-                        <img className="absolute w-50 -top-20 -right-15" src="/assets/landing-disc-2a.svg" />
-                        <img className="absolute w-60 top-15 -left-30 -rotate-20" src="/assets/landing-disc-4b.svg" />
-                    </div>
-                </div>
-                <div className="relative z-1">
-                    <div className="-ml-4 flex w-fit duration-200 hover:-ml-5 hover:text-primary-light">
-                        <i className="bi bi-caret-left-fill"></i>
-                        <a href="/regional-meetings" className="link-back border-b-2 border-transparent hover:border-primary-light ml-1 hover:ml-2">
-                            <strong>REGIONAL MEETINGS</strong>
-                        </a>
-                    </div>
-                    <div className="-ml-4 flex w-fit duration-200 hover:-ml-5 hover:text-primary-light mt-2">
-                        <i className="bi bi-caret-left-fill"></i>
-                        <a href={`/regional-meetings/${regionName}`} className="link-back border-b-2 border-transparent hover:border-primary-light ml-1 hover:ml-2">
-                            <strong>{regionName}</strong>
-                        </a>
-                    </div>
-                    <h1 style={{ color: "white", textTransform: "none !important" }}>{meetingTitle}</h1>
-                    <p>{meetingData.date} - {meetingData.location}</p>
-                </div>
-            </div>
+            <Banner>
+                <a href="/regional-meetings" className="banner-breadcrumb">
+                    <i className="bi bi-caret-left-fill"></i>
+                    <strong>REGIONAL MEETINGS</strong>
+                </a>
+                <br />
+                <a href={`/regional-meetings/${regionName}`} className="banner-breadcrumb">
+                    <i className="bi bi-caret-left-fill"></i>
+                    <strong>{regionName}</strong>
+                </a>
+                <h1 style={{ color: "white" }}>{meetingTitle}</h1>
+                <p>{meetingData.date} - {meetingData.location}</p>
+            </Banner>
 
             <div className="py-20 px-10 lg:px-40">
                 <div className="flex justify-end mb-4">
@@ -200,16 +205,43 @@ export default function RegionalMeetingDetail() {
                 </div>
                 <p>{description}</p>
                 <Break />
-                <div className="mt-10 flex flex-col md:flex-row gap-4">
-                    <div className="w-full">
-                        <h2 className="text-center">Meeting Report</h2>
-                        <div className="pdf-placeholder h-128 bg-gray-light"></div>
+                {(meetingData.reportLink !== "#" || meetingData.reportPdf) && (meetingData.agendaLink !== "#" || meetingData.agendaPdf) && (
+                    <div className="mt-10">
+                        <h2 className="text-center">Meeting Resources</h2>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
+                            <a href={meetingData.reportLink} className="button button-light">
+                                Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                            </a>
+                            {meetingData.reportPdf && (
+                                <button
+                                    className={`button ${previewingPdf === "report" ? "button" : "button-light"}`}
+                                    onClick={() => setPreviewingPdf(previewingPdf === "report" ? null : "report")}
+                                >
+                                    <i className={`bi ${previewingPdf === "report" ? "bi-eye-slash" : "bi-eye"} mr-2`}></i>
+                                    {previewingPdf === "report" ? "Hide" : "Preview"}
+                                </button>
+                            )}
+                            <div class="inline-block h-[80px] min-h-[1em] w-0.5 self-stretch bg-primary-dark"></div>
+                            <a href={meetingData.agendaLink} className="button button-light">
+                                Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                            </a>
+                            {meetingData.agendaPdf && (
+                                <button
+                                    className={`button ${previewingPdf === "agenda" ? "button" : "button-light"}`}
+                                    onClick={() => setPreviewingPdf(previewingPdf === "agenda" ? null : "agenda")}
+                                >
+                                    <i className={`bi ${previewingPdf === "agenda" ? "bi-eye-slash" : "bi-eye"} mr-2`}></i>
+                                    {previewingPdf === "agenda" ? "Hide" : "Preview"}
+                                </button>
+                            )}
+                        </div>
+                        {previewingPdf && (
+                            <div className="mt-6 flex justify-center">
+                                <div className="bg-gray-light w-full lg:max-w-[75%]" style={{ aspectRatio: '8.5 / 11' }}></div>
+                            </div>
+                        )}
                     </div>
-                    <div className="w-full">
-                        <h2 className="text-center">Meeting Agenda</h2>
-                        <div className="pdf-placeholder h-128 bg-gray-light"></div>
-                    </div>
-                </div>
+                )}
 
                 <div className="mt-10">
                     <h1>Gallery</h1>
