@@ -23,10 +23,10 @@ function Carousel() {
     }
   ];
   const carouselEl = [];
-
+  let i = 0;
   carouselContent.map((content) => {
     carouselEl.push(
-      <div className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
+      <div key={i} className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
 
         {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 size-full object-cover" />}
 
@@ -35,7 +35,7 @@ function Carousel() {
         </div>
       </div>
     )
-
+    i++;
   })
 
   const carouselCount = carouselEl.length - 1;
@@ -209,7 +209,7 @@ function HighlightEdit({ index, setShow }) {
     <div className="w-200 text-left">
       <h4>Edit Highlight</h4>
       <form action={formAction} className="mb-5">
-        <label for="title">Title:</label><br />
+        <label htmlFor="title">Title:</label><br />
         <input id="title" name="title" type="text" placeholder="Highlight title" defaultValue={state?.title}
           className={"input-text w-full " + (formRequired?.title && "input-required")}
           onChange={(e) => checkEmpty(e.target.value, "title")} />
@@ -217,7 +217,7 @@ function HighlightEdit({ index, setShow }) {
 
         <br /><br />
 
-        <label for="description">Description:</label><br />
+        <label htmlFor="description">Description:</label><br />
         <textarea id="description" name="description" className={"input input-text w-full h-30"} placeholder="Highlight description" />
 
         <br /><br />

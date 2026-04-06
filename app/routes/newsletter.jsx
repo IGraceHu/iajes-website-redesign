@@ -1,4 +1,5 @@
 import { Menu } from "../components/menu"
+import { Footer } from "../components/footer.jsx"
 import { Subscribe } from "../components/subscribe.jsx"
 import { NewsletterList } from "../components/newsletter-components.jsx"
 import { useState, useMemo } from "react"
@@ -78,13 +79,13 @@ export function NewsletterViewer({ latestDate }) {
                         </div>
                         <div className="w-auto flex flex-col justify-start items-start space-y-5 ml-5">
                             <button className="button w-full aspect-square">
-                                <i class="bi bi-download"></i>
+                                <i className="bi bi-download"></i>
                             </button>
                             <button className="button w-full aspect-square">
-                                <i class="bi bi-link-45deg text-2xl"></i>
+                                <i className="bi bi-link-45deg text-2xl"></i>
                             </button>
                             <button className="button w-full aspect-square">
-                                <i class="bi bi-share-fill"></i>
+                                <i className="bi bi-share-fill"></i>
                             </button>
                         </div>
                     </div>
@@ -200,7 +201,7 @@ export default function Newsletter() {
             <NewsletterViewer latestDate={latestDate} />
             <Subscribe />
             <NewsletterArchive />
-            
+            <Footer />
         </div>
     );
 }

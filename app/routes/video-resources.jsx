@@ -15,6 +15,7 @@ export function meta() {
 const resources = [
     {
         title: "Optimizing industrial processes with CAE",
+        date: new Date("2022-03-25"),
         speaker: "Alejandro López García",
         university: "University of Deusto, Bilbao, Spain",
         speakerDetails: "Lecturer and Programme Leader at the University of Deusto - Research in Computational Mechanics, Fluid Mechanics, Granular matter and powder flow, additive manufacturing, Erosion processes",
@@ -35,8 +36,9 @@ function ResourceCard({resourceInfo}) {
                         <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.videoThumbnail} /> 
                         : 
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
                             <h5 className="relative z-1" style={{color: "var(--color-white)"}}>{resourceInfo.title}</h5>
+                            <p style={{color: "var(--color-white)"}}>{resourceInfo.date.toLocaleDateString()}</p>
                         </div>
                     }
                 </div>
@@ -52,6 +54,7 @@ export default function VideoResources() {
     const isAdmin = true;
     const [showPopup, setShowPopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
+    const today = new Date(Date.now()).toISOString().substring(0, 10);
 
     const popupDetails = {
         content: <div className="md:w-[70vw] h-[80vh]">
@@ -59,7 +62,7 @@ export default function VideoResources() {
             <form className="mb-5 h-[80%] overflow-y-auto">
                 <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
                     <div>
-                        <label for="vid-resource-title">Video resource title:</label><br />
+                        <label htmlFor="vid-resource-title">Video resource title:</label><br />
                         <input id="vid-resource-title" type="text" className="input input-text w-full" />
                     </div>
                     <label>
@@ -67,23 +70,28 @@ export default function VideoResources() {
                         <input id="upload" type="file" />
                         <div className="input-error">This field is required.</div>
                     </label>
+                    <div>
+                        <label htmlFor="vid-resource-date">Video resource date:</label><br />
+                        <input id="vid-resource-date" type="date" className="input input-text w-full" defaultValue={today} />
+                    </div>
                 </div>
+                <br/>
                 
-                <label for="vid-resource-link">Video resource link:</label><br />
+                <label htmlFor="vid-resource-link">Video resource link:</label><br />
                 <input id="vid-resource-link" type="text" className="input input-text w-full" />
                 <br /><br />
-                <label for="vid-resource-desc">Video description:</label><br />
+                <label htmlFor="vid-resource-desc">Video description:</label><br />
                 <textarea id="vid-resource-desc" className="input input-text w-full h-30"></textarea>
                 <br/> <br/>
 
                 <h5>Speaker Details</h5>
                 <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
                     <div>
-                        <label for="vid-resource-speaker-name">Name:</label><br />
+                        <label htmlFor="vid-resource-speaker-name">Name:</label><br />
                         <input id="vid-resource-speaker-name" type="text" className="input input-text w-full" />
                     </div>
                     <div>
-                        <label for="vid-resource-speaker-uni">University:</label><br />
+                        <label htmlFor="vid-resource-speaker-uni">University:</label><br />
                         <input id="vid-resource-speaker-uni" type="text" className="input input-text w-full" />
                     </div>
                 </div>
@@ -94,7 +102,7 @@ export default function VideoResources() {
                     <div className="input-error">This field is required.</div>
                 </label>
                 <br /><br />
-                <label for="vid-resource-speaker-desc">Description:</label><br />
+                <label htmlFor="vid-resource-speaker-desc">Description:</label><br />
                 <textarea id="vid-resource-speaker-desc" className="input input-text w-full h-20"></textarea>
             </form>
         </div>,

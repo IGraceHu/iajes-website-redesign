@@ -1,0 +1,6 @@
+{ 
+  "terminal.integrated.env.windows": {
+    "Path": "C:\\Program Files\\nodejs;${env:Path}"
+  }
+}
+// for j

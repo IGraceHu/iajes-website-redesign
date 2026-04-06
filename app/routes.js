@@ -21,4 +21,5 @@ export default [
     route("webinars", "routes/webinars.jsx"),
     route("video-resources", "routes/video-resources.jsx"),
     route("video-resource/:vidId", "routes/video-resource.jsx"),
+    route("supabasetest", "routes/supabasetest.jsx"),
 ];

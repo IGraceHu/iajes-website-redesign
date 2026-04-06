@@ -78,6 +78,16 @@ export default function StyleGuide() {
                     <h6>Heading 6</h6>
                     <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc in nisi venenatis, faucibus lorem eu, lobortis magna. Donec at ante vel arcu mattis sagittis. Curabitur efficitur ex aliquam sapien dictum fringilla. Vestibulum sagittis sit amet quam in congue. Cras consequat, nibh auctor dapibus ultrices, arcu ex lobortis mi, eu pharetra sem metus eget mi. Sed eget bibendum ipsum. Vivamus bibendum nulla hendrerit ligula facilisis, non euismod mi cursus. Proin nec risus vel elit ullamcorper venenatis. Donec lacinia mi eu nunc vehicula, quis ullamcorper ipsum suscipit. </p>
                     <p>Example for <a href="">inline links</a></p>
+                    <ul>
+                        <li>Unordered list item 1</li>
+                        <li>Unordered list item 2</li>
+                        <li>Unordered list item 3</li>
+                    </ul>
+                    <ol>
+                        <li>Ordered list item 1</li>
+                        <li>Ordered list item 2</li>
+                        <li>Ordered list item 3</li>
+                    </ol>
                 </div>
 
                 <div className="mt-10">
@@ -252,15 +262,15 @@ export default function StyleGuide() {
                     </div>
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-x-10 gap-y-15 my-5">
                         <div className="w-full">
-                            <label for="form-text">Text Input:</label><br />
+                            <label htmlFor="form-text">Text Input:</label><br />
                             <input id="form-text" type="text" className={"input input-text w-full " + formMode} placeholder="Enter text here..." />
                             <div className="input-error">This field is required.</div>
                             <br /><br />
-                            <label for="form-textarea">Textarea Input:</label><br />
+                            <label htmlFor="form-textarea">Textarea Input:</label><br />
                             <textarea id="form-textarea" className={"input input-text w-full " + formMode} placeholder="Enter text here..." />
                             <div className="input-error">Error messages must come after the input.</div>
                             <br /><br />
-                            <label for="form-select">Select:</label><br />
+                            <label htmlFor="form-select">Select:</label><br />
                             <select id="form-select" className={"input input-text w-full " + formMode}>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -272,27 +282,27 @@ export default function StyleGuide() {
 
                         <div>
                             <p>Checkbox</p>
-                            <label for="checkbox1" className="checkbox">
+                            <label htmlFor="checkbox1" className="checkbox">
                                 <input id="checkbox1" type="checkbox" className={formMode} /><p>Checkbox 1</p>
                                 <div className="input-error">This field is required.</div>
                             </label>
-                            <label for="checkbox2" className="checkbox">
+                            <label htmlFor="checkbox2" className="checkbox">
                                 <input id="checkbox2" type="checkbox" className={formMode} /><p>Checkbox 2</p>
                             </label>
-                            <label for="checkbox3" className="checkbox">
+                            <label htmlFor="checkbox3" className="checkbox">
                                 <input id="checkbox3" type="checkbox" className={formMode} /><p>Checkbox 3</p>
                             </label>
                             <br /><br />
 
                             <p>Radio</p>
-                            <label for="radio1" className="radio">
+                            <label htmlFor="radio1" className="radio">
                                 <input id="radio1" type="radio" name="radio" className={formMode} /><p>Radio 1</p>
                                 <div className="input-error">This field is required.</div>
                             </label>
-                            <label for="radio2" className="radio">
+                            <label htmlFor="radio2" className="radio">
                                 <input id="radio2" type="radio" name="radio" className={formMode} /><p>Radio 2</p>
                             </label>
-                            <label for="radio3" className="radio">
+                            <label htmlFor="radio3" className="radio">
                                 <input id="radio3" type="radio" name="radio" className={formMode} /><p>Radio 3</p>
                             </label>
                             <br /><br />

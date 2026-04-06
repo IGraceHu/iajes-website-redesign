@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Menu } from "../components/menu.jsx";
+import { Footer } from "../components/footer.jsx"
 import { NewsletterList, Profile } from "../components/newsletter-components.jsx";
 import { NavLink } from "react-router";
 
@@ -141,8 +142,8 @@ export default function NewsletterDrafts() {
                 </div>
 
                 <div className="mt-5 grid grid-cols-2 gap-5">
-                    <button onClick={addNewsletter} className="button button-light w-full">Create Newsletter <i class="bi bi-plus-lg"></i></button>
-                    <button className="button button-light w-full flex justify-center gap-2">Start from Upload <i class="bi bi-upload"></i></button>
+                    <button onClick={addNewsletter} className="button button-light w-full">Create Newsletter <i className="bi bi-plus-lg"></i></button>
+                    <button className="button button-light w-full flex justify-center gap-2">Start from Upload <i className="bi bi-upload"></i></button>
                 </div>
                 <div className="mt-5 flex justify-center space-x-2">
                     <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button"><i className="bi bi-arrow-left-short"></i> Prev</button>
@@ -152,6 +153,8 @@ export default function NewsletterDrafts() {
                     <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button">Next <i className="bi bi-arrow-right-short"></i></button>
                 </div>
             </main>
+
+            <Footer />
         </div>
     );
 }
