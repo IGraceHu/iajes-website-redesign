@@ -13,9 +13,12 @@ import { useEffect } from 'react';
     //     text - Required. A string with the button text
     //     onclick - Required. A function that clicking the button will execute
     //
+    // closePopup - Optional. A function that runs when the close button is clicked.
+    //     Note: This does not apply to closeOnBlur. If the user clicks outside of the popup, it will just close normally
+    //
     // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
 
-export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, nested=false, children}) {
+export function Popup({id, className, show, setShow, buttons, closePopup=null, stayOnBlur=false, nested=false, children}) {
 
     const popupId = "popup-" + id;
     useEffect(() => {
@@ -47,10 +50,15 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
         }
     }, [show])
 
-    function closePopup() {
+    function defaultClosePopup() {
         setShow(false);
         show = false;
     }
+
+    if (closePopup == null) {
+        closePopup = defaultClosePopup;
+    }
+    
     
     const buttonsEl = [];
     let i = 0;
@@ -76,7 +84,7 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
                 </div>
             </div>
 
-            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => {if (!stayOnBlur) {closePopup()}}} ></div>
+            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => {if (!stayOnBlur) {defaultClosePopup()}}} ></div>
         </div>
     )
 }

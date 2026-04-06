@@ -3,7 +3,7 @@ import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { PopupForm } from "../components/popup";
+import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import "../styles/video-resources.css";
 
@@ -83,7 +83,7 @@ function ResourceCard({resourceInfo}) {
 export default function VideoResources({ loaderData }) {
     const navigate = useNavigate();
     const isAdmin = true;
-    const [showPopup, setShowPopup] = useState(false);
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
     const userId = "";
 
@@ -100,6 +100,7 @@ export default function VideoResources({ loaderData }) {
 
 
     // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
+    const [showResolvePopup, setShowResolvePopup] = useState(false);
 
     const [formRequired, setFormRequired] = useState({
         vidResourceTitle: "",
@@ -128,30 +129,44 @@ export default function VideoResources({ loaderData }) {
 
         const create = await createVideoResource(formData);
         if (create === null) {
-            setShowPopup(false);
-            navigate(0);
+            setShowResolvePopup(true);
         } else {
             setHasError(true);
         }
     }
 
-    function handleShowPopupForm() {
+    function handleShowCreatePopupForm() {
         // This resets formRequired so that there are no error messages when the form is reloaded
         setFormRequired({
             vidResourceTitle: "",
             vidResourceLink: "",
             vidResourceSpeakerName: ""
         })
-        setShowPopup(true);
+        setShowCreatePopup(true);
     }
 
-    const today = new Date(Date.now()).toISOString().substring(0,10);
+    const today = new Date();
+
+    let day = today.getDate();
+    let month = today.getMonth() + 1;
+    let year = today.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    const todayString = `${year}\-${month}\-${day}`
+
+    function closeResolvePopup() {
+        setShowResolvePopup(false);
+        setShowCreatePopup(false);
+        navigate(0);
+    }
 
     return (
         <>
             { isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+                    <PopupForm id="video-resource" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError}>
                         <h4>Create new video resource</h4>
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
@@ -160,7 +175,7 @@ export default function VideoResources({ loaderData }) {
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
                                 <label for="vid-resource-date">Video resource date:</label><br />
-                                <input id="vid-resource-date" name="vid-resource-date" type="date" className="input input-text w-full" defaultValue={today} />
+                                <input id="vid-resource-date" name="vid-resource-date" type="date" className="input input-text w-full" defaultValue={todayString} />
                             </div>
                             <label>
                                 Video resource thumbnail image:
@@ -204,13 +219,16 @@ export default function VideoResources({ loaderData }) {
                             <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker descrption..."></textarea>
                         </fieldset>
                     </PopupForm>
+                    <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
+                        <br/><p className="m-2">New video resource created!</p>
+                    </Popup>
                 </div>
             }
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
                     <h1>Video Resources</h1>
-                    { isAdmin && <button className="button" onClick={handleShowPopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new video resource</button> }
+                    { isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new video resource</button> }
                 </div>
                 <p>
                     Here you will find some videos provided by members of our network that you can use for your own training and also share with your students.
