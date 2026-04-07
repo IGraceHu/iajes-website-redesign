@@ -11,20 +11,6 @@ export function meta() {
   ];
 }
 
-const resourcesTemp = [
-    {
-        id: 1,
-        title: "Optimizing Industrial Processes with CAE",
-        date: new Date("2022-03-25"),
-        speaker: "Alejandro López García",
-        university: "University of Deusto, Bilbao, Spain",
-        speakerDetails: "Lecturer and Programme Leader at the University of Deusto - Research in Computational Mechanics, Fluid Mechanics, Granular matter and powder flow, additive manufacturing, Erosion processes",
-        speakerImg: "https://lh3.googleusercontent.com/sitesv/APaQ0SQ_f2Xs3xgWvX0lZlmpQLezeSdExHZBy7Rugb0t4Ba1Q9fTG0FzhdgQjN67XvFLsIFX5vPgFXkoBb5GC57L8ZAxKEmlg2bMkg1zPVDj0BnbaeqWTWFCJnwk1cOCiN9V8WQXYX8CBc93CHb8YGo_GYGTxM4GP9qU6BnO76gN82KnbcqNeem7xtUwp-syEIx2i3DPhCsrzZ1MO6wQZ0_45VFbS5Nr7Te3gJDc=w1280",
-        video: "https://drive.google.com/file/d/1gd2J8PqdCEGIMtpfd-eJ-ju70iUReXoQ/preview",
-        desc: "How can we improve industrial processes with Computer Aided Engineering?"
-    }
-]
-
 async function getVideoResource(resourceId) {
     const { data, error } = await supabase
         .from('video resources')
@@ -34,7 +20,6 @@ async function getVideoResource(resourceId) {
 }
 
 export async function loader({ params }) {
-  const found = resourcesTemp.find((vidInf) => vidInf.id == params.vidId);
   const vid = await getVideoResource(params.vidId);
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
   vid.title = vid.title || "";
