@@ -32,7 +32,7 @@ const resources = [
 async function getVideoResources() {
     const { data, error } = await supabase
         .from('video resources')
-        .select()
+        .select('id, title, date, speaker, speaker_university, video_thumbnail')
     return data || error;
 }
 
@@ -58,12 +58,13 @@ async function createVideoResource(formData) {
 }
 
 function ResourceCard({resourceInfo}) {
+    resourceInfo.video_thumbnail = (resourceInfo.video_thumbnail == "{}") ? null : resourceInfo.video_thumbnail;
     return (
         <div className="resource-card">
             <a href={"video-resource/" + resourceInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
-                    { resourceInfo?.videoThumbnail ? 
-                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.videoThumbnail} /> 
+                    { resourceInfo.video_thumbnail ? 
+                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} /> 
                         : 
                         <div className="relative w-full h-full p-5">
                             <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
@@ -74,7 +75,7 @@ function ResourceCard({resourceInfo}) {
                 </div>
                 <h6>{resourceInfo.title}</h6>
                 <p className="font-semibold text-black"><i>{resourceInfo.speaker}</i></p>
-                <p className="text-sm text-disabled-light"><i>{resourceInfo.university}</i></p>
+                <p className="text-sm text-disabled-light"><i>{resourceInfo.speaker_university}</i></p>
             </a>
         </div>
     )
@@ -87,12 +88,12 @@ export default function VideoResources({ loaderData }) {
     const [currentPage, setCurrentPage] = useState(0);
     const userId = "";
 
-    const vidResources = loaderData.sort(function(a,b) {return new Date(b.date) - new Date(a.date)})
+    const videoResourcesData = loaderData.sort(function(a,b) {return new Date(b.date) - new Date(a.date)});
 
     const videoResources = [];
     for (let i = (currentPage * 6); i < currentPage + 6; i++) {
-        if (i < vidResources.length) {
-            videoResources.push(<ResourceCard key={vidResources[i].id} resourceInfo={vidResources[i]} />)
+        if (i < videoResourcesData.length) {
+            videoResources.push(<ResourceCard key={videoResourcesData[i].id} resourceInfo={videoResourcesData[i]} />)
         } else {
             break;
         }
@@ -236,7 +237,7 @@ export default function VideoResources({ loaderData }) {
                 <div className="my-5 grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-x-5 gap-y-7">
                     {videoResources}
                 </div>
-                <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={resources.length} itemsPerPage={6} pageRange={5} />
+                <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={videoResourcesData.length} itemsPerPage={6} pageRange={5} />
             </div>
             <Footer />
         </>

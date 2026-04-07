@@ -1,3 +1,4 @@
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
@@ -24,19 +25,27 @@ const resourcesTemp = [
     }
 ]
 
+async function getVideoResource(resourceId) {
+    const { data, error } = await supabase
+        .from('video resources')
+        .select()
+        .eq('id', resourceId)
+    return data[0] || error;
+}
 
 export async function loader({ params }) {
   const found = resourcesTemp.find((vidInf) => vidInf.id == params.vidId);
-  const vid = found || {};
+  const vid = await getVideoResource(params.vidId);
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
   vid.title = vid.title || "";
   vid.date = new Date(vid.date) || "";
   vid.speaker = vid.speaker || "";
-  vid.univeristy = vid.university || "";
-  vid.speakerDetails = vid.speakerDetails || "";
-  vid.speakerImg = vid.speakerImg || "";
-  vid.video = vid.video || null;
-  vid.desc = vid.desc || "";
+  vid.speaker_university = vid.speaker_university || "";
+  vid.speaker_details = vid.speaker_details || "";
+  vid.speaker_image = (vid.speaker_image == "{}") ? null : vid.speaker_image;
+  vid.video_url = vid.video_url || null;
+  vid.video_thumbnail = (vid.video_thumbnail == "{}") ? null : vid.video_thumbnail;
+  vid.video_description = vid.video_description || "";
   return vid;
 }
 
@@ -59,17 +68,17 @@ export default function VideoResource({ loaderData }) {
 
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                        <iframe src={loaderData.video} width="100%" height="100%"></iframe>
+                        <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
                 </div>
-                <p>{loaderData.desc}</p>
+                <p>{loaderData.video_description}</p>
 
                 <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
-                    <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speakerImg} alt="" />
+                    { loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" /> }
                     <div className="w-full md:w-70 shrink-0 grow-0 m-3">
                         <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
-                        <p className="text-disabled-light">{loaderData.university}</p>
+                        <p className="text-disabled-light">{loaderData.speaker_university}</p>
                     </div>
-                    <p>{loaderData.speakerDetails}</p>
+                    <p>{loaderData.speaker_details}</p>
                 </div>
                 
             </div>
