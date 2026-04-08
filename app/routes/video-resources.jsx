@@ -5,6 +5,7 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
+import { updateRequired } from "../helpers/form";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -156,15 +157,23 @@ export default function VideoResources({ loaderData }) {
             setHasError(true);
         }
     }
-
+    
+    // This resets formRequired so that there are no error messages when the form is reloaded
     function handleShowCreatePopupForm() {
-        // This resets formRequired so that there are no error messages when the form is reloaded
         setFormRequired({
             vidResourceTitle: "",
             vidResourceLink: "",
             vidResourceSpeakerName: ""
         })
         setShowCreatePopup(true);
+    }
+
+    // This resolves required fields once fields are no longer empty
+    function checkEmpty(value, inputName) {
+        const updatedFormRequired = updateRequired(value, inputName, formRequired);
+        if (updatedFormRequired != formRequired) {
+          setFormRequired(updatedFormRequired);
+        }
     }
 
     const today = new Date();
@@ -193,7 +202,10 @@ export default function VideoResources({ loaderData }) {
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
                                 <label htmlFor="vid-resource-title">Video resource title:</label><br />
-                                <input id="vid-resource-title" name="vid-resource-title" type="text" className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")} placeholder="Video title" />
+                                <input id="vid-resource-title" name="vid-resource-title" type="text" 
+                                       className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")} 
+                                       placeholder="Video title"
+                                       onChange={(e) => checkEmpty(e.target.value, "vidResourceTitle")} />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="vid-resource-date">Video resource date:</label><br />
@@ -209,7 +221,10 @@ export default function VideoResources({ loaderData }) {
                         <div className="relative">
                             <label htmlFor="vid-resource-link">Video resource link:</label><br />
                             <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
-                            <input id="vid-resource-link" name="vid-resource-link" type="text" className={"input input-text w-full " + (formRequired?.vidResourceLink && "input-required")} placeholder="Video link"  />
+                            <input id="vid-resource-link" name="vid-resource-link" type="text" 
+                                   className={"input input-text w-full " + (formRequired?.vidResourceLink && "input-required")} 
+                                   placeholder="Video link"
+                                   onChange={(e) => checkEmpty(e.target.value, "vidResourceLink")}  />
                             <div className="input-error">This field is required.</div>
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
@@ -222,7 +237,10 @@ export default function VideoResources({ loaderData }) {
                             <div className="mt-3 grid md:grid-cols-2 grid-cols-1 gap-5">
                                 <div>
                                     <label htmlFor="vid-resource-speaker-name">Name:</label><br />
-                                    <input id="vid-resource-speaker-name" name="vid-resource-speaker-name" type="text" className={"input input-text w-full " + (formRequired?.vidResourceSpeakerName && "input-required")} placeholder="Name" />
+                                    <input id="vid-resource-speaker-name" name="vid-resource-speaker-name" type="text" 
+                                           className={"input input-text w-full " + (formRequired?.vidResourceSpeakerName && "input-required")}
+                                           placeholder="Name" 
+                                           onChange={(e) => checkEmpty(e.target.value, "vidResourceSpeakerName")} />
                                     <div className="input-error">This field is required.</div>
                                 </div>
                                 <div>
