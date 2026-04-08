@@ -21,8 +21,30 @@ async function getVideoResources() {
     return data || error;
 }
 
+async function getIsAdmin(userId) {
+    const { data, error } = await supabase
+        .from('users')
+        .select('role')
+        .eq(id, userId);
+    if (data[0]) {
+        return data[0].id == "admin";
+    }
+    return error;
+}
+
 export async function loader({ params }) {
-  return getVideoResources();
+    let isAdmin = false;
+    let errorMsg;
+    const { data, error } = await supabase.auth.getSession()
+    if (error) {
+        errorMsg = error.message;
+    } else {
+        errorMsg = data;
+        // isAdmin = await getIsAdmin(data.session.user.id);
+    }
+    
+    const videoResources = await getVideoResources();
+    return {isAdmin: isAdmin, videoResources: videoResources, errorMsg: errorMsg};
 }
 
 async function createVideoResource(formData) {
@@ -68,11 +90,15 @@ function ResourceCard({resourceInfo}) {
 
 export default function VideoResources({ loaderData }) {
     const navigate = useNavigate();
-    const isAdmin = true;
+    // const [currentUser, setCurrentUser] = useState(null);
+    // const loggedIn = !!currentUser;
+    const [isAdmin, setIsAdmin] = useState(false);
     const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
-    const videoResourcesData = loaderData.sort(function(a,b) {return new Date(b.date) - new Date(a.date)});
+    console.log(loaderData.errorMsg);
+
+    const videoResourcesData = loaderData.videoResources.sort(function(a,b) {return new Date(b.date) - new Date(a.date)});
 
     const videoResources = [];
     for (let i = (currentPage * 6); i < currentPage + 6; i++) {
@@ -155,11 +181,11 @@ export default function VideoResources({ loaderData }) {
                         <h4>Create new video resource</h4>
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
-                                <label for="vid-resource-title">Video resource title:</label><br />
+                                <label htmlFor="vid-resource-title">Video resource title:</label><br />
                                 <input id="vid-resource-title" name="vid-resource-title" type="text" className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")} placeholder="Video title" />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
-                                <label for="vid-resource-date">Video resource date:</label><br />
+                                <label htmlFor="vid-resource-date">Video resource date:</label><br />
                                 <input id="vid-resource-date" name="vid-resource-date" type="date" className="input input-text w-full" defaultValue={todayString} />
                             </div>
                             <label>
@@ -170,12 +196,12 @@ export default function VideoResources({ loaderData }) {
                         </div>
                         
                         <div className="relative">
-                            <label for="vid-resource-link">Video resource link:</label><br />
+                            <label htmlFor="vid-resource-link">Video resource link:</label><br />
                             <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
                             <input id="vid-resource-link" name="vid-resource-link" type="text" className={"input input-text w-full " + (formRequired?.vidResourceLink && "input-required")} placeholder="Video link"  />
                             <div className="input-error">This field is required.</div>
                             <br /><br />
-                            <label for="vid-resource-desc">Video description:</label><br />
+                            <label htmlFor="vid-resource-desc">Video description:</label><br />
                             <textarea id="vid-resource-desc" name="vid-resource-desc" className="input input-text w-full h-30" placeholder="Enter your video description..."></textarea>
                             <br/> <br/>
                         </div>
@@ -184,12 +210,12 @@ export default function VideoResources({ loaderData }) {
                             <div className="text-sm font-semibold text-secondary-dark">Speaker Details</div>
                             <div className="mt-3 grid md:grid-cols-2 grid-cols-1 gap-5">
                                 <div>
-                                    <label for="vid-resource-speaker-name">Name:</label><br />
+                                    <label htmlFor="vid-resource-speaker-name">Name:</label><br />
                                     <input id="vid-resource-speaker-name" name="vid-resource-speaker-name" type="text" className={"input input-text w-full " + (formRequired?.vidResourceSpeakerName && "input-required")} placeholder="Name" />
                                     <div className="input-error">This field is required.</div>
                                 </div>
                                 <div>
-                                    <label for="vid-resource-speaker-uni">University:</label><br />
+                                    <label htmlFor="vid-resource-speaker-uni">University:</label><br />
                                     <input id="vid-resource-speaker-uni" name="vid-resource-speaker-uni" type="text" className="input input-text w-full" placeholder="University" />
                                 </div>
                             </div>
@@ -200,7 +226,7 @@ export default function VideoResources({ loaderData }) {
                                 <div className="input-error">This field is required.</div>
                             </label>
                             <br /><br />
-                            <label for="vid-resource-speaker-desc">Description:</label><br />
+                            <label htmlFor="vid-resource-speaker-desc">Description:</label><br />
                             <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker descrption..."></textarea>
                         </fieldset>
                     </PopupForm>
