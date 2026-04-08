@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
@@ -25,26 +25,17 @@ async function getIsAdmin(userId) {
     const { data, error } = await supabase
         .from('users')
         .select('role')
-        .eq(id, userId);
+        .eq("id", userId);
+    
     if (data[0]) {
         return data[0].id == "admin";
     }
     return error;
 }
 
-export async function loader({ params }) {
-    let isAdmin = false;
-    let errorMsg;
-    const { data, error } = await supabase.auth.getSession()
-    if (error) {
-        errorMsg = error.message;
-    } else {
-        errorMsg = data;
-        // isAdmin = await getIsAdmin(data.session.user.id);
-    }
-    
+export async function loader({ params }) {    
     const videoResources = await getVideoResources();
-    return {isAdmin: isAdmin, videoResources: videoResources, errorMsg: errorMsg};
+    return {videoResources: videoResources};
 }
 
 async function createVideoResource(formData) {
@@ -90,13 +81,33 @@ function ResourceCard({resourceInfo}) {
 
 export default function VideoResources({ loaderData }) {
     const navigate = useNavigate();
-    // const [currentUser, setCurrentUser] = useState(null);
-    // const loggedIn = !!currentUser;
     const [isAdmin, setIsAdmin] = useState(false);
     const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
-    console.log(loaderData.errorMsg);
+    useEffect(() => {
+
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+          if (session?.user.id) {
+            setIsAdmin(getIsAdmin(session.user.id));
+          } else {
+            setIsAdmin(false);
+          }
+        });
+    
+        // Check current session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session?.user.id) {
+            setIsAdmin(getIsAdmin(session.user.id));
+          } else {
+            setIsAdmin(false);
+          }
+        });
+
+    
+        return () => subscription.unsubscribe();
+      }, []);
 
     const videoResourcesData = loaderData.videoResources.sort(function(a,b) {return new Date(b.date) - new Date(a.date)});
 
