@@ -4,11 +4,12 @@ import { Popup, PopupForm } from "../components/popup";
 import { Footer } from "../components/footer";
 import { H1Middle, H1Left } from "../components/graphics";
 import { updateRequired } from "../helpers/form";
+import { getImageUrl, fetchEventImages } from "../helpers/supabaseStorage";
 import "../styles/landing.css";
 
 
 function Carousel() {
-  const carouselContent = [
+  const [carouselContent, setCarouselContent] = useState([
     {
       text: "Lorum ipsum 1"
     },
@@ -21,7 +22,17 @@ function Carousel() {
     {
       text: "Lorum ipsum 4"
     }
-  ];
+  ]);
+
+  // Load banner image from Supabase
+  useEffect(() => {
+    const bannerUrl = getImageUrl("banner1.png");
+    setCarouselContent(prev => [
+      { ...prev[0], imageURL: bannerUrl },
+      ...prev.slice(1)
+    ]);
+  }, []);
+
   const carouselEl = [];
   let i = 0;
   carouselContent.map((content) => {
@@ -83,28 +94,36 @@ function Carousel() {
 }
 
 function AboutUs() {
-  const cardsInfo = [
-    {
-      title: "card 1",
-      url: "tes",
-      imageURL: null
-    },
-    {
-      title: "card 2"
-    },
-    {
-      title: "card 3"
-    },
-    {
-      title: "card 4"
-    },
-    {
-      title: "card 5"
-    },
-    {
-      title: "card 6"
+  const [cardsInfo, setCardsInfo] = useState([
+    { title: "card 1", url: "tes", imageURL: null },
+    { title: "card 2" },
+    { title: "card 3" },
+    { title: "card 4" },
+    { title: "card 5" },
+    { title: "card 6" }
+  ]);
+
+  // Load event images from Supabase
+  useEffect(() => {
+    async function loadEventImages() {
+      const eventFilenames = await fetchEventImages();
+      
+      // Update cardsInfo with event images
+      const updatedCards = cardsInfo.map((card, index) => {
+        if (index < eventFilenames.length) {
+          return {
+            ...card,
+            imageURL: getImageUrl(eventFilenames[index])
+          };
+        }
+        return card;
+      });
+      
+      setCardsInfo(updatedCards);
     }
-  ];
+
+    loadEventImages();
+  }, []);
 
   const cardsEl = [];
   cardsInfo.map((content) => {
