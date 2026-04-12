@@ -2,7 +2,12 @@ import { Menu } from "../components/menu"
 import { Footer } from "../components/footer.jsx"
 import { Subscribe } from "../components/subscribe.jsx"
 import { NewsletterList } from "../components/newsletter-components.jsx"
+import { Document, Page, pdfjs } from "react-pdf"
+import { getPdfUrl } from "../helpers/supabaseStorage.js"
 import { useState, useMemo } from "react"
+
+// Set up the worker for PDF rendering
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
 
 // Shared mock archive used for viewer and archive controls
 const MOCK_ARCHIVE = [
@@ -67,6 +72,27 @@ export function meta() {
 }
 
 export function NewsletterViewer({ latestDate }) {
+    const [numPages, setNumPages] = useState(null);
+    const [pageNumber, setPageNumber] = useState(1);
+    const pdfUrl = getPdfUrl("sample-local-pdf.pdf");
+
+    function onDocumentLoadSuccess({ numPages }) {
+        setNumPages(numPages);
+    }
+
+    function handleDownloadPdf() {
+        if (!pdfUrl) {
+            console.error("PDF URL not available");
+            return;
+        }
+        const link = document.createElement("a");
+        link.href = pdfUrl;
+        link.download = "IAJES-Newsletter.pdf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
     return (
         <>
             <div className="flex flex-col items-center lg:px-40 px-10 py-20 duration-200">
@@ -74,11 +100,32 @@ export function NewsletterViewer({ latestDate }) {
                     <h1>IAJES News</h1>
                     <div className="text-sm text-gray-dark">{latestDate || "—"}</div>
                     <div className="flex flex-row justify-center">
-                        <div className="h-[90vh] w-full bg-gray-light rounded-md">
-                            <p>Newsletter PDF Viewer</p>
+                        <div className="h-[90vh] w-full bg-gray-light rounded-md overflow-auto">
+                            {pdfUrl ? (
+                                <Document file={pdfUrl} onLoadSuccess={onDocumentLoadSuccess}>
+                                    <Page pageNumber={pageNumber} width={800} />
+                                </Document>
+                            ) : (
+                                <p className="p-5">Error loading PDF</p>
+                            )}
                         </div>
                         <div className="w-auto flex flex-col justify-start items-start space-y-5 ml-5">
-                            <button className="button w-full aspect-square">
+                            <button
+                                className="button w-full aspect-square"
+                                onClick={() => setPageNumber((prev) => Math.max(1, prev - 1))}
+                            >
+                                <i className="bi bi-arrow-up-short"></i>
+                            </button>
+                            <span className="text-xs text-center w-full">
+                                {pageNumber} / {numPages || "?"}
+                            </span>
+                            <button
+                                className="button w-full aspect-square"
+                                onClick={() => setPageNumber((prev) => Math.min(numPages || prev, prev + 1))}
+                            >
+                                <i className="bi bi-arrow-down-short"></i>
+                            </button>
+                            <button className="button w-full aspect-square" onClick={handleDownloadPdf}>
                                 <i className="bi bi-download"></i>
                             </button>
                             <button className="button w-full aspect-square">

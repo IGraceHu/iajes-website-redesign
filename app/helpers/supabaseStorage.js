@@ -48,3 +48,13 @@ export async function fetchEventImages() {
     return [];
   }
 }
+
+/**
+ * Generate a public Supabase storage URL for a PDF file
+ * @param {string} filename - The name of the PDF file (e.g., "sample-local-pdf.pdf")
+ * @returns {string} The full Supabase storage URL
+ */
+export function getPdfUrl(filename) {
+  const { data } = supabase.storage.from("newsletter").getPublicUrl(`current/${filename}`);
+  return data?.publicUrl || "";
+}
