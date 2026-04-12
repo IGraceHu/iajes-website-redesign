@@ -1,7 +1,7 @@
 import { supabase } from "../supabase";
 
-const BUCKET_NAME = "test";
-const FOLDER_NAME = "landing";
+const BUCKET_NAME = "landing";
+const SUPABASE_URL = "https://mnjmyajjyxaoemhexhyt.supabase.co";
 
 /**
  * Generate a public Supabase storage URL for a file
@@ -9,12 +9,20 @@ const FOLDER_NAME = "landing";
  * @returns {string} The full Supabase storage URL
  */
 export function getImageUrl(filename) {
-  const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`${FOLDER_NAME}/${filename}`);
-  return data?.publicUrl || "";
+  return `${SUPABASE_URL}/storage/v1/object/public/${BUCKET_NAME}/${filename}`;
 }
 
 /**
- * Fetch all event images from the landing folder
+ * Generate a public Supabase storage URL for a PDF file
+ * @param {string} filename - The name of the PDF file (e.g., "sample-local-pdf.pdf")
+ * @returns {string} The full Supabase storage URL
+ */
+export function getPdfUrl(filename) {
+  return `${SUPABASE_URL}/storage/v1/object/public/newsletter/current/${filename}`;
+}
+
+/**
+ * Fetch all event images from the landing bucket
  * Images are expected to follow the pattern: event1.png, event2.png, etc.
  * @returns {Promise<Array>} Array of image filenames sorted numerically
  */
@@ -22,7 +30,7 @@ export async function fetchEventImages() {
   try {
     const { data, error } = await supabase.storage
       .from(BUCKET_NAME)
-      .list(FOLDER_NAME, {
+      .list("", {
         limit: 100,
         offset: 0,
         sortBy: { column: "name", order: "asc" }
@@ -47,14 +55,4 @@ export async function fetchEventImages() {
     console.error("Error fetching event images:", error);
     return [];
   }
-}
-
-/**
- * Generate a public Supabase storage URL for a PDF file
- * @param {string} filename - The name of the PDF file (e.g., "sample-local-pdf.pdf")
- * @returns {string} The full Supabase storage URL
- */
-export function getPdfUrl(filename) {
-  const { data } = supabase.storage.from("newsletter").getPublicUrl(`current/${filename}`);
-  return data?.publicUrl || "";
 }
