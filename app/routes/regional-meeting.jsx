@@ -18,37 +18,44 @@ const regionalData = {
         name: "JHEASA",
         nameFull: "Jesuit Higher Education in South Asia",
         count: 60,
+        location: "South Asia",
     },
     "AJCU-NA": {
         name: "AJCU - NA",
         nameFull: "Association of Jesuit Colleges and Universities of North America",
         count: 30,
+        location: "United States, District of Columbia, District of Belize, Canada",
     },
     AUSJAL: {
         name: "AUSJAL",
         nameFull: "Association of Universities Entrusted to the Society of Jesus in Latin America",
         count: 30,
+        location: "Latin America",
     },
     Kircher: {
         name: "Kircher",
         nameFull: "Kircher Network - Jesuit Higher Education in Europe and the Near East",
         count: 28,
+        location: "Europe, Near East",
     },
     "AJCU-AP": {
         name: "AJCU - AP",
         nameFull: "Association of Jesuit Colleges and Universities in Asia Pacific",
         count: 19,
+        location: "East Asia and Oceania",
     },
     "AJCU-AM": {
         name: "AJCU - AM",
         nameFull: "Association of Jesuit Colleges and Universities of Africa and Madagascar",
         count: 10,
+        location: "Africa, Madagascar",
     },
 };
 
 export default function RegionalMeeting() {
     const { regionName } = useParams();
     const region = regionalData[regionName];
+    const canEdit = true; // For testing, always show edit buttons
 
     if (!region) {
         return (
@@ -349,39 +356,42 @@ export default function RegionalMeeting() {
                 </a>
                 <h1 style={{ color: "white" }}>{region.name}</h1>
                 <p>{region.nameFull}</p>
+                <div className="regional-meeting-banner-meta">
+                    <p>{region.location}</p>
+                    <p>{region.count} Universities</p>
+                </div>
             </Banner>
 
-            <div className="py-20 px-10 lg:px-40 duration-200">
-                <div className="flex justify-end mb-4">
-                    <button className="button button-light" onClick={() => { setAddForm({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportLink: '', reportPdf: null, images: [], videos: [] }); setShowAddPopup(true); }}>Add Meeting <i className="bi bi-plus ml-1"></i></button>
+            <div className="py-20 px-0 duration-200">
+                <div className="flex justify-end px-10 lg:px-40 mb-4">
+                    {canEdit && <button className="button button-light" onClick={() => { setAddForm({ region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportLink: '', reportPdf: null, images: [], videos: [] }); setShowAddPopup(true); }}>Add Meeting <i className="bi bi-plus ml-1"></i></button>}
                 </div>
                 {/* meeting rows */}
                 {meetings.map((mtg, idx) => (
-                    <div key={mtg.dateUrl} className={`meeting-row ${idx % 2 === 1 ? "bg-gray" : ""} ${idx % 2 === 1 ? "reverse" : ""}`}>
-                        <div className="meeting-info">
-                            <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`}>
-                                <h2>{mtg.title}</h2>
-                            </Link>
-                            <div>
-                                <span className="font-bold">{mtg.date}</span>
-                                <span className="font-bold ml-4">{mtg.location}</span>
-                            </div>
-                            <p className="mt-2">{mtg.description}</p>
-                            <div className="meeting-buttons">
-                                <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="button button-light">
-                                    View Meeting
+                    <div key={mtg.dateUrl} className={`meeting-row-wrapper ${idx % 2 === 1 ? "bg-slate-100" : ""}`}>
+                        <div className={`meeting-row ${idx % 2 === 1 ? "reverse" : ""} px-10 lg:px-40`}>
+                            <div className="meeting-info">
+                                <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`}>
+                                    <h2>{mtg.title}</h2>
                                 </Link>
-                                <a href={mtg.agendaLink} className="button button-light">
-                                    Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
-                                </a>
-                                <a href={mtg.reportLink} className="button button-light">
-                                    Full Report <i className="bi bi-box-arrow-up-right ml-2"></i>
-                                </a>
-                                <button className="button button-light inline-flex h-11 w-11 items-center justify-center" onClick={() => { setEditingIndex(idx); setEditForm(meetings[idx]); setShowEditPopup(true); }}><i className="bi bi-pencil text-lg"></i></button>
-                                <button className="button button-light inline-flex h-11 w-11 items-center justify-center" onClick={() => { setDeleteIndex(idx); setShowDeletePopup(true); }}><i className="bi bi-trash text-lg text-red-600"></i></button>
+                                <div>
+                                    <span className="font-bold">{mtg.date}</span>
+                                    <span className="font-bold ml-4">{mtg.location}</span>
+                                </div>
+                                <p className="mt-2">{mtg.description}</p>
+                                <div className="meeting-buttons">
+                                    <a href={mtg.agendaLink} className="button">
+                                        Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                    </a>
+                                    <a href={mtg.reportLink} className="button">
+                                        Full Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                    </a>
+                                    {canEdit && <button className="button inline-flex h-11 w-11 items-center justify-center" onClick={() => { setEditingIndex(idx); setEditForm(meetings[idx]); setShowEditPopup(true); }}><i className="bi bi-pencil text-lg"></i></button>}
+                                    {canEdit && <button className="button button-delete inline-flex h-11 w-11 items-center justify-center" onClick={() => { setDeleteIndex(idx); setShowDeletePopup(true); }}><i className="bi bi-trash text-lg"></i></button>}
+                                </div>
                             </div>
+                            <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="meeting-img" />
                         </div>
-                        <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="meeting-img" />
                     </div>
                 ))}
             </div>

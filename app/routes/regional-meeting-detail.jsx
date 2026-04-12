@@ -17,6 +17,7 @@ export default function RegionalMeetingDetail() {
     const { search } = useLocation();
     const query = new URLSearchParams(search);
     const passedTitle = query.get("title");
+    const canEdit = true; // For testing, always show edit buttons
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [showDeletePopup, setShowDeletePopup] = useState(false);
 
@@ -200,8 +201,8 @@ export default function RegionalMeetingDetail() {
 
             <div className="py-20 px-10 lg:px-40">
                 <div className="flex justify-end mb-4">
-                    <button className="button button-light" onClick={() => setShowEditPopup(true)}>Edit Meeting <i className="bi bi-pencil ml-1"></i></button>
-                    <button className="button button-light ml-4" onClick={() => setShowDeletePopup(true)}>Delete Meeting <i className="bi bi-trash ml-1"></i></button>
+                    {canEdit && <button className="button button-light" onClick={() => setShowEditPopup(true)}>Edit Meeting <i className="bi bi-pencil ml-1"></i></button>}
+                    {canEdit && <button className="button button-light button-delete ml-4" onClick={() => setShowDeletePopup(true)}>Delete Meeting <i className="bi bi-trash ml-1"></i></button>}
                 </div>
                 <p>{description}</p>
                 <Break />
@@ -221,7 +222,7 @@ export default function RegionalMeetingDetail() {
                                     {previewingPdf === "report" ? "Hide" : "Preview"}
                                 </button>
                             )}
-                            <div class="inline-block h-[80px] min-h-[1em] w-0.5 self-stretch bg-primary-dark"></div>
+                            <div class="hidden min-[768px]:inline-block h-[80px] min-h-[1em] w-0.5 self-stretch bg-primary-dark"></div>
                             <a href={meetingData.agendaLink} className="button button-light">
                                 Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
                             </a>

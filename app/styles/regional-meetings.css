@@ -30,10 +30,6 @@
     margin-bottom: 5px;
 }
 
-.regional-card>a>h6:hover {
-    color: var(--color-secondary-light);
-}
-
 .regional-card-content {
     margin-bottom: 8px;
 }
@@ -49,6 +45,11 @@
     margin: 0;
     font-family: "Quicksand";
     flex: 1;
+}
+
+.regional-card-title:hover {
+    color: var(--color-primary-dark);
+    /* Keep the same color*/
 }
 
 .regional-card-stat-section {
@@ -87,6 +88,19 @@
     align-items: center;
 }
 
+/* extra metadata banner info on regional-meeting page */
+
+.regional-meeting-banner-meta {
+    text-align: right;
+    position: relative;
+    top: -55px;
+    margin-bottom: -55px;
+    /* remove space it takes up in the document flow*/
+
+    /* text-transform: uppercase; */
+    /* font-weight: 700; */
+}
+
 /* link-back from video-resources.css */
 
 a.link-back {
@@ -102,7 +116,9 @@ a.link-back:hover {
     display: flex;
     flex-direction: row;
     gap: 1rem;
-    padding: 2rem 1rem;
+    /* padding: 2rem 1rem; */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     align-items: flex-start;
 }
 
@@ -117,12 +133,12 @@ a.link-back:hover {
 /* meeting-img flex handled below */
 
 .meeting-row.bg-gray {
-    background-color: var(--color-gray-light);
+    background-color: var(--color-slate-100);
 }
 
 /* ensure image placeholder and sizing */
 .meeting-img {
-    background-color: var(--color-gray-light);
+    background-color: var(--color-slate-100);
     border-radius: 8px;
     min-height: 200px;
     width: 100%;
@@ -168,5 +184,9 @@ a.link-back:hover {
 @media (max-width: 480px) {
     .regional-meetings-container {
         padding: 20px 10px;
+    }
+
+    .regional-meeting-banner-meta {
+        display: none;
     }
 }

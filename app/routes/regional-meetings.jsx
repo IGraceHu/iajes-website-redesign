@@ -65,7 +65,7 @@ function RegionalCard({ region }) {
     return (
         <div className="regional-card">
             <Link to={`/regional-meetings/${region.url}`} className="block w-full p-2 border-2 border-transparent hover:border-primary-light rounded-md">
-                <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-gray-light flex items-center">
+                <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-slate-100 flex items-center">
                     {region.imageUrl ? (
                         <img className="min-w-full grow-0 shrink-0" src={region.imageUrl} alt={region.name} />
                     ) : (
@@ -93,6 +93,8 @@ function RegionalCard({ region }) {
 }
 
 export default function RegionalMeetings() {
+    const canEdit = true; // For testing, always show edit buttons
+
     const cards = regionalData.map((region) => (
         <RegionalCard key={region.url} region={region} />
     ));
