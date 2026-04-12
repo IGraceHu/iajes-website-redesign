@@ -5,6 +5,7 @@ import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
+import { updateRequired } from "../helpers/form";
 
 export function meta() {
     return [
@@ -40,10 +41,17 @@ export default function StyleGuide() {
     const [showPopup1, setShowPopup1] = useState(false);
     const [showPopup2, setShowPopup2] = useState(false);
     const [showPopupForm, setShowPopupForm] = useState(false);
+    const [popupFormResults, setPopupFormResults] = useState("");
     
     const buttons = [{text: "Action", onclick: () => console.log("Action")}]
 
-    // Handling required fields in a form.
+    // REQUIRED FIELDS Quickguide to functions
+    //   handleShowPopupForm - Resets required inputs
+    //   validate PopupForm
+    //     - Checks if required inputs are filled in + other validations
+    //     - Extracts formData
+    //   checkEmpty - Puts an input back to normal once it is filled in
+
     // formRequired: An object containing the current state of all required fields, true if they are current required, false if not
     const [formRequired, setFormRequired] = useState({popupRequired: false})
 
@@ -56,7 +64,7 @@ export default function StyleGuide() {
     function validatePopupForm(formData) {
         let isValidated = true;
         const isRequired = {
-            popupRequired: formData.get('popup-form-text-required') === (null || "")
+            popupRequired: formData.get('popupRequired') === (null || "")
         }
         for (let value of Object.values(isRequired)) {
         if (value) {
@@ -69,9 +77,24 @@ export default function StyleGuide() {
             return false;
         }
 
+        // Get formData
         console.log(formData);
-        setShowPopupForm(false);
+        setPopupFormResults("Text Input: " + formData.get("popupText") + "\n" + "Required Text Input: " + formData.get("popupRequired") + "\n")
+        // setShowPopupForm(false);
         return true;
+    }
+
+    // checkEmpty uses updatedRequired from helpers/form.js
+    // checkEmpty is called from the input element itself. Go to the input with id popupRequired to see how this works.
+    // PARAMETERS
+    //    value - User inputted value = e.target.value
+    //    inputName - The name of the input in formRequired, NOT the input element name
+    //                I suggest you make the formRequired variable names and the input elements the same to avoid confusion
+    function checkEmpty(value, inputName) {
+        const updatedFormRequired = updateRequired(value, inputName, formRequired);
+        if (updatedFormRequired != formRequired) {
+          setFormRequired(updatedFormRequired);
+        }
     }
 
 
@@ -83,20 +106,27 @@ export default function StyleGuide() {
             <Popup id="style2" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
                 <p>This is a popup that has a custom action button and will not exit when clicked off of.</p>
             </Popup>
-            <PopupForm id="styleform" className="w-200" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
+            <PopupForm id="styleform" className="w-200 relative" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
                 <p>This is a popup form. Popup forms only have two buttons, 'Save' and 'Cancel'. Popup forms also do not close upon blur.</p>
                 <p>PopupForms include a form, any elements within the PopupForm goes into the form. You cannot nest PopupForms.</p>
                 <p>PopupForm requires a validate function that takes a parameter 'formData'. When 'Save' is clicked, the form is submitted and the contents of the form can be accessed in the validate function through 'formData'. Please remember that only input fields with 'name' attributes will be recognized.</p>
+                <p>The parameter 'formData' is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData">FormData</a> object. You can use formData to get the submitted form values with formData.get('input-name')</p>
                 <p><strong>If there are any required fields to fill in, please refer to source code for implementing that part.</strong></p>
                 <br />
                 <p>This sample popup form takes two text fields and prints them on the console upon saving.</p>
                 <br />
-                <label for="popup-form-text">Text Input:</label><br />
-                <input id="popup-form-text" name="popup-form-text" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
+                <p>{popupFormResults}</p>
+                <br />
+                <label for="popupText">Text Input:</label><br />
+                <input id="popupText" name="popupText" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
                 <br /><br />
-                <label for="popup-form-text-required">Required Text Input:</label><br />
-                <input id="popup-form-text-required" name="popup-form-text-required" type="text" className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} placeholder="Enter text here..." />
+                <label for="popupRequired">Required Text Input:</label><br />
+                <input id="popupRequired" name="popupRequired" type="text" 
+                       className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} 
+                       placeholder="Enter text here..."
+                       onChange={(e) => checkEmpty(e.target.value, "popupRequired")} />
                 <div className="input-error">This field is required.</div>
+                <br/>
             </PopupForm>
 
             <Menu />
