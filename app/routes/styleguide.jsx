@@ -2,10 +2,10 @@ import { useState } from 'react';
 import { redirect } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
-import { PopupForm } from "../components/popup-form";
+import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
+import { updateRequired } from "../helpers/form";
 
 export function meta() {
     return [
@@ -20,62 +20,113 @@ export function action({ url }) {
 
 export default function StyleGuide() {
 
-    // POPUP -------------------------------------------------------------------
-    // The Popup component takes three parameters:
-    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
-    //      There should only be one Popup component used in a component. 
-    // show - Determines if the popup is visible or not
-    // setShow - set function for show
-    // details - an object with properties
-    //    content - Required. An element node with the contents of the popup
-    //    buttons - Optional. An array of objects with properties 'text' and 'onclick'
-    //        text - Required. A string with the button text
-    //        onclick - Required. A function that clicking the button will execute
-    //    defaultButton - Optional. Changes the default values of the 'Close' button. An object with properties 'text' and 'onclick'
-    //        text - Required.
-    //        onclick - Optional.
-    //    closeOnBlur - Optional. Defaults to true. Determines if clicking outside the popup will close the popup or not
-
-    const [showPopup, setShowPopup] = useState(false);
-    const [currentPopup, setCurrentPopup] = useState({}); // This is only needed if you have multiple popups in a component
-
-    const [showFormPopup, setShowFormPopup] = useState(false);
-
-    const popupDetails1 = {
-        content: <p>This is a basic popup.</p>,
-    };
-
-    const popupDetails2 = {
-        content: <p>This is a popup with extra buttons. Clicking outside the popup will not close the popup.</p>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }, { text: "Delete", onclick: () => { console.log("deleted") } }],
-        closeOnBlur: false,
-    };
-
-    const popupDetails3 = {
-        content: <p>This is a popup with a custom default button.</p>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-        defaultButton: { text: "Exit", onclick: () => { setShowPopup(false); } }
-    };
-
-    function popupFormValidate(formData) {
-        console.log(formData);
-        setShowFormPopup(false);
-    }
-
     // PAGINATION --------------------------------------------------------------
     const [pg1, setPg1] = useState(0);
     const [pg2, setPg2] = useState(0);
 
     const [formMode, setFormMode] = useState("");
 
+    // POPUP -------------------------------------------------------------------
+    // The Popup component takes three parameters:
+    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
+    //      There should only be one Popup component used in a component. 
+    // className
+    // show - Determines if the popup is visible or not
+    // setShow - set function for show
+    //    buttons - Optional. An array of objects with properties 'text' and 'onclick'
+    //        text - Required. A string with the button text
+    //        onclick - Required. A function that clicking the button will execute
+    // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
+
+    const [showPopup1, setShowPopup1] = useState(false);
+    const [showPopup2, setShowPopup2] = useState(false);
+    const [showPopupForm, setShowPopupForm] = useState(false);
+    const [popupFormResults, setPopupFormResults] = useState("");
+    
+    const buttons = [{text: "Action", onclick: () => console.log("Action")}]
+
+    // REQUIRED FIELDS Quickguide to functions
+    //   handleShowPopupForm - Resets required inputs
+    //   validate PopupForm
+    //     - Checks if required inputs are filled in + other validations
+    //     - Extracts formData
+    //   checkEmpty - Puts an input back to normal once it is filled in
+
+    // formRequired: An object containing the current state of all required fields, true if they are current required, false if not
+    const [formRequired, setFormRequired] = useState({popupRequired: false})
+
+    function handleShowPopupForm() {
+        // This resets formRequired so that there are no error messages when the form is reloaded
+        setFormRequired({popupRequired: false})
+        setShowPopupForm(true);
+    }
+
+    function validatePopupForm(formData) {
+        let isValidated = true;
+        const isRequired = {
+            popupRequired: formData.get('popupRequired') === (null || "")
+        }
+        for (let value of Object.values(isRequired)) {
+        if (value) {
+            isValidated = false;
+            break;
+        }
+        }
+        if (!isValidated) {
+            setFormRequired(isRequired);
+            return false;
+        }
+
+        // Get formData
+        console.log(formData);
+        setPopupFormResults("Text Input: " + formData.get("popupText") + "\n" + "Required Text Input: " + formData.get("popupRequired") + "\n")
+        // setShowPopupForm(false);
+        return true;
+    }
+
+    // checkEmpty uses updatedRequired from helpers/form.js
+    // checkEmpty is called from the input element itself. Go to the input with id popupRequired to see how this works.
+    // PARAMETERS
+    //    value - User inputted value = e.target.value
+    //    inputName - The name of the input in formRequired, NOT the input element name
+    //                I suggest you make the formRequired variable names and the input elements the same to avoid confusion
+    function checkEmpty(value, inputName) {
+        const updatedFormRequired = updateRequired(value, inputName, formRequired);
+        if (updatedFormRequired != formRequired) {
+          setFormRequired(updatedFormRequired);
+        }
+    }
+
+
     return (
         <>
-            <Popup id="style" show={showPopup} setShow={setShowPopup} details={currentPopup} />
-            <PopupForm id="form-style" show={showFormPopup} setShow={setShowFormPopup} validate={popupFormValidate}>
-                <h5>Popup Form Example</h5>
-                <p>Remember that inputs need to have the 'name' tag to work.</p>
-                <label for="popup-form-text">Text Input:</label><br />
-                <input id="popup-form-text" name="popup-form-text" type="text" className={"input input-text w-full "} placeholder="Enter text here..." />
+            <Popup id="style1" show={showPopup1} setShow={setShowPopup1} >
+                <p>This is the default popup</p>
+            </Popup>
+            <Popup id="style2" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
+                <p>This is a popup that has a custom action button and will not exit when clicked off of.</p>
+            </Popup>
+            <PopupForm id="styleform" className="w-200 relative" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
+                <p>This is a popup form. Popup forms only have two buttons, 'Save' and 'Cancel'. Popup forms also do not close upon blur.</p>
+                <p>PopupForms include a form, any elements within the PopupForm goes into the form. You cannot nest PopupForms.</p>
+                <p>PopupForm requires a validate function that takes a parameter 'formData'. When 'Save' is clicked, the form is submitted and the contents of the form can be accessed in the validate function through 'formData'. Please remember that only input fields with 'name' attributes will be recognized.</p>
+                <p>The parameter 'formData' is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData">FormData</a> object. You can use formData to get the submitted form values with formData.get('input-name')</p>
+                <p><strong>If there are any required fields to fill in, please refer to source code for implementing that part.</strong></p>
+                <br />
+                <p>This sample popup form takes two text fields and prints them on the console upon saving.</p>
+                <br />
+                <p>{popupFormResults}</p>
+                <br />
+                <label for="popupText">Text Input:</label><br />
+                <input id="popupText" name="popupText" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
+                <br /><br />
+                <label for="popupRequired">Required Text Input:</label><br />
+                <input id="popupRequired" name="popupRequired" type="text" 
+                       className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} 
+                       placeholder="Enter text here..."
+                       onChange={(e) => checkEmpty(e.target.value, "popupRequired")} />
+                <div className="input-error">This field is required.</div>
+                <br/>
             </PopupForm>
 
             <Menu />
@@ -341,15 +392,12 @@ export default function StyleGuide() {
                 </div>
 
                 <div className="mt-10">
-                    <h2>Popup</h2>
+                    <h2>Popups</h2>
                     <p>Please refer to the Popup component for popup usage</p>
                     <br />
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails1); setShowPopup(true) }}>Popup Example 1</button>
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails2); setShowPopup(true) }}>Popup Example 2</button>
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails3); setShowPopup(true) }}>Popup Example 3</button>
-                    <p>PopupForm is for Popups that need form validation when the save/submit button is clicked. PopupForms only have two popup buttons: Save and Cancel.</p>
-                    <br/>
-                    <button className="button mr-5 mb-5" onClick={() => { setShowFormPopup(true) }}>Form Popup Example</button>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowPopup1(true) }}>Popup Example 1</button>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowPopup2(true) }}>Popup Example 2</button>
+                    <button className="button mr-5 mb-5" onClick={handleShowPopupForm}>Popup Form</button>
                 </div>
 
                 <div className="mt-10">

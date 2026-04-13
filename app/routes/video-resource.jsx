@@ -1,8 +1,6 @@
-import { useState } from 'react';
 import { Menu } from "../components/menu";
+import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
-import { Banner } from "../components/graphics";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -59,7 +57,7 @@ export default function VideoResource({ loaderData }) {
             </Banner>
 
             <div className="py-20 px-10 lg:px-40 duration-200">
-                <div className="mb-5 w-full h-[43vw]">
+                <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
                         <iframe src={loaderData.video} width="100%" height="100%"></iframe>
                 </div>
                 <p>{loaderData.desc}</p>

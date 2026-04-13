@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
+import { PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import "../styles/video-resources.css";
 
@@ -50,66 +50,63 @@ function ResourceCard({resourceInfo}) {
     )
 }
 
-export default function VideoResources() {
-    const isAdmin = true;
-    const [showPopup, setShowPopup] = useState(false);
-    const [currentPage, setCurrentPage] = useState(0);
-    const today = new Date(Date.now()).toISOString().substring(0, 10);
+function CreateVidRPopup({showPopup, setShowPopup, userId}) {
+    function validate(formData) {
 
-    const popupDetails = {
-        content: <div className="md:w-[70vw] h-[80vh]">
+    }
+    return (
+        <PopupForm show={showPopup} setShow={setShowPopup} validate={validate}>
             <h4>Create new video resource</h4>
-            <form className="mb-5 h-[80%] overflow-y-auto">
-                <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
-                    <div>
-                        <label htmlFor="vid-resource-title">Video resource title:</label><br />
-                        <input id="vid-resource-title" type="text" className="input input-text w-full" />
-                    </div>
-                    <label>
-                        Video resource thumbnail image:
-                        <input id="upload" type="file" />
-                        <div className="input-error">This field is required.</div>
-                    </label>
-                    <div>
-                        <label htmlFor="vid-resource-date">Video resource date:</label><br />
-                        <input id="vid-resource-date" type="date" className="input input-text w-full" defaultValue={today} />
-                    </div>
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5">
+                <div>
+                    <label for="vid-resource-title">Video resource title:</label><br />
+                    <input id="vid-resource-title" name="vid-resource-title" type="text" className="input input-text w-full" />
                 </div>
-                <br/>
-                
-                <label htmlFor="vid-resource-link">Video resource link:</label><br />
-                <input id="vid-resource-link" type="text" className="input input-text w-full" />
-                <br /><br />
-                <label htmlFor="vid-resource-desc">Video description:</label><br />
-                <textarea id="vid-resource-desc" className="input input-text w-full h-30"></textarea>
-                <br/> <br/>
+                <label>
+                    Video resource thumbnail image:
+                    <input id="vid-resource-thumbnail" name="vid-resource-thumbnail" type="file" />
+                    <div className="input-error">This field is required.</div>
+                </label>
+            </div>
+            
+            <label for="vid-resource-link">Video resource link:</label><br />
+            <input id="vid-resource-link" name="vid-resource-link" type="text" className="input input-text w-full" />
+            <br /><br />
+            <label for="vid-resource-desc">Video description:</label><br />
+            <textarea id="vid-resource-desc" name="vid-resource-desc" className="input input-text w-full h-30"></textarea>
+            <br/> <br/>
 
-                <h5>Speaker Details</h5>
-                <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
+            <fieldset className="border-t-2 border-gray-light pt-4">
+                <div className="text-sm font-semibold text-secondary-dark">Speaker Details</div>
+                <div className="mt-3 grid md:grid-cols-2 grid-cols-1 gap-5">
                     <div>
-                        <label htmlFor="vid-resource-speaker-name">Name:</label><br />
-                        <input id="vid-resource-speaker-name" type="text" className="input input-text w-full" />
+                        <label for="vid-resource-speaker-name">Name:</label><br />
+                        <input id="vid-resource-speaker-name" name="vid-resource-speaker-name" type="text" className="input input-text w-full" />
                     </div>
                     <div>
-                        <label htmlFor="vid-resource-speaker-uni">University:</label><br />
-                        <input id="vid-resource-speaker-uni" type="text" className="input input-text w-full" />
+                        <label for="vid-resource-speaker-uni">University:</label><br />
+                        <input id="vid-resource-speaker-uni" name="vid-resource-speaker-uni" type="text" className="input input-text w-full" />
                     </div>
                 </div>
                 <br/>
                 <label>
                     Speaker image:
-                    <input id="upload" type="file" className="ml-3" />
+                    <input id="vid-resource-speaker-img" name="vid-resource-speaker-img" type="file" className="ml-3" />
                     <div className="input-error">This field is required.</div>
                 </label>
                 <br /><br />
-                <label htmlFor="vid-resource-speaker-desc">Description:</label><br />
-                <textarea id="vid-resource-speaker-desc" className="input input-text w-full h-20"></textarea>
-            </form>
-        </div>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-        defaultButton: { text: "Cancel", onclick: () => { setShowPopup(false); } },
-        closeOnBlur: false
-    }
+                <label for="vid-resource-speaker-desc">Description:</label><br />
+                <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20"></textarea>
+            </fieldset>
+        </PopupForm>
+    )
+}
+
+export default function VideoResources() {
+    const isAdmin = true;
+    const [showPopup, setShowPopup] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
+    const userId = "";
 
     const videoResources = [];
     for (let i = (currentPage * 6); i < currentPage + 6; i++) {
@@ -124,7 +121,7 @@ export default function VideoResources() {
         <>
             { isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <Popup show={showPopup} setShow={setShowPopup} details={popupDetails} />
+                    <CreateVidRPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={userId} />
                 </div>
             }
             <Menu currentEndUrl="/video-resources" />
