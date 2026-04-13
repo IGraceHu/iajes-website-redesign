@@ -3,7 +3,19 @@ import { NavLink, useNavigate } from "react-router";
 import { supabase } from "../supabase";
 // import iajesLogo from "../"
 
-export function Menu() {
+async function getUsername(userId) {
+    const { data, error } = await supabase
+        .from('users')
+        .select('fname, lname')
+        .eq("id", userId);
+    console.log(data);
+    if (data[0]) {
+        return data[0];
+    }
+    return error;
+}
+
+export function Menu({}) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const loggedIn = !!currentUser;
@@ -11,21 +23,45 @@ export function Menu() {
   const [whatWeDoActive, setWhatWeDoActive] = useState(false);
   const [sideMenuActive, setSideMenuActive] = useState(false);
   const [accountDdActive, setAccountDdActive] = useState(false);
-
+  const [username, setUsername] = useState(null);
 
   useEffect(() => {
+
+    const user = async (userId) => {
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('fname, lname')
+          .eq("id", userId);
+        if (data[0]) {
+          console.log(data);
+          setUsername(data[0]);
+        }
+        else { console.log("error"); }
+        
+        // You may want to do setState here as well
+      } catch (error) {
+        console.log("error");
+      }
+    }
+
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUser(session?.user ?? null);
+      if (session?.user.id) {
+        user(session.user.id);
+      }
     });
 
     // Check current session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(session?.user ?? null);
+      user(session.user.id);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -36,11 +72,11 @@ export function Menu() {
   useEffect(() => {
 
     const menuDropdownEls = document.getElementsByClassName("menu-dropdown-container");
-    console.log(menuDropdownEls);
+    // console.log(menuDropdownEls);
     for (let menuDropdown of menuDropdownEls) {
       menuDropdown.addEventListener("mouseout", function() { menuDropdown.classList.remove("active"); });
       menuDropdown.addEventListener("mouseover", function() { menuDropdown.classList.add("active"); });
-      console.log(menuDropdown);
+      // console.log(menuDropdown);
     }
 
     const sideMenuDropdownEls = document.getElementsByClassName("side-menu-dropdown-container");
@@ -145,6 +181,7 @@ export function Menu() {
                 >
             </div>
             <div className="menu-dropdown right-3 -mt-[220px]">
+              <p className="text-sm p-4">{username?.fname} {username?.lname}</p>
               <NavLink to={"/profile/" + currentUser?.id} end className="link p-4 pb-0">
                 Profile
               </NavLink>
