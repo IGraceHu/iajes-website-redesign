@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { supabase } from "../supabase";
 
-export function Menu({}) {
+export function Menu({ currentEndUrl }) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const loggedIn = !!currentUser;
@@ -10,6 +10,30 @@ export function Menu({}) {
   const [userInfo, setUserInfo] = useState(null);
 
   const imageUrl = null;
+
+  
+
+  let isGroupActive = {
+    whatWeDo: false,
+    resources: false,
+    meetings: false
+  }
+
+  switch (currentEndUrl) {
+    case "/about":
+    case "/organizational-structure":
+    case "/newsletter":
+      isGroupActive.whatWeDo = true;
+      break;
+    case "/video-resources":
+    case "/webinars":
+      isGroupActive.resources = true;
+      break;
+    case "/regional-meetings":
+    case "/international-meetings":
+      isGroupActive.meetings = true;
+      break;
+  }
 
   useEffect(() => {
 
@@ -59,14 +83,14 @@ export function Menu({}) {
     const menuDropdownEls = document.getElementsByClassName("menu-dropdown-container");
     
     for (let menuDropdown of menuDropdownEls) {
-      menuDropdown.addEventListener("mouseout", function() { menuDropdown.classList.remove("active"); });
-      menuDropdown.addEventListener("mouseover", function() { menuDropdown.classList.add("active"); });
+      menuDropdown.addEventListener("mouseout", function() { menuDropdown.classList.remove("active-popup"); });
+      menuDropdown.addEventListener("mouseover", function() { menuDropdown.classList.add("active-popup"); });
     }
 
     const sideMenuDropdownEls = document.getElementsByClassName("side-menu-dropdown-container");
     for (let sideMenuDropdown of sideMenuDropdownEls) {
-      sideMenuDropdown.addEventListener("mouseout", function() { sideMenuDropdown.classList.remove("active"); })
-      sideMenuDropdown.addEventListener("mouseover", function() { sideMenuDropdown.classList.add("active"); })
+      sideMenuDropdown.addEventListener("mouseout", function() { sideMenuDropdown.classList.remove("active-popup"); })
+      sideMenuDropdown.addEventListener("mouseover", function() { sideMenuDropdown.classList.add("active-popup"); })
     }
 
     if (sideMenuActive) {
@@ -98,16 +122,16 @@ export function Menu({}) {
         </NavLink>
 
 
-        <div className="relative flex items-center w-120 hidden md:flex">
+        <div className="relative flex items-center justify-end w-130 hidden md:flex">
           <div className="menu-dropdown-container">
-            <div className="menu-dropdown-button link p-4">
+            <div className={"menu-dropdown-button link p-4" + (isGroupActive.whatWeDo ? " active" : "")}>
               What We Do
             </div>
             <div className="menu-dropdown -mt-[240px] py-1">
-              <NavLink to="/about" className="link py-3 px-4 pr-10">
+              <NavLink to="/about" end className="link py-3 px-4 pr-10">
                 About IAJES
               </NavLink>
-              <NavLink to="/organizational-structure" className="link py-3 px-4 pr-10">
+              <NavLink to="/organizational-structure" end className="link py-3 px-4 pr-10">
                 Organizational Structure
               </NavLink>
               <NavLink to="/newsletter" className="link py-3 px-4 pr-10">
@@ -121,7 +145,7 @@ export function Menu({}) {
           </NavLink>
 
           <div className="menu-dropdown-container">
-            <div className="menu-dropdown-button link p-4">
+            <div className={"menu-dropdown-button link p-4" + (isGroupActive.resources ? " active" : "")}>
               Resources
             </div>
             <div className="menu-dropdown -mt-[220px] py-1">
@@ -135,7 +159,7 @@ export function Menu({}) {
           </div>
 
           <div className="menu-dropdown-container">
-            <div className="menu-dropdown-button link p-4">
+            <div className={"menu-dropdown-button link p-4" + (isGroupActive.meetings ? " active" : "")}>
               Meetings
             </div>
             <div className="menu-dropdown w-45 -mt-[220px] py-1">
@@ -200,7 +224,7 @@ export function Menu({}) {
         <div id="side-menu" className="absolute bg-white flex flex-col w-70 h-dvh duration-400 ease-in-out shadow-md z-1 -left-70" >
           
           <div className="side-menu-dropdown-container mt-7 pb-3 px-7">
-            <div className="side-menu-dropdown-button link py-3">
+            <div className={"side-menu-dropdown-button link py-3" + (isGroupActive.whatWeDo ? " active" : "")}>
               What We Do
             </div>
             <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">
@@ -221,7 +245,7 @@ export function Menu({}) {
           </NavLink>
 
           <div className="side-menu-dropdown-container py-3 px-7">
-            <div className="side-menu-dropdown-button link pb-3">
+            <div className={"side-menu-dropdown-button link pb-3" + (isGroupActive.resources ? " active" : "")}>
               Resources
             </div>
             <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">
@@ -235,7 +259,7 @@ export function Menu({}) {
           </div>
 
           <div className="side-menu-dropdown-container py-3 px-7">
-            <div className="side-menu-dropdown-button link pb-3">
+            <div className={"side-menu-dropdown-button link pb-3" + (isGroupActive.meetings ? " active" : "")}>
               Meetings
             </div>
             <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">

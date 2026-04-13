@@ -442,7 +442,7 @@ function LogoSection() {
 export default function OrganizationalStructure() {
     return (
         <>
-            <Menu />
+            <Menu currentEndUrl="/organizational-structure"/>
             <div className="w-full duration-200">
                 <InfographicSection />
                 <MembersSection />
