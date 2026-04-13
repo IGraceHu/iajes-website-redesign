@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu } from "../components/menu";
+import internationalMeetingTemplate from "../templates/international-meeting-template";
 
 export function meta() {
   return [{ title: "International Meetings" }];
@@ -373,7 +374,12 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "IBERO - Mexico",
         quote:
           "As an educational institution, what can we do to promote effective changes and improve living conditions of the society?",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=0B2UIkFIjmCEsRE9lNDcyS0JIUnEzM3Z6dkQ2R0U1Y1Fja0dB",
+          },
+        ],
       },
       {
         topic: "ENERGY",
@@ -381,7 +387,12 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "ICAI - Madrid - Spain",
         quote:
           "We have to put a lot of efforts to try to bring all the people deprived of access to the energy into the light.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=0B2UIkFIjmCEsVGdnQm5fZ2xhdThUZ0tnOUdraWVRWEh3czh3",
+          },
+        ],
       },
       {
         topic: "BIG DATAS/FACTORY 4.0",
@@ -389,7 +400,7 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "DEUSTO - Spain",
         quote:
           "The problem is not technology...We have to teach how technology can transform our societies using less resources.",
-        resources: ["Slides", "Video"],
+        resources: [],
       },
     ],
   },
@@ -403,7 +414,16 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "UNICAP - Recife",
         quote:
           "If we can use the sugar cane ashes as a material in replacement of cement in production of concrete mortar, we can avoid environmental impacts and reduce the CO2 emission.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=0B2UIkFIjmCEsOEJ3NTREQmFZWkR5X1ZfbDFVU2xYRVoxSGVn",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1a2ESlTC_9U3fob6af4yG5pryP7Fa-azF",
+          },
+        ],
       },
       {
         topic: "\"Radiations and health\"",
@@ -411,7 +431,20 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "Xavier Institute of Engineering Mumbai - India",
         quote:
           "We can show in India one, that Engineering school is not minded to make money alone and two, we can bring ethics in Engineering.",
-        resources: ["Paper", "Slides", "Video"],
+        resources: [
+          {
+            label: "Paper",
+            href: "https://drive.google.com/open?id=1_st51-SKi5SDfo4cpwRwp6BcOenJFZ0A",
+          },
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1Mxbt5IAj-PcSsuDamy6y3QciOA2FcWYJ",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1a2ESlTC_9U3fob6af4yG5pryP7Fa-azF",
+          },
+        ],
       },
     ],
   },
@@ -427,14 +460,32 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "Santa Clara - USA",
         quote:
           "We have not just to provide information but change their minds.. Broad interdisciplinarities...Of course we have to give specialization but we need to give them Breadth.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=0B2UIkFIjmCEsQm44cUo3dm85OFVLVVFIc0c5b1lMZHo4QXNV",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1TFCOxXotISwePph08F9LBYjW9SOisQ7K",
+          },
+        ],
       },
       {
         topic: "Human development for future decision-makers",
         name: "Yann Ferguson",
         affiliation: "Icam",
         quote: "We have to reinvent our links to the planet putting more ecology into humanism.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1HfM10Kj5xc7TIMQmf2ns_zE6p35Q8JoL",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1TFCOxXotISwePph08F9LBYjW9SOisQ7K",
+          },
+        ],
       },
       {
         topic: "Innovative pedagogy to mix Engineering and social justice",
@@ -442,7 +493,16 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "LUC - USA",
         quote:
           "With engineering environments changing we believe we must prepare our students for these environments ...so that (for example) if a request to falsify data occurs they have thought about it and they have a plan of action.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1PNtY_eqGBcZpV5qE_w6p26csam3_pWtj",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1TFCOxXotISwePph08F9LBYjW9SOisQ7K",
+          },
+        ],
       },
       {
         topic: "\"Becoming an engineer within a Jesuit University : which specificities ?\"",
@@ -450,7 +510,20 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "Rector DEUSTO - Bilbao - Spain",
         quote:
           "From the greek origin, we inherited two models of institutions : university with the scientific and professional model which pushes the knowledge for its own sake and promotes successful professional life. And the humanistic school with the aim of training people in social responsibility and in effective communication skills. What defines our institution today?",
-        resources: ["Paper", "Slides", "Video"],
+        resources: [
+          {
+            label: "Paper",
+            href: "https://drive.google.com/open?id=1KS3NkL0I5tLQFWvu9hEdA98cXrq4ODuc",
+          },
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1qeyJ27YWbVjGrA-KLM2mm-h3m7y2JXfW",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1-AoDjl2d-VoK2TaCcPLk8SHaUCNpwCsi",
+          },
+        ],
       },
       {
         topic: "Engineers for a societal change",
@@ -460,7 +533,16 @@ const BILBAO_PROGRAM_SECTIONS = [
           "What does it mean to be human? it will be more and more difficult to be different from machines.",
         quoteTwo:
           "A lot of changes are going to come: this is going to be a very complex moment of history ...but it's really important to be optimistic, to have hope in ourselves and society.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1ScaDe8XiRLqKCybXgzIx7KDPP_SGkt-P",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1-AoDjl2d-VoK2TaCcPLk8SHaUCNpwCsi",
+          },
+        ],
       },
     ],
   },
@@ -474,7 +556,16 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "Marquette University",
         quote:
           "The idea is to facilitate and make the collaborations between faculty from places where there is a lot of research going on with faculty in places where research is less accessible.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1yp1Dl23oyFWs3mzwk0L6owiAJOVk24IM",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1e1y4dvEcQM5dMXsG7B4r6HYOzIvK7_M0",
+          },
+        ],
       },
       {
         topic: "Building Jesuit Networks - Ideas on success factors for Jesuit Networking",
@@ -483,7 +574,20 @@ const BILBAO_PROGRAM_SECTIONS = [
         role: "Expert on Jesuit Networking",
         quote:
           "We have to be very clear: what is the added value you are bringing into the table of the jesuit mission? are you bringing learning capabilities and adaptation to our mission, impact or scale.., explorability and innovation..., to which objectives of the higher education secretary are you contributing? to what extent you work ?",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Paper",
+            href: "https://drive.google.com/open?id=1Ms1Ey92A1peOhbIvvskemULX15H9nGXu",
+          },
+          {
+            label: "Slides",
+            href: "https://drive.google.com/open?id=1MKBD1i5fTpduf1PpGZKEzaR_4oNlsGnX",
+          },
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1DPGtEIsxP2goMENikpeDKnK3eyyFCfU8",
+          },
+        ],
       },
       {
         topic: "How to operate fruitful synergy between IAJU and IAJES?",
@@ -491,7 +595,12 @@ const BILBAO_PROGRAM_SECTIONS = [
         affiliation: "Secretary for Jesuit Higher Education",
         quote:
           "When I was told that you wanted to form an association and that it would be difficult and so on and so forth..!! No, it's going to be easy because engineers are very collaborative by nature; they understand everything has to fit together and work together or nothing happens.",
-        resources: ["Slides", "Video"],
+        resources: [
+          {
+            label: "Video",
+            href: "https://drive.google.com/open?id=1DPGtEIsxP2goMENikpeDKnK3eyyFCfU8",
+          },
+        ],
       },
     ],
   },
@@ -520,11 +629,80 @@ const VIDEO_2024 = [
   "https://drive.google.com/file/d/10MHYm7u4xFFJUmEt3nfRaJtBhI214xnV/preview",
   "https://drive.google.com/file/d/1_pRj3J8f7iDs6Oe0zu88sjVEEwkEidcM/preview",
 ];
+const VIDEO_2018 = [
+  "https://drive.google.com/file/d/1a2ESlTC_9U3fob6af4yG5pryP7Fa-azF/preview",
+  "https://drive.google.com/file/d/1TFCOxXotISwePph08F9LBYjW9SOisQ7K/preview",
+  "https://drive.google.com/file/d/1-AoDjl2d-VoK2TaCcPLk8SHaUCNpwCsi/preview",
+  "https://drive.google.com/file/d/1e1y4dvEcQM5dMXsG7B4r6HYOzIvK7_M0/preview",
+  "https://drive.google.com/file/d/1DPGtEIsxP2goMENikpeDKnK3eyyFCfU8/preview",
+];
 
 const MILESTONE_2018_INTRO = MILESTONE_2018.slice(1, 4);
 const MILESTONE_2019_BODY = MILESTONE_2019.slice(3);
 
-const MEETINGS = [
+function createUpcomingMeeting(config) {
+  const label = config?.label?.trim() || "Upcoming Conference";
+  const id = label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "") || "upcoming-conference";
+  const toTextList = (value) => {
+    if (Array.isArray(value)) {
+      return value
+        .map((item) => (typeof item === "string" ? item.trim() : ""))
+        .filter(Boolean);
+    }
+    if (typeof value === "string" && value.trim()) {
+      return [value.trim()];
+    }
+    return [];
+  };
+  const toScheduleList = (value) => {
+    if (!Array.isArray(value)) {
+      return [];
+    }
+
+    return value.filter(
+      (day) =>
+        day &&
+        typeof day.day === "string" &&
+        day.day.trim() &&
+        Array.isArray(day.items) &&
+        day.items.length > 0
+    );
+  };
+  const overview = toTextList(config?.overview);
+  const programNotes = toTextList(config?.programNotes);
+
+  return {
+    id,
+    label,
+    title: config?.title?.trim() || label,
+    date: config?.date?.trim(),
+    location: config?.location?.trim(),
+    meetingWebsite: config?.meetingWebsite?.trim(),
+    heroImage: config?.heroImage?.trim() || HERO_2024,
+    milestone: overview,
+    mainProgram: {
+      text: programNotes.length ? programNotes : ["Program details coming soon."],
+      schedule: toScheduleList(config?.schedule),
+    },
+    media: {
+      videos: toTextList(config?.videos),
+      images: toTextList(config?.photos),
+    },
+  };
+}
+
+function hasUpcomingMeeting(config) {
+  return Boolean(config?.label?.trim());
+}
+
+const UPCOMING_MEETINGS = hasUpcomingMeeting(internationalMeetingTemplate)
+  ? [createUpcomingMeeting(internationalMeetingTemplate)]
+  : [];
+
+const ARCHIVE_MEETINGS = [
   {
     id: "bhubaneshwar-2024",
     label: "4th Conference - Bhubaneswar 2024",
@@ -593,12 +771,13 @@ const MEETINGS = [
       embed: BILBAO_ATTENDEES_EMBED,
     },
     media: {
+      videos: VIDEO_2018,
       images: IMAGES_2018,
     },
   },
 ];
 
-const PREVIOUS_MEETINGS = MEETINGS;
+const ALL_MEETINGS = [...UPCOMING_MEETINGS, ...ARCHIVE_MEETINGS];
 
 function SectionDropdown({ title, children }) {
   return (
@@ -642,14 +821,38 @@ function SpeakerCard({ speaker }) {
       ) : null}
       {resources.length ? (
         <div className="mt-3 flex flex-wrap justify-center gap-2">
-          {resources.map((resource) => (
-            <span
-              key={`${speaker.name}-${resource}`}
-              className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark"
-            >
-              {resource}
-            </span>
-          ))}
+          {resources.map((resource, index) => {
+            const isResourceObject = typeof resource === "object" && resource !== null;
+            const label = isResourceObject ? resource.label : resource;
+            const href = isResourceObject ? resource.href : null;
+
+            if (!label) {
+              return null;
+            }
+
+            if (href) {
+              return (
+                <a
+                  key={`${speaker.name}-${label}-${index}`}
+                  href={href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark duration-200 hover:bg-primary-extralight"
+                >
+                  {label}
+                </a>
+              );
+            }
+
+            return (
+              <span
+                key={`${speaker.name}-${label}-${index}`}
+                className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark"
+              >
+                {label}
+              </span>
+            );
+          })}
         </div>
       ) : null}
     </div>
@@ -715,6 +918,7 @@ function MeetingSection({ meeting }) {
   const isBhubaneswar = meeting.id === "bhubaneshwar-2024";
   const isBilbao = meeting.id === "bilbao-2018";
   const isCali = meeting.id === "cali-2019";
+  const milestoneLines = meeting.milestone ?? [];
   const mainProgramLines = meeting.mainProgram?.text ?? [];
   const mainProgramSchedule = meeting.mainProgram?.schedule ?? [];
   const hasMainProgramSchedule = mainProgramSchedule.length > 0;
@@ -796,7 +1000,7 @@ function MeetingSection({ meeting }) {
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
-        {!isBilbao ? (
+        {!isBilbao && milestoneLines.length ? (
           <SectionDropdown title="A milestone event">
             {isCali ? (
               <div className="flex flex-col gap-3">
@@ -869,7 +1073,7 @@ function MeetingSection({ meeting }) {
               </div>
             ) : (
               <div className="flex flex-col gap-3">
-                {meeting.milestone.map((line, index) => (
+                {milestoneLines.map((line, index) => (
                   <p key={`${meeting.id}-milestone-${index}`} className="text-gray-dark/80">
                     {line}
                   </p>
@@ -1014,6 +1218,21 @@ function MeetingSection({ meeting }) {
 
         </SectionDropdown>
 
+        {meeting.meetingWebsite ? (
+          <SectionDropdown title="Meeting Website">
+            <a
+              href={meeting.meetingWebsite}
+              target="_blank"
+              rel="noreferrer"
+              className="button inline-flex items-center"
+            >
+              Visit meeting website
+              <i className="bi bi-arrow-up-right ml-2" aria-hidden="true" />
+            </a>
+            <p className="mt-3 text-gray-dark/70">{meeting.meetingWebsite}</p>
+          </SectionDropdown>
+        ) : null}
+
         {meeting.attendees?.embed ? (
           <SectionDropdown title="List of attendees">
             <div className="overflow-hidden rounded-md border-2 border-gray-light bg-white">
@@ -1133,8 +1352,17 @@ function MeetingSection({ meeting }) {
 }
 
 export default function InternationalMeetings() {
-  const [selectedMeetingId, setSelectedMeetingId] = useState(PREVIOUS_MEETINGS[0]?.id ?? "");
-  const selectedMeeting = PREVIOUS_MEETINGS.find((meeting) => meeting.id === selectedMeetingId);
+  const [selectedMeetingId, setSelectedMeetingId] = useState(ALL_MEETINGS[0]?.id ?? "");
+  const selectedMeeting = ALL_MEETINGS.find((meeting) => meeting.id === selectedMeetingId) ?? null;
+
+  const handleMeetingSelection = (meetingId) => {
+    const nextMeeting = ALL_MEETINGS.find((meeting) => meeting.id === meetingId);
+    if (!nextMeeting) {
+      return;
+    }
+
+    setSelectedMeetingId(meetingId);
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -1157,9 +1385,9 @@ export default function InternationalMeetings() {
                 id="meeting-select"
                 className="input input-text w-full mt-2"
                 value={selectedMeetingId}
-                onChange={(event) => setSelectedMeetingId(event.target.value)}
+                onChange={(event) => handleMeetingSelection(event.target.value)}
               >
-                {PREVIOUS_MEETINGS.map((meeting) => (
+                {ALL_MEETINGS.map((meeting) => (
                   <option key={meeting.id} value={meeting.id}>
                     {meeting.label}
                   </option>
@@ -1167,21 +1395,21 @@ export default function InternationalMeetings() {
               </select>
             </div>
             <div className="hidden lg:block">
-              {PREVIOUS_MEETINGS.map((meeting, index) => (
+              {ALL_MEETINGS.map((meeting, index) => (
                 <MeetingSidebarButton
                   key={meeting.id}
                   meeting={meeting}
                   active={meeting.id === selectedMeetingId}
                   first={index === 0}
-                  last={index === PREVIOUS_MEETINGS.length - 1}
-                  onClick={() => setSelectedMeetingId(meeting.id)}
+                  last={index === ALL_MEETINGS.length - 1}
+                  onClick={() => handleMeetingSelection(meeting.id)}
                 />
               ))}
             </div>
           </aside>
 
           <div id="conference-details">
-            <h2 className="mb-3">Previous Conferences</h2>
+            <h2 className="mb-3">Conferences</h2>
             {selectedMeeting ? <MeetingSection meeting={selectedMeeting} /> : null}
           </div>
         </section>
