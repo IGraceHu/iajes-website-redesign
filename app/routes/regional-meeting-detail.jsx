@@ -3,7 +3,7 @@ import { useParams, useLocation } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Banner } from "../components/graphics";
-import { Popup } from "../components/popup";
+import { Popup, PopupForm } from "../components/popup";
 import { Break } from "../components/graphics";
 import "../styles/regional-meetings.css";
 import "../styles/video-resources.css";
@@ -23,6 +23,14 @@ export default function RegionalMeetingDetail() {
 
     const regions = ["JHEASA", "AJCU-NA", "AUSJAL", "Kircher", "AJCU-AP", "AJCU-AM"];
 
+    const handleSaveEditMeeting = () => {
+        setShowEditPopup(false);
+    };
+
+    const handleConfirmDeleteMeeting = () => {
+        setShowDeletePopup(false);
+    };
+
     // placeholder meeting information
     const meetingTitle = passedTitle || `Meeting ${meetingDate}`;
     const description = "Faculty members from universities in the Kircher Region play an important role in the International Association of Jesuit Engineering Schools (IAJES) through their active participation in various task forces and projects. Among the key task forces within the region are those focused on energy, which aims to establish a dynamic international network for sustainable and equitable energy access, and the Artificial Intelligence & Humanity task force, dedicated to equipping engineers with the skills to identify and address injustices in artificial intelligence and big data systems. Additionally, the Research & Academic Cooperation task force stands out for its commitment to initiatives like mentoring programs, cooperative PhD programs, and the development of cross-disciplinary skills for scientists and engineers.\n\nAn in-person event for IAJES representatives  in the Kircher Region is scheduled for February 22-23, 2024 in Deusto. This landmark meeting marks a milestone where universities from the region will convene in one location, fostering dialogue and exploring research, exchange, and networking synergies among our institutions. The meeting will focus on discussing ambitious goals and themes, providing a platform for the exchange of experiences in these areas, and creating spaces for community building among the members of the Kircher region.";
@@ -30,7 +38,7 @@ export default function RegionalMeetingDetail() {
     const [meetingData, setMeetingData] = useState({
         region: regionName,
         title: meetingTitle,
-        date: meetingDate,
+        date: "January 1-3, 2026",
         location: "Santa Clara University",
         description: description,
         agendaLink: "https://example.com/agenda",
@@ -45,121 +53,92 @@ export default function RegionalMeetingDetail() {
     const [errors, setErrors] = useState({ title: false, date: false, location: false });
     const [previewingPdf, setPreviewingPdf] = useState(null); // "report", "agenda", or null
 
-    const editPopupDetails = {
-        content: (
-            <div className="p-4 max-h-[80vh] overflow-y-auto">
-                <h4>Edit Meeting</h4>
-                <div className="space-y-4 mt-4">
-                    <div>
-                        <label>Region:</label>
-                        <select className="input input-text w-full" value={editForm.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
-                            {regions.map(r => <option key={r} value={r}>{r}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                        <label>Title:</label>
-                        <input className="input input-text w-full" type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
-                    </div>
-                    <div>
-                        <label>Date:</label>
-                        <input className="input input-text w-full" type="text" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} />
-                    </div>
-                    <div>
-                        <label>Location:</label>
-                        <input className="input input-text w-full" type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
-                    </div>
-                    <div>
-                        <label>Description:</label>
-                        <textarea className="input input-text w-full" value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="4" />
-                    </div>
-                    <div>
-                        <label>Agenda Link:</label>
-                        <input className="input input-text w-full" type="url" value={editForm.agendaLink} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
-                    </div>
-                    <div>
-                        <label>Agenda PDF:</label>
-                        <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
-                    </div>
-                    <div>
-                        <label>Meeting Report Link:</label>
-                        <input className="input input-text w-full" type="url" value={editForm.reportLink} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
-                    </div>
-                    <div>
-                        <label>Meeting Report PDF:</label>
-                        <input className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
-                    </div>
-                    <div>
-                        <label>Photos:</label>
-                        <input type="file" multiple accept="image/*" onChange={e => {
-                            const files = Array.from(e.target.files);
-                            const newImages = files.map(f => ({ url: URL.createObjectURL(f), featured: false }));
-                            setEditForm({ ...editForm, images: [...editForm.images, ...newImages] });
-                        }} />
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {editForm.images.map((img, idx) => (
-                                <div key={idx} className="relative border p-2">
-                                    <img src={img.url} className="w-24 h-24 object-cover" />
-                                    <div className="mt-1">
-                                        <input type="checkbox" checked={img.featured} onChange={e => {
-                                            const copy = [...editForm.images];
-                                            copy.forEach((i, j) => i.featured = j === idx ? e.target.checked : false);
-                                            setEditForm({ ...editForm, images: copy });
-                                        }} /> Featured
-                                    </div>
-                                    <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, images: editForm.images.filter((_, i) => i !== idx) })} ><i className="bi bi-trash"></i></button>
+    const editPopupContent = (
+        <div className="p-4 max-h-[80vh] overflow-y-auto">
+            <h4>Edit Meeting</h4>
+            <div className="space-y-4 mt-4">
+                <div>
+                    <label>Region:</label>
+                    <select name="region" className="input input-text w-full" value={editForm.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
+                        {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                    </select>
+                </div>
+                <div>
+                    <label>Title:</label>
+                    <input name="title" className="input input-text w-full" type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
+                </div>
+                <div>
+                    <label>Date:</label>
+                    <input name="date" className="input input-text w-full" type="text" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} />
+                </div>
+                <div>
+                    <label>Location:</label>
+                    <input name="location" className="input input-text w-full" type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+                </div>
+                <div>
+                    <label>Description:</label>
+                    <textarea name="description" className="input input-text w-full" value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="4" />
+                </div>
+                <div>
+                    <label>Agenda Link:</label>
+                    <input name="agendaLink" className="input input-text w-full" type="url" value={editForm.agendaLink} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                </div>
+                <div>
+                    <label>Agenda PDF:</label>
+                    <input name="agendaPdf" className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
+                </div>
+                <div>
+                    <label>Meeting Report Link:</label>
+                    <input name="reportLink" className="input input-text w-full" type="url" value={editForm.reportLink} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                </div>
+                <div>
+                    <label>Meeting Report PDF:</label>
+                    <input name="reportPdf" className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
+                </div>
+                <div>
+                    <label>Photos:</label>
+                    <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
+                        const files = Array.from(e.target.files);
+                        const newImages = files.map(f => ({ url: URL.createObjectURL(f), featured: false }));
+                        setEditForm({ ...editForm, images: [...editForm.images, ...newImages] });
+                    }} />
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {editForm.images.map((img, idx) => (
+                            <div key={idx} className="relative border p-2">
+                                <img src={img.url} className="w-24 h-24 object-cover" />
+                                <div className="mt-1">
+                                    <input type="checkbox" checked={img.featured} onChange={e => {
+                                        const copy = [...editForm.images];
+                                        copy.forEach((i, j) => i.featured = j === idx ? e.target.checked : false);
+                                        setEditForm({ ...editForm, images: copy });
+                                    }} /> Featured
                                 </div>
-                            ))}
-                        </div>
+                                <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, images: editForm.images.filter((_, i) => i !== idx) })} ><i className="bi bi-trash"></i></button>
+                            </div>
+                        ))}
                     </div>
-                    <div>
-                        <label>Videos:</label>
-                        <input type="file" multiple accept="video/*" onChange={e => {
-                            const files = Array.from(e.target.files);
-                            const newVideos = files.map(f => ({ url: URL.createObjectURL(f) }));
-                            setEditForm({ ...editForm, videos: [...editForm.videos, ...newVideos] });
-                        }} />
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {editForm.videos.map((vid, idx) => (
-                                <div key={idx} className="relative border p-2">
-                                    <video src={vid.url} className="w-24 h-24" />
-                                    <button className="absolute bottom-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, videos: editForm.videos.filter((_, i) => i !== idx) })} ><i className="bi bi-trash"></i></button>
-                                </div>
-                            ))}
-                        </div>
+                </div>
+                <div>
+                    <label>Videos:</label>
+                    <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
+                        const files = Array.from(e.target.files);
+                        const newVideos = files.map(f => ({ url: URL.createObjectURL(f) }));
+                        setEditForm({ ...editForm, videos: [...editForm.videos, ...newVideos] });
+                    }} />
+                    <div className="flex flex-wrap gap-2 mt-2">
+                        {editForm.videos.map((vid, idx) => (
+                            <div key={idx} className="relative border p-2">
+                                <video src={vid.url} className="w-24 h-24" />
+                                <button className="absolute bottom-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, videos: editForm.videos.filter((_, i) => i !== idx) })} ><i className="bi bi-trash"></i></button>
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
-        ),
-        buttons: [
-            { text: "Cancel", onclick: () => { setShowEditPopup(false); setEditForm(meetingData); setErrors({ title: false, date: false, location: false }); } },
-            {
-                text: "Save", onclick: () => {
-                    const newErrors = {
-                        title: !editForm.title.trim(),
-                        date: !editForm.date.trim(),
-                        location: !editForm.location.trim()
-                    };
-                    setErrors(newErrors);
-                    if (!newErrors.title && !newErrors.date && !newErrors.location) {
-                        setMeetingData(editForm);
-                        setShowEditPopup(false);
-                    }
-                }, className: "button"
-            },
-        ],
-        defaultButton: { text: "", onclick: () => { } },
-        closeOnBlur: false,
-    };
+        </div>
+    );
 
-    const deletePopupDetails = {
-        content: <p>This will delete "{meetingData.title}". Are you sure?</p>,
-        buttons: [
-            { text: "Cancel", onclick: () => setShowDeletePopup(false) },
-            { text: "Delete", onclick: () => { setShowDeletePopup(false); } },
-        ],
-        defaultButton: { text: "", onclick: () => { } },
-        closeOnBlur: false,
-    };
+    const deletePopupContent = <p>This will delete "{meetingData.title}". Are you sure?</p>;
 
     function Carousel({ images }) {
         const [current, setCurrent] = useState(0);
@@ -182,8 +161,12 @@ export default function RegionalMeetingDetail() {
 
     return (
         <>
-            <Popup id="edit" show={showEditPopup} setShow={setShowEditPopup} details={editPopupDetails} />
-            <Popup id="delete" show={showDeletePopup} setShow={setShowDeletePopup} details={deletePopupDetails} />
+            <PopupForm id="edit-meeting-detail" className="md:w-[70vw] relative" show={showEditPopup} setShow={setShowEditPopup} validate={() => handleSaveEditMeeting()}>
+                {editPopupContent}
+            </PopupForm>
+            <Popup id="delete-meeting-detail" show={showDeletePopup} setShow={setShowDeletePopup} stayOnBlur={true} buttons={[{ text: "Delete", onclick: handleConfirmDeleteMeeting }]}>
+                {deletePopupContent}
+            </Popup>
             <Menu />
             <Banner>
                 <a href="/regional-meetings" className="banner-breadcrumb">
