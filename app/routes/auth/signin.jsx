@@ -94,13 +94,11 @@ export default function SignIn() {
     }
   }
 
-  const errorPopup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">{popupErrorMessage}</div>
-  }
-
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Popup id="sign-in" show={showPopup} setShow={setShowPopup} details={errorPopup} />
+      <Popup id="sign-in" show={showPopup} setShow={setShowPopup} >
+        <div className="w-full h-30 text-center flex justify-center items-center">{popupErrorMessage}</div>
+      </Popup>
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
