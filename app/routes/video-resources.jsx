@@ -124,7 +124,7 @@ export default function VideoResources() {
                     <CreateVidRPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={userId} />
                 </div>
             }
-            <Menu />
+            <Menu currentEndUrl="/video-resources" />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
                     <h1>Video Resources</h1>

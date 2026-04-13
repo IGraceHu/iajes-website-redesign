@@ -249,7 +249,7 @@ function OriginTimelineSection() {
 export default function About() {
     return (
         <>
-            <Menu />
+            <Menu currentEndUrl="/about"/>
             <div className="w-full duration-200">
                 <TitleSection />
                 <WhatWeDoSection />
