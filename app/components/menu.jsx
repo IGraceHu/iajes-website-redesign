@@ -174,7 +174,7 @@ export function Menu({ currentEndUrl }) {
         </div>
 
         {!loggedIn ?
-          <NavLink to="/signin" end className="block button my-1.5">
+          <NavLink to="/signin" end className="block button m-1.5">
             Sign In
           </NavLink>
         :
