@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Menu } from "../components/menu";
+import { Footer } from "../components/footer";
 import internationalMeetingTemplate from "../templates/international-meeting-template";
 
 export function meta() {
@@ -363,6 +364,22 @@ const BILBAO_INTRO =
 const BILBAO_ATTENDEES_EMBED =
   "https://drive.google.com/file/d/1_1lY921DB7GVeEjlPaqEQQuD6Y59nsss/preview";
 
+const BILBAO_SPEAKER_PHOTOS = {
+  joseLuisGuttierez: "/img/international-meetings/2018/speakers/jose-luis-guttierez.jpg",
+  pabloFriasMarin: "/img/international-meetings/2018/speakers/pablo-frias-marin.jpg",
+  alexRayonJerez: "/img/international-meetings/2018/speakers/alex-rayon-jerez.jpg",
+  fernandoSilva: "/img/international-meetings/2018/speakers/fernando-silva.jpg",
+  frJohnRose: "/img/international-meetings/2018/speakers/fr-john-rose.jpg",
+  aleksandarCzecevic: "/img/international-meetings/2018/speakers/aleksandar-czecevic.jpg",
+  yannFerguson: "/img/international-meetings/2018/speakers/yann-ferguson.jpg",
+  gailBaura: "/img/international-meetings/2018/speakers/gail-baura.jpg",
+  frJoseMariaGuibert: "/img/international-meetings/2018/speakers/fr-jose-maria-guibert.jpg",
+  guillermoDorronsoro: "/img/international-meetings/2018/speakers/guillermo-dorronsoro.png",
+  larsOlson: "/img/international-meetings/2018/speakers/lars-olson.jpg",
+  frDanielVillanueva: "/img/international-meetings/2018/speakers/fr-daniel-villanueva-sj.jpg",
+  frMichaelGaranzini: "/img/international-meetings/2018/speakers/fr-michael-garanzini.jpg",
+};
+
 const BILBAO_PROGRAM_SECTIONS = [
   {
     title: "Talks about Research and Training on Large engineering issues",
@@ -371,6 +388,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "CITIES",
         name: "Jose Luis Guttierez",
+        photo: BILBAO_SPEAKER_PHOTOS.joseLuisGuttierez,
         affiliation: "IBERO - Mexico",
         quote:
           "As an educational institution, what can we do to promote effective changes and improve living conditions of the society?",
@@ -384,6 +402,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "ENERGY",
         name: "Pablo Frias Marin",
+        photo: BILBAO_SPEAKER_PHOTOS.pabloFriasMarin,
         affiliation: "ICAI - Madrid - Spain",
         quote:
           "We have to put a lot of efforts to try to bring all the people deprived of access to the energy into the light.",
@@ -397,6 +416,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "BIG DATAS/FACTORY 4.0",
         name: "Alex Rayon Jerez",
+        photo: BILBAO_SPEAKER_PHOTOS.alexRayonJerez,
         affiliation: "DEUSTO - Spain",
         quote:
           "The problem is not technology...We have to teach how technology can transform our societies using less resources.",
@@ -411,6 +431,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "\"Alternative building materials from waste\"",
         name: "Fernando Silva",
+        photo: BILBAO_SPEAKER_PHOTOS.fernandoSilva,
         affiliation: "UNICAP - Recife",
         quote:
           "If we can use the sugar cane ashes as a material in replacement of cement in production of concrete mortar, we can avoid environmental impacts and reduce the CO2 emission.",
@@ -428,6 +449,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "\"Radiations and health\"",
         name: "Fr John Rose",
+        photo: BILBAO_SPEAKER_PHOTOS.frJohnRose,
         affiliation: "Xavier Institute of Engineering Mumbai - India",
         quote:
           "We can show in India one, that Engineering school is not minded to make money alone and two, we can bring ethics in Engineering.",
@@ -457,6 +479,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "The Ignatian approach to engineering",
         name: "Aleksandar Czecevic",
+        photo: BILBAO_SPEAKER_PHOTOS.aleksandarCzecevic,
         affiliation: "Santa Clara - USA",
         quote:
           "We have not just to provide information but change their minds.. Broad interdisciplinarities...Of course we have to give specialization but we need to give them Breadth.",
@@ -474,6 +497,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "Human development for future decision-makers",
         name: "Yann Ferguson",
+        photo: BILBAO_SPEAKER_PHOTOS.yannFerguson,
         affiliation: "Icam",
         quote: "We have to reinvent our links to the planet putting more ecology into humanism.",
         resources: [
@@ -490,6 +514,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "Innovative pedagogy to mix Engineering and social justice",
         name: "Gail Baura",
+        photo: BILBAO_SPEAKER_PHOTOS.gailBaura,
         affiliation: "LUC - USA",
         quote:
           "With engineering environments changing we believe we must prepare our students for these environments ...so that (for example) if a request to falsify data occurs they have thought about it and they have a plan of action.",
@@ -507,6 +532,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "\"Becoming an engineer within a Jesuit University : which specificities ?\"",
         name: "Fr. Jose Maria Guibert",
+        photo: BILBAO_SPEAKER_PHOTOS.frJoseMariaGuibert,
         affiliation: "Rector DEUSTO - Bilbao - Spain",
         quote:
           "From the greek origin, we inherited two models of institutions : university with the scientific and professional model which pushes the knowledge for its own sake and promotes successful professional life. And the humanistic school with the aim of training people in social responsibility and in effective communication skills. What defines our institution today?",
@@ -528,6 +554,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "Engineers for a societal change",
         name: "Guillermo Dorronsoro",
+        photo: BILBAO_SPEAKER_PHOTOS.guillermoDorronsoro,
         affiliation: "DEUSTO - Bilbao - Spain",
         quote:
           "What does it mean to be human? it will be more and more difficult to be different from machines.",
@@ -553,6 +580,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "A proposed roadmap for IAJES: real collaborations",
         name: "Lars Olson",
+        photo: BILBAO_SPEAKER_PHOTOS.larsOlson,
         affiliation: "Marquette University",
         quote:
           "The idea is to facilitate and make the collaborations between faculty from places where there is a lot of research going on with faculty in places where research is less accessible.",
@@ -570,6 +598,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "Building Jesuit Networks - Ideas on success factors for Jesuit Networking",
         name: "Fr. Daniel Villanueva SJ",
+        photo: BILBAO_SPEAKER_PHOTOS.frDanielVillanueva,
         affiliation: "Director \"Entreculturas\"",
         role: "Expert on Jesuit Networking",
         quote:
@@ -592,6 +621,7 @@ const BILBAO_PROGRAM_SECTIONS = [
       {
         topic: "How to operate fruitful synergy between IAJU and IAJES?",
         name: "Fr. Michael Garanzini",
+        photo: BILBAO_SPEAKER_PHOTOS.frMichaelGaranzini,
         affiliation: "Secretary for Jesuit Higher Education",
         quote:
           "When I was told that you wanted to form an association and that it would be difficult and so on and so forth..!! No, it's going to be easy because engineers are very collaborative by nature; they understand everything has to fit together and work together or nothing happens.",
@@ -631,9 +661,6 @@ const VIDEO_2024 = [
 ];
 const VIDEO_2018 = [
   "https://drive.google.com/file/d/1a2ESlTC_9U3fob6af4yG5pryP7Fa-azF/preview",
-  "https://drive.google.com/file/d/1TFCOxXotISwePph08F9LBYjW9SOisQ7K/preview",
-  "https://drive.google.com/file/d/1-AoDjl2d-VoK2TaCcPLk8SHaUCNpwCsi/preview",
-  "https://drive.google.com/file/d/1e1y4dvEcQM5dMXsG7B4r6HYOzIvK7_M0/preview",
   "https://drive.google.com/file/d/1DPGtEIsxP2goMENikpeDKnK3eyyFCfU8/preview",
 ];
 
@@ -781,14 +808,16 @@ const ALL_MEETINGS = [...UPCOMING_MEETINGS, ...ARCHIVE_MEETINGS];
 
 function SectionDropdown({ title, children }) {
   return (
-    <details className="rounded-md border-2 border-gray-light bg-white">
-      <summary className="list-none">
-        <div className="flex items-center justify-between gap-4 rounded-md bg-primary-extralight px-4 py-3">
+    <details className="meeting-dropdown rounded-md border-2 border-gray-light bg-white">
+      <summary className="list-none cursor-pointer">
+        <div className="flex items-center justify-between gap-4 rounded-md bg-teal-50 px-4 py-3">
           <span className="font-semibold text-secondary-dark">{title}</span>
           <i className="bi bi-chevron-down text-secondary-dark" aria-hidden="true" />
         </div>
       </summary>
-      <div className="border-t-2 border-gray-light p-4">{children}</div>
+      <div className="meeting-dropdown-content">
+        <div className="border-t-2 border-gray-light p-4">{children}</div>
+      </div>
     </details>
   );
 }
@@ -802,9 +831,18 @@ function SpeakerCard({ speaker }) {
         <div className="text-sm font-semibold text-secondary-dark">{speaker.topic}</div>
       ) : null}
       <div className="mt-4 flex justify-center">
-        <div className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-gray-light bg-primary-extralight text-xs text-gray-dark/70">
-          Photo
-        </div>
+        {speaker.photo ? (
+          <img
+            src={speaker.photo}
+            alt={speaker.name ? `${speaker.name} photo` : "Speaker photo"}
+            className="h-28 w-28 rounded-full border-2 border-gray-light object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-28 w-28 items-center justify-center rounded-full border-2 border-gray-light bg-teal-50 text-xs text-gray-dark/70">
+            Photo
+          </div>
+        )}
       </div>
       {speaker.name ? (
         <div className="mt-4 text-sm font-semibold text-secondary-dark">{speaker.name}</div>
@@ -837,7 +875,7 @@ function SpeakerCard({ speaker }) {
                   href={href}
                   target="_blank"
                   rel="noreferrer"
-                  className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark duration-200 hover:bg-primary-extralight"
+                  className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark duration-200 hover:bg-teal-50"
                 >
                   {label}
                 </a>
@@ -862,14 +900,14 @@ function SpeakerCard({ speaker }) {
 function MeetingSidebarButton({ meeting, active = false, first = false, last = false, onClick }) {
   const stateClasses = active
     ? "border-primary-dark bg-primary-dark"
-    : "border-gray-light bg-white hover:bg-primary-extralight";
+    : "border-gray-light bg-white hover:bg-teal-50";
   const roundingClasses = `${first ? "rounded-t-md" : ""} ${last ? "rounded-b-md border-b-2" : ""}`;
 
   return (
     <a href="#conference-details" className="block">
       <button
         type="button"
-        className={`w-full border-x-2 border-t-2 p-3 text-left duration-200 ${stateClasses} ${roundingClasses}`}
+        className={`w-full cursor-pointer border-x-2 border-t-2 p-3 text-left duration-200 ${stateClasses} ${roundingClasses}`}
         onClick={onClick}
         aria-pressed={active}
       >
@@ -915,6 +953,7 @@ function MeetingSection({ meeting }) {
   const mediaImages = meeting.media?.images ?? [];
   const mediaVideos = meeting.media?.videos ?? [];
   const [imageIndex, setImageIndex] = useState(0);
+  const [imageMotionDirection, setImageMotionDirection] = useState(1);
   const isBhubaneswar = meeting.id === "bhubaneshwar-2024";
   const isBilbao = meeting.id === "bilbao-2018";
   const isCali = meeting.id === "cali-2019";
@@ -937,6 +976,7 @@ function MeetingSection({ meeting }) {
 
   useEffect(() => {
     setImageIndex(0);
+    setImageMotionDirection(1);
   }, [meeting.id]);
 
   useEffect(() => {
@@ -944,6 +984,7 @@ function MeetingSection({ meeting }) {
       return undefined;
     }
     const intervalId = setInterval(() => {
+      setImageMotionDirection(1);
       setImageIndex((prev) => (prev + 1) % mediaImages.length);
     }, 5000);
     return () => clearInterval(intervalId);
@@ -953,6 +994,7 @@ function MeetingSection({ meeting }) {
     if (mediaImages.length <= 1) {
       return;
     }
+    setImageMotionDirection(direction);
     setImageIndex((prev) => (prev + direction + mediaImages.length) % mediaImages.length);
   };
 
@@ -967,7 +1009,7 @@ function MeetingSection({ meeting }) {
               <p className="mt-3 text-gray-dark/80">{meeting.intro}</p>
             ) : null}
             {meeting.date || meeting.location ? (
-              <div className="mt-4 rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-gray-dark/80">
+              <div className="mt-4 rounded-md border-2 border-gray-light bg-teal-50 px-4 py-3 text-gray-dark/80">
                 <div className="grid gap-3 sm:grid-cols-2">
                   {meeting.date ? (
                     <div>
@@ -1011,7 +1053,7 @@ function MeetingSection({ meeting }) {
                     return (
                       <div
                         key={`${meeting.id}-milestone-section-${index}`}
-                        className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 font-semibold text-secondary-dark"
+                        className="rounded-md border-2 border-gray-light bg-teal-50 px-4 py-3 font-semibold text-secondary-dark"
                       >
                         {section.title}
                       </div>
@@ -1021,15 +1063,16 @@ function MeetingSection({ meeting }) {
                   return (
                     <details
                       key={`${meeting.id}-milestone-section-${index}`}
-                      className="rounded-md border-2 border-gray-light bg-white"
+                      className="meeting-dropdown rounded-md border-2 border-gray-light bg-white"
                     >
-                      <summary className="list-none">
-                        <div className="flex items-center justify-between gap-4 rounded-md bg-primary-extralight px-4 py-3">
+                      <summary className="list-none cursor-pointer">
+                        <div className="flex items-center justify-between gap-4 rounded-md bg-teal-50 px-4 py-3">
                           <span className="font-semibold text-secondary-dark">{section.title}</span>
                           <i className="bi bi-chevron-down text-secondary-dark" aria-hidden="true" />
                         </div>
                       </summary>
-                      <div className="border-t-2 border-gray-light p-4">
+                      <div className="meeting-dropdown-content">
+                        <div className="border-t-2 border-gray-light p-4">
                         <div className="flex flex-col gap-3">
                           {section.details.map((detail, detailIndex) => (
                             <p
@@ -1067,6 +1110,7 @@ function MeetingSection({ meeting }) {
                           ) : null}
                         </div>
                       </div>
+                      </div>
                     </details>
                   );
                 })}
@@ -1092,7 +1136,7 @@ function MeetingSection({ meeting }) {
 
                 return (
                   <div key={`${meeting.id}-program-section-${index}`}>
-                    <div className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 text-center">
+                    <div className="rounded-md border-2 border-gray-light bg-teal-50 px-4 py-3 text-center">
                       <h4 className="text-secondary-dark">{section.title}</h4>
                       {section.description ? (
                         <p className="mt-2 text-gray-dark/80">{section.description}</p>
@@ -1112,7 +1156,7 @@ function MeetingSection({ meeting }) {
             </div>
           ) : isBhubaneswar && mainProgramLines.length ? (
             <div className="grid gap-4 lg:grid-cols-2 lg:items-start">
-              <div className="rounded-md border-2 border-gray-light bg-primary-extralight px-4 py-3 font-semibold text-secondary-dark">
+              <div className="rounded-md border-2 border-gray-light bg-teal-50 px-4 py-3 font-semibold text-secondary-dark">
                 {mainProgramLines[0]}
               </div>
               <div className="rounded-md border-2 border-gray-light bg-white px-4 py-3">
@@ -1135,7 +1179,7 @@ function MeetingSection({ meeting }) {
           ) : null}
 
           {hasMainProgramSchedule ? (
-            <div className="mt-4 rounded-md bg-primary-extralight px-4 py-3">
+            <div className="mt-4 rounded-md bg-teal-50 px-4 py-3">
               <div className="text-sm font-semibold text-secondary-dark">Program schedule</div>
               <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                 {mainProgramSchedule.map((day) => (
@@ -1192,7 +1236,7 @@ function MeetingSection({ meeting }) {
 
           {meeting.mainProgram?.image && !hasMainProgramSchedule && !hasMainProgramSections ? (
             <div className="mt-4 overflow-hidden rounded-md border-2 border-gray-light bg-white">
-              <div className="border-b-2 border-gray-light bg-primary-extralight px-4 py-2 text-sm font-semibold text-secondary-dark">
+              <div className="border-b-2 border-gray-light bg-teal-50 px-4 py-2 text-sm font-semibold text-secondary-dark">
                 Program schedule
               </div>
               <div className="bg-white p-3">
@@ -1311,12 +1355,15 @@ function MeetingSection({ meeting }) {
                 </div>
                 <div className="mt-3 overflow-hidden rounded-md border-2 border-gray-light bg-white p-3">
                   <div className="relative flex items-center justify-center overflow-hidden rounded-md bg-white p-3">
-                    <img
-                      src={mediaImages[imageIndex]}
-                      alt={`${meeting.title} photo ${imageIndex + 1}`}
-                      className="h-[360px] w-full object-contain"
-                      loading="lazy"
-                    />
+                    <div className={`w-full ${mediaImages.length > 1 ? "px-12" : ""}`}>
+                      <img
+                        key={`${meeting.id}-photo-${imageIndex}`}
+                        src={mediaImages[imageIndex]}
+                        alt={`${meeting.title} photo ${imageIndex + 1}`}
+                        className={`meeting-gallery-image ${imageMotionDirection >= 0 ? "is-next" : "is-prev"} h-[360px] w-full object-contain`}
+                        loading="lazy"
+                      />
+                    </div>
                     {mediaImages.length > 1 ? (
                       <>
                         <button
@@ -1355,6 +1402,27 @@ export default function InternationalMeetings() {
   const [selectedMeetingId, setSelectedMeetingId] = useState(ALL_MEETINGS[0]?.id ?? "");
   const selectedMeeting = ALL_MEETINGS.find((meeting) => meeting.id === selectedMeetingId) ?? null;
 
+  useEffect(() => {
+    const handleDropdownToggle = (event) => {
+      const dropdown = event.target;
+      if (!dropdown || dropdown.tagName !== "DETAILS") {
+        return;
+      }
+      if (!dropdown.classList.contains("meeting-dropdown") || !dropdown.open) {
+        return;
+      }
+
+      const top = dropdown.getBoundingClientRect().top + window.scrollY - 120;
+      window.scrollTo({
+        top: Math.max(0, top),
+        behavior: "smooth",
+      });
+    };
+
+    document.addEventListener("toggle", handleDropdownToggle, true);
+    return () => document.removeEventListener("toggle", handleDropdownToggle, true);
+  }, []);
+
   const handleMeetingSelection = (meetingId) => {
     const nextMeeting = ALL_MEETINGS.find((meeting) => meeting.id === meetingId);
     if (!nextMeeting) {
@@ -1375,15 +1443,11 @@ export default function InternationalMeetings() {
         </p>
 
         <section className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
-          <aside className="h-fit lg:sticky lg:top-24">
-            <h4 className="mb-3">Meetings</h4>
+          <aside className="h-fit lg:sticky lg:top-32">
             <div className="mt-3 lg:hidden">
-              <label htmlFor="meeting-select" className="font-semibold text-secondary-dark">
-                Choose a meeting
-              </label>
               <select
                 id="meeting-select"
-                className="input input-text w-full mt-2"
+                className="input input-text w-full"
                 value={selectedMeetingId}
                 onChange={(event) => handleMeetingSelection(event.target.value)}
               >
@@ -1394,7 +1458,7 @@ export default function InternationalMeetings() {
                 ))}
               </select>
             </div>
-            <div className="hidden lg:block">
+            <div className="hidden lg:block max-h-[calc(100vh-10rem)] overflow-y-auto pr-1">
               {ALL_MEETINGS.map((meeting, index) => (
                 <MeetingSidebarButton
                   key={meeting.id}
@@ -1409,7 +1473,6 @@ export default function InternationalMeetings() {
           </aside>
 
           <div id="conference-details">
-            <h2 className="mb-3">Conferences</h2>
             {selectedMeeting ? <MeetingSection meeting={selectedMeeting} /> : null}
           </div>
         </section>
@@ -1419,6 +1482,7 @@ export default function InternationalMeetings() {
           <p>and in deep synergy with the Regional Associations of Jesuit Universities</p>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

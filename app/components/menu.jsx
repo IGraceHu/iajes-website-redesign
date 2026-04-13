@@ -95,9 +95,6 @@ export function Menu() {
                 <NavLink to="/regional-meetings" end className="p-4 pr-10">
                   Regional Meetings
                 </NavLink>
-                <NavLink to="/biennal-meetings" end className="p-4 pr-10 pb-5">
-                  Biennal Meetings
-                </NavLink>
                 <NavLink to="/international-meetings" end className="p-4 pr-10 pb-5">
                   International Meetings
                 </NavLink>
@@ -139,9 +136,6 @@ export function Menu() {
           </NavLink>
           <NavLink to="/regional-meetings" end className="pt-10 px-7">
             Regional Meetings
-          </NavLink>
-          <NavLink to="/biennal-meetings" end className="pt-10 px-7">
-            Biennal Meetings
           </NavLink>
           <NavLink to="/international-meetings" end className="pt-10 px-7">
             International Meetings
