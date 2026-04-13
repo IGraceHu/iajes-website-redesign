@@ -55,6 +55,8 @@ async function signUp(data) {
           lname: data.lname,
           created_at: authData.user.created_at,
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
+          email: data.email,
+          role: "member"
         }]);
 
       if (dbError) {
@@ -144,13 +146,11 @@ export default function SignUp() {
 
   }
 
-  const errorPopup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
-  }
-
   return (
     <div className="flex flex-col justify-between">
-      <Popup id="sign-up" show={showPopup} setShow={setShowPopup} details={errorPopup} />
+      <Popup id="sign-up" show={showPopup} setShow={setShowPopup}>
+        <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
+      </Popup>
 
       <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
