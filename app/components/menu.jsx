@@ -1,29 +1,15 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { supabase } from "../supabase";
-// import iajesLogo from "../"
-
-async function getUsername(userId) {
-    const { data, error } = await supabase
-        .from('users')
-        .select('fname, lname')
-        .eq("id", userId);
-    console.log(data);
-    if (data[0]) {
-        return data[0];
-    }
-    return error;
-}
 
 export function Menu({}) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
   const loggedIn = !!currentUser;
-  const [meetingsDdActive, setMeetingsDdActive] = useState(false);
-  const [whatWeDoActive, setWhatWeDoActive] = useState(false);
   const [sideMenuActive, setSideMenuActive] = useState(false);
-  const [accountDdActive, setAccountDdActive] = useState(false);
-  const [username, setUsername] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
+
+  const imageUrl = null;
 
   useEffect(() => {
 
@@ -34,8 +20,7 @@ export function Menu({}) {
           .select('fname, lname, email')
           .eq("id", userId);
         if (data[0]) {
-          console.log(data);
-          setUsername(data[0]);
+          setUserInfo(data[0]);
         }
         else { console.log("error"); }
         
@@ -72,17 +57,16 @@ export function Menu({}) {
   useEffect(() => {
 
     const menuDropdownEls = document.getElementsByClassName("menu-dropdown-container");
-    // console.log(menuDropdownEls);
+    
     for (let menuDropdown of menuDropdownEls) {
       menuDropdown.addEventListener("mouseout", function() { menuDropdown.classList.remove("active"); });
       menuDropdown.addEventListener("mouseover", function() { menuDropdown.classList.add("active"); });
-      // console.log(menuDropdown);
     }
 
     const sideMenuDropdownEls = document.getElementsByClassName("side-menu-dropdown-container");
     for (let sideMenuDropdown of sideMenuDropdownEls) {
-      sideMenuDropdown.addEventListener("mouseover", function() { sideMenuDropdown.classList.add("active"); })
       sideMenuDropdown.addEventListener("mouseout", function() { sideMenuDropdown.classList.remove("active"); })
+      sideMenuDropdown.addEventListener("mouseover", function() { sideMenuDropdown.classList.add("active"); })
     }
 
     if (sideMenuActive) {
@@ -95,7 +79,7 @@ export function Menu({}) {
       sideMenuContEl.children[0].classList.add("hidden");
     }
 
-  }, [sideMenuActive, accountDdActive, currentUser])
+  }, [sideMenuActive, currentUser])
 
 
   return (
@@ -177,25 +161,30 @@ export function Menu({}) {
         }
         {loggedIn &&
           <div className="menu-dropdown-container">
-            <div className="menu-dropdown-button rounded-full bg-primary-dark w-10 h-10 my-1.5 ml-2 mr-4 hover:bg-secondary-light duration-200 cursor-pointer">
+            <div className="menu-dropdown-button rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark size-11 my-1.5 ml-2 mr-4 flex items-center justify-center text-white hover:text-primary-light hover:border-secondary-light hover:bg-secondary-light duration-200 cursor-pointer">
+              { imageUrl && <img className="hover:opacity-90 duration-200 min-w-full min-h-full" src={imageUrl} /> }
+              { !imageUrl && <i className="bi bi-person-fill text-[1.5rem]"></i> }
             </div>
             <div className="menu-dropdown right-3 py-1 -mt-[220px]">
               <div className="text-sm py-3 px-3 mx-2 mb-2 border-b-2 border-primary-light flex items-center">
 
                 <div className="mr-4">
-                  <div className="rounded-full bg-primary-dark w-15 h-15"></div>
+                  <div className="rounded-full bg-primary-dark size-15 border-2 border-primary-dark overflow-hidden flex items-center justify-center">
+                    { imageUrl && <img className="min-w-full min-h-full" src={imageUrl} /> }
+                    { !imageUrl && <i className="bi bi-person-fill text-[2rem] text-white"></i> }
+                  </div>
                 </div>
                 <div className="pr-6">
-                  {username?.fname} {username?.lname}
+                  {userInfo?.fname} {userInfo?.lname}
                   <br/>
-                  <span className="text-disabled-light italic">{username?.email}</span>
+                  <span className="text-disabled-light italic">{userInfo?.email}</span>
                 </div>
 
               </div>
               <NavLink to={"/profile/" + currentUser?.id} end className="link py-3 px-4 pr-10">
                 Profile
               </NavLink>
-              <div className="px-4 py-3">
+              <div className="px-4 pt-2 pb-3">
                 <button onClick={handleSignOut} className="block button w-full">
                   Sign Out
                 </button>
