@@ -9,10 +9,6 @@ export function Menu({ currentEndUrl }) {
   const [sideMenuActive, setSideMenuActive] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
 
-  const imageUrl = null;
-
-  
-
   let isGroupActive = {
     whatWeDo: false,
     resources: false,
@@ -41,14 +37,13 @@ export function Menu({ currentEndUrl }) {
       try {
         const { data, error } = await supabase
           .from('users')
-          .select('fname, lname, email')
+          .select('fname, lname, email, image_url')
           .eq("id", userId);
         if (data[0]) {
           setUserInfo(data[0]);
         }
         else { console.log("error"); }
         
-        // You may want to do setState here as well
       } catch (error) {
         console.log("error");
       }
@@ -178,24 +173,27 @@ export function Menu({ currentEndUrl }) {
 
         </div>
 
-        {!loggedIn &&
+        {!loggedIn ?
           <NavLink to="/signin" end className="block button my-1.5">
             Sign In
           </NavLink>
-        }
-        {loggedIn &&
+        :
           <div className="menu-dropdown-container">
             <div className="menu-dropdown-button rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark size-11 my-1.5 ml-2 mr-4 flex items-center justify-center text-white hover:text-primary-light hover:border-secondary-light hover:bg-secondary-light duration-200 cursor-pointer">
-              { imageUrl && <img className="hover:opacity-90 duration-200 min-w-full min-h-full" src={imageUrl} /> }
-              { !imageUrl && <i className="bi bi-person-fill text-[1.5rem]"></i> }
+              { (userInfo?.image_url != null && userInfo?.image_url != "") ? 
+                <img className="hover:opacity-90 duration-200 min-w-full min-h-full" src={userInfo.image_url} /> 
+              :
+                <i className="bi bi-person-fill text-[1.5rem]"></i> }
             </div>
             <div className="menu-dropdown right-3 py-1 -mt-[220px]">
               <div className="text-sm py-3 px-3 mx-2 mb-2 border-b-2 border-primary-light flex items-center">
 
                 <div className="mr-4">
                   <div className="rounded-full bg-primary-dark size-15 border-2 border-primary-dark overflow-hidden flex items-center justify-center">
-                    { imageUrl && <img className="min-w-full min-h-full" src={imageUrl} /> }
-                    { !imageUrl && <i className="bi bi-person-fill text-[2rem] text-white"></i> }
+                    { (userInfo?.image_url != null && userInfo?.image_url != "") ? 
+                      <img className="min-w-full min-h-full" src={userInfo.image_url} />
+                    :
+                      <i className="bi bi-person-fill text-[2rem] text-white"></i> }
                   </div>
                 </div>
                 <div className="pr-6">
