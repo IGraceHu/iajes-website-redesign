@@ -31,7 +31,7 @@ export function Menu({}) {
       try {
         const { data, error } = await supabase
           .from('users')
-          .select('fname, lname')
+          .select('fname, lname, email')
           .eq("id", userId);
         if (data[0]) {
           console.log(data);
@@ -154,11 +154,11 @@ export function Menu({}) {
             <div className="menu-dropdown-button link p-4">
               Meetings
             </div>
-            <div className="menu-dropdown -mt-[220px] py-1">
-              <NavLink to="/regional-meetings" end className="link py-3 px-4 pr-10">
+            <div className="menu-dropdown w-45 -mt-[220px] py-1">
+              <NavLink to="/regional-meetings" end className="link py-3 px-4">
                 Regional Meetings
               </NavLink>
-              <NavLink to="/international-meetings" end className="link py-3 px-4 pr-10">
+              <NavLink to="/international-meetings" end className="link py-3 px-4">
                 International Meetings
               </NavLink>
             </div>
@@ -177,16 +177,26 @@ export function Menu({}) {
         }
         {loggedIn &&
           <div className="menu-dropdown-container">
-            <div className="menu-dropdown-button rounded-full bg-primary-dark w-10 h-10 my-1.5 ml-2 mr-4 hover:bg-secondary-light duration-200 cursor-pointer" 
-                >
+            <div className="menu-dropdown-button rounded-full bg-primary-dark w-10 h-10 my-1.5 ml-2 mr-4 hover:bg-secondary-light duration-200 cursor-pointer">
             </div>
-            <div className="menu-dropdown right-3 -mt-[220px]">
-              <p className="text-sm p-4">{username?.fname} {username?.lname}</p>
-              <NavLink to={"/profile/" + currentUser?.id} end className="link p-4 pb-0">
+            <div className="menu-dropdown right-3 py-1 -mt-[220px]">
+              <div className="text-sm py-3 px-3 mx-2 mb-2 border-b-2 border-primary-light flex items-center">
+
+                <div className="mr-4">
+                  <div className="rounded-full bg-primary-dark w-15 h-15"></div>
+                </div>
+                <div className="pr-6">
+                  {username?.fname} {username?.lname}
+                  <br/>
+                  <span className="text-disabled-light italic">{username?.email}</span>
+                </div>
+
+              </div>
+              <NavLink to={"/profile/" + currentUser?.id} end className="link py-3 px-4 pr-10">
                 Profile
               </NavLink>
-              <div className="p-4">
-                <button onClick={handleSignOut} className="block button">
+              <div className="px-4 py-3">
+                <button onClick={handleSignOut} className="block button w-full">
                   Sign Out
                 </button>
               </div>
