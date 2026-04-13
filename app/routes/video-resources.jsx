@@ -22,18 +22,6 @@ async function getVideoResources() {
     return data || error;
 }
 
-async function getIsAdmin(userId) {
-    const { data, error } = await supabase
-        .from('users')
-        .select('role')
-        .eq("id", userId);
-    
-    if (data[0]) {
-        return data[0].id == "admin";
-    }
-    return error;
-}
-
 export async function loader({ params }) {    
     const videoResources = await getVideoResources();
     return {videoResources: videoResources};
@@ -88,21 +76,33 @@ export default function VideoResources({ loaderData }) {
 
     useEffect(() => {
 
+        const getIsAdmin = async (userId) => {
+            try {
+                const { data, error } = await supabase
+                .from('users')
+                .select('role')
+                .eq("id", userId);
+                if (data[0]) {
+                    setIsAdmin(data[0].role == "admin");
+                }
+                else { console.log("error"); }
+                
+            } catch (error) {
+                console.log("error");
+            }
+        }
+
         // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
           if (session?.user.id) {
-            setIsAdmin(getIsAdmin(session.user.id));
-          } else {
-            setIsAdmin(false);
+            getIsAdmin(session?.user.id);
           }
         });
     
         // Check current session on mount
         supabase.auth.getSession().then(({ data: { session } }) => {
           if (session?.user.id) {
-            setIsAdmin(getIsAdmin(session.user.id));
-          } else {
-            setIsAdmin(false);
+            getIsAdmin(session?.user.id);
           }
         });
 
