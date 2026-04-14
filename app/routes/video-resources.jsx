@@ -75,7 +75,6 @@ export default function VideoResources({ loaderData }) {
     const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
-
         const getIsAdmin = async (userId) => {
             try {
                 const { data, error } = await supabase
@@ -213,7 +212,7 @@ export default function VideoResources({ loaderData }) {
                             </div>
                             <label>
                                 Video resource thumbnail image:
-                                <input id="vid-resource-thumbnail" name="vid-resource-thumbnail" type="file" />
+                                <input id="vid-resource-thumbnail" name="vid-resource-thumbnail" type="file" accept=".jpg,.jpeg,.png" />
                                 <div className="input-error">This field is required.</div>
                             </label>
                         </div>
@@ -251,7 +250,7 @@ export default function VideoResources({ loaderData }) {
                             <br/>
                             <label>
                                 Speaker image:
-                                <input id="vid-resource-speaker-img" name="vid-resource-speaker-img" type="file" className="ml-3" />
+                                <input id="vid-resource-speaker-img" name="vid-resource-speaker-img" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
                                 <div className="input-error">This field is required.</div>
                             </label>
                             <br /><br />

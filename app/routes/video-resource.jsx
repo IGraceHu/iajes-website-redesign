@@ -1,7 +1,10 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
+import { Popup } from "../components/popup";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -17,6 +20,14 @@ async function getVideoResource(resourceId) {
         .select()
         .eq('id', resourceId)
     return data[0] || error;
+}
+
+async function deleteVideoResource(resourceId) {
+    const response = await supabase
+        .from('video resources')
+        .delete()
+        .eq('id', resourceId)
+    return response;
 }
 
 export async function loader({ params }) {
@@ -35,8 +46,61 @@ export async function loader({ params }) {
 }
 
 export default function VideoResource({ loaderData }) {
+    const navigate = useNavigate();
+    const [showDeletePopup, setShowDeletePopup] = useState(false);
+    const [isAdmin, setIsAdmin] = useState(false);
+
+    useEffect(() => {
+        const getIsAdmin = async (userId) => {
+            try {
+                const { data, error } = await supabase
+                .from('users')
+                .select('role')
+                .eq("id", userId);
+                if (data[0]) {
+                    setIsAdmin(data[0].role == "admin");
+                }
+                else { console.log("error"); }
+                
+            } catch (error) {
+                console.log("error");
+            }
+        }
+
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user.id) {
+            getIsAdmin(session?.user.id);
+            }
+        });
+    
+        // Check current session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user.id) {
+            getIsAdmin(session?.user.id);
+            }
+        });
+
+    
+        return () => subscription.unsubscribe();
+    }, []);
+
+    function handleDelete() {
+        try {
+            deleteVideoResource(loaderData.id);
+            navigate({pathname: "/video-resources"});
+        }
+        catch (error) {
+            console.log("Error");
+        }
+    }
+
     return (
         <>
+            <Popup id="delete-vidr" show={showDeletePopup} setShow={setShowDeletePopup} 
+                buttons={[{text:"Delete", onclick:handleDelete}]}>
+                <div className="text-center mt-6">Delete this video resource?</div>
+            </Popup>
             <Menu />
             <Banner type="blue">
                 <div className="relative z-1"> 
@@ -52,6 +116,7 @@ export default function VideoResource({ loaderData }) {
             </Banner>
 
             <div className="py-20 px-10 lg:px-40 duration-200">
+                { isAdmin ? <button className="button button-light button-red mb-4 float-right" onClick={() => setShowDeletePopup(true)}>Delete Video Resource</button> : <></>}
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
                         <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
                 </div>
