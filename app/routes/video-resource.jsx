@@ -116,7 +116,7 @@ export default function VideoResource({ loaderData }) {
             </Banner>
 
             <div className="py-20 px-10 lg:px-40 duration-200">
-                { isAdmin ? <button className="button button-light button-red mb-4 float-right" onClick={() => setShowDeletePopup(true)}>Delete Video Resource</button> : <></>}
+                { isAdmin ? <div className="text-right mb-4"><button className="button button-light button-red" onClick={() => setShowDeletePopup(true)}>Delete Video Resource</button></div> : <></>}
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
                         <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
                 </div>
