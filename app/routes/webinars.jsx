@@ -337,7 +337,7 @@ export default function Webinars() {
 
     return (
         <>
-            <Menu />
+            <Menu currentEndUrl="/webinars" />
             <div className="lg:px-40 px-10 py-20 duration-200">
                 <h1>Webinars</h1>
                 <div className="relative w-full grid lg:grid-cols-[min-content_auto] grid-rows-[min-content_auto] gap-5 z-1">
