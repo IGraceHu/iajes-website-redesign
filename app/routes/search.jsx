@@ -1,7 +1,23 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Pagination } from "../components/pagination";
+
+export function meta() {
+  return [
+    { title: "People" },
+    { name: "", content: "" },
+  ];
+}
+
+async function getPeople() {
+  const { data, error } = await supabase
+    .from('users')
+    .select()
+    
+  return data || error;
+}
 
 // ---- Placeholder data (replace later with real backend data) ----
 const PEOPLE = [
@@ -15,8 +31,8 @@ const PEOPLE = [
     school: "XIM University",
     major: "Computer Science",
     interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
+    task_force_role: "Task Force Member",
+    task_force: "Affiliated Task Force",
     region: "Asia",
   },
   {
@@ -29,8 +45,8 @@ const PEOPLE = [
     school: "XIM University",
     major: "Information Systems",
     interests: "Digital collaboration, web platforms",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
+    task_force_role: "Task Force Member",
+    task_force: "Affiliated Task Force",
     region: "Asia",
   },
   {
@@ -43,8 +59,8 @@ const PEOPLE = [
     school: "XIM University",
     major: "Computer Science",
     interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
+    task_force_role: "Task Force Member",
+    task_force: "Affiliated Task Force",
     region: "Asia",
   },
   {
@@ -57,8 +73,8 @@ const PEOPLE = [
     school: "XIM University",
     major: "Computer Science",
     interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
+    task_force_role: "Task Force Member",
+    task_force: "Affiliated Task Force",
     region: "Asia",
   },
   {
@@ -71,8 +87,8 @@ const PEOPLE = [
     school: "Santa Clara University",
     major: "Engineering",
     interests: "Systems design, security, leadership",
-    taskForceRole: "Task Force Lead",
-    taskForce: "Governing Board",
+    task_force_role: "Task Force Lead",
+    task_force: "Governing Board",
     region: "North America",
   },
 ];
@@ -98,34 +114,42 @@ const formatFilterLabel = (value) => {
     .join(" ");
 };
 
-export default function SearchRoute() {
+export async function loader({}) {
+  return getPeople();
+}
+
+export default function SearchRoute({ loaderData }) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTaskForces, setSelectedTaskForces] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
 
+  // console.log(loaderData);
+
   const taskForceOptions = useMemo(
-    () => Array.from(new Set(PEOPLE.map((person) => person.taskForce))).sort(),
+    () => Array.from(new Set(loaderData.map((person) => person.task_force))).sort(),
     []
   );
   const countryOptions = useMemo(
-    () => Array.from(new Set(PEOPLE.map((person) => person.country))).sort(),
+    () => Array.from(new Set(loaderData.map((person) => person.country))).sort(),
     []
   );
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PEOPLE.filter((person) => {
+    return loaderData.filter((person) => {
+      console.log(person);
+
       const matchesQuery =
         !q ||
-        person.name.toLowerCase().includes(q) ||
-        person.title.toLowerCase().includes(q) ||
-        person.institution.toLowerCase().includes(q) ||
-        person.school.toLowerCase().includes(q) ||
-        person.interests.toLowerCase().includes(q);
+        person?.fname.toLowerCase().includes(q);
+        // person.title.toLowerCase().includes(q) ||
+        // person?.institution.toLowerCase().includes(q) ||
+        // person.school.toLowerCase().includes(q) ||
+        // person?.interests.toLowerCase().includes(q);
 
       const matchesTaskForce =
-        selectedTaskForces.length === 0 || selectedTaskForces.includes(person.taskForce);
+        selectedTaskForces.length === 0 || selectedTaskForces.includes(person.task_force);
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
 
@@ -305,7 +329,7 @@ function PersonResultCard({ person }) {
     <div
       role="link"
       tabIndex={0}
-      aria-label={`View profile for ${person.name}`}
+      aria-label={`View profile for ${person.fname}`}
       onClick={handleNavigate}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -323,7 +347,7 @@ function PersonResultCard({ person }) {
           <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
         </div>
         <div>
-          <div className="text-lg font-semibold text-secondary-dark">{person.name}</div>
+          <div className="text-lg font-semibold text-secondary-dark">{person.fname}</div>
           <div className="mt-1 text-sm italic text-secondary-light">
             {person.title}, {person.institution}
           </div>
@@ -337,7 +361,7 @@ function PersonResultCard({ person }) {
             Country <span className="text-gray-dark/60">{person.country}</span>
           </div>
           <div className="italic">
-            School <span className="text-gray-dark/60">{person.school}</span>
+            Institution <span className="text-gray-dark/60">{person.institution}</span>
           </div>
         </div>
         <div className="space-y-2">
@@ -351,11 +375,14 @@ function PersonResultCard({ person }) {
       </div>
 
       <div className="flex flex-col items-end gap-4">
+        { person.task_force && 
         <div className="w-full max-w-[240px] rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-          <div className="font-semibold text-secondary-dark">{person.taskForceRole}:</div>
-          <div className="mt-1 text-gray-dark/70">{person.taskForce}</div>
-        </div>
+          <div className="font-semibold text-secondary-dark">{person.task_force_role}:</div>
+          <div className="mt-1 text-gray-dark/70">{person.task_force}</div>
+        </div> 
+        }
 
+        { person.allow_contact &&
         <button
           type="button"
           className="button flex w-full max-w-[240px] items-center justify-center gap-3 text-lg font-semibold"
@@ -367,6 +394,7 @@ function PersonResultCard({ person }) {
           <i className="bi bi-envelope" aria-hidden="true" />
           Contact
         </button>
+        }
       </div>
     </div>
   );
