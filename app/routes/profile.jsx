@@ -26,6 +26,7 @@ async function updateProfile(userId, formData) {
     .update({
       fname: formData.get("fname"),
       lname: formData.get("lname"),
+      allow_contact: formData.get("allow-contact") || false,
       tagline: formData.get("tagline"),
       job_position: formData.get("job-position"),
       institution: formData.get("institution"),
@@ -122,6 +123,12 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 defaultValue={draft.lname}
               />
               <div className="input-error">This field is required.</div>
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="allow-contact" className="checkbox">
+                  <input id="allow-contact" name="allow-contact" type="checkbox" 
+                         className={""} defaultChecked={draft.allow_contact} /><p>Allow site visitors to contact you?</p>
+              </label>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="tagline">Tagline</label>
@@ -389,31 +396,6 @@ export default function ProfileRoute({ loaderData }) {
     setShowPhotoPopup(false);
   };
 
-  
-
-  const photoPopupDetails = {
-    content: (
-      <div className="flex flex-col gap-4">
-        <div className="text-lg font-semibold text-secondary-dark">Profile Photo</div>
-        <div className="flex flex-col items-center gap-3">
-          <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-md border-2 border-gray-light bg-gray-light">
-            {photoDraftUrl ? (
-              <img src={photoDraftUrl} alt="Profile preview" className="h-full w-full object-cover" />
-            ) : (
-              <i className="bi bi-person-fill text-[72px] text-secondary-dark/60" aria-hidden="true" />
-            )}
-          </div>
-          <button type="button" className="button button-light" onClick={openPhotoPicker}>
-            Change Photo
-          </button>
-          <div className="text-xs text-gray-dark/70">Changes apply after you click Save Changes.</div>
-        </div>
-      </div>
-    ),
-    buttons: [{ text: "Save Changes", onclick: handlePhotoSave }],
-    defaultButton: { text: "Cancel", onclick: handlePhotoCancel },
-    closeOnBlur: false,
-  };
 
   const profilePhotoContent = profile.avatarUrl ? (
     <img
@@ -428,7 +410,25 @@ export default function ProfileRoute({ loaderData }) {
   return (
     <div className="min-h-screen bg-white">
       <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={currentUserId} />
-      <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} details={photoPopupDetails} />
+      <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} stayOnBlur
+             buttons={[{ text: "Save Changes", onclick: handlePhotoSave }]} >
+        <div className="flex flex-col gap-4">
+          <div className="text-lg font-semibold text-secondary-dark">Profile Photo</div>
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-md border-2 border-gray-light bg-gray-light">
+              {photoDraftUrl ? (
+                <img src={photoDraftUrl} alt="Profile preview" className="h-full w-full object-cover" />
+              ) : (
+                <i className="bi bi-person-fill text-[72px] text-secondary-dark/60" aria-hidden="true" />
+              )}
+            </div>
+            <button type="button" className="button button-light" onClick={openPhotoPicker}>
+              Change Photo
+            </button>
+            <div className="text-xs text-gray-dark/70">Changes apply after you click Save Changes.</div>
+          </div>
+        </div>
+      </Popup>
       <input
         ref={fileInputRef}
         type="file"
@@ -487,16 +487,18 @@ export default function ProfileRoute({ loaderData }) {
                   </div>
                 }
 
-                <button
-                  type="button"
-                  className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"
-                  onClick={() => {
-                    window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
-                  }}
-                >
-                  <i className="bi bi-envelope" aria-hidden="true" />
-                  Contact
-                </button>
+                { profile?.allow_contact &&
+                  <button
+                    type="button"
+                    className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"
+                    onClick={() => {
+                      window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
+                    }}
+                  >
+                    <i className="bi bi-envelope" aria-hidden="true" />
+                    Contact
+                  </button>
+                }
               </div>
 
               <p className="leading-relaxed text-gray-dark/80">{profile.biography}</p>
