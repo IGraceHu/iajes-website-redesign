@@ -126,27 +126,31 @@ export default function SearchRoute({ loaderData }) {
   const [selectedCountries, setSelectedCountries] = useState([]);
 
   // console.log(loaderData);
+  const taskForceOptionsSet = new Set(loaderData.map((person) => { return (person.task_force != "") ? person.task_force : null }));
+  taskForceOptionsSet.delete(null);
+
+  const countryOptionsSet = new Set(loaderData.map((person) => { return (person.country != "") ? person.country : null }));
+  countryOptionsSet.delete(null);
 
   const taskForceOptions = useMemo(
-    () => Array.from(new Set(loaderData.map((person) => person.task_force))).sort(),
+    () => Array.from(taskForceOptionsSet).sort(),
     []
   );
   const countryOptions = useMemo(
-    () => Array.from(new Set(loaderData.map((person) => person.country))).sort(),
+    () => Array.from(countryOptionsSet).sort(),
     []
   );
+
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     return loaderData.filter((person) => {
-      console.log(person);
 
       const matchesQuery =
         !q ||
-        person?.fname.toLowerCase().includes(q);
-        // person.title.toLowerCase().includes(q) ||
-        // person?.institution.toLowerCase().includes(q) ||
-        // person.school.toLowerCase().includes(q) ||
-        // person?.interests.toLowerCase().includes(q);
+        person?.fname?.toLowerCase().includes(q) ||
+        person?.institution?.toLowerCase().includes(q) ||
+        person?.interests?.toLowerCase().includes(q);
 
       const matchesTaskForce =
         selectedTaskForces.length === 0 || selectedTaskForces.includes(person.task_force);
@@ -319,25 +323,20 @@ function FilterGroup({ title, options, selected, onToggle }) {
 }
 
 function PersonResultCard({ person }) {
-  const navigate = useNavigate();
-
-  const handleNavigate = () => {
-    navigate(`/profile/${person.id}`);
-  };
 
   return (
-    <div
+    <a
+      href={`/profile/${person.id}`}
       role="link"
       tabIndex={0}
       aria-label={`View profile for ${person.fname}`}
-      onClick={handleNavigate}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           handleNavigate();
         }
       }}
-      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-[260px_1fr_320px]"
+      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-3"
     >
       <div className="flex items-center gap-4">
         <div
@@ -347,55 +346,43 @@ function PersonResultCard({ person }) {
           <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
         </div>
         <div>
-          <div className="text-lg font-semibold text-secondary-dark">{person.fname}</div>
+          <div className="text-lg font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
           <div className="mt-1 text-sm italic text-secondary-light">
-            {person.title}, {person.institution}
+            {person?.job_position && <span>{person.job_position}, </span> } {person.institution}
           </div>
           <div className="text-sm text-gray-dark/70">{person.email}</div>
         </div>
       </div>
 
-      <div className="grid gap-2 text-sm text-gray-dark/80 sm:grid-cols-2">
-        <div className="space-y-2">
-          <div className="italic">
-            Country <span className="text-gray-dark/60">{person.country}</span>
+      <div className="grid gap-2 text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
+        { person?.country &&
+          <div className="">
+            Country <span className="font-semibold text-secondary-dark">{person.country}</span>
           </div>
-          <div className="italic">
-            Institution <span className="text-gray-dark/60">{person.institution}</span>
+        }
+        { person?.institution &&
+          <div className="">
+            Institution <span className="font-semibold text-secondary-dark">{person.institution}</span>
           </div>
-        </div>
-        <div className="space-y-2">
-          <div className="italic">
-            Major <span className="text-gray-dark/60">{person.major}</span>
+        }
+        { person?.major &&
+          <div className="">
+            Major <span className="font-semibold text-secondary-dark">{person.major}</span>
           </div>
-          <div className="italic">
-            Research Interests <span className="text-gray-dark/60">{person.interests}</span>
+        }
+        { person?.research_interests &&
+          <div className="">
+            Research Interests <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
           </div>
-        </div>
+        }
       </div>
 
-      <div className="flex flex-col items-end gap-4">
-        { person.task_force && 
-        <div className="w-full max-w-[240px] rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
+      { person.task_force && 
+        <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
           <div className="font-semibold text-secondary-dark">{person.task_force_role}:</div>
           <div className="mt-1 text-gray-dark/70">{person.task_force}</div>
         </div> 
         }
-
-        { person.allow_contact &&
-        <button
-          type="button"
-          className="button flex w-full max-w-[240px] items-center justify-center gap-3 text-lg font-semibold"
-          onClick={(event) => {
-            event.stopPropagation();
-            window.location.href = `mailto:${person.email}?subject=IAJES%20Connection`;
-          }}
-        >
-          <i className="bi bi-envelope" aria-hidden="true" />
-          Contact
-        </button>
-        }
-      </div>
-    </div>
+    </a>
   );
 }
