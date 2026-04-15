@@ -487,7 +487,7 @@ export default function ProfileRoute({ loaderData }) {
                   </div>
                 }
 
-                { profile?.allow_contact &&
+                { (profile?.allow_contact || (currentUserId != null)) &&
                   <button
                     type="button"
                     className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"
