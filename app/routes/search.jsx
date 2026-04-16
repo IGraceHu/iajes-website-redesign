@@ -275,7 +275,7 @@ function PersonResultCard({ person }) {
         <div>
           <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
           <div className="my-1 italic text-secondary-light">
-            {person?.job_position && <span>{person.job_position}, </span> } {person.institution}
+            {person.job_position}{ person?.job_position && person?.institution && <span>, </span>}{person.institution}
           </div>
           <div className="text-sm text-gray-dark/70">{person.email}</div>
         </div>

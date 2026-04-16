@@ -514,7 +514,7 @@ export default function ProfileRoute({ loaderData }) {
                 {profile.fname} {profile.lname}
               </h4>
               <p className="mt-1 text-sm text-gray-dark/70">
-                {profile.job_position}, {profile.institution}
+                {profile.job_position}{ profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
               </p>
               <p className="text-sm italic text-gray-dark/60">{profile.tagline}</p>
             </div>
