@@ -14,7 +14,7 @@ export function meta() {
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select('id, fname, lname, email, image_url, job_position, country, institution, major, research_interests, task_force_role, task_force')
+    .select('id, fname, lname, email, image_url, job_position, languages, country, institution, major, research_interests, task_force_role, task_force')
     
   return data || error;
 }

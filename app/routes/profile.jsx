@@ -27,6 +27,7 @@ async function updateProfile(userId, formData) {
       fname: formData.get("fname"),
       lname: formData.get("lname"),
       allow_contact: formData.get("allow-contact") || false,
+      languages: formData.get("languages"),
       tagline: formData.get("tagline"),
       job_position: formData.get("job-position"),
       institution: formData.get("institution"),
@@ -131,6 +132,16 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
               </label>
             </div>
             <div className="md:col-span-2">
+              <label htmlFor="tagline">Languages</label>
+              <input
+                id="languages"
+                name="languages"
+                type="text"
+                className="input-text w-full"
+                defaultValue={draft.languages}
+              />
+            </div>
+            <div className="md:col-span-2">
               <label htmlFor="tagline">Tagline</label>
               <input
                 id="tagline"
@@ -138,6 +149,16 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 type="text"
                 className="input-text w-full"
                 defaultValue={draft.tagline}
+              />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="biography">Biography</label>
+              <textarea
+                id="biography"
+                name="biography"
+                type="text"
+                className="input-text w-full"
+                defaultValue={draft.biography}
               />
             </div>
           </div>
@@ -186,6 +207,16 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 defaultValue={draft.major}
               />
             </div>
+            <div className="md:col-span-2">
+              <label htmlFor="research-interests">Research Interests</label>
+              <textarea
+                id="research-interests"
+                name="research-interests"
+                type="text"
+                className="input-text w-full"
+                defaultValue={draft.research_interests}
+              />
+            </div>
           </div>
         </fieldset>
 
@@ -210,32 +241,6 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 type="text"
                 className="input-text w-full"
                 defaultValue={draft.task_force_role}
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Bio</div>
-          <div className="mt-3 grid gap-4">
-            <div>
-              <label htmlFor="research-interests">Research Interests</label>
-              <textarea
-                id="research-interests"
-                name="research-interests"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.research_interests}
-              />
-            </div>
-            <div>
-              <label htmlFor="biography">Biography</label>
-              <textarea
-                id="biography"
-                name="biography"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.biography}
               />
             </div>
           </div>
@@ -506,10 +511,11 @@ export default function ProfileRoute({ loaderData }) {
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
               <div className="grid gap-3 text-sm">
-                <InfoRow label="Country" value={profile.country} />
-                <InfoRow label="Institution" value={profile.institution} />
-                <InfoRow label="Major" value={profile.major} />
-                <InfoRow label="Research Interests" value={profile.research_interests} />
+                { profile.country && <InfoRow label="Country" value={profile.country} /> }
+                { profile.languages && <InfoRow label="Languages" value={profile.languages} /> }
+                { profile.institution && <InfoRow label="Institution" value={profile.institution} /> }
+                { profile.major && <InfoRow label="Major" value={profile.major} /> }
+                { profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} /> }
               </div>
 
               <div className="flex items-center gap-4 text-xl text-secondary-light">
@@ -530,7 +536,7 @@ export default function ProfileRoute({ loaderData }) {
 function InfoRow({ label, value }) {
   if (value !== (null || "")) {
     return (
-      <div className="grid grid-cols-[140px_1fr] gap-4">
+      <div className="grid grid-cols-[70px_1fr] gap-4">
         <p className="italic text-gray-dark/60 py-0">{label}</p>
         <p className="font-semibold text-secondary-dark py-0">{value}</p>
       </div>
