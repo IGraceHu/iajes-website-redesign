@@ -6,9 +6,9 @@ import { Menu } from "../components/menu";
 import { Popup, PopupForm } from "../components/popup";
 import "../styles/profile.css";
 
-export function meta() {
+export function meta({ loaderData }) {
   return [
-    { title: "IAJES Profile" },
+    { title: loaderData.fname + " " + loaderData.lname },
     { name: "", content: "" },
   ];
 }
