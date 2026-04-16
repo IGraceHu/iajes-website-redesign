@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
+import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import "../styles/profile.css";
 
@@ -496,7 +497,7 @@ export default function ProfileRoute({ loaderData }) {
         <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-16 shadow-sm relative z-10 border" + bannerClass}>
           <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
             <div className="flex flex-col items-center text-center">
-              <div className="relative -mt-12">
+              <div className="relative -mt-8">
                 <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-white bg-gray-light overflow-hidden">
                   {profilePhotoContent}
                 </div>
@@ -564,6 +565,7 @@ export default function ProfileRoute({ loaderData }) {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
@@ -594,7 +596,7 @@ function IconSquare({ className, title, icon, onClick, small=false }) {
 }
 
 function SocialIcon({ label, href, icon }) {
-  if (href !== (null || "")) {
+  if (href !== null && href !== "") {
     
     return (
       <a

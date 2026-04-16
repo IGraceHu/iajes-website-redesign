@@ -56,7 +56,8 @@ async function signUp(data) {
           created_at: authData.user.created_at,
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
           email: data.email,
-          role: "member"
+          role: "member",
+          subscribed: data.subscribe
         }]);
 
       if (dbError) {
@@ -65,7 +66,7 @@ async function signUp(data) {
       }
     }
 
-    return { success: true };
+    return { success: true, id: authData.user.id };
   } catch (err) {
     console.error("Sign up error:", err);
     return { success: false, message: "An unexpected error occurred. Please try again." };
@@ -115,7 +116,7 @@ export default function SignUp() {
     if (validated) {
       const result = await signUp(data);
       if (result.success) {
-        navigate("/");
+        navigate("/profile/" + result.id);
       } else {
         setErrorMessage(result.message);
         setShowPopup(true);
@@ -152,9 +153,9 @@ export default function SignUp() {
         <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
       </Popup>
 
-      <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
+      <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="w-18 h-full" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
@@ -164,14 +165,14 @@ export default function SignUp() {
           <div className="w-full mb-5 grid md:grid-cols-2 grid-cols-1 gap-5">
             <div>
               <label htmlFor="fname">First name:</label><br />
-              <input id="fname" name="fname" type="text" defaultValue={state?.fname}
+              <input id="fname" name="fname" type="text" defaultValue={state?.fname} placeholder="First name"
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "fname")} />
               <div className="input-error">This field is required.</div>
             </div>
             <div>
               <label htmlFor="lname">Last name:</label><br />
-              <input id="lname" name="lname" type="text" defaultValue={state?.lname}
+              <input id="lname" name="lname" type="text" defaultValue={state?.lname} placeholder="Last name"
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "lname")} />
               <div className="input-error">This field is required.</div>
@@ -179,7 +180,7 @@ export default function SignUp() {
           </div>
 
           <label htmlFor="email">Email:</label><br />
-          <input id="email" name="email" type="text" defaultValue={state?.email}
+          <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
           <div className="input-error">Please enter a valid email address.</div>
@@ -187,7 +188,7 @@ export default function SignUp() {
           <br /><br />
 
           <label htmlFor="pwd">Create Password:</label><br />
-          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
+          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => { checkPassword(); checkEmpty(e.target.value, "pwd"); }} />
           <div className="input-error">Please enter a password.</div>
@@ -195,7 +196,7 @@ export default function SignUp() {
           <br /><br />
 
           <label htmlFor="re-pwd">Re-enter Password:</label><br />
-          <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd}
+          <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd} placeholder="Re-enter Password"
             className={"input-text w-full " + (formRequired?.rePwd && "input-required")}
             onChange={checkPassword} />
           <div className="input-error">Passwords must match.</div>

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Pagination } from "../components/pagination";
+import { Footer } from "../components/footer";
 
 export function meta() {
   return [
@@ -223,6 +224,7 @@ export default function SearchRoute({ loaderData }) {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
