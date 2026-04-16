@@ -230,7 +230,7 @@ export default function SearchRoute({ loaderData }) {
 function FilterGroup({ title, options, selected, onToggle }) {
   return (
     <div>
-      <div className="mb-3 text-sm font-semibold text-secondary-dark">{title}</div>
+      <div className="mb-3 font-semibold text-secondary-dark">{title}</div>
       <div className="flex flex-col gap-2">
         {options.map((option) => (
           <label key={option} className="checkbox">
@@ -239,7 +239,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
               checked={selected.includes(option)}
               onChange={() => onToggle(option)}
             />
-            <p className="text-sm text-gray-dark/80">{formatFilterLabel(option)}</p>
+            <p className="text-gray-dark/80">{formatFilterLabel(option)}</p>
           </label>
         ))}
       </div>
@@ -271,43 +271,45 @@ function PersonResultCard({ person }) {
           <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
         </div>
         <div>
-          <div className="text-lg font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
-          <div className="mt-1 text-sm italic text-secondary-light">
+          <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
+          <div className="my-1 italic text-secondary-light">
             {person?.job_position && <span>{person.job_position}, </span> } {person.institution}
           </div>
           <div className="text-sm text-gray-dark/70">{person.email}</div>
         </div>
       </div>
 
-      <div className="grid gap-2 text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
+      <div className="grid text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
         { person?.country &&
           <div className="">
-            Country <span className="font-semibold text-secondary-dark">{person.country}</span>
+            <span className="mr-1">Country</span> <span className="font-semibold text-secondary-dark">{person.country}</span>
           </div>
         }
-        { person?.institution &&
+        { person?.languages &&
           <div className="">
-            Institution <span className="font-semibold text-secondary-dark">{person.institution}</span>
+            <span className="mr-1">Languages</span> <span className="font-semibold text-secondary-dark">{person.languages}</span>
           </div>
         }
         { person?.major &&
           <div className="">
-            Major <span className="font-semibold text-secondary-dark">{person.major}</span>
+            <span className="mr-1">Major</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
           </div>
         }
         { person?.research_interests &&
           <div className="">
-            Research Interests <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
+            <span className="mr-1">Research Interests</span> <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
           </div>
         }
       </div>
-
-      { person.task_force && 
+      <div>
+        { person.task_force && 
         <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
           <div className="font-semibold text-secondary-dark">{person.task_force_role}:</div>
           <div className="mt-1 text-gray-dark/70">{person.task_force}</div>
         </div> 
         }
+      </div>
+      
     </a>
   );
 }
