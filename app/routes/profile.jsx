@@ -4,6 +4,7 @@ import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup, PopupForm } from "../components/popup";
+import "../styles/profile.css";
 
 export function meta() {
   return [
@@ -28,6 +29,7 @@ async function updateProfile(userId, formData) {
       lname: formData.get("lname"),
       allow_contact: formData.get("allow-contact") || false,
       languages: formData.get("languages"),
+      banner_type: formData.get("banner-type"),
       tagline: formData.get("tagline"),
       job_position: formData.get("job-position"),
       institution: formData.get("institution"),
@@ -142,7 +144,21 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
               />
             </div>
             <div>
-              <label htmlFor="tagline">Languages</label>
+              <p>Banner Type:</p>
+              <div className="mt-1">
+                <label htmlFor="banner-type-0" className="radio-button gray">
+                      <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0}/><p>Gray</p>
+                </label>
+                <label htmlFor="banner-type-1" className="radio-button green">
+                    <input id="banner-type-1" type="radio" name="banner-type" value="1" defaultChecked={draft.banner_type == 1}/><p>Green</p>
+                </label>
+                <label htmlFor="banner-type-2" className="radio-button blue">
+                    <input id="banner-type-2" type="radio" name="banner-type" value="2" defaultChecked={draft.banner_type == 2}/><p>Blue</p>
+                </label>
+                <label htmlFor="banner-type-3" className="radio-button dark-blue">
+                    <input id="banner-type-3" type="radio" name="banner-type" value="3" defaultChecked={draft.banner_type == 3}/><p>Dark Blue</p>
+                </label>
+              </div>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="tagline">Tagline</label>
@@ -319,6 +335,20 @@ export default function ProfileRoute({ loaderData }) {
   const fileInputRef = useRef(null);
 
   const [currentUserId, setCurrentUserId] = useState(null);
+  
+  let bannerClass = "-gray-light"
+  switch (loaderData.banner_type) {
+    case 1:
+      bannerClass = "-primary-dark";
+      break;
+    case 2:
+      bannerClass = "-secondary-light";
+      break;
+    case 3:
+      bannerClass = "-secondary-dark";
+      break;
+  };
+
 
   useEffect(() => {
     // Listen for auth state changes
@@ -368,7 +398,6 @@ export default function ProfileRoute({ loaderData }) {
   const handleOpenEdit = () => {
     setShowPopup(true);
   };
-
 
 
   const openPhotoPicker = () => {
@@ -453,7 +482,10 @@ export default function ProfileRoute({ loaderData }) {
             Back to Search
           </a>
         </div>
-        <div className="relative h-[220px] rounded-md bg-gray-light" aria-label="Profile banner placeholder">
+        <div className={"relative h-[220px] rounded-md overflow-hidden bg" + bannerClass} aria-label="Profile banner placeholder">
+          <div className={"relative w-full opacity-50"}>
+              <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
+          </div>
           {currentUserId == profile.id ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
               <IconSquare title="Edit" icon="bi-pencil" onClick={handleOpenEdit} />
@@ -461,7 +493,7 @@ export default function ProfileRoute({ loaderData }) {
           ) : null}
         </div>
 
-        <div className="-mt-16 rounded-md border-2 border-gray-light bg-white p-6 pt-16 shadow-sm relative z-10">
+        <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-16 shadow-sm relative z-10 border" + bannerClass}>
           <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
             <div className="flex flex-col items-center text-center">
               <div className="relative -mt-12">

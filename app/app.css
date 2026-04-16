@@ -510,6 +510,58 @@ input[type="file"].input-disabled::file-selector-button:hover {
   cursor: default;
 }
 
+
+.radio-button {
+  display: inline-block;
+  margin-right: var(--spacing);
+  margin-bottom: var(--spacing);
+}
+
+.radio-button:hover {
+  cursor: pointer;
+}
+
+.radio-button > input {
+  display: none;
+}
+
+.radio-button > p {
+  background-color: var(--color-white);
+  color: var(--color-primary-dark);
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+  border: 2px solid var(--color-primary-dark);
+  border-radius: var(--radius-md);
+  text-align: center;
+  transition: 0.2s;
+}
+
+.radio-button:hover > p {
+  border-color: var(--color-secondary-light);
+  color: var(--color-secondary-light);
+}
+
+.radio-button > input:checked + p {
+  background-color: var(--color-primary-dark);
+  color: var(--color-white);
+}
+
+.radio-button:hover > input:checked + p {
+  border-color: var(--color-primary-dark);
+}
+
+.radio-button > input[type="radio"]:disabled + p,
+.radio-button > input[type="radio"].input-disabled + p {
+  cursor: default;
+  border-color: var(--color-disabled-light);
+  color: var(--color-disabled-light);
+}
+
+.radio-button > input[type="radio"]:disabled:checked + p,
+.radio-button > input[type="radio"].input-disabled:checked + p {
+  background-color: var(--color-disabled-light);
+  color: var(--color-white);
+}
+
 .input-text.input-required {
   border-color: var(--color-error);
 }
@@ -529,6 +581,22 @@ input[type="file"].input-disabled::file-selector-button:hover {
 }
 .radio:hover > input[type="radio"].input-required + p:before {
   background-color: var(--color-red-100);
+}
+
+.radio-button > input[type="radio"].input-required + p {
+  border-color: var(--color-error);
+  color: var(--color-error);
+}
+.radio-button:hover > input[type="radio"].input-required + p {
+  border-color: #71000f;
+  color: #71000f;
+}
+.radio-button > input[type="radio"].input-required:checked + p {
+  background-color: var(--color-error);
+  color: var(--color-white);
+}
+.radio-button:hover > input[type="radio"].input-required:checked + p {
+  border-color: var(--color-error);
 }
 
 input[type="file"].input-required::file-selector-button {
