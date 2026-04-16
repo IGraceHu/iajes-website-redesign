@@ -131,8 +131,8 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                          className={""} defaultChecked={draft.allow_contact} /><p>Allow site visitors to contact you?</p>
               </label>
             </div>
-            <div className="md:col-span-2">
-              <label htmlFor="tagline">Languages</label>
+            <div className="">
+              <label htmlFor="languages">Languages</label>
               <input
                 id="languages"
                 name="languages"
@@ -140,6 +140,9 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 className="input-text w-full"
                 defaultValue={draft.languages}
               />
+            </div>
+            <div>
+              <label htmlFor="tagline">Languages</label>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="tagline">Tagline</label>
