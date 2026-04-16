@@ -14,86 +14,12 @@ export function meta() {
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select()
+    .select('id, fname, lname, email, image_url, job_position, country, institution, major, research_interests, task_force_role, task_force')
     
   return data || error;
 }
 
-// ---- Placeholder data (replace later with real backend data) ----
-const PEOPLE = [
-  {
-    id: "1",
-    name: "John Smith",
-    title: "Professor",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    task_force_role: "Task Force Member",
-    task_force: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "2",
-    name: "John Smith",
-    title: "Researcher",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Information Systems",
-    interests: "Digital collaboration, web platforms",
-    task_force_role: "Task Force Member",
-    task_force: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "3",
-    name: "John Smith",
-    title: "Professor",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    task_force_role: "Task Force Member",
-    task_force: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "4",
-    name: "John Smith",
-    title: "Professor",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    task_force_role: "Task Force Member",
-    task_force: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "5",
-    name: "Jane Doe",
-    title: "Dean",
-    institution: "Santa Clara University",
-    email: "janedoe@scu.edu",
-    country: "USA",
-    school: "Santa Clara University",
-    major: "Engineering",
-    interests: "Systems design, security, leadership",
-    task_force_role: "Task Force Lead",
-    task_force: "Governing Board",
-    region: "North America",
-  },
-];
-
-const PAGE_SIZE = 4; // Figma shows 4 cards on the page screenshot
+const PAGE_SIZE = 8; 
 
 const formatFilterLabel = (value) => {
   if (!value) return value;
@@ -125,7 +51,6 @@ export default function SearchRoute({ loaderData }) {
   const [selectedTaskForces, setSelectedTaskForces] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
 
-  // console.log(loaderData);
   const taskForceOptionsSet = new Set(loaderData.map((person) => { return (person.task_force != "") ? person.task_force : null }));
   taskForceOptionsSet.delete(null);
 
@@ -199,7 +124,7 @@ export default function SearchRoute({ loaderData }) {
       <div className="mx-auto max-w-[1100px] px-6 pb-20 pt-10">
         <div className="text-center">
           <h2 className="mb-2 normal-case text-primary-dark">
-            Search people, university, research interests
+            Search People
           </h2>
           <p
             className={`text-sm text-gray-dark/70 transition-opacity duration-200 ${
@@ -219,7 +144,7 @@ export default function SearchRoute({ loaderData }) {
               value={query}
               onChange={handleQueryChange}
               onInput={handleQueryChange}
-              placeholder="Search people, university, research interests"
+              placeholder="Search people, institutions, or research interests"
               className="w-full bg-transparent text-sm text-gray-dark outline-none"
             />
           </div>
@@ -273,12 +198,12 @@ export default function SearchRoute({ loaderData }) {
               </div>
               <div className="text-lg font-semibold text-secondary-light">Start searching</div>
               <div className="mt-2 text-sm text-gray-dark/70">
-                Type a name, university, or research interest to find someone.
+                Type a name, institution, or research interest to find someone.
               </div>
             </div>
           ) : results.length === 0 ? (
             <div className="rounded-md border-2 border-gray-light bg-white px-6 py-8 text-sm text-gray-dark/70">
-              No results found. Try a different name, university, or research interest.
+              No results found. Try a different name, institution, or research interest.
             </div>
           ) : (
             <>
