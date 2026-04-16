@@ -113,7 +113,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="fname"
                 type="text"
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
-                defaultValue={draft.fname}
+                defaultValue={draft.fname} placeholder="First name"
               />
               <div className="input-error">This field is required.</div>
             </div>
@@ -124,7 +124,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="lname"
                 type="text"
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
-                defaultValue={draft.lname}
+                defaultValue={draft.lname} placeholder="Last name"
               />
               <div className="input-error">This field is required.</div>
             </div>
@@ -141,7 +141,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="languages"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.languages}
+                defaultValue={draft.languages} placeholder="Languages"
               />
             </div>
             <div>
@@ -168,7 +168,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="tagline"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.tagline}
+                defaultValue={draft.tagline} placeholder="Tagline"
               />
             </div>
             <div className="md:col-span-2">
@@ -177,8 +177,8 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 id="biography"
                 name="biography"
                 type="text"
-                className="input-text w-full"
-                defaultValue={draft.biography}
+                className="input-text w-full h-40"
+                defaultValue={draft.biography} placeholder="Biography..."
               />
             </div>
           </div>
@@ -194,7 +194,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="job-position"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.job_position}
+                defaultValue={draft.job_position}  placeholder="Job/Position"
               />
             </div>
             <div>
@@ -204,7 +204,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="institution"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.institution}
+                defaultValue={draft.institution} placeholder="Institution"
               />
             </div>
             <div>
@@ -214,7 +214,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="country"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.country}
+                defaultValue={draft.country} placeholder="Country"
               />
             </div>
             <div>
@@ -224,7 +224,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="major"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.major}
+                defaultValue={draft.major} placeholder="Major"
               />
             </div>
             <div className="md:col-span-2">
@@ -234,7 +234,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="research-interests"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.research_interests}
+                defaultValue={draft.research_interests} placeholder="Research interests..."
               />
             </div>
           </div>
@@ -250,7 +250,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="task-force"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.task_force}
+                defaultValue={draft.task_force} placeholder="Task Force"
               />
             </div>
             <div>
@@ -260,7 +260,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="task-force-role"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.task_force_role}
+                defaultValue={draft.task_force_role} placeholder="Task Force Role"
               />
             </div>
           </div>
@@ -276,7 +276,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="url-linkedin"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.url_linkedin}
+                defaultValue={draft.url_linkedin} placeholder="LinkedIn URL"
               />
             </div>
             <div>
@@ -286,7 +286,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="url-instagram"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.url_instagram}
+                defaultValue={draft.url_instagram} placeholder="Instagram URL"
               />
             </div>
             <div>
@@ -296,7 +296,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="url-twitter"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.url_twitter}
+                defaultValue={draft.url_twitter} placeholder="X (Twitter) URL"
               />
             </div>
             <div>
@@ -306,7 +306,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="url-facebook"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.url_facebook}
+                defaultValue={draft.url_facebook} placeholder="Facebook URL"
               />
             </div>
             <div className="md:col-span-2">
@@ -316,7 +316,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
                 name="url-website"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.url_website}
+                defaultValue={draft.url_website} placeholder="Website URL"
               />
             </div>
           </div>
