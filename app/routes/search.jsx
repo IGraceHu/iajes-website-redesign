@@ -250,7 +250,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
 }
 
 function PersonResultCard({ person }) {
-
+  console.log(person);
   return (
     <a
       href={`/profile/${person.id}`}
@@ -306,8 +306,8 @@ function PersonResultCard({ person }) {
       <div>
         { person.task_force && 
         <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-          <div className="font-semibold text-secondary-dark">{person.task_force_role}:</div>
-          <div className="mt-1 text-gray-dark/70">{person.task_force}</div>
+          <div className="font-semibold text-secondary-dark">{person.task_force}</div>
+          <div className="mt-1 text-gray-dark/70">{person.task_force_role}</div>
         </div> 
         }
       </div>

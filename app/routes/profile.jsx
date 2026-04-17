@@ -9,9 +9,20 @@ import "../styles/profile.css";
 
 export function meta({ loaderData }) {
   return [
-    { title: loaderData.fname + " " + loaderData.lname },
+    { title: loaderData.person.fname + " " + loaderData.person.lname },
     { name: "", content: "" },
   ];
+}
+
+async function getTaskForces() {
+  const { data, error } = await supabase
+    .from('task forces')
+    .select('name, url')
+  if (data) {
+    // const list = data.map((item) => item.name);
+    return data;
+  }
+  return error;
 }
 
 async function getProfile(userId) {
@@ -51,10 +62,12 @@ async function updateProfile(userId, formData) {
 }
 
 export async function loader({ params }) {
-  return getProfile(params.id);
+  const person = await getProfile(params.id);
+  const taskForceList = await getTaskForces();
+  return { person: person, taskForceList: taskForceList };
 }
 
-function EditPopup({ showPopup, setShowPopup, userId }) {
+function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
   const [hasError, setHasError] = useState(false);
@@ -245,13 +258,10 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
           <div className="mt-3 grid gap-4 md:grid-cols-2">
             <div>
               <label htmlFor="task-force">Task Force</label>
-              <input
-                id="task-force"
-                name="task-force"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.task_force} placeholder="Task Force"
-              />
+              <select id="task-force" name="task-force" className="input input-text w-full" >
+                <option value="">None</option>
+                { (taskForceList) ? taskForceList.map((taskForce) => <option key={taskForce.url} value={taskForce.name} selected={taskForce.name == draft.task_force}>{taskForce.name}</option>) : <></>}
+              </select>
             </div>
             <div>
               <label htmlFor="task-force-role">Task Force Role</label>
@@ -327,7 +337,7 @@ function EditPopup({ showPopup, setShowPopup, userId }) {
 }
 
 export default function ProfileRoute({ loaderData }) {
-  const basePerson = loaderData;
+  const basePerson = loaderData.person;
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
   const [showPhotoPopup, setShowPhotoPopup] = useState(false);
@@ -336,9 +346,13 @@ export default function ProfileRoute({ loaderData }) {
   const fileInputRef = useRef(null);
 
   const [currentUserId, setCurrentUserId] = useState(null);
-  
+
+  const userTaskForceUrl = loaderData.taskForceList.find((val, index, array) => {
+    return val.name == basePerson.task_force;
+  })?.url;
+
   let bannerClass = "-gray-light"
-  switch (loaderData.banner_type) {
+  switch (basePerson.banner_type) {
     case 1:
       bannerClass = "-primary-dark";
       break;
@@ -447,7 +461,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={currentUserId} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={currentUserId} taskForceList={loaderData.taskForceList} />
       <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} stayOnBlur
              buttons={[{ text: "Save Changes", onclick: handlePhotoSave }]} >
         <div className="flex flex-col gap-4">
@@ -522,10 +536,11 @@ export default function ProfileRoute({ loaderData }) {
             <div className="flex flex-col gap-4">
               <div className="flex flex-col w-full gap-4 sm:flex-row">
                 { profile?.task_force &&
-                  <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-                    <p className="font-semibold text-secondary-dark">{profile.task_force_role}:</p>
-                    <p className="mt-1 text-gray-dark/70">{profile.task_force}</p>
-                  </div>
+                  <a href={"/task-forces/" + userTaskForceUrl} className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-sm hover:border-secondary-light">
+                    <p className="font-semibold text-secondary-dark">{profile.task_force}</p>
+                    { profile?.task_force_role &&
+                    <p className="mt-1 text-gray-dark/70">{profile.task_force_role}</p> }
+                  </a>
                 }
 
                 { (profile?.allow_contact || (currentUserId != null)) &&
