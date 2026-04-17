@@ -508,6 +508,9 @@ export default function ProfileRoute({ loaderData }) {
           ) : null}
         </div>
 
+        {/* This makes the colors able to be used by border cuz Tailwind gets confused if it isnt explicitly written */}
+        <span className="border-primary-dark border-secondary-light border-secondary-dark"></span>
+        
         <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-16 shadow-sm relative z-10 border" + bannerClass}>
           <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
             <div className="flex flex-col items-center text-center">
