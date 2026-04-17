@@ -250,7 +250,6 @@ function FilterGroup({ title, options, selected, onToggle }) {
 }
 
 function PersonResultCard({ person }) {
-  console.log(person);
   return (
     <a
       href={`/profile/${person.id}`}
