@@ -1,13 +1,14 @@
 import { useState } from 'react';
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Banner } from "../components/graphics";
 
 
-export function meta() {
+export function meta({ loaderData }) {
   return [
-    { title: "Task Force" },
+    { title: "Task Force: " + loaderData.name },
     // { name: "description", content: "Welcome to React Router!" },
   ];
 }
@@ -17,8 +18,8 @@ const tfInfoTemp = [
     url: "research-and-academic-cooperation",
     name: "Research & Academic Cooperation",
     shortDesc: "The Task Force on Research and Academic Cooperation, with its commendable achievements, aims to create a real network between people who perform academic work at the IAJES institutions. We strive to connect people, develop synergies, and strengthen all engineering programs within the network. To date, we have successfully conducted two projects that have provided results and potential opportunities, and we continue to work to connect more people and institutions to improve research and cooperation. ",
-    textarea1: "The Task Force on Research and Academic Cooperation, with its commendable achievements, aims to create a real network between people who perform academic work at the IAJES institutions. We strive to connect people, develop synergies, and strengthen all engineering programs within the network. To date, we have successfully conducted two projects that have provided results and potential opportunities, and we continue to work to connect more people and institutions to improve research and cooperation. ",
-    textarea2: `- 16-03-2021: Participation in the webinar presenting the PhD Cooperative Program of IQS. 
+    content_top: "The Task Force on Research and Academic Cooperation, with its commendable achievements, aims to create a real network between people who perform academic work at the IAJES institutions. We strive to connect people, develop synergies, and strengthen all engineering programs within the network. To date, we have successfully conducted two projects that have provided results and potential opportunities, and we continue to work to connect more people and institutions to improve research and cooperation. ",
+    content_bottom: `- 16-03-2021: Participation in the webinar presenting the PhD Cooperative Program of IQS. 
 - 30-03-2021: The Steering Committee Accepts Rosa Nomen as the team leader of this Task Force.
 - 11-05-2021: First webinar of the Research & Cooperation Task Force and definition of our work for the next three years.
 - 10-09-2021: The first campaign of the Mentoring was launched.
@@ -29,7 +30,7 @@ const tfInfoTemp = [
 - April 2024: New Webinar on Ignatian Mentoring, strengthening the understanding of how Ignatian Spirituality enlightens Mentoring. A reflection on the effectiveness of the Mentoring Project and future steps was also considered. 
 - May 2024: The process is open for the Collaborative Ph.D. and Postdoctoral Program candidates.`,
     imageURL: null,
-    people: [
+    team_members: [
       {
         imageURL: "https://lh3.googleusercontent.com/sitesv/AAzXCkee2B7Ov_gofW_iaUKmjUonmMx36p9ryUJKOIWEV2qpObBByLRUd4xK7uvCqRSucGRZzVF0OVjeaMc2_1X2SSvCEFXQn4CM4Ij5UWP0p2boR63ZFfPdmxOlZYqndJK1x1Bdyedn1HdtGETMFPW7V0t8D21G4JZZcLGvt-Bk5K57EchaFLUuxqmntqijNbat7kTVQjBvbsvxi085Jf5Ebsf_o0QqoYynKhrR=w1280",
         name: "Rosa Nomen",
@@ -109,7 +110,7 @@ const tfInfoTemp = [
     desc: "desc",
     imageUrl: null,
     url: "name-2",
-    people: []
+    team_members: []
   },
   {
     name: "name 3",
@@ -149,14 +150,22 @@ const tfInfoTemp = [
   }
 ]
 
+async function getTaskForce(taskForceUrl) {
+  const { data, error } = await supabase
+    .from('task forces')
+    .select()
+    .eq('url', taskForceUrl)
+  return data[0] || error;
+}
+
 export async function loader({ params }) {
-  const found = tfInfoTemp.find((tfInf) => tfInf.url == params.tfName);
-  const tf = found || {};
+  // const found = tfInfoTemp.find((tfInf) => tfInf.url == params.tfName);
+  const tf = await getTaskForce(params.tfName);
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
-  tf.people = tf.people || [];
+  tf.team_members = tf.team_members || [];
   tf.projects = tf.projects || [];
-  tf.textarea1 = tf.textarea1 || "";
-  tf.textarea2 = tf.textarea2 || "";
+  tf.content_top = tf.content_top || "";
+  tf.content_bottom = tf.content_bottom || "";
   tf.name = tf.name || "";
   return tf;
 }
@@ -227,7 +236,7 @@ function EditTextarea2Popup({showPopup, setShowPopup, taskForceId, userId}) {
   )
 }
 
-function EditTeam({showPopup, setShowPopup, taskForceId, userId, people}) {
+function EditTeam({showPopup, setShowPopup, taskForceId, userId, team_members}) {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
   const [editMember, setEditMember] = useState({});
 
@@ -245,7 +254,7 @@ function EditTeam({showPopup, setShowPopup, taskForceId, userId, people}) {
       <Popup id="tf-team" show={showPopup} setShow={setShowPopup}>
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
-          {people.map(person => <div key={person.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+          {team_members.map(person => <div key={person.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
             <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(person)}>
               <p className="pr-5 mr-auto" style={{ color: "black" }}>{person.name}</p>
               <i className="bi bi-pencil-square"></i>
@@ -258,16 +267,16 @@ function EditTeam({showPopup, setShowPopup, taskForceId, userId, people}) {
 
       <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={validate} nested>
         <h4>Edit Team Member</h4>
-        <label for="edit-member-name">Name:</label><br />
+        <label htmlFor="edit-member-name">Name:</label><br />
         <input id="edit-person-name" name="edit-person-name" type="text" className="input input-text w-full" />
         <br /><br />
-        <label for="edit-member-loc">Location:</label><br />
+        <label htmlFor="edit-member-loc">Location:</label><br />
         <input id="edit-member-loc" name="edit-member-loc" type="text" className="input input-text w-full" />
         <br /><br />
-        <label for="edit-member-contact">Contact:</label><br />
+        <label htmlFor="edit-member-contact">Contact:</label><br />
         <input id="edit-member-contact" name="edit-member-contact" type="text" className="input input-text w-full" />
         <br /><br />
-        <label for="edit-member-url">IAJES Profile URL:</label><br />
+        <label htmlFor="edit-member-url">IAJES Profile URL:</label><br />
         <input id="edit-member-url" name="edit-member-url" type="text" className="input input-text w-full" />
         <br /><br />
         <label>
@@ -313,7 +322,7 @@ function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) 
         <h4>Edit Project</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
-            <label for="edit-project-title">Project title:</label><br />
+            <label htmlFor="edit-project-title">Project title:</label><br />
             <input id="edit-project-title" name="edit-project-title" type="text" className="input input-text md:w-70 w-full" />
           </div>
           <label>
@@ -323,11 +332,11 @@ function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) 
           </label>
         </div>
         <div className="mb-5">
-          <label for="edit-project-url">Project URL:</label><br />
+          <label htmlFor="edit-project-url">Project URL:</label><br />
           <input id="edit-project-url" name="edit-project-url" type="text" className="input input-text w-full" />
         </div>
         <div className="">
-          <label for="edit-project-desc">Project details:</label><br />
+          <label htmlFor="edit-project-desc">Project details:</label><br />
           <textarea id="edit-project-desc" name="edit-project-desc" className="input input-text w-full h-60" ></textarea>
         </div>
       </PopupForm>
@@ -348,12 +357,12 @@ export default function TaskForce({ loaderData }) {
   const [showProjectsPopup, setShowProjectsPopup] = useState(false);
 
   let memberClassName = "w-full my-5 duration-200 grid gap-5 justify-items-center ";
-  if (loaderData.people) {
-    if (loaderData.people.length == 1) {
+  if (loaderData.team_members) {
+    if (loaderData.team_members.length == 1) {
       memberClassName += "grid-cols-1";
-    } else if (loaderData.people.length == 2) {
+    } else if (loaderData.team_members.length == 2) {
       memberClassName += "grid-cols-2";
-    } else if (loaderData.people.length == 3) {
+    } else if (loaderData.team_members.length == 3) {
       memberClassName += "xl:grid-cols-3 grid-cols-2";
     } else {
       memberClassName += "xl:grid-cols-4 lg:grid-cols-3 grid-cols-2";
@@ -366,7 +375,7 @@ export default function TaskForce({ loaderData }) {
       <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} taskForceId={taskForceId} userId={currentUserId} />
       <EditTextarea1Popup showPopup={showTextarea1Popup} setShowPopup={setShowTextarea1Popup} taskForceId={taskForceId} userId={currentUserId} />
       <EditTextarea2Popup showPopup={showTextarea2Popup} setShowPopup={setShowTextarea2Popup} taskForceId={taskForceId} userId={currentUserId} />
-      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceId={taskForceId} userId={currentUserId} people={loaderData.people} />
+      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceId={taskForceId} userId={currentUserId} team_members={loaderData.team_members} />
       <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceId={taskForceId} userId={currentUserId} projects={loaderData.projects} />
       
       <Menu />
@@ -392,7 +401,7 @@ export default function TaskForce({ loaderData }) {
         </div>
 
         <div className="w-full text-left duration-200 mb-10">
-          <p>{loaderData.textarea1}</p>
+          <p>{loaderData.content_top}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
               <button className="button button-light" onClick={() => { setShowTextarea1Popup(true) }}>
@@ -405,12 +414,12 @@ export default function TaskForce({ loaderData }) {
           <h2>Team Members</h2>
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
           <div className={memberClassName}>
-            {loaderData.people.map(person => <MemberCard key={person.name} memberData={person} />)}
+            {loaderData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
           </div>
         </div>
 
         <div className="w-full text-left duration-200 mb-10">
-          <p>{loaderData?.textarea2}</p>
+          <p>{loaderData?.content_bottom}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
               <button className="button button-light" onClick={() => { setShowTextarea2Popup(true) }}>
