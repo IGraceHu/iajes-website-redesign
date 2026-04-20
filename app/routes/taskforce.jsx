@@ -200,7 +200,7 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
       return teamMemberList || [];
     }
 
-    return errorMembers;
+    return teamMemberList;
 }
 
 async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
@@ -221,7 +221,7 @@ async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
         .eq('url', taskForceUrl)
       return teamMemberList || [];
     }
-    return response;
+    return teamMemberList;
   }
   return false;
 }
@@ -380,9 +380,9 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       currentTeamMembers.map((member) => teamMemberList.push(member.id));
     }
     
+    
     if (focusMember == null) {
       const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData);
-      console.log(updatedTeamMemberList);
 
       // if the team member is successfully created, fetch team members again to update UI
       if (updatedTeamMemberList != null) {
