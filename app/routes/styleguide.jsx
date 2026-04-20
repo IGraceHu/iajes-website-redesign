@@ -277,6 +277,28 @@ export default function StyleGuide() {
                                 <br />
                             </p>
                         </div>
+                        <div className="px-5 py-7 rounded-md text-center bg-error-dark text-white">
+                            <p>
+                                #a01225
+                                <br />
+                                Error Dark
+                                <br />
+                                color-error-dark
+                                <br />
+                                <span className="text-xs">(Applied to delete buttons on hover)</span>
+                            </p>
+                        </div>
+                        <div className="px-5 py-7 rounded-md text-center bg-error-extradark text-white">
+                            <p>
+                                #7a0e1d
+                                <br />
+                                Error Extra Dark
+                                <br />
+                                color-error-extradark
+                                <br />
+                                <span className="text-xs">(Applied to delete buttons on click)</span>
+                            </p>
+                        </div>
 
                     </div>
                 </div>
@@ -286,6 +308,9 @@ export default function StyleGuide() {
                     <div>
                         <button className="button mr-5 mb-5">.button</button>
                         <button className="button button-light mr-5 mb-5">.button .button-light</button>
+                        <br />
+                        <button className="button button-delete mr-5 mb-5">.button .button-delete</button>
+                        <button className="button button-light button-delete mr-5 mb-5">.button .button-light .button-delete</button>
                         <br />
                         <button className="button button-disabled mr-5 mb-5">.button .button-disabled</button>
                         <button className="button button-light button-disabled mr-5 mb-5">.button .button-light .button-disabled</button>

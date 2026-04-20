@@ -45,7 +45,7 @@ export function Popup({id, className, show, setShow, buttons, closePopup=null, s
 
             // Return scrollbar after popup disappears
             if (!nested) {
-                setTimeout(() => {document.body.style.overflow = "auto"; document.body.style.paddingRight = "0";}, 200);
+                setTimeout(() => { document.body.style.overflow = "auto"; document.body.style.paddingRight = "0"; }, 200);
             }
         }
     }, [show])
@@ -90,19 +90,19 @@ export function Popup({id, className, show, setShow, buttons, closePopup=null, s
 }
 
 // POPUPFORM -----------------------------------------------------------------------
-    // PARAMETERS
-    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
-    //      There should only be one Popup component used in a component. 
-    //
-    // show - Determines if the popup is visible or not
-    //
-    // setShow - set function for show
-    //
-    // validate - Required. A function with paramters formData that runs when the form is submitted
-    // 
-    // hasError - Optional. Default is false
+// PARAMETERS
+// id - Unique ID for the popup. Ensures that popups from different components do not overlap
+//      There should only be one Popup component used in a component. 
+//
+// show - Determines if the popup is visible or not
+//
+// setShow - set function for show
+//
+// validate - Required. A function with paramters formData that runs when the form is submitted
+// 
+// hasError - Optional. Default is false
 
-export function PopupForm({id, className, show, setShow, validate, hasError, nested=false, children}) {
+export function PopupForm({ id, className, show, setShow, validate, hasError, nested = false, children }) {
     // const [state, formAction] = useActionState(saveForm, {});
 
     const popupId = "popup-" + id;
@@ -117,7 +117,7 @@ export function PopupForm({id, className, show, setShow, validate, hasError, nes
             const formEl = document.getElementById(popupId + "-form");
             formEl.reset();
             formEl.children[0].scrollTo(0, 0);
-            
+
 
             // Compensate for when scrollbar is visible lmao
             if (!nested) {
@@ -135,7 +135,7 @@ export function PopupForm({id, className, show, setShow, validate, hasError, nes
 
             // Return scrollbar after popup disappears
             if (!nested) {
-                setTimeout(() => {document.body.style.overflow = "auto"; document.body.style.paddingRight = "0";}, 200);
+                setTimeout(() => { document.body.style.overflow = "auto"; document.body.style.paddingRight = "0"; }, 200);
             }
         }
     }, [show])
@@ -159,7 +159,7 @@ export function PopupForm({id, className, show, setShow, validate, hasError, nes
                         {children}
                     </div>
                     <div className="h-25 flex flex-col justify-end">
-                        { hasError && 
+                        {hasError &&
                             <p className="text-error text-center my-2">An error occurred. Please try again later.</p>
                         }
                         <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">

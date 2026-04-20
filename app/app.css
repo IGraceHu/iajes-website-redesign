@@ -33,6 +33,9 @@ Please style individual elements in separate dedicated stylesheets
   --color-disabled-dark: #404547;
   --color-selection-highlight: #4388A1;
   --color-error: #c2162d;
+  --color-error-dark: #7A0e1d;
+  --color-error-extradark: #36070c;
+  --color-slate-100: #f1f5f9;
 
 }
 
@@ -43,10 +46,10 @@ body {
 }
 
 .noscroll {
-  position: fixed; 
+  position: fixed;
   top: var(--position-top, 0);
   inline-size: 100%;
-  overflow-y:scroll; 
+  overflow-y: scroll;
 }
 
 
@@ -136,13 +139,15 @@ a:hover,
   cursor: pointer;
 }
 
-p a, li a {
+p a,
+li a {
   /* color: var(--color-primary-dark); */
   border-bottom: 1px solid;
   border-color: var(--color-primary-dark);
 }
 
-p a:hover, li a:hover {
+p a:hover,
+li a:hover {
   border-color: var(--color-primary-light);
 }
 
@@ -160,7 +165,8 @@ ol {
 
 /* MENU ********************************************************************/
 
-#menu .link, #side-menu .link {
+#menu .link,
+#side-menu .link {
   z-index: 1;
   color: var(--color-black);
   font-size: var(--text-sm);
@@ -171,7 +177,8 @@ ol {
   font-weight: bold;
 }
 
-#menu .link:hover, #side-menu .link:hover {
+#menu .link:hover,
+#side-menu .link:hover {
   color: var(--color-primary-light);
   cursor: pointer;
 }
@@ -193,7 +200,8 @@ ol {
   box-shadow: var(--shadow-sm);
 
   opacity: 0;
-  transition: margin-top 0.5s ease-in, opacity 0.2s 0s; /* When disappear */
+  transition: margin-top 0.5s ease-in, opacity 0.2s 0s;
+  /* When disappear */
 }
 
 #menu .menu-dropdown-container.active-popup .menu-dropdown-button {
@@ -203,7 +211,8 @@ ol {
 #menu .menu-dropdown-container.active-popup .menu-dropdown {
   opacity: 1;
   margin-top: -4px;
-  transition: margin-top 0.5s ease-out, opacity 0.2s 0.3s; /* When appear */
+  transition: margin-top 0.5s ease-out, opacity 0.2s 0.3s;
+  /* When appear */
 }
 
 
@@ -303,6 +312,39 @@ button:disabled.button.button-light {
   font-size: 1.7rem;
 }
 
+.button.button-delete {
+  background-color: var(--color-error);
+  border-color: var(--color-error);
+  color: var(--color-white);
+}
+
+.button.button-delete:hover {
+  background-color: var(--color-error-dark);
+  border-color: var(--color-error-dark);
+}
+
+.button.button-delete:hover:active {
+  background-color: var(--color-error-extradark);
+  border-color: var(--color-error-extradark);
+}
+
+.button.button-light.button-delete {
+  background-color: var(--color-white);
+  color: var(--color-error);
+  border-color: var(--color-error);
+}
+
+.button.button-light.button-delete:hover {
+  background-color: var(--color-white);
+  color: var(--color-error-dark);
+  border-color: var(--color-error-dark);
+}
+
+.button.button-light.button-delete:hover:active {
+  color: var(--color-error-extradark);
+  border-color: var(--color-error-extradark);
+}
+
 .button-icon {
   color: var(--color-primary-dark);
   transition: 0.2s;
@@ -313,13 +355,13 @@ button:disabled.button.button-light {
   cursor: pointer;
 }
 
-.button.button-red {
+.button-red {
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
-.button.button-red:hover {
+.button-red:hover {
   color: #71000f;
   border-color: #71000f;
   cursor: pointer;
@@ -348,7 +390,7 @@ select:disabled.input-text,
 .input-text.input-disabled {
   border-color: var(--color-disabled-light);
   color: var(--color-disabled-light);
-  cursor:default;
+  cursor: default;
 }
 
 input[type="file"]::file-selector-button {
@@ -393,17 +435,17 @@ input[type="file"].input-disabled::file-selector-button:hover {
   cursor: pointer;
 }
 
-.checkbox > input {
+.checkbox>input {
   display: none;
 }
 
-.checkbox > p {
+.checkbox>p {
   width: fit-content;
   display: flex;
   align-items: center;
 }
 
-.checkbox > p::before {
+.checkbox>p::before {
   content: "\F26E";
   font-family: "Bootstrap-icons";
   width: 1.25rem;
@@ -422,32 +464,32 @@ input[type="file"].input-disabled::file-selector-button:hover {
   transition: 0.2s;
 }
 
-.checkbox:hover > p:before {
+.checkbox:hover>p:before {
   background-color: var(--color-primary-extralight);
 }
 
-.checkbox > input:checked + p:before {
+.checkbox>input:checked+p:before {
   background-color: var(--color-primary-dark);
   border-color: var(--color-primary-dark);
 }
 
-.checkbox > input[type="checkbox"]:disabled + p::before,
-.checkbox > input[type="checkbox"].input-disabled + p::before {
+.checkbox>input[type="checkbox"]:disabled+p::before,
+.checkbox>input[type="checkbox"].input-disabled+p::before {
   border-color: var(--color-disabled-light);
 }
 
-.checkbox:hover > input[type="checkbox"]:disabled + p:before,
-.checkbox:hover > input[type="checkbox"].input-disabled + p:before {
+.checkbox:hover>input[type="checkbox"]:disabled+p:before,
+.checkbox:hover>input[type="checkbox"].input-disabled+p:before {
   background-color: var(--color-white);
 }
 
-.checkbox > input[type="checkbox"]:checked:disabled + p::before,
-.checkbox > input[type="checkbox"]:checked.input-disabled + p::before {
+.checkbox>input[type="checkbox"]:checked:disabled+p::before,
+.checkbox>input[type="checkbox"]:checked.input-disabled+p::before {
   background-color: var(--color-disabled-light);
 }
 
-.checkbox:hover > input[type="checkbox"]:disabled + p,
-.checkbox:hover > input[type="checkbox"].input-disabled + p {
+.checkbox:hover>input[type="checkbox"]:disabled+p,
+.checkbox:hover>input[type="checkbox"].input-disabled+p {
   cursor: default;
 }
 
@@ -461,17 +503,17 @@ input[type="file"].input-disabled::file-selector-button:hover {
   cursor: pointer;
 }
 
-.radio > input {
+.radio>input {
   display: none;
 }
 
-.radio > p {
+.radio>p {
   width: fit-content;
   display: flex;
   align-items: center;
 }
 
-.radio > p::before {
+.radio>p::before {
   content: "";
   display: block;
   width: 1.25rem;
@@ -483,30 +525,30 @@ input[type="file"].input-disabled::file-selector-button:hover {
   transition: 0.2s;
 }
 
-.radio:hover > p:before {
+.radio:hover>p:before {
   background-color: var(--color-primary-extralight);
 }
 
-.radio > input:checked + p:before {
+.radio>input:checked+p:before {
   border: 6px solid var(--color-primary-dark);
 }
 
-.radio:hover > input:checked + p:before {
+.radio:hover>input:checked+p:before {
   background-color: var(--color-white);
 }
 
-.radio > input[type="radio"]:disabled + p::before,
-.radio > input[type="radio"].input-disabled + p::before {
+.radio>input[type="radio"]:disabled+p::before,
+.radio>input[type="radio"].input-disabled+p::before {
   border-color: var(--color-disabled-light);
 }
 
-.radio:hover > input[type="radio"]:disabled + p:before,
-.radio:hover > input[type="radio"].input-disabled + p:before {
+.radio:hover>input[type="radio"]:disabled+p:before,
+.radio:hover>input[type="radio"].input-disabled+p:before {
   background-color: var(--color-white);
 }
 
-.radio:hover > input[type="radio"]:disabled + p,
-.radio:hover > input[type="radio"].input-disabled + p {
+.radio:hover>input[type="radio"]:disabled+p,
+.radio:hover>input[type="radio"].input-disabled+p {
   cursor: default;
 }
 
@@ -514,20 +556,23 @@ input[type="file"].input-disabled::file-selector-button:hover {
   border-color: var(--color-error);
 }
 
-.checkbox > input[type="checkbox"].input-required + p::before {
+.checkbox>input[type="checkbox"].input-required+p::before {
   border-color: var(--color-error);
 }
-.checkbox:hover > input[type="checkbox"].input-required + p:before {
+
+.checkbox:hover>input[type="checkbox"].input-required+p:before {
   background-color: var(--color-red-100);
 }
-.checkbox > input[type="checkbox"]:checked.input-required + p::before {
+
+.checkbox>input[type="checkbox"]:checked.input-required+p::before {
   background-color: var(--color-error);
 }
 
-.radio > input[type="radio"].input-required + p::before {
+.radio>input[type="radio"].input-required+p::before {
   border-color: var(--color-error);
 }
-.radio:hover > input[type="radio"].input-required + p:before {
+
+.radio:hover>input[type="radio"].input-required+p:before {
   background-color: var(--color-red-100);
 }
 
@@ -535,6 +580,7 @@ input[type="file"].input-required::file-selector-button {
   border-color: var(--color-error);
   color: var(--color-error);
 }
+
 input[type="file"].input-required::file-selector-button:hover {
   border-color: var(--color-red-500);
   color: var(--color-red-500);
@@ -548,41 +594,42 @@ input[type="file"].input-required::file-selector-button:hover {
   color: var(--color-error);
 }
 
-.input-text.input-required + .input-error {
+.input-text.input-required+.input-error {
   display: block;
 }
 
-input[type="checkbox"].input-required ~ .input-error,
-input[type="radio"].input-required ~ .input-error,
-input[type="file"].input-required ~ .input-error {
+input[type="checkbox"].input-required~.input-error,
+input[type="radio"].input-required~.input-error,
+input[type="file"].input-required~.input-error {
   display: block;
 }
 
 /* ICONS ***********************************************************************/
 
 .bi {
-  -webkit-text-stroke: 1px;
+  -webkit-text-stroke: 0.5px;
+  /*Originally 1px*/
 }
 
 
 
-.banner > .banner-content > h1,
-.banner > .banner-content > h2,
-.banner > .banner-content > h3,
-.banner > .banner-content > h4,
-.banner > .banner-content > h5,
-.banner > .banner-content > h6,
-.banner > .banner-content > p {
+.banner>.banner-content>h1,
+.banner>.banner-content>h2,
+.banner>.banner-content>h3,
+.banner>.banner-content>h4,
+.banner>.banner-content>h5,
+.banner>.banner-content>h6,
+.banner>.banner-content>p {
   color: white;
 }
 
-.banner.bg-secondary-dark > .banner-content > h1,
-.banner.bg-secondary-dark > .banner-content > h2,
-.banner.bg-secondary-dark > .banner-content > h3,
-.banner.bg-secondary-dark > .banner-content > h4,
-.banner.bg-secondary-dark > .banner-content > h5,
-.banner.bg-secondary-dark > .banner-content > h6,
-.banner.bg-secondary-dark > .banner-content > p {
+.banner.bg-secondary-dark>.banner-content>h1,
+.banner.bg-secondary-dark>.banner-content>h2,
+.banner.bg-secondary-dark>.banner-content>h3,
+.banner.bg-secondary-dark>.banner-content>h4,
+.banner.bg-secondary-dark>.banner-content>h5,
+.banner.bg-secondary-dark>.banner-content>h6,
+.banner.bg-secondary-dark>.banner-content>p {
   color: var(--color-primary-light);
 }
 
@@ -592,7 +639,7 @@ input[type="file"].input-required ~ .input-error {
   color: white;
 }
 
-.banner-breadcrumb > strong {
+.banner-breadcrumb>strong {
   border-bottom: 2px solid #ffffff00;
   transition: 0.2s;
 }
@@ -602,25 +649,26 @@ input[type="file"].input-required ~ .input-error {
   color: var(--color-primary-light);
 }
 
-.banner-breadcrumb:hover > strong {
+.banner-breadcrumb:hover>strong {
   margin-left: 5px;
   color: var(--color-primary-light);
   border-color: var(--color-primary-light);
 }
 
 
-#task-forces > div:nth-child(4n-2), #task-forces > div:nth-child(4n-1) {
+#task-forces>div:nth-child(4n-2),
+#task-forces>div:nth-child(4n-1) {
   background-color: var(--color-slate-100);
 }
 
-@media (width < 64rem) { 
-  #task-forces > div:nth-child(n) {
+@media (width < 64rem) {
+  #task-forces>div:nth-child(n) {
     background-color: var(--color-white);
   }
 
-  #task-forces > div:nth-child(even) {
+  #task-forces>div:nth-child(even) {
     background-color: var(--color-slate-100);
   }
 
-  
+
 }
