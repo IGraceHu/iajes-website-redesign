@@ -190,7 +190,7 @@ export default function Newsletter() {
 
     return (
         <div className="bg-white items-center text-black">
-            <Menu />
+            <Menu currentEndUrl="/newsletter"/>
             <div className="lg:px-40 px-10 py-20 duration-200 flex items-center justify-end space-x-2 hidden">
                 <div className="text-sm text-gray-600">Debug mode:</div>
                 <button className={`button ${mode === 'member' ? 'button' : 'button-light'}`} onClick={() => setMode('member')}>Member</button>

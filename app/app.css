@@ -151,15 +151,6 @@ li a:hover {
   border-color: var(--color-primary-light);
 }
 
-#menu .link {
-  color: var(--color-black);
-}
-
-#menu .link:hover {
-  color: var(--color-primary-light);
-  cursor: pointer;
-}
-
 ul {
   list-style-type: disc;
   margin-left: 1rem;
@@ -170,6 +161,75 @@ ol {
   list-style-type: decimal;
   margin-left: 1rem;
   margin-bottom: calc(var(--spacing) * 2);
+}
+
+/* MENU ********************************************************************/
+
+#menu .link, #side-menu .link {
+  z-index: 1;
+  color: var(--color-black);
+  font-size: var(--text-sm);
+}
+
+#menu .active {
+  color: var(--color-secondary-light);
+  font-weight: bold;
+}
+
+#menu .link:hover, #side-menu .link:hover {
+  color: var(--color-primary-light);
+  cursor: pointer;
+}
+
+#menu .menu-dropdown-button {
+  z-index: 1;
+  /* padding: calc(var(--spacing) * 4); */
+  position: relative;
+}
+
+#menu .menu-dropdown {
+  z-index: 0;
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-white);
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+
+  opacity: 0;
+  transition: margin-top 0.5s ease-in, opacity 0.2s 0s; /* When disappear */
+}
+
+#menu .menu-dropdown-container.active-popup .menu-dropdown-button {
+  color: var(--color-primary-light);
+}
+
+#menu .menu-dropdown-container.active-popup .menu-dropdown {
+  opacity: 1;
+  margin-top: -4px;
+  transition: margin-top 0.5s ease-out, opacity 0.2s 0.3s; /* When appear */
+}
+
+
+#side-menu .side-menu-dropdown-button {
+  transition: 0.2s;
+}
+
+#side-menu .side-menu-dropdown {
+  max-height: 0px;
+  opacity: 0;
+  overflow-y: hidden;
+  transition: 0.8s;
+}
+
+#side-menu .side-menu-dropdown-container.active-popup .side-menu-dropdown-button {
+  color: var(--color-primary-light);
+}
+
+#side-menu .side-menu-dropdown-container.active-popup .side-menu-dropdown {
+  max-height: 200px;
+  opacity: 1;
 }
 
 
@@ -291,13 +351,13 @@ button:disabled.button.button-light {
   cursor: pointer;
 }
 
-.button-red {
+.button.button-red {
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
-.button-red:hover {
+.button.button-red:hover {
   color: #71000f;
   border-color: #71000f;
   cursor: pointer;
