@@ -126,7 +126,7 @@ p:last-of-type {
 
 a,
 .link {
-  color: var(--color-black);
+  color: var(--color-secondary-dark);
   transition: 0.2s;
 }
 
