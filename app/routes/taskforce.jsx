@@ -356,11 +356,17 @@ function EditContentBottomPopup({showPopup, setShowPopup, content, taskForceUrl}
 }
 
 function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
+  const navigate = useNavigate();
   const [currentTeamMembers, setCurrentTeamMembers] = useState(teamMembers);
   const [showMemberPopup, setShowMemberPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [focusMember, setFocusMember] = useState(null);
   const [formRequired, setFormRequired] = useState({ name: false });
+
+  function handleClosePopup() {
+    setShowPopup(false);
+    navigate(0);
+  }
 
   function handleShowMemberPopup(memberData) {
     setShowMemberPopup(true);
@@ -442,7 +448,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
 
   return (
     <>
-      <Popup id="tf-team" show={showPopup} setShow={setShowPopup}>
+      <Popup id="tf-team" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
           {currentTeamMembers.map(member => <div key={member.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
