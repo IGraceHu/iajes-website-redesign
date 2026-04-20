@@ -168,11 +168,47 @@ async function updateTaskForceField(taskForceUrl, fieldName, fieldValue) {
   return error;
 }
 
+async function getTeamMembers(teamMemberList) {
+  const { data, error } = await supabase
+    .from('task force members')
+    .select()
+    .in('id', teamMemberList)
+    return data || error;
+}
+
+async function addTeamMember(taskForceUrl, teamMemberList, formData) {
+  const { data, errorMembers } = await supabase
+    .from('task force members')
+    .insert({
+      name: formData.get("name"),
+      role: formData.get("role"),
+      location: formData.get("location"),
+      contact: formData.get("contact"),
+      iajes_url: formData.get("iajes-url"),
+    })
+    .select()
+
+    if (data) {
+      teamMemberList.push(data[0].id);
+
+      const { errorTF } = await supabase
+        .from('task forces')
+        .update({
+          team_members: teamMemberList
+        })
+        .eq('url', taskForceUrl)
+      return teamMemberList || [];
+    }
+
+    return errorMembers;
+}
+
 export async function loader({ params }) {
   // const found = tfInfoTemp.find((tfInf) => tfInf.url == params.tfName);
   const tf = await getTaskForce(params.tfName);
+  const teamMembers = await getTeamMembers(tf.team_members || [])
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
-  tf.team_members = tf.team_members || [];
+  tf.team_members = teamMembers || []
   tf.projects = tf.projects || [];
   tf.content_top = tf.content_top || "";
   tf.content_bottom = tf.content_bottom || "";
@@ -283,16 +319,67 @@ function EditContentBottomPopup({showPopup, setShowPopup, content, taskForceUrl}
 }
 
 function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
+  const [currentTeamMembers, setCurrentTeamMembers] = useState(teamMembers);
   const [showMemberPopup, setShowMemberPopup] = useState(false);
-  const [editMember, setEditMember] = useState({});
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [focusMember, setFocusMember] = useState(null);
+  const [formRequired, setFormRequired] = useState({ name: false });
 
-  function handleShowMemberPopup(memberId) {
+  function handleShowMemberPopup(memberData) {
     setShowMemberPopup(true);
-    setEditMember(memberId);
+    setFocusMember(memberData);
   }
 
-  function validate() {
+  function handleDeleteMemberPopup(memberData) {
+    setShowDeletePopup(true);
+    setFocusMember(memberData);
+  }
+
+  async function memberValidate(formData) {
+    let isValidated = true;
+    const isRequired = {
+      name: formData.get('name') === (null || ""),
+    }
+    for (let value of Object.values(isRequired)) {
+      if (value) {
+        isValidated = false;
+        break;
+      }
+    }
+    if (!isValidated) {
+      setFormRequired(isRequired);
+      return false;
+    }
+
+    const teamMemberList = [];
+    if (currentTeamMembers.length > 0) {
+      currentTeamMembers.map((member) => teamMemberList.push(member.id));
+    }
     
+    if (focusMember == null) {
+      const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData);
+      console.log(updatedTeamMemberList);
+      if (updatedTeamMemberList != null) {
+        setShowMemberPopup(false);
+        const newMembers = await getTeamMembers(updatedTeamMemberList)
+        setCurrentTeamMembers(newMembers);
+      }
+    }
+    // const update = await updateProfile(userId, formData);
+    setFocusMember(null);
+  }
+
+  function handleRemove() {
+    try {
+      const teamMemberList = [];
+      if (currentTeamMembers.length > 0) {
+        currentTeamMembers.map((member) => { (member.id != focusMember.id) ? teamMemberList.push(member.id) : null; });
+      }
+      deleteVideoResource(loaderData.id);
+    }
+    catch (error) {
+      console.log("Error");
+    }
   }
 
   return (
@@ -300,34 +387,43 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       <Popup id="tf-team" show={showPopup} setShow={setShowPopup}>
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
-          {teamMembers.map(member => <div key={member.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+          {currentTeamMembers.map(member => <div key={member.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
             <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(member)}>
               <p className="pr-5 mr-auto" style={{ color: "black" }}>{member.name}</p>
               <i className="bi bi-pencil-square"></i>
             </button>
-            <button className="button-icon button-red"><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+            <button className="button-icon button-red" onClick={() => handleDeleteMemberPopup(member)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
           </div>)}
         </div>
-        <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup()}>Add a team member</button>
+        <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup(null)}>Add a team member</button>
       </Popup>
 
-      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={validate} nested>
+      <Popup id="tf-delete-member" show={showDeletePopup} setShow={setShowDeletePopup} nested
+             buttons={[{text:"Remove", onclick:handleRemove}]}>
+          <div className="text-center mt-6">Remove {focusMember?.name}?</div>
+      </Popup>
+
+      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={memberValidate} nested>
         <h4>Edit Team Member</h4>
         <label htmlFor="edit-member-name">Name:</label><br />
-        <input id="edit-person-name" name="edit-person-name" type="text" className="input input-text w-full" />
+        <input id="edit-person-name" name="name" type="text" className="input input-text w-full"
+               placeholder="Name" />
         <br /><br />
         <label htmlFor="edit-member-loc">Location:</label><br />
-        <input id="edit-member-loc" name="edit-member-loc" type="text" className="input input-text w-full" />
+        <input id="edit-member-loc" name="location" type="text" className="input input-text w-full"
+               placeholder="Location" />
         <br /><br />
         <label htmlFor="edit-member-contact">Contact:</label><br />
-        <input id="edit-member-contact" name="edit-member-contact" type="text" className="input input-text w-full" />
+        <input id="edit-member-contact" name="contact" type="text" className="input input-text w-full"
+               placeholder="Contact" />
         <br /><br />
         <label htmlFor="edit-member-url">IAJES Profile URL:</label><br />
-        <input id="edit-member-url" name="edit-member-url" type="text" className="input input-text w-full" />
+        <input id="edit-member-url" name="iajes-url" type="text" className="input input-text w-full"
+               placeholder="IAJES URL" />
         <br /><br />
         <label>
           Image:<br />
-          <input id="edit-member-image" name="edit-member-image" type="file" />
+          <input id="edit-member-image" name="image" type="file" />
           <div className="input-error">This field is required.</div>
         </label>
       </PopupForm>
@@ -393,8 +489,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
 export default function TaskForce({ loaderData }) {
   const isAdmin = true;
 
-  const taskForceUrl = "";
-  const currentUserId = "";
+  const taskForceData = loaderData;
 
   const [showShortDescPopup, setShowShortDescPopup] = useState(false);
   const [showContentTopPopup, setShowContentTopPopup] = useState(false);
@@ -403,12 +498,12 @@ export default function TaskForce({ loaderData }) {
   const [showProjectsPopup, setShowProjectsPopup] = useState(false);
 
   let memberClassName = "w-full my-5 duration-200 grid gap-5 justify-items-center ";
-  if (loaderData.team_members) {
-    if (loaderData.team_members.length == 1) {
+  if (taskForceData.team_members) {
+    if (taskForceData.team_members.length == 1) {
       memberClassName += "grid-cols-1";
-    } else if (loaderData.team_members.length == 2) {
+    } else if (taskForceData.team_members.length == 2) {
       memberClassName += "grid-cols-2";
-    } else if (loaderData.team_members.length == 3) {
+    } else if (taskForceData.team_members.length == 3) {
       memberClassName += "xl:grid-cols-3 grid-cols-2";
     } else {
       memberClassName += "xl:grid-cols-4 lg:grid-cols-3 grid-cols-2";
@@ -418,11 +513,11 @@ export default function TaskForce({ loaderData }) {
 
   return (
     <>
-      <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} content={loaderData.short_desc} taskForceUrl={loaderData.url} />
-      <EditContentTopPopup showPopup={showContentTopPopup} setShowPopup={setShowContentTopPopup} content={loaderData.content_top} taskForceUrl={loaderData.url} />
-      <EditContentBottomPopup showPopup={showContentBottomPopup} setShowPopup={setShowContentBottomPopup} content={loaderData.content_top} taskForceUrl={loaderData.url} />
-      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceUrl={loaderData.url} teamMembers={loaderData.team_members} />
-      <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceUrl={loaderData.url} projects={loaderData.projects} />
+      <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} content={taskForceData.short_desc} taskForceUrl={taskForceData.url} />
+      <EditContentTopPopup showPopup={showContentTopPopup} setShowPopup={setShowContentTopPopup} content={taskForceData.content_top} taskForceUrl={taskForceData.url} />
+      <EditContentBottomPopup showPopup={showContentBottomPopup} setShowPopup={setShowContentBottomPopup} content={taskForceData.content_top} taskForceUrl={taskForceData.url} />
+      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceUrl={taskForceData.url} teamMembers={taskForceData.team_members} />
+      <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceUrl={taskForceData.url} projects={taskForceData.projects} />
       
       <Menu />
       <Banner>
@@ -430,13 +525,13 @@ export default function TaskForce({ loaderData }) {
             <i className="bi bi-caret-left-fill"></i>
             <strong>TASK FORCES</strong>
         </a>
-        <h1 style={{ color: "white" }}>{loaderData.name}</h1>
+        <h1 style={{ color: "white" }}>{taskForceData.name}</h1>
       </Banner>
 
       <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
 
         <div className="w-full text-left duration-200 mb-10">
-          <p>{loaderData.short_desc}</p>
+          <p>{taskForceData.short_desc}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
               <button className="button button-light" onClick={() => { setShowShortDescPopup(true) }}>
@@ -447,7 +542,7 @@ export default function TaskForce({ loaderData }) {
         </div>
 
         <div className="w-full text-left duration-200 mb-10">
-          <p>{loaderData.content_top}</p>
+          <p>{taskForceData.content_top}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
               <button className="button button-light" onClick={() => { setShowContentTopPopup(true) }}>
@@ -460,12 +555,12 @@ export default function TaskForce({ loaderData }) {
           <h2>Team Members</h2>
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
           <div className={memberClassName}>
-            {loaderData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
+            {taskForceData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
           </div>
         </div>
 
         <div className="w-full text-left duration-200 mb-10">
-          <p>{loaderData?.content_bottom}</p>
+          <p>{taskForceData?.content_bottom}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
               <button className="button button-light" onClick={() => { setShowContentBottomPopup(true) }}>
@@ -477,7 +572,7 @@ export default function TaskForce({ loaderData }) {
         <div className="w-full md:text-left relative duration-200 mb-10">
           <h2>Projects</h2>
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
-          {loaderData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
+          {taskForceData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
         </div>
 
         {/* <div className="w-full md:text-left relative duration-200 mb-10">
