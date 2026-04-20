@@ -33,8 +33,8 @@ Please style individual elements in separate dedicated stylesheets
   --color-disabled-dark: #404547;
   --color-selection-highlight: #4388A1;
   --color-error: #c2162d;
-  --color-error-dark: #a01225;
-  --color-error-extradark: #7a0e1d;
+  --color-error-dark: #7A0e1d;
+  --color-error-extradark: #36070c;
   --color-slate-100: #f1f5f9;
 
 }

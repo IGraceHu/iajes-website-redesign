@@ -54,46 +54,55 @@ export default function RegionalMeetingDetail() {
     const [previewingPdf, setPreviewingPdf] = useState(null); // "report", "agenda", or null
 
     const editPopupContent = (
-        <div className="p-4 max-h-[80vh] overflow-y-auto">
-            <h4>Edit Meeting</h4>
-            <div className="space-y-4 mt-4">
-                <div>
-                    <label>Region:</label>
-                    <select name="region" className="input input-text w-full" value={editForm.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
-                        {regions.map(r => <option key={r} value={r}>{r}</option>)}
-                    </select>
+        // <div className="p-4 max-h-[80vh] overflow-y-auto">
+        <>
+            <div className="space-y-4 p-4">
+                <h4>Edit Meeting</h4>
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Region:</label>
+                        <select name="region" className="input input-text w-full" value={editForm.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
+                            {regions.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                    </div>
+                    <div>
+                        <label>Title:</label>
+                        <input name="title" className="input input-text w-full" type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
+                    </div>
                 </div>
-                <div>
-                    <label>Title:</label>
-                    <input name="title" className="input input-text w-full" type="text" value={editForm.title} onChange={e => setEditForm({ ...editForm, title: e.target.value })} />
-                </div>
-                <div>
-                    <label>Date:</label>
-                    <input name="date" className="input input-text w-full" type="text" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} />
-                </div>
-                <div>
-                    <label>Location:</label>
-                    <input name="location" className="input input-text w-full" type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Date:</label>
+                        <input name="date" className="input input-text w-full" type="text" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} />
+                    </div>
+                    <div>
+                        <label>Location:</label>
+                        <input name="location" className="input input-text w-full" type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+                    </div>
                 </div>
                 <div>
                     <label>Description:</label>
-                    <textarea name="description" className="input input-text w-full" value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="4" />
+                    <textarea name="description" className="input input-text w-full" value={editForm.description} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="12" />
                 </div>
-                <div>
-                    <label>Agenda Link:</label>
-                    <input name="agendaLink" className="input input-text w-full" type="url" value={editForm.agendaLink} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Agenda Link:</label>
+                        <input name="agendaLink" className="input input-text w-full" type="url" value={editForm.agendaLink} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report Link:</label>
+                        <input name="reportLink" className="input input-text w-full" type="url" value={editForm.reportLink} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                    </div>
                 </div>
-                <div>
-                    <label>Agenda PDF:</label>
-                    <input name="agendaPdf" className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
-                </div>
-                <div>
-                    <label>Meeting Report Link:</label>
-                    <input name="reportLink" className="input input-text w-full" type="url" value={editForm.reportLink} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
-                </div>
-                <div>
-                    <label>Meeting Report PDF:</label>
-                    <input name="reportPdf" className="input input-text w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <label>Agenda PDF:</label>
+                        <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
+                    </div>
+                    <div>
+                        <label>Meeting Report PDF:</label>
+                        <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
+                    </div>
                 </div>
                 <div>
                     <label>Photos:</label>
@@ -102,9 +111,9 @@ export default function RegionalMeetingDetail() {
                         const newImages = files.map(f => ({ url: URL.createObjectURL(f), featured: false }));
                         setEditForm({ ...editForm, images: [...editForm.images, ...newImages] });
                     }} />
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2">
                         {editForm.images.map((img, idx) => (
-                            <div key={idx} className="relative border p-2">
+                            <div key={idx} className="relative border p-2 mt-2">
                                 <img src={img.url} className="w-24 h-24 object-cover" />
                                 <div className="mt-1">
                                     <input type="checkbox" checked={img.featured} onChange={e => {
@@ -125,9 +134,9 @@ export default function RegionalMeetingDetail() {
                         const newVideos = files.map(f => ({ url: URL.createObjectURL(f) }));
                         setEditForm({ ...editForm, videos: [...editForm.videos, ...newVideos] });
                     }} />
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2">
                         {editForm.videos.map((vid, idx) => (
-                            <div key={idx} className="relative border p-2">
+                            <div key={idx} className="relative border p-2 mt-2">
                                 <video src={vid.url} className="w-24 h-24" />
                                 <button className="absolute bottom-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, videos: editForm.videos.filter((_, i) => i !== idx) })} ><i className="bi bi-trash"></i></button>
                             </div>
@@ -135,7 +144,8 @@ export default function RegionalMeetingDetail() {
                     </div>
                 </div>
             </div>
-        </div>
+        {/* </div> */}
+        </>
     );
 
     const deletePopupContent = <p>This will delete "{meetingData.title}". Are you sure?</p>;
