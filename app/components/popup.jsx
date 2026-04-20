@@ -13,9 +13,12 @@ import { useEffect } from 'react';
     //     text - Required. A string with the button text
     //     onclick - Required. A function that clicking the button will execute
     //
+    // closePopup - Optional. A function that runs when the close button is clicked.
+    //     Note: This does not apply to closeOnBlur. If the user clicks outside of the popup, it will just close normally
+    //
     // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
 
-export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, nested=false, children}) {
+export function Popup({id, className, show, setShow, buttons, closePopup=null, stayOnBlur=false, nested=false, children}) {
 
     const popupId = "popup-" + id;
     useEffect(() => {
@@ -47,10 +50,15 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
         }
     }, [show])
 
-    function closePopup() {
+    function defaultClosePopup() {
         setShow(false);
         show = false;
     }
+
+    if (closePopup == null) {
+        closePopup = defaultClosePopup;
+    }
+    
     
     const buttonsEl = [];
     let i = 0;
@@ -66,7 +74,7 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
                 <div className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
-                    <div className="overflow-y-auto">
+                    <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>
                     <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
@@ -76,7 +84,7 @@ export function Popup({id, className, show, setShow, buttons, stayOnBlur=false, 
                 </div>
             </div>
 
-            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => {if (!stayOnBlur) {closePopup()}}} ></div>
+            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => {if (!stayOnBlur) {defaultClosePopup()}}} ></div>
         </div>
     )
 }
@@ -147,7 +155,7 @@ export function PopupForm({id, className, show, setShow, validate, hasError, nes
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
                 <form id={popupId + "-form"} onSubmit={handleSubmit} className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
-                    <div className="overflow-y-auto w-full relative">
+                    <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>
                     <div className="h-25 flex flex-col justify-end">

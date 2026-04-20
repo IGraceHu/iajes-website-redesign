@@ -313,13 +313,13 @@ button:disabled.button.button-light {
   cursor: pointer;
 }
 
-.button-red {
+.button.button-red {
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
-.button-red:hover {
+.button.button-red:hover {
   color: #71000f;
   border-color: #71000f;
   cursor: pointer;
