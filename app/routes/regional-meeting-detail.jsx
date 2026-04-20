@@ -144,7 +144,7 @@ export default function RegionalMeetingDetail() {
                     </div>
                 </div>
             </div>
-        {/* </div> */}
+            {/* </div> */}
         </>
     );
 
@@ -215,7 +215,7 @@ export default function RegionalMeetingDetail() {
                                     {previewingPdf === "report" ? "Hide" : "Preview"}
                                 </button>
                             )}
-                            <div class="hidden min-[768px]:inline-block h-[80px] min-h-[1em] w-0.5 self-stretch bg-primary-dark"></div>
+                            <div class="hidden min-[768px]:inline-block h-20 min-h-[1em] w-0.5 self-stretch bg-primary-dark"></div>
                             <a href={meetingData.agendaLink} className="button button-light">
                                 Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
                             </a>

@@ -165,7 +165,8 @@ ol {
 
 /* MENU ********************************************************************/
 
-#menu .link, #side-menu .link {
+#menu .link,
+#side-menu .link {
   z-index: 1;
   color: var(--color-black);
   font-size: var(--text-sm);
@@ -176,7 +177,8 @@ ol {
   font-weight: bold;
 }
 
-#menu .link:hover, #side-menu .link:hover {
+#menu .link:hover,
+#side-menu .link:hover {
   color: var(--color-primary-light);
   cursor: pointer;
 }
@@ -198,7 +200,8 @@ ol {
   box-shadow: var(--shadow-sm);
 
   opacity: 0;
-  transition: margin-top 0.5s ease-in, opacity 0.2s 0s; /* When disappear */
+  transition: margin-top 0.5s ease-in, opacity 0.2s 0s;
+  /* When disappear */
 }
 
 #menu .menu-dropdown-container.active-popup .menu-dropdown-button {
@@ -208,7 +211,8 @@ ol {
 #menu .menu-dropdown-container.active-popup .menu-dropdown {
   opacity: 1;
   margin-top: -4px;
-  transition: margin-top 0.5s ease-out, opacity 0.2s 0.3s; /* When appear */
+  transition: margin-top 0.5s ease-out, opacity 0.2s 0.3s;
+  /* When appear */
 }
 
 
@@ -351,13 +355,13 @@ button:disabled.button.button-light {
   cursor: pointer;
 }
 
-.button.button-red {
+.button-red {
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
-.button.button-red:hover {
+.button-red:hover {
   color: #71000f;
   border-color: #71000f;
   cursor: pointer;

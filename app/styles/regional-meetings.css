@@ -179,14 +179,14 @@ a.link-back:hover {
         grid-template-columns: 1fr;
         gap: 20px;
     }
+
+    .regional-meeting-banner-meta {
+        display: none;
+    }
 }
 
 @media (max-width: 480px) {
     .regional-meetings-container {
         padding: 20px 10px;
-    }
-
-    .regional-meeting-banner-meta {
-        display: none;
     }
 }
