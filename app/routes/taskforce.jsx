@@ -203,6 +203,29 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
     return errorMembers;
 }
 
+async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
+  const memberPosition = teamMemberList.indexOf(memberId);
+  if (memberPosition >= 0) {
+    const response = await supabase
+      .from('task force members')
+      .delete()
+      .eq('id', memberId)
+    
+    if (response) {
+      teamMemberList.splice(memberPosition, 0);
+      const { errorTF } = await supabase
+        .from('task forces')
+        .update({
+          team_members: teamMemberList
+        })
+        .eq('url', taskForceUrl)
+      return teamMemberList || [];
+    }
+    return response;
+  }
+  return false;
+}
+
 export async function loader({ params }) {
   // const found = tfInfoTemp.find((tfInf) => tfInf.url == params.tfName);
   const tf = await getTaskForce(params.tfName);
@@ -351,6 +374,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       return false;
     }
 
+    // creates a list of current member ids to update the task force member list
     const teamMemberList = [];
     if (currentTeamMembers.length > 0) {
       currentTeamMembers.map((member) => teamMemberList.push(member.id));
@@ -359,6 +383,8 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
     if (focusMember == null) {
       const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData);
       console.log(updatedTeamMemberList);
+
+      // if the team member is successfully created, fetch team members again to update UI
       if (updatedTeamMemberList != null) {
         setShowMemberPopup(false);
         const newMembers = await getTeamMembers(updatedTeamMemberList)
@@ -369,17 +395,26 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
     setFocusMember(null);
   }
 
-  function handleRemove() {
+  async function handleRemove() {
     try {
+      // creates a list of current member ids to update the task force member list
       const teamMemberList = [];
       if (currentTeamMembers.length > 0) {
-        currentTeamMembers.map((member) => { (member.id != focusMember.id) ? teamMemberList.push(member.id) : null; });
+        currentTeamMembers.map((member) => teamMemberList.push(member.id));
       }
-      deleteVideoResource(loaderData.id);
+
+      const updatedTeamMemberList = await deleteTeamMember(taskForceUrl, teamMemberList, focusMember.id);
+      
+      if (updatedTeamMemberList && updatedTeamMemberList != null) {
+        setShowDeletePopup(false);
+        const newMembers = await getTeamMembers(updatedTeamMemberList)
+        setCurrentTeamMembers(newMembers);
+      }
     }
     catch (error) {
-      console.log("Error");
+      console.log(error);
     }
+    setFocusMember(null);
   }
 
   return (
