@@ -34,7 +34,7 @@ export async function loader({ params }) {
   const vid = await getVideoResource(params.vidId);
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
   vid.title = vid.title || "";
-  vid.date = new Date(vid.date) || "";
+  vid.date = vid.date.replace(/-/g, '\/') || "";
   vid.speaker = vid.speaker || "";
   vid.speaker_university = vid.speaker_university || "";
   vid.speaker_details = vid.speaker_details || "";
@@ -110,7 +110,7 @@ export default function VideoResource({ loaderData }) {
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
                     <p>
-                        <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date.toLocaleDateString()}</i></span>
+                        <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date}</i></span>
                     </p>
                 </div>
             </Banner>
