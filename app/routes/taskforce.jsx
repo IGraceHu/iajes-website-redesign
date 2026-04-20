@@ -203,6 +203,20 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
     return teamMemberList;
 }
 
+async function updateTeamMember(memberId, formData) {
+  const { error } = await supabase
+    .from('task force members')
+    .update({
+      name: formData.get("name"),
+      role: formData.get("role"),
+      location: formData.get("location"),
+      contact: formData.get("contact"),
+      iajes_url: formData.get("iajes-url"),
+    })
+    .eq('id', memberId)
+    return error;
+}
+
 async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
   const memberPosition = teamMemberList.indexOf(memberId);
   if (memberPosition >= 0) {
@@ -358,6 +372,8 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
     setFocusMember(memberData);
   }
 
+
+  // create and update
   async function memberValidate(formData) {
     let isValidated = true;
     const isRequired = {
@@ -380,15 +396,22 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       currentTeamMembers.map((member) => teamMemberList.push(member.id));
     }
     
-    
+    // if focus member is null => new member
     if (focusMember == null) {
       const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData);
 
       // if the team member is successfully created, fetch team members again to update UI
       if (updatedTeamMemberList != null) {
-        setShowMemberPopup(false);
         const newMembers = await getTeamMembers(updatedTeamMemberList)
         setCurrentTeamMembers(newMembers);
+        setShowMemberPopup(false);
+      }
+    } else {
+      const updateMember = await updateTeamMember(focusMember.id, formData);
+      if (updateMember === null) {
+        const newMembers = await getTeamMembers(teamMemberList)
+        setCurrentTeamMembers(newMembers);
+        setShowMemberPopup(false);
       }
     }
     // const update = await updateProfile(userId, formData);
@@ -406,9 +429,9 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       const updatedTeamMemberList = await deleteTeamMember(taskForceUrl, teamMemberList, focusMember.id);
       
       if (updatedTeamMemberList && updatedTeamMemberList != null) {
-        setShowDeletePopup(false);
         const newMembers = await getTeamMembers(updatedTeamMemberList)
         setCurrentTeamMembers(newMembers);
+        setShowDeletePopup(false);
       }
     }
     catch (error) {
@@ -442,19 +465,23 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <h4>Edit Team Member</h4>
         <label htmlFor="edit-member-name">Name:</label><br />
         <input id="edit-person-name" name="name" type="text" className="input input-text w-full"
-               placeholder="Name" />
+               placeholder="Name"
+               defaultValue={focusMember?.name} />
         <br /><br />
         <label htmlFor="edit-member-loc">Location:</label><br />
         <input id="edit-member-loc" name="location" type="text" className="input input-text w-full"
-               placeholder="Location" />
+               placeholder="Location"
+               defaultValue={focusMember?.location} />
         <br /><br />
         <label htmlFor="edit-member-contact">Contact:</label><br />
         <input id="edit-member-contact" name="contact" type="text" className="input input-text w-full"
-               placeholder="Contact" />
+               placeholder="Contact"
+               defaultValue={focusMember?.contact} />
         <br /><br />
         <label htmlFor="edit-member-url">IAJES Profile URL:</label><br />
         <input id="edit-member-url" name="iajes-url" type="text" className="input input-text w-full"
-               placeholder="IAJES URL" />
+               placeholder="IAJES URL"
+               defaultValue={focusMember?.iajes_url} />
         <br /><br />
         <label>
           Image:<br />
