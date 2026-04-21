@@ -5,6 +5,7 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Banner } from "../components/graphics";
+import { updateRequired } from "../helpers/form";
 
 export function meta({ loaderData }) {
   return [
@@ -259,8 +260,14 @@ function MemberCard({ memberData }) {
       <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
         <img className="min-w-full min-h-full" src={memberData.imageURL} />
       </div>
-      <p>{memberData.name}</p>
-      <p>{memberData.position}</p>
+      { memberData.iajes_url ? 
+          <a href={memberData.iajes_url} className="block font-semibold text-secondary-dark mb-2 hover:text-primary-dark duration-200">{memberData.name}</a> 
+          :
+          <p className="font-semibold text-secondary-dark">{memberData.name}</p> 
+        }
+      
+      <p className="text-sm italic text-secondary-light">{memberData.role}{memberData?.role && memberData?.location && <span>, </span>}{memberData.location}</p>
+      <p className="text-sm text-gray-dark/70">{memberData.contact}</p>
     </div>
   )
 }
@@ -361,7 +368,6 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [focusMember, setFocusMember] = useState(null);
-  const [formRequired, setFormRequired] = useState({ name: false });
 
   function handleClosePopup() {
     setShowPopup(false);
@@ -379,11 +385,15 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   }
 
 
+  const [formRequired, setFormRequired] = useState({ name: false, iajesUrl: false });
   // create and update
   async function memberValidate(formData) {
     let isValidated = true;
+
+    const iajesUrl = formData.get("iajes-url")
     const isRequired = {
       name: formData.get('name') === (null || ""),
+      iajesUrl: (iajesUrl && !iajesUrl.match(/\/profile\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/))
     }
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -422,6 +432,21 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
     }
     // const update = await updateProfile(userId, formData);
     setFocusMember(null);
+  }
+
+  function checkEmpty(value, inputName) {
+      const updatedFormRequired = updateRequired(value, inputName, formRequired);
+      if (updatedFormRequired != formRequired) {
+        setFormRequired(updatedFormRequired);
+      }
+  }
+
+  function iajesUrlChange() {
+    const updatedFormRequired = structuredClone(formRequired);
+    updatedFormRequired.iajesUrl = false;
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
   }
 
   async function handleRemove() {
@@ -470,9 +495,16 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={memberValidate} nested>
         <h4>Edit Team Member</h4>
         <label htmlFor="edit-member-name">Name:</label><br />
-        <input id="edit-person-name" name="name" type="text" className="input input-text w-full"
-               placeholder="Name"
+        <input id="edit-person-name" name="name" type="text" className={"input input-text w-full " + (formRequired?.name && "input-required")}
+               placeholder="Name" onChange={(e) => checkEmpty(e.target.value, "name")}
                defaultValue={focusMember?.name} />
+        <div className="input-error">This field is required.</div>
+        
+        <br /><br />
+        <label htmlFor="edit-member-role">Task Force Role:</label><br />
+        <input id="edit-person-role" name="role" type="text" className="input input-text w-full"
+               placeholder="Task Force Role"
+               defaultValue={focusMember?.role} />
         <br /><br />
         <label htmlFor="edit-member-loc">Location:</label><br />
         <input id="edit-member-loc" name="location" type="text" className="input input-text w-full"
@@ -485,9 +517,10 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
                defaultValue={focusMember?.contact} />
         <br /><br />
         <label htmlFor="edit-member-url">IAJES Profile URL:</label><br />
-        <input id="edit-member-url" name="iajes-url" type="text" className="input input-text w-full"
-               placeholder="IAJES URL"
+        <input id="edit-member-url" name="iajes-url" type="text" className={"input input-text w-full " + (formRequired?.iajesUrl && "input-required")}
+               placeholder="/profile/..." onChange={iajesUrlChange}
                defaultValue={focusMember?.iajes_url} />
+        <div className="input-error">Invalid profile URL. IAJES profile URL must start with /profile/</div>
         <br /><br />
         <label>
           Image:<br />
