@@ -614,7 +614,7 @@ export default function TaskForce({ loaderData }) {
     <>
       <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} content={taskForceData.short_desc} taskForceUrl={taskForceData.url} />
       <EditContentTopPopup showPopup={showContentTopPopup} setShowPopup={setShowContentTopPopup} content={taskForceData.content_top} taskForceUrl={taskForceData.url} />
-      <EditContentBottomPopup showPopup={showContentBottomPopup} setShowPopup={setShowContentBottomPopup} content={taskForceData.content_top} taskForceUrl={taskForceData.url} />
+      <EditContentBottomPopup showPopup={showContentBottomPopup} setShowPopup={setShowContentBottomPopup} content={taskForceData.content_bottom} taskForceUrl={taskForceData.url} />
       <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceUrl={taskForceData.url} teamMembers={taskForceData.team_members} />
       <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceUrl={taskForceData.url} projects={taskForceData.projects} />
       
