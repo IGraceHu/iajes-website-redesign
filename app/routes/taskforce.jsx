@@ -174,9 +174,14 @@ async function getTeamMembers(teamMemberList) {
     .from('task force members')
     .select()
     .in('id', teamMemberList)
-    return data || error;
+    return data || [];
 }
 
+// Add Team Member
+// Adds a team member to the Team Members table
+// And adds the member's id to the list of team members of the task force
+// Returns the list of task force members
+//   Will be updated if successful
 async function addTeamMember(taskForceUrl, teamMemberList, formData) {
   const { data, errorMembers } = await supabase
     .from('task force members')
@@ -198,7 +203,7 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
           team_members: teamMemberList
         })
         .eq('url', taskForceUrl)
-      return teamMemberList || [];
+      return teamMemberList;
     }
 
     return teamMemberList;
@@ -234,11 +239,9 @@ async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
           team_members: teamMemberList
         })
         .eq('url', taskForceUrl)
-      return teamMemberList || [];
     }
-    return teamMemberList;
   }
-  return false;
+  return teamMemberList;
 }
 
 export async function loader({ params }) {
@@ -417,20 +420,17 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData);
 
       // if the team member is successfully created, fetch team members again to update UI
-      if (updatedTeamMemberList != null) {
-        const newMembers = await getTeamMembers(updatedTeamMemberList)
-        setCurrentTeamMembers(newMembers);
-        setShowMemberPopup(false);
-      }
+      const newMembers = await getTeamMembers(updatedTeamMemberList)
+      setCurrentTeamMembers(newMembers);
+      setShowMemberPopup(false);
     } else {
       const updateMember = await updateTeamMember(focusMember.id, formData);
       if (updateMember === null) {
-        const newMembers = await getTeamMembers(teamMemberList)
+        const newMembers = await getTeamMembers(teamMemberList);
         setCurrentTeamMembers(newMembers);
-        setShowMemberPopup(false);
       }
+      setShowMemberPopup(false);
     }
-    // const update = await updateProfile(userId, formData);
     setFocusMember(null);
   }
 
@@ -459,11 +459,9 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
 
       const updatedTeamMemberList = await deleteTeamMember(taskForceUrl, teamMemberList, focusMember.id);
       
-      if (updatedTeamMemberList && updatedTeamMemberList != null) {
-        const newMembers = await getTeamMembers(updatedTeamMemberList)
-        setCurrentTeamMembers(newMembers);
-        setShowDeletePopup(false);
-      }
+      const newMembers = await getTeamMembers(updatedTeamMemberList)
+      setCurrentTeamMembers(newMembers);
+      setShowDeletePopup(false);
     }
     catch (error) {
       console.log(error);
