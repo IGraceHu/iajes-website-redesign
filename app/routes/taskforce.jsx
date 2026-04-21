@@ -194,9 +194,11 @@ export async function loader({ params }) {
 function MemberCard({ memberData }) {
   return (
     <div className="text-center w-full">
-      <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
-        <img className="min-w-full min-h-full" src={memberData.imageURL} />
-      </div>
+      { memberData?.image_url &&
+        <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
+          <img className="min-w-full min-h-full" src={memberData.image_url} />
+        </div>
+      }
       { memberData.iajes_url ? 
           <a href={memberData.iajes_url} className="block font-semibold text-secondary-dark mb-2 hover:text-primary-dark duration-200">{memberData.name}</a> 
           :
@@ -709,45 +711,46 @@ export default function TaskForce({ loaderData }) {
           }
         </div>
 
-        <div className="w-full text-left duration-200 mb-10">
-          <p>{taskForceData.content_top}</p>
-          {isAdmin &&
-            <div className="w-full mt-5 text-right">
-              <button className="button button-light" onClick={() => { setShowContentTopPopup(true) }}>
-                Edit Area
-              </button>
-            </div>}
-        </div>
-
-        <div className="w-full md:text-left relative duration-200 mb-10">
-          <h2>Team Members</h2>
-          {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
-          <div className={memberClassName}>
-            {taskForceData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
+        { (isAdmin || taskForceData?.content_top.length > 0) &&
+          <div className="w-full text-left duration-200 mb-10">
+            <p>{taskForceData.content_top}</p>
+            {isAdmin &&
+              <div className="w-full mt-5 text-right">
+                <button className="button button-light" onClick={() => { setShowContentTopPopup(true) }}>
+                  Edit Area
+                </button>
+              </div>}
           </div>
-        </div>
+        }
 
-        <div className="w-full text-left duration-200 mb-10">
-          <p>{taskForceData?.content_bottom}</p>
-          {isAdmin &&
-            <div className="w-full mt-5 text-right">
-              <button className="button button-light" onClick={() => { setShowContentBottomPopup(true) }}>
-                Edit Area
-              </button>
-            </div>}
-        </div>
+        { (isAdmin || taskForceData.team_members.length > 0) &&
+          <div className="w-full md:text-left relative duration-200 mb-15">
+            <h2>Team Members</h2>
+            {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
+            <div className={memberClassName}>
+              {taskForceData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
+            </div>
+          </div>
+        }
+        { (isAdmin || taskForceData?.content_bottom.length > 0) &&
+          <div className="w-full text-left duration-200 mb-10">
+            <p>{taskForceData?.content_bottom}</p>
+            {isAdmin &&
+              <div className="w-full mt-5 text-right">
+                <button className="button button-light" onClick={() => { setShowContentBottomPopup(true) }}>
+                  Edit Area
+                </button>
+              </div>}
+          </div>
+        }
 
-        <div className="w-full md:text-left relative duration-200 mb-10">
-          <h2>Projects</h2>
-          {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
-          {taskForceData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
-        </div>
-
-        {/* <div className="w-full md:text-left relative duration-200 mb-10">
-          <h2>External Links</h2>
-          {isAdmin && <button className="button button-light md:absolute -top-1 right-0">Edit</button>}
-
-        </div> */}
+        { (isAdmin || taskForceData.projects.length > 0) &&
+          <div className="w-full md:text-left relative duration-200 mb-10">
+            <h2>Projects</h2>
+            {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
+            {taskForceData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
+          </div>
+        }
 
       </div>
       <Footer />
