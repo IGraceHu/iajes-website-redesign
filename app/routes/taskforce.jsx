@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
@@ -620,7 +620,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
 }
 
 export default function TaskForce({ loaderData }) {
-  const isAdmin = true;
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const taskForceData = loaderData;
 
@@ -642,6 +642,41 @@ export default function TaskForce({ loaderData }) {
       memberClassName += "xl:grid-cols-4 lg:grid-cols-3 grid-cols-2";
     }
   }
+
+  useEffect(() => {
+    const getIsAdmin = async (userId) => {
+        try {
+            const { data, error } = await supabase
+            .from('users')
+            .select('role')
+            .eq("id", userId);
+            if (data[0]) {
+                setIsAdmin(data[0].role == "admin");
+            }
+            else { console.log("error"); }
+            
+        } catch (error) {
+            console.log("error");
+        }
+    }
+
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user.id) {
+        getIsAdmin(session?.user.id);
+      }
+    });
+
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user.id) {
+        getIsAdmin(session?.user.id);
+      }
+    });
+
+
+    return () => subscription.unsubscribe();
+  }, []);
 
 
   return (
