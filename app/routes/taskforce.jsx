@@ -203,7 +203,6 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
           team_members: teamMemberList
         })
         .eq('url', taskForceUrl)
-      return teamMemberList;
     }
 
     return teamMemberList;
@@ -242,6 +241,68 @@ async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
     }
   }
   return teamMemberList;
+}
+
+// Add Team Member
+// Adds a team member to the Team Members table
+// And adds the member's id to the list of team members of the task force
+// Returns the list of task force members
+//   Will be updated if successful
+async function addProject(taskForceUrl, projectList, formData) {
+  const { data, errorProjects } = await supabase
+    .from('task force projects')
+    .insert({
+      name: formData.get("name"),
+      details: formData.get("details"),
+      url: formData.get("url")
+    })
+    .select()
+
+    if (data) {
+      projectList.push(data[0].id);
+
+      const { errorTF } = await supabase
+        .from('task forces')
+        .update({
+          projects: projectList
+        })
+        .eq('url', taskForceUrl)
+    }
+
+    return projectList;
+}
+
+async function updateProject(projectId, formData) {
+  const { error } = await supabase
+    .from('task force projects')
+    .update({
+      name: formData.get("name"),
+      details: formData.get("details"),
+      url: formData.get("url")
+    })
+    .eq('id', projectId)
+    return error;
+}
+
+async function deleteProject(taskForceUrl, projectList, projectId) {
+  const projectPosition = projectList.indexOf(projectId);
+  if (projectPosition >= 0) {
+    const response = await supabase
+      .from('task force projects')
+      .delete()
+      .eq('id', projectId)
+    
+    if (response) {
+      projectList.splice(projectPosition, 0);
+      const { errorTF } = await supabase
+        .from('task forces')
+        .update({
+          projects: projectList
+        })
+        .eq('url', taskForceUrl)
+    }
+  }
+  return projectList;
 }
 
 export async function loader({ params }) {
