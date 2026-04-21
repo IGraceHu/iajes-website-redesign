@@ -349,14 +349,22 @@ function MemberCard({ memberData }) {
 
 function ProjectCard({ projectData }) {
   return (
-    <div className="md:text-left w-full mb-5 grid grid-rows-[2.5rem_auto] md:grid-cols-[400px_auto] grid-cols-1 gap-5">
-      <a href={"/projects/" + projectData.url} className="md:order-2"><h3>{projectData.name}</h3></a>
-      <div className="m-auto md:row-span-2 md:order-1">
-        {/* <iframe src="https://drive.google.com/file/d/1Lb-tAYB5vcDcjZ4L-3u26jZ23k8dZLSy/preview" width="400" height="280"></iframe> */}
+    <div className="mb-5 mt-5">
+      { projectData.url ? 
+          <a href={projectData.url} className="hover:text-primary-dark duration-200"><h4>{projectData.name}</h4></a> 
+          :
+          <h4>{projectData.name}</h4> 
+        }
+      <div className="grid md:grid-cols-[auto_300px] grid-cols-1 gap-4">
+        <p className="text-left">
+          {projectData.details}
+        </p>
+        { projectData.image_url &&
+          <div className="rounded-md md:max-h-50 overflow-hidden">
+            <img className="rounded-md" src={projectData.image_url} />
+          </div>
+        }
       </div>
-      <p className="text-left md:order-3">
-        {projectData.desc}
-      </p>
     </div>
   )
 }
@@ -816,7 +824,7 @@ export default function TaskForce({ loaderData }) {
 
         <div className="w-full md:text-left relative duration-200 mb-10">
           <h2>Team Members</h2>
-          {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
+          {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
           <div className={memberClassName}>
             {taskForceData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
           </div>
@@ -834,7 +842,7 @@ export default function TaskForce({ loaderData }) {
 
         <div className="w-full md:text-left relative duration-200 mb-10">
           <h2>Projects</h2>
-          {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
+          {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
           {taskForceData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
         </div>
 
