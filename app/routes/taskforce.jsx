@@ -231,7 +231,7 @@ async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
       .eq('id', memberId)
     
     if (response) {
-      teamMemberList.splice(memberPosition, 0);
+      teamMemberList.splice(memberPosition, 1);
       const { errorTF } = await supabase
         .from('task forces')
         .update({
@@ -241,6 +241,14 @@ async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
     }
   }
   return teamMemberList;
+}
+
+async function getProjects(projectList) {
+  const { data, error } = await supabase
+    .from('task force projects')
+    .select()
+    .in('id', projectList)
+    return data || [];
 }
 
 // Add Team Member
@@ -293,7 +301,7 @@ async function deleteProject(taskForceUrl, projectList, projectId) {
       .eq('id', projectId)
     
     if (response) {
-      projectList.splice(projectPosition, 0);
+      projectList.splice(projectPosition, 1);
       const { errorTF } = await supabase
         .from('task forces')
         .update({
@@ -309,14 +317,17 @@ export async function loader({ params }) {
   // const found = tfInfoTemp.find((tfInf) => tfInf.url == params.tfName);
   const tf = await getTaskForce(params.tfName);
   const teamMembers = await getTeamMembers(tf.team_members || [])
+  const projects = await getProjects(tf.projects || [])
   // Ensure expected arrays/fields exist to avoid runtime errors when mapping
   tf.team_members = teamMembers || []
-  tf.projects = tf.projects || [];
+  tf.projects = projects || [];
   tf.content_top = tf.content_top || "";
   tf.content_bottom = tf.content_bottom || "";
   tf.name = tf.name || "";
   return tf;
 }
+
+
 
 function MemberCard({ memberData }) {
   return (
@@ -341,7 +352,7 @@ function ProjectCard({ projectData }) {
     <div className="md:text-left w-full mb-5 grid grid-rows-[2.5rem_auto] md:grid-cols-[400px_auto] grid-cols-1 gap-5">
       <a href={"/projects/" + projectData.url} className="md:order-2"><h3>{projectData.name}</h3></a>
       <div className="m-auto md:row-span-2 md:order-1">
-        <iframe src="https://drive.google.com/file/d/1Lb-tAYB5vcDcjZ4L-3u26jZ23k8dZLSy/preview" width="400" height="280"></iframe>
+        {/* <iframe src="https://drive.google.com/file/d/1Lb-tAYB5vcDcjZ4L-3u26jZ23k8dZLSy/preview" width="400" height="280"></iframe> */}
       </div>
       <p className="text-left md:order-3">
         {projectData.desc}
@@ -592,54 +603,146 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
 }
 
 function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
+  const navigate = useNavigate();
+  const [currentProjects, setCurrentProjects] = useState(projects);
   const [showProjectPopup, setShowProjectPopup] = useState(false);
-  const [editProject, setEditProject] = useState({});
+  const [showDeletePopup, setShowDeletePopup] = useState(false);
+  const [focusProject, setFocusProject] = useState({});
 
-  function handleShowProjectPopup(projectId) {
-    setShowProjectPopup(true);
-    setEditProject(projectId);
+  function handleClosePopup() {
+    setShowPopup(false);
+    navigate(0);
   }
 
-  function validate() {
+  function handleShowProjectPopup(projectData) {
+    setShowProjectPopup(true);
+    setFocusProject(projectData);
+  }
+
+  function handleDeleteProjectPopup(projectData) {
+    setShowDeletePopup(true);
+    setFocusProject(projectData);
+  }
+
+  const [formRequired, setFormRequired] = useState({ name: false });
+
+  async function validate(formData) {
+    let isValidated = true;
+
+    const isRequired = {
+      name: formData.get('name') === (null || ""),
+    }
+    for (let value of Object.values(isRequired)) {
+      if (value) {
+        isValidated = false;
+        break;
+      }
+    }
+    if (!isValidated) {
+      setFormRequired(isRequired);
+      return false;
+    }
+
+    // creates a list of current project ids to update the task force project list
+    const projectList = [];
+    if (currentProjects.length > 0) {
+      currentProjects.map((project) => projectList.push(project.id));
+    }
     
+    // if focus project is null => new project
+    if (focusProject == null) {
+      const updatedProjectList = await addProject(taskForceUrl, projectList, formData);
+
+      // if the team project is successfully created, fetch project again to update UI
+      const newProjects = await getProjects(updatedProjectList)
+      setCurrentProjects(newProjects);
+      setShowProjectPopup(false);
+    } else {
+      const updatedProject = await updateProject(focusProject.id, formData);
+      if (updatedProject === null) {
+        const newProjects = await getProjects(projectList);
+        setCurrentProjects(newProjects);
+      }
+      setShowProjectPopup(false);
+    }
+    setFocusProject(null);
+  }
+
+  function checkEmpty(value, inputName) {
+      const updatedFormRequired = updateRequired(value, inputName, formRequired);
+      if (updatedFormRequired != formRequired) {
+        setFormRequired(updatedFormRequired);
+      }
+  }
+
+  async function handleRemove() {
+    try {
+      // creates a list of current member ids to update the task force member list
+      const projectList = [];
+      if (currentProjects.length > 0) {
+        currentProjects.map((project) => projectList.push(project.id));
+      }
+
+      const updatedProjectList = await deleteProject(taskForceUrl, projectList, focusProject.id);
+      
+      const newProjects = await getProjects(updatedProjectList)
+      setCurrentProjects(newProjects);
+      setShowDeletePopup(false);
+    }
+    catch (error) {
+      console.log(error);
+    }
+    setFocusProject(null);
   }
   
   return (
     <>
-      <Popup id="tf-projects" show={showPopup} setShow={setShowPopup}>
+      <Popup id="tf-projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Task Force Projects</h4>
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
-            {projects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+            {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
               <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{project.name}</p>
                 <i className="bi bi-pencil-square"></i>
               </button>
-              <button className="button-icon button-red"><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+              <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
             </div>)}
           </div>
-          <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup()}>Add a project</button>
+          <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup(null)}>Add a project</button>
+      </Popup>
+
+      <Popup id="tf-delete-project" show={showDeletePopup} setShow={setShowDeletePopup} nested
+             buttons={[{text:"Remove", onclick:handleRemove}]}>
+          <div className="text-center mt-6">Remove {focusProject?.name}?</div>
       </Popup>
 
       <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} nested>
         <h4>Edit Project</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
-            <label htmlFor="edit-project-title">Project title:</label><br />
-            <input id="edit-project-title" name="edit-project-title" type="text" className="input input-text md:w-70 w-full" />
+            <label htmlFor="edit-project-name">Project title:</label><br />
+            <input id="edit-project-name" name="name" type="text" className={"input input-text md:w-70 w-full " + (formRequired?.name && "input-required")} 
+                   placeholder="Project name" onChange={(e) => checkEmpty(e.target.value, "name")}
+                   defaultValue={focusProject?.name} />
+            <div className="input-error">This field is required.</div>
           </div>
           <label>
             Image:<br />
-            <input id="edit-project-img" name="edit-project-img" type="file" />
+            <input id="edit-project-img" name="image-url" type="file" />
             <div className="input-error">This field is required.</div>
           </label>
         </div>
         <div className="mb-5">
           <label htmlFor="edit-project-url">Project URL:</label><br />
-          <input id="edit-project-url" name="edit-project-url" type="text" className="input input-text w-full" />
+          <input id="edit-project-url" name="url" type="text" className="input input-text w-full"
+                 placeholder="https://example.com"
+                 defaultValue={focusProject?.url} />
         </div>
         <div className="">
           <label htmlFor="edit-project-desc">Project details:</label><br />
-          <textarea id="edit-project-desc" name="edit-project-desc" className="input input-text w-full h-60" ></textarea>
+          <textarea id="edit-project-desc" name="details" className="input input-text w-full h-60" 
+                 placeholder="Project details..."
+                 defaultValue={focusProject?.details} ></textarea>
         </div>
       </PopupForm>
     </>
