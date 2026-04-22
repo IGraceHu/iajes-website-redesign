@@ -1,4 +1,6 @@
 import { useState, useEffect, useActionState } from "react";
+import { supabase } from "../supabase";
+import { useNavigate } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup, PopupForm } from "../components/popup";
 import { Footer } from "../components/footer";
@@ -6,6 +8,39 @@ import { H1Middle, H1Left } from "../components/graphics";
 import { updateRequired } from "../helpers/form";
 import "../styles/landing.css";
 
+export function meta() {
+  return [
+    { title: "IAJES Homepage" },
+  ];
+}
+
+async function getHighlights() {
+    const { data, error } = await supabase
+      .from('highlights')
+      .select();
+    if (data) {
+      data.sort((a, b) => { return a.id - b.id });
+    }
+    
+    return data || error;
+}
+
+async function updateHighlight(highlightId, formData) {
+  const { error } = await supabase
+    .from('highlights')
+    .update({
+      title: formData.get("title"),
+      details: formData.get("details"),
+    })
+    .eq('id', highlightId);
+    return error;
+}
+
+
+export async function loader({ params }) {
+  const highlightsList = await getHighlights();
+  return highlightsList;
+}
 
 function Carousel() {
   const carouselContent = [
@@ -169,49 +204,101 @@ const highlights = [
 ];
 
 
-function EditHighlights({showPopup, setShowPopup}) {
+function EditHighlights({showPopup, setShowPopup, highlightList}) {
+  const navigate = useNavigate();
+  const [currentHighlights, setCurrentHighlights] = useState(highlightList);
   const [showHighlightPopup, setShowHighlightPopup] = useState(false);
-  const [editHighlight, setEditHighlight] = useState(0);
+  const [focusHighlight, setFocusHighlight] = useState({});
+  const [formRequired, setFormRequired] = useState({ title: false, details: false });
+  const [hasError, setHasError] = useState(false);
 
-  function handleShowHighlightPopup(highlightId) {
-    setShowHighlightPopup(true);
-    setEditHighlight(highlightId);
+  function handleClosePopup() {
+    setShowPopup(false);
+    navigate(0);
   }
 
-  function validate() {
+  function handleShowHighlightPopup(highlight) {
+    setShowHighlightPopup(true);
+    setFocusHighlight(highlight);
+  }
+
+  async function validate(formData) {
+    let isValidated = true;
+
+    const isRequired = {
+      title: formData.get('title') === (null || ""),
+      details: formData.get('details') === (null || ""),
+    }
+    for (let value of Object.values(isRequired)) {
+      if (value) {
+        isValidated = false;
+        break;
+      }
+    }
+    if (!isValidated) {
+      setFormRequired(isRequired);
+      return false;
+    }
     
+    const updatedHighlight = await updateHighlight(focusHighlight.id, formData);
+    if (updatedHighlight === null) {
+      setHasError(false);
+      const newHighlights = await getHighlights();
+      setCurrentHighlights(newHighlights);
+      setShowHighlightPopup(false);
+    } else {
+      setHasError(true);
+      console.log(updatedHighlight);
+    }
+  }
+
+  function checkEmpty(value, inputName) {
+      const updatedFormRequired = updateRequired(value, inputName, formRequired);
+      if (updatedFormRequired != formRequired) {
+        setFormRequired(updatedFormRequired);
+      }
   }
   
   return (
     <>
-      <Popup id="edit-highlights" show={showPopup} setShow={setShowPopup}>
+      <Popup id="edit-highlights" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Highlights</h4>
-          <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
-            {highlights.map(highlight => <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-              <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight.id)}>
-                <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
-                <i className="bi bi-pencil-square"></i>
-              </button>
-            </div>)}
+          <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
+            {currentHighlights.map(highlight => 
+              <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+                <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
+                  <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
+                  <i className="bi bi-pencil-square"></i>
+                </button>
+              </div>
+            )}
           </div>
       </Popup>
 
-      <PopupForm id="edit-highlight" className="md:w-200" show={showHighlightPopup} setShow={setShowHighlightPopup} validate={validate} nested>
+      <PopupForm id="edit-highlight" className="md:w-200" show={showHighlightPopup} setShow={setShowHighlightPopup} validate={validate} hasError={hasError} nested>
         <h4>Edit Highlight</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
-            <label for="edit-highlight-title">Highlight title:</label><br />
-            <input id="edit-highlight-title" name="edit-highlight-title" type="text" className="input input-text md:w-70 w-full" />
+            <label htmlFor="edit-highlight-title">Highlight title:</label><br />
+            <input id="edit-highlight-title" name="title" type="text" 
+                   className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
+                   placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
+                   defaultValue={focusHighlight.title} />
+            <div className="input-error">This field is required.</div>
           </div>
           <label>
             Image:<br />
-            <input id="edit-highlight-img" name="edit-highlight-img" type="file" />
+            <input id="edit-highlight-img" name="image-url" type="file" />
             <div className="input-error">This field is required.</div>
           </label>
         </div>
         <div className="">
-          <label for="edit-highlight-desc">Highlight details:</label><br />
-          <textarea id="edit-highlight-desc" name="edit-highlight-desc" className="input input-text w-full h-60" ></textarea>
+          <label htmlFor="edit-highlight-desc">Highlight details:</label><br />
+          <textarea id="edit-highlight-desc" name="details" 
+                    className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
+                    placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
+                    defaultValue={focusHighlight.details} ></textarea>
+          <div className="input-error">This field is required.</div>
         </div>
       </PopupForm>
     </>
@@ -223,30 +310,12 @@ function HighlightContent({ content }) {
   return (
     <div className="size-full min-h-80 flex flex-col justify-stretch text-left">
       <div className="bg-gray-dark grow h-fit rounded-md mb-2">
-        {content.imageURL != null && <img src={content.imageURL} className="size-full object-cover" />}
+        {content.image_url && <img src={content.image_url} className="size-full object-cover" />}
       </div>
       <h2>{content.title}</h2>
-      <p>{content.description}</p>
+      <p>{content.details}</p>
     </div>
   )
-}
-
-function Highlights({ canEdit, setEditHighlights }) {
-  return (
-    <>
-      <div className="text-center">
-        <H1Middle className="text-glow">Highlights</H1Middle>
-        { canEdit && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
-        <div id="highlights" className="width-full py-5 grid md:grid-cols-[60%_40%] md:grid-rows-6 gap-10" >
-          <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlights[0]}/></div>
-          <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlights[1]}/></div>
-          <div className="md:row-span-2" ><HighlightContent content={highlights[2]}/></div>
-          <div className="md:row-span-2" ><HighlightContent content={highlights[3]}/></div>
-          <div className="md:row-span-2" ><HighlightContent content={highlights[4]}/></div>
-        </div>
-      </div>
-    </>
-  );
 }
 
 function LandingSubscribe() {
@@ -261,20 +330,37 @@ function LandingSubscribe() {
   );
 }
 
-export function Landing() {
+export default function Landing({ loaderData }) {
   const isAdmin = true;
   const [editHighlights, setEditHighlights] = useState(false);
+
+  const hasHighlights = !loaderData?.code;
+  const highlightList = hasHighlights ? loaderData : [];
 
   return (
     <>
       {isAdmin &&
-        <EditHighlights showPopup={editHighlights} setShowPopup={setEditHighlights} />}
+        <EditHighlights showPopup={editHighlights} setShowPopup={setEditHighlights} highlightList={highlightList} />}
       <Menu />
       <Carousel />
       <div className="flex height-fit">
         <div id="content" className="items-center text-black lg:px-40 px-10 py-20 w-full h-fit duration-200 z-1">
           <AboutUs />
-          <Highlights canEdit={isAdmin} setEditHighlights={setEditHighlights} />
+          
+          { hasHighlights && 
+            <div className="text-center relative">
+              <H1Middle className="text-glow">Highlights</H1Middle>
+              { isAdmin && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
+              <div id="highlights" className="relative width-full py-5 grid md:grid-rows-6 gap-10" >
+                <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlightList[0]}/></div>
+                <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlightList[1]}/></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]}/></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]}/></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]}/></div>
+              </div>
+            </div>
+          }
+
           <LandingSubscribe />
           <div className="h-100">
 

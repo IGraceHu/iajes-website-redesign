@@ -156,3 +156,10 @@
 .about-card:hover img {
     opacity: 0;
 }
+
+
+@media (width >= 48rem) { 
+    #highlights {
+        grid-template-columns: calc(60% - 20px) calc(40% - 20px);
+    }
+}

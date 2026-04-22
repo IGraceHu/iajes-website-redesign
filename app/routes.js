@@ -1,7 +1,7 @@
 import { index, route } from "@react-router/dev/routes";
 
 export default [
-    index("routes/home.jsx"),
+    index("routes/landing.jsx"),
     route("about", "routes/about.jsx"),
     route("organizational-structure", "routes/organizational-structure.jsx"),
     route("styleguide", "routes/styleguide.jsx"),
