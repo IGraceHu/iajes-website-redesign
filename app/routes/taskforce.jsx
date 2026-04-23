@@ -315,6 +315,8 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [focusMember, setFocusMember] = useState(null);
+  const [formRequired, setFormRequired] = useState({ name: false, iajesUrl: false });
+
 
   function handleClosePopup() {
     setShowPopup(false);
@@ -323,6 +325,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
 
   function handleShowMemberPopup(memberData) {
     setShowMemberPopup(true);
+    setFormRequired({ name: false, iajesUrl: false });
     setFocusMember(memberData);
   }
 
@@ -332,7 +335,6 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   }
 
 
-  const [formRequired, setFormRequired] = useState({ name: false, iajesUrl: false });
   // create and update
   async function memberValidate(formData) {
     let isValidated = true;
@@ -480,6 +482,8 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
   const [showProjectPopup, setShowProjectPopup] = useState(false);
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [focusProject, setFocusProject] = useState({});
+  const [formRequired, setFormRequired] = useState({ name: false });
+
 
   function handleClosePopup() {
     setShowPopup(false);
@@ -488,6 +492,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
 
   function handleShowProjectPopup(projectData) {
     setShowProjectPopup(true);
+    setFormRequired({ name: false });
     setFocusProject(projectData);
   }
 
@@ -496,7 +501,6 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
     setFocusProject(projectData);
   }
 
-  const [formRequired, setFormRequired] = useState({ name: false });
 
   async function validate(formData) {
     let isValidated = true;
