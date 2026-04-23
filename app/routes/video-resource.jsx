@@ -29,11 +29,37 @@ async function getVideoResource(resourceId) {
     return data ? data[0] : null;
 }
 
-async function deleteVideoResource(resourceId) {
+async function deleteVideoResource(resourceId, thumbnailUrl, speakerImgUrl) {
+    const filesToRemove = [];
+
+    // Extract the exact filename from the Supabase public URL
+    const extractFilename = (url) => {
+        if (!url) return null;
+        const parts = url.split('/video-resources/');
+        return parts.length > 1 ? parts[parts.length - 1] : null;
+    };
+
+    const thumbFilename = extractFilename(thumbnailUrl);
+    if (thumbFilename) filesToRemove.push(thumbFilename);
+
+    const speakerFilename = extractFilename(speakerImgUrl);
+    if (speakerFilename) filesToRemove.push(speakerFilename);
+
+    if (filesToRemove.length > 0) {
+        const { error: storageError } = await supabase.storage
+            .from('video-resources')
+            .remove(filesToRemove);
+
+        if (storageError) {
+            console.error("Error deleting files from storage:", storageError);
+        }
+    }
+
     const response = await supabase
         .from('video resources')
         .delete()
         .eq('id', resourceId)
+
     return response;
 }
 
@@ -239,13 +265,13 @@ export default function VideoResource({ loaderData }) {
         return () => subscription.unsubscribe();
     }, []);
 
-    function handleDelete() {
+    async function handleDelete() {
         try {
-            deleteVideoResource(loaderData.id);
+            await deleteVideoResource(loaderData.id, loaderData.video_thumbnail, loaderData.speaker_image);
             navigate({ pathname: "/video-resources" });
         }
         catch (error) {
-            console.log("Error");
+            console.error("Error during deletion:", error);
         }
     }
 
