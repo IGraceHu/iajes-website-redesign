@@ -144,12 +144,17 @@ export default function SearchRoute({ loaderData }) {
           <div className="flex w-full max-w-[380px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
             <input
+              id="search-input"
               value={query}
               onChange={handleQueryChange}
               onInput={handleQueryChange}
               placeholder="Search people, institutions, or research interests"
               className="w-full bg-transparent text-sm text-gray-dark outline-none"
             />
+            <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
+                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
+              <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+            </button>
           </div>
 
           <div className="flex flex-wrap gap-3">
