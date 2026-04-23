@@ -31,6 +31,7 @@ async function updateHighlight(highlightId, formData) {
     .update({
       title: formData.get("title"),
       details: formData.get("details"),
+      url: formData.get("url"),
     })
     .eq('id', highlightId);
     return error;
@@ -209,7 +210,7 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
   const [currentHighlights, setCurrentHighlights] = useState(highlightList);
   const [showHighlightPopup, setShowHighlightPopup] = useState(false);
   const [focusHighlight, setFocusHighlight] = useState({});
-  const [formRequired, setFormRequired] = useState({ title: false, details: false });
+  const [formRequired, setFormRequired] = useState({ title: false, details: false, url: false });
   const [hasError, setHasError] = useState(false);
 
   function handleClosePopup() {
@@ -219,15 +220,17 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
 
   function handleShowHighlightPopup(highlight) {
     setShowHighlightPopup(true);
+    setFormRequired({ title: false, details: false, url: false });
     setFocusHighlight(highlight);
   }
 
   async function validate(formData) {
     let isValidated = true;
-
+    const urlInput = formData.get("url");
     const isRequired = {
       title: formData.get('title') === (null || ""),
       details: formData.get('details') === (null || ""),
+      url: (urlInput && !urlInput.match(/https:\/\//))
     }
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -257,6 +260,14 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
       if (updatedFormRequired != formRequired) {
         setFormRequired(updatedFormRequired);
       }
+  }
+
+  function urlChange() {
+    const updatedFormRequired = structuredClone(formRequired);
+    updatedFormRequired.url = false;
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
   }
   
   return (
@@ -292,6 +303,15 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
             <div className="input-error">This field is required.</div>
           </label>
         </div>
+        <div>
+          <label htmlFor="edit-highlight-url">Highlight URL:</label><br />
+          <input id="edit-highlight-url" name="url" type="text" 
+                  className={"input input-text w-full " + (formRequired?.url && "input-required")}
+                  placeholder="https://..." onChange={urlChange}
+                  defaultValue={focusHighlight.url} />
+          <div className="input-error">Invalid link.</div>
+        </div>
+        <br/>
         <div className="">
           <label htmlFor="edit-highlight-desc">Highlight details:</label><br />
           <textarea id="edit-highlight-desc" name="details" 
@@ -312,7 +332,11 @@ function HighlightContent({ content }) {
       <div className="bg-gray-dark grow h-fit rounded-md mb-2">
         {content.image_url && <img src={content.image_url} className="size-full object-cover" />}
       </div>
-      <h2>{content.title}</h2>
+      { content?.url ? 
+        <a href={content?.url}><h2>{content.title}</h2></a>
+        :
+        <h2>{content.title}</h2>
+      }
       <p>{content.details}</p>
     </div>
   )
