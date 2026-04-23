@@ -4,7 +4,7 @@ import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
-import { Banner } from "../components/graphics";
+import { Banner, Break } from "../components/graphics";
 import { updateRequired } from "../helpers/form";
 
 export function meta({ loaderData }) {
@@ -699,8 +699,7 @@ export default function TaskForce({ loaderData }) {
       </Banner>
 
       <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
-
-        <div className="w-full text-left duration-200 mb-10">
+        <div className="w-full text-left duration-200 mb-5">
           <p>{taskForceData.short_desc}</p>
           {isAdmin &&
             <div className="w-full mt-5 text-right">
@@ -710,6 +709,8 @@ export default function TaskForce({ loaderData }) {
             </div>
           }
         </div>
+
+        <Break />
 
         { (isAdmin || taskForceData?.content_top.length > 0) &&
           <div className="w-full text-left duration-200 mb-10">
