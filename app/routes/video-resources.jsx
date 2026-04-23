@@ -38,11 +38,19 @@ async function createVideoResource(formData) {
             .from('video-resources')
             .upload(path, thumbnailFile);
 
-        if (uploadError) return uploadError;
+        if (uploadError) {
+            console.error("Error uploading thumbnail:", uploadError);
+            return uploadError;
+        }
 
-        const { data } = supabase.storage
+        const { data, error: urlError } = supabase.storage
             .from('video-resources')
             .getPublicUrl(path);
+
+        if (urlError) {
+            console.error("Error getting thumbnail URL:", urlError);
+            return urlError;
+        }
 
         thumbnailUrl = data.publicUrl;
     }
@@ -54,11 +62,19 @@ async function createVideoResource(formData) {
             .from('video-resources')
             .upload(path, speakerImgFile);
 
-        if (uploadError) return uploadError;
+        if (uploadError) {
+            console.error("Error uploading speaker image:", uploadError);
+            return uploadError;
+        }
 
-        const { data } = supabase.storage
+        const { data, error: urlError } = supabase.storage
             .from('video-resources')
             .getPublicUrl(path);
+
+        if (urlError) {
+            console.error("Error getting speaker image URL:", urlError);
+            return urlError;
+        }
 
         speakerImgUrl = data.publicUrl;
     }
@@ -76,6 +92,11 @@ async function createVideoResource(formData) {
             speaker_image: speakerImgUrl,
             speaker_details: formData.get("vid-resource-speaker-desc"),
         })
+
+    if (error) {
+        console.error("Database insert error:", error);
+    }
+
     return error;
 }
 
@@ -184,10 +205,11 @@ export default function VideoResources({ loaderData }) {
             return false;
         }
 
-        const create = await createVideoResource(formData);
-        if (create === null) {
+        const createError = await createVideoResource(formData);
+        if (createError === null) {
             setShowResolvePopup(true);
         } else {
+            console.error("Failed to create video resource:", createError);
             setHasError(true);
         }
     }
