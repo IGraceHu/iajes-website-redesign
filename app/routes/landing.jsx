@@ -64,7 +64,7 @@ function Carousel() {
     carouselEl.push(
       <div key={i} className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
 
-        {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 size-full object-cover" />}
+        {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
 
         <div className="relative z-1 size-full box-border m-40">
           <p>{content.text}</p>
@@ -175,34 +175,6 @@ function AboutUs() {
     </div>
   );
 }
-
-const highlights = [
-  {
-    id: 0,
-    title: "highlight 0",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc in nisi venenatis, faucibus lorem eu, lobortis magna. Donec at ante vel arcu mattis sagittis."
-  },
-  {
-    id: 1,
-    title: "highlight 1",
-    description: "Curabitur efficitur ex aliquam sapien dictum fringilla."
-  },
-  {
-    id: 2,
-    title: "highlight 2",
-    description: "Vestibulum sagittis sit amet quam in congue.",
-  },
-  {
-    id: 3,
-    title: "highlight 3",
-    description: "Cras consequat, nibh auctor dapibus ultrices, arcu ex lobortis mi, eu pharetra sem metus eget mi."
-  },
-  {
-    id: 4,
-    title: "highlight 4",
-    description: "Sed eget bibendum ipsum."
-  }
-];
 
 
 function EditHighlights({showPopup, setShowPopup, highlightList}) {
@@ -329,7 +301,9 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
 function HighlightContent({ content }) {
   return (
     <div className="size-full min-h-80 flex flex-col justify-stretch text-left">
-      <div className="bg-gray-dark grow h-fit rounded-md mb-2">
+      <div className="relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden">
+        <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
+        <img className="absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
         {content.image_url && <img src={content.image_url} className="size-full object-cover" />}
       </div>
       { content?.url ? 
