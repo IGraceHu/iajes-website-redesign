@@ -1,0 +1,62 @@
+.radio-button > p {
+    border-color: var(--color-primary-light);
+}
+
+.radio-button.gray:hover > p {
+    border-color: var(--color-gray-light);
+    color: var(--color-gray-light);
+}
+
+.radio-button.gray > input:checked + p {
+    border-color: var(--color-gray-light);
+    background-color: var(--color-gray-light);
+}
+
+.radio-button.gray:hover > input:checked + p {
+    color: var(--color-white);
+}
+
+
+.radio-button.green:hover > p {
+    border-color: var(--color-primary-dark);
+    color: var(--color-primary-dark);
+}
+
+.radio-button.green > input:checked + p {
+    border-color: var(--color-primary-dark);
+    background-color: var(--color-primary-dark);
+}
+
+.radio-button.green:hover > input:checked + p {
+    color: var(--color-white);
+}
+
+
+.radio-button.blue:hover > p {
+    border-color: var(--color-secondary-light);
+    color: var(--color-secondary-light);
+}
+
+.radio-button.blue > input:checked + p {
+    border-color: var(--color-secondary-light);
+    background-color: var(--color-secondary-light);
+}
+
+.radio-button.blue:hover > input:checked + p {
+    color: var(--color-white);
+}
+
+
+.radio-button.dark-blue:hover > p {
+    border-color: var(--color-secondary-dark);
+    color: var(--color-secondary-dark);
+}
+
+.radio-button.dark-blue > input:checked + p {
+    border-color: var(--color-secondary-dark);
+    background-color: var(--color-secondary-dark);
+}
+
+.radio-button.dark-blue:hover > input:checked + p {
+    color: var(--color-white);
+}

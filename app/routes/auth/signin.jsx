@@ -100,9 +100,9 @@ export default function SignIn() {
         <div className="w-full h-30 text-center flex justify-center items-center">{popupErrorMessage}</div>
       </Popup>
 
-      <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
+      <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="w-18 h-full" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
@@ -110,7 +110,7 @@ export default function SignIn() {
         <h4>Sign in to <span className="text-primary-dark">IAJES</span></h4>
         <form action={formAction} className="md:w-md w-full duration-200">
           <label htmlFor="email">Email:</label><br />
-          <input id="email" name="email" type="text" defaultValue={state?.email}
+          <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
           <div className="input-error">Please enter a valid email address.</div>
@@ -121,7 +121,7 @@ export default function SignIn() {
             <label htmlFor="pwd">Password:</label>
             <p><a tabIndex="3" href="/forget-password">Forgot password?</a></p>
           </div>
-          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
+          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "pwd")} />
           <div className="input-error">Please enter your password.</div>

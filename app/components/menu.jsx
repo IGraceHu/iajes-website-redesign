@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { Popup } from "../components/popup";
 
 export function Menu({ currentEndUrl }) {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ export function Menu({ currentEndUrl }) {
   const loggedIn = !!currentUser;
   const [sideMenuActive, setSideMenuActive] = useState(false);
   const [userInfo, setUserInfo] = useState(null);
+  const [signOutPopup, setSignOutPopup] = useState(false);
 
   let isGroupActive = {
     whatWeDo: false,
@@ -70,7 +72,7 @@ export function Menu({ currentEndUrl }) {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setCurrentUser(null);
-    navigate("/");
+    setSignOutPopup(true);
   };
 
   useEffect(() => {
@@ -102,6 +104,10 @@ export function Menu({ currentEndUrl }) {
 
 
   return (
+    <>
+    <Popup show={signOutPopup} setShow={setSignOutPopup} closePopup={() => {setSignOutPopup(false); navigate("/"); navigate(0);}} stayOnBlur={true}>
+      <p className="text-center mt-6">You have been signed out.</p>
+    </Popup>
     <div id="menu" className="sticky top-0 bg-white z-100">
       <div className="border-b border-b-gray-light h-6 z-1">
 
@@ -277,5 +283,6 @@ export function Menu({ currentEndUrl }) {
       </div>
 
     </div>
+    </>
   );
 }

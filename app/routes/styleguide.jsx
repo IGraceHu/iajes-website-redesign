@@ -397,6 +397,21 @@ export default function StyleGuide() {
                             </label>
                             <br /><br />
 
+                            <p>Radio Buttons (need to be contained within an element)</p>
+                            <div>
+                                <label htmlFor="radiobutton1" className="radio-button">
+                                    <input id="radiobutton1" type="radio" name="radiobutton" className={formMode} /><p>Radio 1</p>
+                                    <div className="input-error">This field is required.</div>
+                                </label>
+                                <label htmlFor="radiobutton2" className="radio-button">
+                                    <input id="radiobutton2" type="radio" name="radiobutton" className={formMode} /><p>Radio 2</p>
+                                </label>
+                                <label htmlFor="radiobutton3" className="radio-button">
+                                    <input id="radiobutton3" type="radio" name="radiobutton" className={formMode} /><p>Radio 3</p>
+                                </label>
+                            </div>
+                            <br /><br />
+
                             <p>File</p>
                             <label>
                                 <input id="upload" type="file" className={formMode} />

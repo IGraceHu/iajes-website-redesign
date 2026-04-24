@@ -90,11 +90,14 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
 
         <input type="submit" value="Send password reset e-mail" className="button w-full"></input>
       </form>
+      <div className="w-full my-5 text-center text-disabled-light">
+        <p>Already have an account? <a href="/signin">Sign in here.</a></p>
+      </div>
     </div>
   )
 }
 
-export default function SignIn() {
+export default function ForgetPassword() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
@@ -106,9 +109,9 @@ export default function SignIn() {
         <div className="w-full h-30 text-center flex justify-center items-center">{popupMessage}</div>
       </Popup>
 
-      <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
+      <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="w-18 h-full" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
