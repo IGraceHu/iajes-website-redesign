@@ -127,13 +127,13 @@ p:last-of-type {
   margin-bottom: 0;
 }
 
-a,
+p > a,
 .link {
   color: var(--color-primary-dark);
   transition: 0.2s;
 }
 
-a:hover,
+p > a:hover,
 .link:hover {
   color: var(--color-primary-light);
   cursor: pointer;
