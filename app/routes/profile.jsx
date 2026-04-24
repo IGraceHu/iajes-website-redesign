@@ -69,7 +69,7 @@ export async function loader({ params }) {
 
 function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
   const navigate = useNavigate();
-  const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+  const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
   const [draft, setDraft] = useState({});
 
@@ -77,7 +77,12 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
     let isValidated = true;
     const isRequired = {
       fname: formData.get('fname') === (null || ""),
-      lname: formData.get('lname') === (null || "")
+      lname: formData.get('lname') === (null || ""),
+      urlLinkedin: (formData.get('url-linkedin') && !formData.get('url-linkedin').match(/https:\/\//)),
+      urlInstagram: (formData.get('url-instagram') && !formData.get('url-instagram').match(/https:\/\//)),
+      urlTwitter: (formData.get('url-twitter') && !formData.get('url-twitter').match(/https:\/\//)),
+      urlFacebook: (formData.get('url-facebook') && !formData.get('url-facebook').match(/https:\/\//)),
+      urlWebsite: (formData.get('url-website') && !formData.get('url-website').match(/https:\/\//))
     }
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -100,17 +105,33 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
   }
 
   async function loadInfo() {
-      const profileInfo = await getProfile(userId);
-      setDraft(profileInfo);
-    }
+    const profileInfo = await getProfile(userId);
+    setDraft(profileInfo);
+    setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
+  }
 
   useEffect(() => {
     if (showPopup) {
       loadInfo();
       setHasError(false);
+      setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
     }
   }, [showPopup])
 
+  function checkEmpty(value, inputName) {
+      const updatedFormRequired = updateRequired(value, inputName, formRequired);
+      if (updatedFormRequired != formRequired) {
+        setFormRequired(updatedFormRequired);
+      }
+  }
+
+  function urlChange(inputName) {
+    const updatedFormRequired = structuredClone(formRequired);
+    updatedFormRequired[inputName] = false;
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
+  }
 
   return (
     <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
@@ -118,7 +139,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
        <div className="flex flex-col gap-6">
         <fieldset>
           <div className="text-sm font-semibold text-secondary-dark">Personal Information</div>
-          <div className="mt-3 grid gap-4 md:grid-cols-2">
+          <div className="mt-3 grid gap-5 md:grid-cols-2">
             <div className="relative">
               <label htmlFor="first-name">First Name</label>
               <input
@@ -126,7 +147,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
                 name="fname"
                 type="text"
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
-                defaultValue={draft.fname} placeholder="First name"
+                defaultValue={draft.fname} placeholder="First name" onChange={(e) => checkEmpty(e.target.value, "fname")}
               />
               <div className="input-error">This field is required.</div>
             </div>
@@ -137,7 +158,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
                 name="lname"
                 type="text"
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
-                defaultValue={draft.lname} placeholder="Last name"
+                defaultValue={draft.lname} placeholder="Last name" onChange={(e) => checkEmpty(e.target.value, "lname")}
               />
               <div className="input-error">This field is required.</div>
             </div>
@@ -278,16 +299,18 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
 
         <fieldset className="border-t-2 border-gray-light pt-4">
           <div className="text-sm font-semibold text-secondary-dark">Social Links</div>
-          <div className="mt-3 grid gap-3 md:grid-cols-2">
+          <div className="mt-3 grid gap-x-3 gap-y-5 md:grid-cols-2">
             <div>
               <label htmlFor="linkedin">LinkedIn</label>
               <input
                 id="linkedin"
                 name="url-linkedin"
                 type="text"
-                className="input-text w-full"
+                className={"input input-text w-full " + (formRequired?.urlLinkedin && "input-required")}
+                onChange={() => urlChange("urlLinkedin")}
                 defaultValue={draft.url_linkedin} placeholder="LinkedIn URL"
               />
+              <div className="input-error">Invalid link.</div>
             </div>
             <div>
               <label htmlFor="instagram">Instagram</label>
@@ -295,9 +318,11 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
                 id="instagram"
                 name="url-instagram"
                 type="text"
-                className="input-text w-full"
+                className={"input input-text w-full " + (formRequired?.urlInstagram && "input-required")}
+                onChange={() => urlChange("urlInstagram")}
                 defaultValue={draft.url_instagram} placeholder="Instagram URL"
               />
+              <div className="input-error">Invalid link.</div>
             </div>
             <div>
               <label htmlFor="x">X (Twitter)</label>
@@ -305,9 +330,11 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
                 id="x"
                 name="url-twitter"
                 type="text"
-                className="input-text w-full"
+                className={"input input-text w-full " + (formRequired?.urlTwitter && "input-required")}
+                onChange={() => urlChange("urlTwittern")}
                 defaultValue={draft.url_twitter} placeholder="X (Twitter) URL"
               />
+              <div className="input-error">Invalid link.</div>
             </div>
             <div>
               <label htmlFor="facebook">Facebook</label>
@@ -315,9 +342,11 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
                 id="facebook"
                 name="url-facebook"
                 type="text"
-                className="input-text w-full"
+                className={"input input-text w-full " + (formRequired?.urlFacebook && "input-required")}
+                onChange={() => urlChange("urlFacebook")}
                 defaultValue={draft.url_facebook} placeholder="Facebook URL"
               />
+              <div className="input-error">Invalid link.</div>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="website">Website</label>
@@ -325,9 +354,11 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
                 id="website"
                 name="url-website"
                 type="text"
-                className="input-text w-full"
+                className={"input input-text w-full " + (formRequired?.urlWebsite && "input-required")}
+                onChange={() => urlChange("urlWebsite")}
                 defaultValue={draft.url_website} placeholder="Website URL"
               />
+              <div className="input-error">Invalid link.</div>
             </div>
           </div>
         </fieldset>
