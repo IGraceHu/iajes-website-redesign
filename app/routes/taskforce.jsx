@@ -250,7 +250,7 @@ function EditShortDescPopup({showPopup, setShowPopup, content, taskForceUrl}) {
   return (
     <PopupForm id="tf-shortdesc" className="md:w-[60vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit short description:</h4>
-      <p>The short description appears in the main task force page.</p>
+      <p>This is the short description appears in the main task force page.</p>
       <textarea id="tf-desc-input" name="tf-desc-input" placeholder="Task force short description..."
                 className="input-text w-full min-h-30 h-[30vh]"
                 defaultValue={content}>
