@@ -298,21 +298,40 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
 }
 
 
-function HighlightContent({ content }) {
-  return (
-    <div className="size-full min-h-80 flex flex-col justify-stretch text-left">
-      <div className="relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden">
-        <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
-        <img className="absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
-        {content.image_url && <img src={content.image_url} className="size-full object-cover" />}
-      </div>
-      { content?.url ? 
-        <a href={content?.url}><h2>{content.title}</h2></a>
-        :
+function HighlightContent({ content, side = false }) {  
+  const contentEls = (
+      <>
+        <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
+          
+          { content?.image_url ?
+           <img src={content.image_url} className="size-full object-cover duration-200" />
+          :
+            <>
+              <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
+              <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
+            </>
+          }
+        </div>
+
         <h2>{content.title}</h2>
-      }
-      <p>{content.details}</p>
-    </div>
+        
+        <p>{content.details}</p>
+      </>
+    );
+
+  const height = side ? "h-80" : "h-120"
+  return (
+    <>
+    { content?.url ? 
+      <a href={content.url} className={"highlight-card flex flex-col justify-stretch text-left " + height}>
+        {contentEls}
+      </a>
+    :
+      <div className={"size-full flex flex-col justify-stretch text-left " + height}>
+        {contentEls}
+      </div>
+    }
+    </>
   )
 }
 
@@ -387,9 +406,9 @@ export default function Landing({ loaderData }) {
               <div id="highlights" className="relative width-full py-5 grid md:grid-rows-6 gap-10" >
                 <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlightList[0]}/></div>
                 <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlightList[1]}/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]}/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]}/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]}/></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]} side/></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]} side/></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]} side/></div>
               </div>
             </div>
           }
