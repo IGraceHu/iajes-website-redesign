@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useParams, Link, useNavigate } from "react-router";
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Banner } from "../components/graphics";
 import { Popup, PopupForm } from "../components/popup";
 import "../styles/regional-meetings.css";
 import "../styles/video-resources.css";
-import { useParams, Link } from "react-router";
 
 export function meta() {
     return [
@@ -52,107 +53,249 @@ const regionalData = {
     },
 };
 
-const regionalMeetingsData = {
-    JHEASA: [
-        {
-            title: 'South Asia Leadership Meeting',
-            date: 'August 12–14, 2024',
-            location: 'New Delhi, India',
-            description: 'A gathering of university leaders to discuss Jesuit higher education strategy and regional partnerships.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'south-asia-leadership-meeting-2024',
-        },
-        {
-            title: 'Jesuit Education Forum',
-            date: 'January 15–17, 2024',
-            location: 'Colombo, Sri Lanka',
-            description: 'A forum to explore curriculum innovation, faculty development, and shared research in South Asia.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'jesuit-education-forum-2024',
-        },
-    ],
-    "AJCU-NA": [
-        {
-            title: 'North America Annual Meeting',
-            date: 'September 3–5, 2024',
-            location: 'Washington, D.C., USA',
-            description: 'Annual leadership conference for Jesuit colleges and universities in North America.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'north-america-annual-meeting-2024',
-        },
-    ],
-    AUSJAL: [
-        {
-            title: 'Latin America Higher Ed Summit',
-            date: 'October 20–22, 2024',
-            location: 'São Paulo, Brazil',
-            description: 'A summit addressing regional collaboration, student mobility, and institutional sustainability.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'latin-america-higher-ed-summit-2024',
-        },
-    ],
-    Kircher: [
-        {
-            title: 'Europe & Near East Network Meeting',
-            date: 'November 5–7, 2024',
-            location: 'Rome, Italy',
-            description: 'A meeting focused on network growth, research partnerships, and mission-driven learning.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'europe-near-east-network-meeting-2024',
-        },
-    ],
-    "AJCU-AP": [
-        {
-            title: 'Asia Pacific Leadership Forum',
-            date: 'July 8–10, 2024',
-            location: 'Manila, Philippines',
-            description: 'Leaders from Jesuit institutions discuss regional strategy and community engagement.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'asia-pacific-leadership-forum-2024',
-        },
-    ],
-    "AJCU-AM": [
-        {
-            title: 'Africa & Madagascar Regional Meeting',
-            date: 'June 1–3, 2024',
-            location: 'Nairobi, Kenya',
-            description: 'A regional meeting on capacity building, sustainability, and Jesuit higher education priorities.',
-            agendaLink: '#',
-            reportLink: '#',
-            dateUrl: 'africa-madagascar-regional-meeting-2024',
-        },
-    ],
-};
+const regions = ["JHEASA", "AJCU-NA", "AUSJAL", "Kircher", "AJCU-AP", "AJCU-AM"];
 
-function createMeetingFromFormData(formData, extras = {}) {
+// Database functions
+async function getMeetingsByRegion(region) {
+    const { data, error } = await supabase
+        .from('regional meetings')
+        .select('*')
+        .eq('region', region)
+        .order('date', { ascending: false });
+
+    if (error) {
+        console.error('Error fetching meetings:', error);
+        return [];
+    }
+    return data || [];
+}
+
+async function getMeetingResources(meetingId) {
+    const { data, error } = await supabase
+        .from('regional meetings resources')
+        .select('*')
+        .eq('regional_meeting_id', meetingId)
+        .order('sort_order', { ascending: true });
+
+    if (error) {
+        console.error('Error fetching resources:', error);
+        return [];
+    }
+    return data || [];
+}
+
+async function createMeeting(formData, extras = {}) {
     const title = (formData.get('title') || '').toString().trim() || 'Untitled Meeting';
     const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-    return {
+
+    const meetingData = {
+        name: title,
         region: formData.get('region') || '',
-        title,
         date: formData.get('date') || '',
+        date_url: dateUrl,
         location: formData.get('location') || '',
         description: formData.get('description') || '',
-        agendaLink: formData.get('agendaLink') || '#',
-        reportLink: formData.get('reportLink') || '#',
-        agendaPdf: formData.get('agendaPdf') || null,
-        reportPdf: formData.get('reportPdf') || null,
-        images: extras.images || [],
-        videos: extras.videos || [],
-        dateUrl,
+        agenda_url: formData.get('agendaLink') || '#',
+        meeting_report_url: formData.get('reportLink') || '#',
     };
+
+    const { data, error } = await supabase
+        .from('regional meetings')
+        .insert([meetingData])
+        .select();
+
+    if (error) {
+        console.error('Error creating meeting:', error);
+        return { error };
+    }
+
+    // Handle resource uploads if any
+    if (data && data[0]) {
+        const meetingId = data[0].id;
+
+        // Upload agenda PDF if provided
+        if (extras.agendaPdf) {
+            await uploadPdf(meetingId, 'agenda', extras.agendaPdf);
+        }
+
+        // Upload report PDF if provided
+        if (extras.reportPdf) {
+            await uploadPdf(meetingId, 'report', extras.reportPdf);
+        }
+
+        // Upload images
+        if (extras.images && extras.images.length > 0) {
+            for (const image of extras.images) {
+                if (image.file) {
+                    await uploadResource(meetingId, image, 'image');
+                }
+            }
+        }
+
+        // Upload videos
+        if (extras.videos && extras.videos.length > 0) {
+            for (const video of extras.videos) {
+                if (video.file) {
+                    await uploadResource(meetingId, video, 'video');
+                }
+            }
+        }
+    }
+
+    return { data: data[0], error: null };
+}
+
+async function updateMeeting(meetingId, formData, extras = {}) {
+    const title = (formData.get('title') || '').toString().trim() || 'Untitled Meeting';
+    const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    const meetingData = {
+        name: title,
+        region: formData.get('region') || '',
+        date: formData.get('date') || '',
+        date_url: dateUrl,
+        location: formData.get('location') || '',
+        description: formData.get('description') || '',
+        agenda_url: formData.get('agendaLink') || '#',
+        meeting_report_url: formData.get('reportLink') || '#',
+    };
+
+    const { data, error } = await supabase
+        .from('regional meetings')
+        .update(meetingData)
+        .eq('id', meetingId)
+        .select();
+
+    if (error) {
+        console.error('Error updating meeting:', error);
+        return { error };
+    }
+
+    // Handle new PDF uploads if provided
+    if (data && data[0]) {
+        // Upload agenda PDF if provided
+        if (extras.agendaPdf) {
+            await uploadPdf(meetingId, 'agenda', extras.agendaPdf);
+        }
+
+        // Upload report PDF if provided
+        if (extras.reportPdf) {
+            await uploadPdf(meetingId, 'report', extras.reportPdf);
+        }
+
+        // Upload new images
+        if (extras.images && extras.images.length > 0) {
+            for (const image of extras.images) {
+                if (image.file) {
+                    await uploadResource(meetingId, image, 'image');
+                }
+            }
+        }
+
+        // Upload new videos
+        if (extras.videos && extras.videos.length > 0) {
+            for (const video of extras.videos) {
+                if (video.file) {
+                    await uploadResource(meetingId, video, 'video');
+                }
+            }
+        }
+    }
+
+    return { data: data[0], error: null };
+}
+
+async function deleteMeeting(meetingId) {
+    // Resources will be automatically deleted due to ON DELETE CASCADE
+    const { error } = await supabase
+        .from('regional meetings')
+        .delete()
+        .eq('id', meetingId);
+
+    return error;
+}
+
+async function uploadPdf(meetingId, type, file) {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${meetingId}/${type}.${fileExt}`;
+    const filePath = `regional-meetings-pdfs/${fileName}`;
+
+    const { data, error } = await supabase.storage
+        .from('files')
+        .upload(filePath, file, { upsert: true });
+
+    if (error) {
+        console.error(`Error uploading ${type} PDF:`, error);
+        return null;
+    }
+
+    const { data: urlData } = supabase.storage
+        .from('files')
+        .getPublicUrl(filePath);
+
+    // Update the meeting with the PDF URL
+    const updateField = type === 'agenda' ? 'agenda_pdf_url' : 'meeting_report_pdf_url';
+    await supabase
+        .from('regional meetings')
+        .update({ [updateField]: urlData.publicUrl })
+        .eq('id', meetingId);
+
+    return urlData.publicUrl;
+}
+
+async function uploadResource(meetingId, resource, type) {
+    const fileExt = resource.file.name.split('.').pop();
+    const fileName = `${meetingId}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
+    const filePath = `regional-meeting-resources/${fileName}`;
+
+    const { data, error } = await supabase.storage
+        .from('files')
+        .upload(filePath, resource.file, { upsert: true });
+
+    if (error) {
+        console.error(`Error uploading ${type}:`, error);
+        return null;
+    }
+
+    const { data: urlData } = supabase.storage
+        .from('files')
+        .getPublicUrl(filePath);
+
+    // Create resource record
+    await supabase
+        .from('regional meetings resources')
+        .insert([{
+            regional_meeting_id: meetingId,
+            resource_url: urlData.publicUrl,
+            resource_type: type,
+        }]);
+
+    return urlData.publicUrl;
 }
 
 export default function RegionalMeeting() {
     const { regionName } = useParams();
+    const navigate = useNavigate();
     const region = regionalData[regionName];
     const canEdit = true; // For testing, always show edit buttons
+
+    const [meetings, setMeetings] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Fetch meetings from database
+    useEffect(() => {
+        async function loadMeetings() {
+            setLoading(true);
+            const data = await getMeetingsByRegion(regionName);
+            setMeetings(data);
+            setLoading(false);
+        }
+
+        if (regionName) {
+            loadMeetings();
+        }
+    }, [regionName]);
 
     if (!region) {
         return (
@@ -168,9 +311,19 @@ export default function RegionalMeeting() {
         );
     }
 
-    const regions = ["JHEASA", "AJCU-NA", "AUSJAL", "Kircher", "AJCU-AP", "AJCU-AM"];
-
-    const initialMeetingForm = { region: regionName, title: '', date: '', location: '', description: '', agendaLink: '', agendaPdf: null, reportLink: '', reportPdf: null, images: [], videos: [] };
+    const initialMeetingForm = {
+        region: regionName,
+        title: '',
+        date: '',
+        location: '',
+        description: '',
+        agendaLink: '',
+        agendaPdf: null,
+        reportLink: '',
+        reportPdf: null,
+        images: [],
+        videos: []
+    };
 
     const [showEditMeetingsPopup, setShowEditMeetingsPopup] = useState(false);
     const [showAddMeetingFormPopup, setShowAddMeetingFormPopup] = useState(false);
@@ -178,39 +331,105 @@ export default function RegionalMeeting() {
     const [showDeleteMeetingPopup, setShowDeleteMeetingPopup] = useState(false);
     const [addForm, setAddForm] = useState(initialMeetingForm);
     const [editForm, setEditForm] = useState(initialMeetingForm);
-    const [editingIndex, setEditingIndex] = useState(null);
-    const [deleteIndex, setDeleteIndex] = useState(null);
-    const [meetings, setMeetings] = useState(regionalMeetingsData[regionName] || []);
+    const [editingMeeting, setEditingMeeting] = useState(null);
+    const [deleteMeetingId, setDeleteMeetingId] = useState(null);
+    const [saving, setSaving] = useState(false);
 
-    const openEditMeeting = (idx) => {
-        setEditingIndex(idx);
-        setEditForm({ ...meetings[idx] });
+    const openEditMeeting = (meeting) => {
+        setEditingMeeting(meeting);
+        setEditForm({
+            region: meeting.region,
+            title: meeting.name || '',
+            date: meeting.date || '',
+            location: meeting.location || '',
+            description: meeting.description || '',
+            agendaLink: meeting.agenda_url || '',
+            reportLink: meeting.meeting_report_url || '',
+            agendaPdf: null,
+            reportPdf: null,
+            images: [],
+            videos: [],
+        });
         setShowEditMeetingFormPopup(true);
     };
 
-    const openDeleteMeeting = (idx) => {
-        setDeleteIndex(idx);
+    const openDeleteMeeting = (meeting) => {
+        setDeleteMeetingId(meeting.id);
         setShowDeleteMeetingPopup(true);
     };
 
-    const handleSaveAddMeeting = (formData) => {
-        const meeting = createMeetingFromFormData(formData, { images: addForm.images, videos: addForm.videos });
-        setMeetings(prevMeetings => [meeting, ...prevMeetings]);
+    const handleSaveAddMeeting = async (formData) => {
+        if (saving) return;
+        setSaving(true);
+
+        const extras = {
+            agendaPdf: addForm.agendaPdf,
+            reportPdf: addForm.reportPdf,
+            images: addForm.images,
+            videos: addForm.videos,
+        };
+
+        const result = await createMeeting(formData, extras);
+
+        setSaving(false);
+
+        if (result.error) {
+            alert('Error creating meeting: ' + result.error.message);
+            return;
+        }
+
         setAddForm(initialMeetingForm);
         setShowAddMeetingFormPopup(false);
+
+        // Refresh meetings list
+        const data = await getMeetingsByRegion(regionName);
+        setMeetings(data);
     };
 
-    const handleSaveEditMeeting = (formData) => {
-        const updatedMeeting = createMeetingFromFormData(formData, { images: editForm.images, videos: editForm.videos });
-        setMeetings(prevMeetings => prevMeetings.map((meeting, idx) => idx === editingIndex ? updatedMeeting : meeting));
-        setEditingIndex(null);
+    const handleSaveEditMeeting = async (formData) => {
+        if (saving || !editingMeeting) return;
+        setSaving(true);
+
+        const extras = {
+            agendaPdf: editForm.agendaPdf,
+            reportPdf: editForm.reportPdf,
+            images: editForm.images,
+            videos: editForm.videos,
+        };
+
+        const result = await updateMeeting(editingMeeting.id, formData, extras);
+
+        setSaving(false);
+
+        if (result.error) {
+            alert('Error updating meeting: ' + result.error.message);
+            return;
+        }
+
+        setEditingMeeting(null);
         setShowEditMeetingFormPopup(false);
+
+        // Refresh meetings list
+        const data = await getMeetingsByRegion(regionName);
+        setMeetings(data);
     };
 
-    const handleDeleteMeeting = () => {
-        setMeetings(prevMeetings => prevMeetings.filter((_, i) => i !== deleteIndex));
-        setDeleteIndex(null);
+    const handleDeleteMeeting = async () => {
+        if (!deleteMeetingId) return;
+
+        const error = await deleteMeeting(deleteMeetingId);
+
+        if (error) {
+            alert('Error deleting meeting: ' + error.message);
+            return;
+        }
+
+        setDeleteMeetingId(null);
         setShowDeleteMeetingPopup(false);
+
+        // Refresh meetings list
+        const data = await getMeetingsByRegion(regionName);
+        setMeetings(data);
     };
 
     const resetAddForm = () => {
@@ -226,24 +445,30 @@ export default function RegionalMeeting() {
             <Popup id="edit-meetings" show={showEditMeetingsPopup} setShow={setShowEditMeetingsPopup} buttons={mainPopupButtons}>
                 <div className="space-y-4 p-4 max-h-[80vh] overflow-y-auto">
                     <h4>Edit Meetings</h4>
-                    <div className="grid gap-3">
-                        {meetings.map((mtg, idx) => (
-                            <div key={mtg.dateUrl} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm cursor-pointer">
-                                <button type="button" className="text-left grow" onClick={() => openEditMeeting(idx)}>
-                                    <p className="font-semibold">{mtg.title}</p>
-                                    <p className="text-sm text-gray-dark mt-1">{mtg.date} · {mtg.location}</p>
-                                </button>
-                                <div className="flex items-center gap-2 ml-4">
-                                    <button type="button" className="button-icon text-primary-dark" onClick={() => openEditMeeting(idx)}>
-                                        <i className="bi bi-pencil-square"></i>
+                    {loading ? (
+                        <p>Loading...</p>
+                    ) : meetings.length === 0 ? (
+                        <p>No meetings found. Click "Add Meeting" to create one.</p>
+                    ) : (
+                        <div className="grid gap-3">
+                            {meetings.map((mtg) => (
+                                <div key={mtg.id} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm cursor-pointer">
+                                    <button type="button" className="text-left grow" onClick={() => openEditMeeting(mtg)}>
+                                        <p className="font-semibold">{mtg.name}</p>
+                                        <p className="text-sm text-gray-dark mt-1">{mtg.date} · {mtg.location}</p>
                                     </button>
-                                    <button type="button" className="button-red" onClick={() => openDeleteMeeting(idx)}>
-                                        <i className="bi bi-x" style={{ fontSize: "2rem" }}></i>
-                                    </button>
+                                    <div className="flex items-center gap-2 ml-4">
+                                        <button type="button" className="button-icon text-primary-dark" onClick={() => openEditMeeting(mtg)}>
+                                            <i className="bi bi-pencil-square"></i>
+                                        </button>
+                                        <button type="button" className="button-red" onClick={() => openDeleteMeeting(mtg)}>
+                                            <i className="bi bi-x" style={{ fontSize: "2rem" }}></i>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </div>
             </Popup>
 
@@ -301,17 +526,41 @@ export default function RegionalMeeting() {
                             <label>Photos:</label>
                             <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
                                 const files = Array.from(e.target.files);
-                                const newImages = files.map(f => ({ url: URL.createObjectURL(f), featured: false }));
+                                const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
                                 setAddForm({ ...addForm, images: [...addForm.images, ...newImages] });
                             }} />
+                            {addForm.images.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {addForm.images.map((img, idx) => (
+                                        <div key={idx} className="relative border p-2">
+                                            <img src={img.url} className="w-24 h-24 object-cover" />
+                                            <button className="absolute top-1 right-1 text-red-600" onClick={() => setAddForm({ ...addForm, images: addForm.images.filter((_, i) => i !== idx) })}>
+                                                <i className="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                         <div>
                             <label>Videos:</label>
                             <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
                                 const files = Array.from(e.target.files);
-                                const newVideos = files.map(f => ({ url: URL.createObjectURL(f) }));
+                                const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
                                 setAddForm({ ...addForm, videos: [...addForm.videos, ...newVideos] });
                             }} />
+                            {addForm.videos.length > 0 && (
+                                <div className="flex flex-wrap gap-2 mt-2">
+                                    {addForm.videos.map((vid, idx) => (
+                                        <div key={idx} className="relative border p-2">
+                                            <video src={vid.url} className="w-24 h-24" />
+                                            <button className="absolute top-1 right-1 text-red-600" onClick={() => setAddForm({ ...addForm, videos: addForm.videos.filter((_, i) => i !== idx) })}>
+                                                <i className="bi bi-trash"></i>
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -358,35 +607,59 @@ export default function RegionalMeeting() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label>Agenda PDF:</label>
+                            <label>Agenda PDF (upload to replace existing):</label>
                             <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
                         </div>
                         <div>
-                            <label>Meeting Report PDF:</label>
+                            <label>Meeting Report PDF (upload to replace existing):</label>
                             <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
                         </div>
                     </div>
                     <div>
-                        <label>Photos:</label>
+                        <label>Photos (upload new photos):</label>
                         <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
                             const files = Array.from(e.target.files);
-                            const newImages = files.map(f => ({ url: URL.createObjectURL(f), featured: false }));
+                            const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
                             setEditForm({ ...editForm, images: [...editForm.images, ...newImages] });
                         }} />
+                        {editForm.images.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {editForm.images.map((img, idx) => (
+                                    <div key={idx} className="relative border p-2">
+                                        <img src={img.url} className="w-24 h-24 object-cover" />
+                                        <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, images: editForm.images.filter((_, i) => i !== idx) })}>
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                     <div>
-                        <label>Videos:</label>
+                        <label>Videos (upload new videos):</label>
                         <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
                             const files = Array.from(e.target.files);
-                            const newVideos = files.map(f => ({ url: URL.createObjectURL(f) }));
+                            const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
                             setEditForm({ ...editForm, videos: [...editForm.videos, ...newVideos] });
                         }} />
+                        {editForm.videos.length > 0 && (
+                            <div className="flex flex-wrap gap-2 mt-2">
+                                {editForm.videos.map((vid, idx) => (
+                                    <div key={idx} className="relative border p-2">
+                                        <video src={vid.url} className="w-24 h-24" />
+                                        <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, videos: editForm.videos.filter((_, i) => i !== idx) })}>
+                                            <i className="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
             </PopupForm>
 
             <Popup id="delete-meeting" show={showDeleteMeetingPopup} setShow={setShowDeleteMeetingPopup} stayOnBlur={true} nested buttons={[{ text: "Delete", onclick: handleDeleteMeeting }]}>
-                <p>This will delete "{meetings[deleteIndex]?.title}". Are you sure?</p>
+                <p>Are you sure you want to delete this meeting? This action cannot be undone.</p>
             </Popup>
             <Menu />
             <Banner>
@@ -406,32 +679,41 @@ export default function RegionalMeeting() {
                 <div className="flex justify-end px-10 lg:px-40 mb-4">
                     {canEdit && <button className="button button-light" onClick={() => { setShowEditMeetingsPopup(true); }}>Edit Meetings <i className="bi bi-pencil-square ml-1"></i></button>}
                 </div>
-                {/* meeting rows */}
-                {meetings.map((mtg, idx) => (
-                    <div key={mtg.dateUrl} className={`meeting-row-wrapper ${idx % 2 === 1 ? "bg-slate-100" : ""}`}>
-                        <div className={`meeting-row ${idx % 2 === 1 ? "reverse" : ""} px-10 lg:px-40`}>
-                            <div className="meeting-info">
-                                <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`}>
-                                    <h2>{mtg.title}</h2>
-                                </Link>
-                                <div>
-                                    <span className="font-bold">{mtg.date}</span>
-                                    <span className="font-bold ml-4">{mtg.location}</span>
-                                </div>
-                                <p className="mt-2">{mtg.description}</p>
-                                <div className="meeting-buttons">
-                                    <a href={mtg.agendaLink} className="button">
-                                        Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
-                                    </a>
-                                    <a href={mtg.reportLink} className="button">
-                                        Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <Link to={`/regional-meetings/${regionName}/${mtg.dateUrl}?title=${encodeURIComponent(mtg.title)}`} className="meeting-img" />
-                        </div>
+                {loading ? (
+                    <div className="px-10 lg:px-40">
+                        <p>Loading meetings...</p>
                     </div>
-                ))}
+                ) : meetings.length === 0 ? (
+                    <div className="px-10 lg:px-40">
+                        <p>No meetings found for this region.</p>
+                    </div>
+                ) : (
+                    meetings.map((mtg, idx) => (
+                        <div key={mtg.id} className={`meeting-row-wrapper ${idx % 2 === 1 ? "bg-slate-100" : ""}`}>
+                            <div className={`meeting-row ${idx % 2 === 1 ? "reverse" : ""} px-10 lg:px-40`}>
+                                <div className="meeting-info">
+                                    <Link to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`}>
+                                        <h2>{mtg.name}</h2>
+                                    </Link>
+                                    <div>
+                                        <span className="font-bold">{mtg.date}</span>
+                                        <span className="font-bold ml-4">{mtg.location}</span>
+                                    </div>
+                                    <p className="mt-2">{mtg.description}</p>
+                                    <div className="meeting-buttons">
+                                        <a href={mtg.agenda_url} className="button">
+                                            Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                        </a>
+                                        <a href={mtg.meeting_report_url} className="button">
+                                            Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <Link to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`} className="meeting-img" />
+                            </div>
+                        </div>
+                    ))
+                )}
             </div>
             <Footer />
         </>
