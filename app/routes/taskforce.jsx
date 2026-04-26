@@ -36,6 +36,9 @@ async function getTeamMembers(teamMemberList) {
     .from('task force members')
     .select()
     .in('id', teamMemberList)
+    if (data) {
+      data.sort((a, b) => { return a.id - b.id });
+    }
     return data || [];
 }
 
