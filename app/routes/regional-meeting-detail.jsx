@@ -32,7 +32,7 @@ async function getMeetingById(meetingId) {
 
 async function getMeetingResources(meetingId) {
     const { data, error } = await supabase
-        .from('regional meeting resources')
+        .from('regional meetings resources')
         .select('*')
         .eq('regional_meeting_id', meetingId)
         .order('sort_order', { ascending: true });
@@ -55,8 +55,8 @@ async function updateMeeting(meetingId, formData, extras = {}) {
         date_url: dateUrl,
         location: formData.get('location') || '',
         description: formData.get('description') || '',
-        agenda_url: formData.get('agendaLink') || '#',
-        meeting_report_url: formData.get('reportLink') || '#',
+        agenda_url: formData.get('agendaLink') || '',
+        meeting_report_url: formData.get('reportLink') || '',
     };
 
     const { data, error } = await supabase
@@ -86,7 +86,7 @@ async function updateMeeting(meetingId, formData, extras = {}) {
         if (extras.images && extras.images.length > 0) {
             for (const image of extras.images) {
                 if (image.file) {
-                    await uploadResource(meetingId, image, 'image');
+                    await uploadResource(meetingId, image.file, 'image');
                 }
             }
         }
@@ -95,7 +95,7 @@ async function updateMeeting(meetingId, formData, extras = {}) {
         if (extras.videos && extras.videos.length > 0) {
             for (const video of extras.videos) {
                 if (video.file) {
-                    await uploadResource(meetingId, video, 'video');
+                    await uploadResource(meetingId, video.file, 'video');
                 }
             }
         }
@@ -120,7 +120,7 @@ async function uploadPdf(meetingId, type, file) {
     const filePath = `regional-meetings-pdfs/${fileName}`;
 
     const { data, error } = await supabase.storage
-        .from('files')
+        .from('regional-meetings-resources')
         .upload(filePath, file, { upsert: true });
 
     if (error) {
@@ -129,47 +129,51 @@ async function uploadPdf(meetingId, type, file) {
     }
 
     const { data: urlData } = supabase.storage
-        .from('files')
+        .from('regional-meetings-resources')
         .getPublicUrl(filePath);
 
     // Update the meeting with the PDF URL
     const updateField = type === 'agenda' ? 'agenda_pdf_url' : 'meeting_report_pdf_url';
-    await supabase
+    const { error: updateError } = await supabase
         .from('regional meetings')
         .update({ [updateField]: urlData.publicUrl })
         .eq('id', meetingId);
 
+    if (updateError) console.error(updateError);
+
     return urlData.publicUrl;
 }
 
-async function uploadResource(meetingId, resource, type) {
-    const fileExt = resource.file.name.split('.').pop();
-    const fileName = `${meetingId}/${Date.now()}_${Math.random().toString(36).substr(2, 9)}.${fileExt}`;
-    const filePath = `regional-meetings-resources/${fileName}`;
+async function uploadResource(meetingId, file, type) {
+    const fileExt = file.name.split('.').pop();
+    const filePath = `regional-meeting-resources/${meetingId}/${Date.now()}.${fileExt}`;
 
-    const { data, error } = await supabase.storage
-        .from('files')
-        .upload(filePath, resource.file, { upsert: true });
+    const { error: uploadError } = await supabase.storage
+        .from('regional-meetings-resources')
+        .upload(filePath, file, { upsert: true });
 
-    if (error) {
-        console.error(`Error uploading ${type}:`, error);
-        return null;
+    if (uploadError) {
+        console.error('Upload error:', uploadError);
+        return;
     }
 
     const { data: urlData } = supabase.storage
-        .from('files')
+        .from('regional-meetings-resources')
         .getPublicUrl(filePath);
 
     // Create resource record
-    await supabase
-        .from('regional meeting resources')
+    const { error: insertError } = await supabase
+        .from('regional meetings resources')
         .insert([{
             regional_meeting_id: meetingId,
             resource_url: urlData.publicUrl,
             resource_type: type,
+            sort_order: 0,
         }]);
 
-    return urlData.publicUrl;
+    if (insertError) console.error(insertError);
+
+    // return urlData.publicUrl;
 }
 
 export default function RegionalMeetingDetail() {
@@ -344,11 +348,11 @@ export default function RegionalMeetingDetail() {
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label>Agenda Link:</label>
-                        <input name="agendaLink" className="input input-text w-full" type="url" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                        <input name="agendaLink" className="input input-text w-full" type="text" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
                     </div>
                     <div>
                         <label>Meeting Report Link:</label>
-                        <input name="reportLink" className="input input-text w-full" type="url" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                        <input name="reportLink" className="input input-text w-full" type="text" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
                     </div>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
