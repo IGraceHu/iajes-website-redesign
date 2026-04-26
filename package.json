@@ -26,5 +26,6 @@
     "supabase": "^2.77.1",
     "tailwindcss": "^4.1.13",
     "vite": "^7.1.7"
-  }
+  },
+  "gcp-build":""
 }
