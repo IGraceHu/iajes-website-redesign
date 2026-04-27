@@ -27,5 +27,5 @@
     "tailwindcss": "^4.1.13",
     "vite": "^7.1.7"
   },
-  "gcp-build":""
+  "gcp-build": ""
 }
