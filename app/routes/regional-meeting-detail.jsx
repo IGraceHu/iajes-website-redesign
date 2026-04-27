@@ -72,11 +72,19 @@ async function updateMeeting(meetingId, formData, extras = {}) {
 
     // Handle new PDF uploads if provided
     if (data && data[0]) {
-        // Upload agenda PDF if provided
+        // Delete agenda PDF if flagged
+        if (extras.deleteAgendaPdf && extras.existingAgendaPdfUrl) {
+            await deletePdf(meetingId, 'agenda', extras.existingAgendaPdfUrl);
+        }
+        // Upload agenda PDF if provided (replaces any existing)
         if (extras.agendaPdf) {
             await uploadPdf(meetingId, 'agenda', extras.agendaPdf);
         }
 
+        // Delete report PDF if flagged
+        if (extras.deleteReportPdf && extras.existingReportPdfUrl) {
+            await deletePdf(meetingId, 'report', extras.existingReportPdfUrl);
+        }
         // Upload report PDF if provided
         if (extras.reportPdf) {
             await uploadPdf(meetingId, 'report', extras.reportPdf);
@@ -227,6 +235,33 @@ async function uploadPdf(meetingId, type, file) {
     return urlData.publicUrl;
 }
 
+async function deletePdf(meetingId, type, existingUrl) {
+    // Delete from storage
+    if (existingUrl) {
+        try {
+            const urlParts = existingUrl.split('/');
+            const filePath = urlParts.slice(-2).join('/');
+            await supabase.storage.from('regional-meetings-resources').remove([`regional-meetings-pdfs/${filePath}`]);
+        } catch (e) {
+            // try alternate path extraction
+        }
+        // Also try the full path approach used elsewhere
+        try {
+            const urlParts = existingUrl.split('/');
+            const filePath = urlParts.slice(-2).join('/');
+            await supabase.storage.from('regional-meetings-resources').remove([filePath]);
+        } catch (e) {
+            console.error('Error deleting PDF from storage:', e);
+        }
+    }
+    // Clear the URL field in the DB
+    const updateField = type === 'agenda' ? 'agenda_pdf_url' : 'meeting_report_pdf_url';
+    await supabase
+        .from('regional meetings')
+        .update({ [updateField]: null })
+        .eq('id', meetingId);
+}
+
 async function uploadResource(meetingId, file, type, sortOrder) {
     const fileExt = file.name.split('.').pop();
     const filePath = `regional-meeting-resources/${meetingId}/${Date.now()}.${fileExt}`;
@@ -308,6 +343,10 @@ export default function RegionalMeetingDetail() {
         const extras = {
             agendaPdf: editForm?.agendaPdf,
             reportPdf: editForm?.reportPdf,
+            deleteAgendaPdf: editForm?.deleteAgendaPdf,
+            deleteReportPdf: editForm?.deleteReportPdf,
+            existingAgendaPdfUrl: editForm?.existingAgendaPdfUrl,
+            existingReportPdfUrl: editForm?.existingReportPdfUrl,
             allImages: editForm?.allImages || [],
             allVideos: editForm?.allVideos || [],
         };
@@ -367,6 +406,10 @@ export default function RegionalMeetingDetail() {
                 reportLink: meetingData.meeting_report_url || '',
                 agendaPdf: null,
                 reportPdf: null,
+                existingAgendaPdfUrl: meetingData.agenda_pdf_url || null,
+                existingReportPdfUrl: meetingData.meeting_report_pdf_url || null,
+                deleteAgendaPdf: false,
+                deleteReportPdf: false,
                 allImages,
                 allVideos,
             });
@@ -448,12 +491,66 @@ export default function RegionalMeetingDetail() {
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
-                        <label>Agenda PDF (upload to replace existing):</label>
-                        <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
+                        <label>Agenda PDF:</label>
+                        {editForm?.existingAgendaPdfUrl && !editForm?.deleteAgendaPdf && !editForm?.agendaPdf ? (
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm text-gray-dark truncate flex-1 input input-text w-full py-1">
+                                    {editForm.existingAgendaPdfUrl.split('/').pop()}
+                                </span>
+                                <button
+                                    type="button"
+                                    className="text-red-600 cursor-pointer shrink-0"
+                                    title="Remove PDF"
+                                    onClick={() => setEditForm({ ...editForm, deleteAgendaPdf: true })}
+                                >
+                                    <i className="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        ) : editForm?.deleteAgendaPdf ? (
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm text-gray-dark italic flex-1">PDF will be deleted on save.</span>
+                                <button type="button" className="text-sm text-primary-dark cursor-pointer" onClick={() => setEditForm({ ...editForm, deleteAgendaPdf: false })}>Undo</button>
+                            </div>
+                        ) : null}
+                        {(!editForm?.existingAgendaPdfUrl || editForm?.deleteAgendaPdf || editForm?.agendaPdf) && (
+                            <div className="flex items-center gap-2 mt-1">
+                                <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0], deleteAgendaPdf: false })} />
+                                {editForm?.agendaPdf && (
+                                    <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, agendaPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                )}
+                            </div>
+                        )}
                     </div>
                     <div>
-                        <label>Meeting Report PDF (upload to replace existing):</label>
-                        <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
+                        <label>Meeting Report PDF:</label>
+                        {editForm?.existingReportPdfUrl && !editForm?.deleteReportPdf && !editForm?.reportPdf ? (
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm text-gray-dark truncate flex-1 input input-text w-full py-1">
+                                    {editForm.existingReportPdfUrl.split('/').pop()}
+                                </span>
+                                <button
+                                    type="button"
+                                    className="text-red-600 cursor-pointer shrink-0"
+                                    title="Remove PDF"
+                                    onClick={() => setEditForm({ ...editForm, deleteReportPdf: true })}
+                                >
+                                    <i className="bi bi-trash"></i>
+                                </button>
+                            </div>
+                        ) : editForm?.deleteReportPdf ? (
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-sm text-gray-dark italic flex-1">PDF will be deleted on save.</span>
+                                <button type="button" className="text-sm text-primary-dark cursor-pointer" onClick={() => setEditForm({ ...editForm, deleteReportPdf: false })}>Undo</button>
+                            </div>
+                        ) : null}
+                        {(!editForm?.existingReportPdfUrl || editForm?.deleteReportPdf || editForm?.reportPdf) && (
+                            <div className="flex items-center gap-2 mt-1">
+                                <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0], deleteReportPdf: false })} />
+                                {editForm?.reportPdf && (
+                                    <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, reportPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                )}
+                            </div>
+                        )}
                     </div>
                 </div>
                 <div>
@@ -462,18 +559,19 @@ export default function RegionalMeetingDetail() {
                         const files = Array.from(e.target.files);
                         const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f), isNew: true }));
                         setEditForm({ ...editForm, allImages: [...(editForm?.allImages || []), ...newImages] });
+                        e.target.value = '';
                     }} />
                     {(editForm?.allImages || []).length > 0 && (
                         <div className="mt-2">
-                            <p className="font-bold">Photos (click arrows to reorder, X to delete):</p>
+                            <p className="font-bold">Photos (click arrows to reorder, trash to delete):</p>
                             <div className="flex flex-wrap gap-2 mt-1">
-                                {editForm.allImages.map((img, idx) => (
-                                    <div key={img.id || `new-${idx}`} className="relative border p-2">
-                                        <img src={img.resource_url || img.url} className="w-24 h-24 object-cover" />
+                                {editForm.allImages.map((img, idx) => img.toDelete ? null : (
+                                    <div key={img.id || `new-${idx}`} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
+                                        <img src={img.resource_url || img.url} className="w-24 h-24 object-contain" />
                                         <div className="absolute top-1 left-1 flex gap-1">
                                             <button
                                                 type="button"
-                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
                                                 onClick={() => {
                                                     if (idx === 0) return;
                                                     const updated = [...editForm.allImages];
@@ -486,7 +584,7 @@ export default function RegionalMeetingDetail() {
                                             </button>
                                             <button
                                                 type="button"
-                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
                                                 onClick={() => {
                                                     if (idx === editForm.allImages.length - 1) return;
                                                     const updated = [...editForm.allImages];
@@ -500,7 +598,7 @@ export default function RegionalMeetingDetail() {
                                         </div>
                                         <button
                                             type="button"
-                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1"
+                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
                                             onClick={() => {
                                                 if (img.isNew) {
                                                     setEditForm({ ...editForm, allImages: editForm.allImages.filter((_, i) => i !== idx) });
@@ -512,9 +610,9 @@ export default function RegionalMeetingDetail() {
                                                 }
                                             }}
                                         >
-                                            <i className="bi bi-x"></i>
+                                            <i className="bi bi-trash"></i>
                                         </button>
-                                        <span className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs p-1">{idx + 1}</span>
+                                        <span className="absolute bottom-1 left-1 bg-black/50 rounded-md text-white text-xs p-1">{idx + 1}</span>
                                     </div>
                                 ))}
                             </div>
@@ -527,18 +625,19 @@ export default function RegionalMeetingDetail() {
                         const files = Array.from(e.target.files);
                         const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f), isNew: true }));
                         setEditForm({ ...editForm, allVideos: [...(editForm?.allVideos || []), ...newVideos] });
+                        e.target.value = '';
                     }} />
                     {(editForm?.allVideos || []).length > 0 && (
                         <div className="mt-2">
-                            <p className="font-bold">Videos (click arrows to reorder, X to delete):</p>
+                            <p className="font-bold">Videos (click arrows to reorder, trash to delete):</p>
                             <div className="flex flex-wrap gap-2 mt-1">
-                                {editForm.allVideos.map((vid, idx) => (
-                                    <div key={vid.id || `new-${idx}`} className="relative border p-2">
-                                        <video src={vid.resource_url || vid.url} className="w-24 h-24 object-cover" />
+                                {editForm.allVideos.map((vid, idx) => vid.toDelete ? null : (
+                                    <div key={vid.id || `new-${idx}`} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
+                                        <video src={vid.resource_url || vid.url} className="w-24 h-24 object-contain" />
                                         <div className="absolute top-1 left-1 flex gap-1">
                                             <button
                                                 type="button"
-                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
                                                 onClick={() => {
                                                     if (idx === 0) return;
                                                     const updated = [...editForm.allVideos];
@@ -551,7 +650,7 @@ export default function RegionalMeetingDetail() {
                                             </button>
                                             <button
                                                 type="button"
-                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
                                                 onClick={() => {
                                                     if (idx === editForm.allVideos.length - 1) return;
                                                     const updated = [...editForm.allVideos];
@@ -565,7 +664,7 @@ export default function RegionalMeetingDetail() {
                                         </div>
                                         <button
                                             type="button"
-                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1"
+                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
                                             onClick={() => {
                                                 if (vid.isNew) {
                                                     setEditForm({ ...editForm, allVideos: editForm.allVideos.filter((_, i) => i !== idx) });
@@ -577,9 +676,9 @@ export default function RegionalMeetingDetail() {
                                                 }
                                             }}
                                         >
-                                            <i className="bi bi-x"></i>
+                                            <i className="bi bi-trash"></i>
                                         </button>
-                                        <span className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs p-1">{idx + 1}</span>
+                                        <span className="absolute bottom-1 left-1 bg-black/50 rounded-md text-white text-xs p-1">{idx + 1}</span>
                                     </div>
                                 ))}
                             </div>
@@ -594,20 +693,88 @@ export default function RegionalMeetingDetail() {
 
     function Carousel({ images }) {
         const [current, setCurrent] = useState(0);
+        const [animating, setAnimating] = useState(false);
+        const [direction, setDirection] = useState(null); // 'next' | 'prev'
+        const [displayed, setDisplayed] = useState(0);
+
         if (images.length === 0) {
             return <div className="aspect-video max-w-2xl mx-auto bg-gray-light flex items-center justify-center text-gray-500">No images available</div>;
         }
-        const next = () => setCurrent((current + 1) % images.length);
-        const prev = () => setCurrent((current - 1 + images.length) % images.length);
+
+        const go = (dir) => {
+            if (animating) return;
+            setDirection(dir);
+            setAnimating(true);
+            setTimeout(() => {
+                const next = dir === 'next'
+                    ? (current + 1) % images.length
+                    : (current - 1 + images.length) % images.length;
+                setCurrent(next);
+                setDisplayed(next);
+                setAnimating(false);
+            }, 220);
+        };
+
+        const slideOutClass = animating
+            ? (direction === 'next' ? 'carousel-exit-left' : 'carousel-exit-right')
+            : '';
+
         return (
-            <div className="relative aspect-video max-w-2xl mx-auto bg-gray-900 overflow-hidden">
-                <button className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-2xl z-10" onClick={prev}><i className="bi bi-chevron-left"></i></button>
-                <img src={images[current].resource_url} className="w-full h-full object-contain" />
-                <div className="absolute bottom-4 left-4 text-white bg-black bg-opacity-50 p-2 rounded">
-                    Image {current + 1} of {images.length}
+            <>
+                <style>{`
+                    @keyframes carouselExitLeft {
+                        from { opacity: 1; transform: translateX(0); }
+                        to   { opacity: 0; transform: translateX(-48px); }
+                    }
+                    @keyframes carouselExitRight {
+                        from { opacity: 1; transform: translateX(0); }
+                        to   { opacity: 0; transform: translateX(48px); }
+                    }
+                    @keyframes carouselEnterLeft {
+                        from { opacity: 0; transform: translateX(-48px); }
+                        to   { opacity: 1; transform: translateX(0); }
+                    }
+                    @keyframes carouselEnterRight {
+                        from { opacity: 0; transform: translateX(48px); }
+                        to   { opacity: 1; transform: translateX(0); }
+                    }
+                    .carousel-exit-left  { animation: carouselExitLeft  0.22s ease forwards; }
+                    .carousel-exit-right { animation: carouselExitRight 0.22s ease forwards; }
+                    .carousel-enter-left  { animation: carouselEnterLeft  0.22s ease forwards; }
+                    .carousel-enter-right { animation: carouselEnterRight 0.22s ease forwards; }
+                `}</style>
+                <div className="relative aspect-video max-w-2xl mx-auto bg-gray-900 overflow-hidden">
+                    <button
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-2xl z-10 cursor-pointer"
+                        style={{ color: 'var(--color-zinc-400)', transition: 'color 0.2s, transform 0.2s', transform: 'translateY(-50%)' }}
+                        onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-zinc-50)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(-3px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-zinc-400)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(0)'; }}
+                        onClick={() => go('prev')}
+                    >
+                        <i className="bi bi-chevron-left"></i>
+                    </button>
+                    <img
+                        key={current}
+                        src={images[current].resource_url}
+                        className={`w-full h-full object-contain ${animating ? (direction === 'next' ? 'carousel-exit-left' : 'carousel-exit-right') : (direction ? (direction === 'next' ? 'carousel-enter-right' : 'carousel-enter-left') : '')}`}
+                    />
+                    <div className="absolute bottom-4 left-4 text-white text-xs p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                        Photo {current + 1} of {images.length}
+                    </div>
+                    <button
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 text-2xl z-10 cursor-pointer"
+                        style={{ color: 'var(--color-zinc-400)', transition: 'color 0.2s, transform 0.2s', transform: 'translateY(-50%)' }}
+                        onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-zinc-50)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(3px)'; }}
+                        onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-zinc-400)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(0)'; }}
+                        onClick={() => go('next')}
+                    >
+                        <i className="bi bi-chevron-right"></i>
+                    </button>
                 </div>
-                <button className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white text-2xl z-10" onClick={next}><i className="bi bi-chevron-right"></i></button>
-            </div>
+                {images[current].caption && (
+                    <p className="mt-3 text-xs text-gray-dark/70">{images[current].caption}</p>
+                )}
+            </>
         );
     }
 
@@ -642,7 +809,7 @@ export default function RegionalMeetingDetail() {
                 <p>{meetingData.description}</p>
                 <Break />
                 {(meetingData.meeting_report_url || meetingData.meeting_report_pdf_url) && (
-                    <div className="mt-10">
+                    <div className="mt-5">
                         <h2 className="text-center">Meeting Report</h2>
                         <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                             {meetingData.meeting_report_url && (
@@ -674,7 +841,7 @@ export default function RegionalMeetingDetail() {
                 )}
 
                 {(meetingData.agenda_url || meetingData.agenda_pdf_url) && (
-                    <div className="mt-10">
+                    <div className="mt-5">
                         <h2 className="text-center">Meeting Agenda</h2>
                         <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                             {meetingData.agenda_url && (
@@ -705,18 +872,19 @@ export default function RegionalMeetingDetail() {
                     </div>
                 )}
 
-                <div className="mt-10">
-                    <h1>Gallery</h1>
+                {(meetingData.meeting_report_url || meetingData.meeting_report_pdf_url || meetingData.agenda_url || meetingData.agenda_pdf_url) && <Break />}
+                <div className="mt-5">
+                    <h1 className="text-center">Gallery</h1>
                     <div className="mt-6">
                         <Carousel images={images} />
                     </div>
-                    <div className="mt-6 flex flex-col md:flex-row gap-4">
+                    <div className="mt-6 flex flex-wrap gap-4">
                         {videos.length > 0 ? videos.map((vid, idx) => (
-                            <video key={idx} src={vid.resource_url} controls className="w-full md:w-1/2 h-64 object-cover" />
+                            <video key={idx} src={vid.resource_url} controls controlsList="nodownload" className="w-full md:w-[calc(50%-8px)] h-64 object-cover" />
                         )) : (
                             <>
-                                <div className="w-full md:w-1/2 h-64 bg-gray-light flex items-center justify-center text-gray-500">Video placeholder</div>
-                                <div className="w-full md:w-1/2 h-64 bg-gray-light flex items-center justify-center text-gray-500">Video placeholder</div>
+                                <div className="w-full md:w-[calc(50%-8px)] h-64 bg-gray-light flex items-center justify-center text-gray-500">Video placeholder</div>
+                                <div className="w-full md:w-[calc(50%-8px)] h-64 bg-gray-light flex items-center justify-center text-gray-500">Video placeholder</div>
                             </>
                         )}
                     </div>

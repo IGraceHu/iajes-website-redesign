@@ -190,11 +190,19 @@ async function updateMeeting(meetingId, formData, extras = {}) {
 
     // Handle new PDF uploads if provided
     if (data && data[0]) {
+        // Delete agenda PDF if flagged
+        if (extras.deleteAgendaPdf && extras.existingAgendaPdfUrl) {
+            await deletePdf(meetingId, 'agenda', extras.existingAgendaPdfUrl);
+        }
         // Upload agenda PDF if provided
         if (extras.agendaPdf) {
             await uploadPdf(meetingId, 'agenda', extras.agendaPdf);
         }
 
+        // Delete report PDF if flagged
+        if (extras.deleteReportPdf && extras.existingReportPdfUrl) {
+            await deletePdf(meetingId, 'report', extras.existingReportPdfUrl);
+        }
         // Upload report PDF if provided
         if (extras.reportPdf) {
             await uploadPdf(meetingId, 'report', extras.reportPdf);
@@ -265,6 +273,7 @@ async function updateMeeting(meetingId, formData, extras = {}) {
 }
 
 async function deleteMeeting(meetingId) {
+    // Delete all files from storage using prefix matching (more reliable)
     const prefixes = [
         `regional-meeting-resources/${meetingId}`,
         `regional-meetings-pdfs/${meetingId}`,
@@ -283,11 +292,13 @@ async function deleteMeeting(meetingId) {
         }
     }
 
+    // Delete resource records from database
     await supabase
         .from('regional meetings resources')
         .delete()
         .eq('regional_meeting_id', meetingId);
 
+    // Delete the meeting
     const { error } = await supabase
         .from('regional meetings')
         .delete()
@@ -341,6 +352,25 @@ async function uploadPdf(meetingId, type, file) {
     return urlData.publicUrl;
 }
 
+async function deletePdf(meetingId, type, existingUrl) {
+    // Delete from storage
+    if (existingUrl) {
+        try {
+            const urlParts = existingUrl.split('/');
+            const filePath = urlParts.slice(-2).join('/');
+            await supabase.storage.from('regional-meetings-resources').remove([filePath]);
+        } catch (e) {
+            console.error('Error deleting PDF from storage:', e);
+        }
+    }
+    // Clear the URL field in the DB
+    const updateField = type === 'agenda' ? 'agenda_pdf_url' : 'meeting_report_pdf_url';
+    await supabase
+        .from('regional meetings')
+        .update({ [updateField]: null })
+        .eq('id', meetingId);
+}
+
 async function uploadResource(meetingId, file, type, sortOrder) {
     const fileExt = file.name.split('.').pop();
     const filePath = `regional-meeting-resources/${meetingId}/${Date.now()}.${fileExt}`;
@@ -382,6 +412,7 @@ export default function RegionalMeeting() {
     const [meetings, setMeetings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [thumbnails, setThumbnails] = useState({});
 
     // Fetch meetings from database
     useEffect(() => {
@@ -389,6 +420,14 @@ export default function RegionalMeeting() {
             setLoading(true);
             const data = await getMeetingsByRegion(regionName);
             setMeetings(data);
+
+            // Fetch thumbnails for each meeting
+            const thumbs = {};
+            for (const mtg of data) {
+                thumbs[mtg.id] = await getMeetingThumbnail(mtg.id);
+            }
+            setThumbnails(thumbs);
+
             setLoading(false);
         }
 
@@ -457,6 +496,10 @@ export default function RegionalMeeting() {
             reportLink: meeting.meeting_report_url || '',
             agendaPdf: null,
             reportPdf: null,
+            existingAgendaPdfUrl: meeting.agenda_pdf_url || null,
+            existingReportPdfUrl: meeting.meeting_report_pdf_url || null,
+            deleteAgendaPdf: false,
+            deleteReportPdf: false,
             allImages,
             allVideos,
         });
@@ -504,6 +547,10 @@ export default function RegionalMeeting() {
         const extras = {
             agendaPdf: editForm.agendaPdf,
             reportPdf: editForm.reportPdf,
+            deleteAgendaPdf: editForm.deleteAgendaPdf,
+            deleteReportPdf: editForm.deleteReportPdf,
+            existingAgendaPdfUrl: editForm.existingAgendaPdfUrl,
+            existingReportPdfUrl: editForm.existingReportPdfUrl,
             allImages: editForm.allImages,
             allVideos: editForm.allVideos,
         };
@@ -642,45 +689,50 @@ export default function RegionalMeeting() {
                                     url: URL.createObjectURL(f),
                                     isNew: true,
                                 }));
-
                                 setAddForm({
                                     ...addForm,
                                     allImages: [...addForm.allImages, ...newImages],
                                 });
+                                e.target.value = '';
                             }} />
-                            {addForm.allImages.length > 0 && (
+                            {addForm.allImages.filter(img => !img.toDelete).length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {addForm.allImages.map((img, idx) => (
-                                        <div key={idx} className="relative border p-2">
-                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-cover" />
-
-                                            {/* delete */}
-                                            <button
-                                                className="absolute top-1 right-1 text-red-600"
-                                                onClick={() => {
-                                                    const updated = [...addForm.allImages];
-                                                    updated[idx] = { ...updated[idx], toDelete: true };
-                                                    setAddForm({ ...addForm, allImages: updated });
-                                                }}>
-                                                <i className="bi bi-trash"></i>
-                                            </button>
+                                    {addForm.allImages.map((img, idx) => img.toDelete ? null : (
+                                        <div key={idx} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
+                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-contain" />
 
                                             {/* reorder */}
-                                            <div className="absolute bottom-1 left-1 flex gap-1">
-                                                <button onClick={() => {
+                                            <div className="absolute top-1 left-1 flex gap-1">
+                                                <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                     if (idx === 0) return;
                                                     const updated = [...addForm.allImages];
                                                     [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
                                                     setAddForm({ ...addForm, allImages: updated });
-                                                }}>⬆️</button>
+                                                }} disabled={idx === 0}><i className="bi bi-arrow-left"></i></button>
 
-                                                <button onClick={() => {
+                                                <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                     if (idx === addForm.allImages.length - 1) return;
                                                     const updated = [...addForm.allImages];
                                                     [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
                                                     setAddForm({ ...addForm, allImages: updated });
-                                                }}>⬇️</button>
+                                                }} disabled={idx === addForm.allImages.length - 1}><i className="bi bi-arrow-right"></i></button>
                                             </div>
+
+                                            {/* delete */}
+                                            <button
+                                                type="button"
+                                                className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
+                                                onClick={() => {
+                                                    if (img.isNew) {
+                                                        setAddForm({ ...addForm, allImages: addForm.allImages.filter((_, i) => i !== idx) });
+                                                    } else {
+                                                        const updated = [...addForm.allImages];
+                                                        updated[idx] = { ...updated[idx], toDelete: true };
+                                                        setAddForm({ ...addForm, allImages: updated });
+                                                    }
+                                                }}>
+                                                <i className="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -699,40 +751,46 @@ export default function RegionalMeeting() {
                                     ...addForm,
                                     allVideos: [...addForm.allVideos, ...newVideos]
                                 });
+                                e.target.value = '';
                             }} />
-                            {addForm.allVideos.length > 0 && (
+                            {addForm.allVideos.filter(v => !v.toDelete).length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {addForm.allVideos.map((vid, idx) => (
-                                        <div key={idx} className="relative border p-2">
-                                            <video src={vid.url || vid.resource_url} className="w-24 h-24" />
-
-                                            {/* delete */}
-                                            <button
-                                                className="absolute top-1 right-1 text-red-600"
-                                                onClick={() => {
-                                                    const updated = [...addForm.allVideos];
-                                                    updated[idx] = { ...updated[idx], toDelete: true };
-                                                    setAddForm({ ...addForm, allVideos: updated });
-                                                }}>
-                                                <i className="bi bi-trash"></i>
-                                            </button>
+                                    {addForm.allVideos.map((vid, idx) => vid.toDelete ? null : (
+                                        <div key={idx} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
+                                            <video src={vid.url || vid.resource_url} className="w-24 h-24 object-contain" />
 
                                             {/* reorder */}
-                                            <div className="absolute bottom-1 left-1 flex gap-1">
-                                                <button onClick={() => {
+                                            <div className="absolute top-1 left-1 flex gap-1">
+                                                <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                     if (idx === 0) return;
                                                     const updated = [...addForm.allVideos];
                                                     [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
                                                     setAddForm({ ...addForm, allVideos: updated });
-                                                }}>⬆️</button>
+                                                }} disabled={idx === 0}><i className="bi bi-arrow-left"></i></button>
 
-                                                <button onClick={() => {
+                                                <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                     if (idx === addForm.allVideos.length - 1) return;
                                                     const updated = [...addForm.allVideos];
                                                     [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
                                                     setAddForm({ ...addForm, allVideos: updated });
-                                                }}>⬇️</button>
+                                                }} disabled={idx === addForm.allVideos.length - 1}><i className="bi bi-arrow-right"></i></button>
                                             </div>
+
+                                            {/* delete */}
+                                            <button
+                                                type="button"
+                                                className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
+                                                onClick={() => {
+                                                    if (vid.isNew) {
+                                                        setAddForm({ ...addForm, allVideos: addForm.allVideos.filter((_, i) => i !== idx) });
+                                                    } else {
+                                                        const updated = [...addForm.allVideos];
+                                                        updated[idx] = { ...updated[idx], toDelete: true };
+                                                        setAddForm({ ...addForm, allVideos: updated });
+                                                    }
+                                                }}>
+                                                <i className="bi bi-trash"></i>
+                                            </button>
                                         </div>
                                     ))}
                                 </div>
@@ -783,12 +841,66 @@ export default function RegionalMeeting() {
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label>Agenda PDF (upload to replace existing):</label>
-                            <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0] })} />
+                            <label>Agenda PDF:</label>
+                            {editForm.existingAgendaPdfUrl && !editForm.deleteAgendaPdf && !editForm.agendaPdf ? (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-sm text-gray-dark truncate flex-1 input input-text w-full py-1">
+                                        {editForm.existingAgendaPdfUrl.split('/').pop()}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="text-red-600 cursor-pointer shrink-0"
+                                        title="Remove PDF"
+                                        onClick={() => setEditForm({ ...editForm, deleteAgendaPdf: true })}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            ) : editForm.deleteAgendaPdf ? (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-sm text-gray-dark italic flex-1">PDF will be deleted on save.</span>
+                                    <button type="button" className="text-sm text-primary-dark cursor-pointer" onClick={() => setEditForm({ ...editForm, deleteAgendaPdf: false })}>Undo</button>
+                                </div>
+                            ) : null}
+                            {(!editForm.existingAgendaPdfUrl || editForm.deleteAgendaPdf || editForm.agendaPdf) && (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0], deleteAgendaPdf: false })} />
+                                    {editForm.agendaPdf && (
+                                        <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, agendaPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                         <div>
-                            <label>Meeting Report PDF (upload to replace existing):</label>
-                            <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0] })} />
+                            <label>Meeting Report PDF:</label>
+                            {editForm.existingReportPdfUrl && !editForm.deleteReportPdf && !editForm.reportPdf ? (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-sm text-gray-dark truncate flex-1 input input-text w-full py-1">
+                                        {editForm.existingReportPdfUrl.split('/').pop()}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className="text-red-600 cursor-pointer shrink-0"
+                                        title="Remove PDF"
+                                        onClick={() => setEditForm({ ...editForm, deleteReportPdf: true })}
+                                    >
+                                        <i className="bi bi-trash"></i>
+                                    </button>
+                                </div>
+                            ) : editForm.deleteReportPdf ? (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <span className="text-sm text-gray-dark italic flex-1">PDF will be deleted on save.</span>
+                                    <button type="button" className="text-sm text-primary-dark cursor-pointer" onClick={() => setEditForm({ ...editForm, deleteReportPdf: false })}>Undo</button>
+                                </div>
+                            ) : null}
+                            {(!editForm.existingReportPdfUrl || editForm.deleteReportPdf || editForm.reportPdf) && (
+                                <div className="flex items-center gap-2 mt-1">
+                                    <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0], deleteReportPdf: false })} />
+                                    {editForm.reportPdf && (
+                                        <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, reportPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     </div>
                     <div>
@@ -804,40 +916,46 @@ export default function RegionalMeeting() {
                                 ...editForm,
                                 allImages: [...editForm.allImages, ...newImages]
                             });
+                            e.target.value = '';
                         }} />
-                        {editForm.allImages.length > 0 && (
+                        {editForm.allImages.filter(img => !img.toDelete).length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
-                                {editForm.allImages.map((img, idx) => (
-                                    <div key={idx} className="relative border p-2">
-                                        <img src={img.url || img.resource_url} className="w-24 h-24 object-cover" />
-
-                                        {/* delete */}
-                                        <button
-                                            className="absolute top-1 right-1 text-red-600"
-                                            onClick={() => {
-                                                const updated = [...editForm.allImages];
-                                                updated[idx] = { ...updated[idx], toDelete: true };
-                                                setEditForm({ ...editForm, allImages: updated });
-                                            }}>
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                {editForm.allImages.map((img, idx) => img.toDelete ? null : (
+                                    <div key={idx} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
+                                        <img src={img.url || img.resource_url} className="w-24 h-24 object-contain" />
 
                                         {/* reorder */}
-                                        <div className="absolute bottom-1 left-1 flex gap-1">
-                                            <button onClick={() => {
+                                        <div className="absolute top-1 left-1 flex gap-1">
+                                            <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                 if (idx === 0) return;
                                                 const updated = [...editForm.allImages];
                                                 [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
                                                 setEditForm({ ...editForm, allImages: updated });
-                                            }}>⬆️</button>
+                                            }} disabled={idx === 0}><i className="bi bi-arrow-left"></i></button>
 
-                                            <button onClick={() => {
+                                            <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                 if (idx === editForm.allImages.length - 1) return;
                                                 const updated = [...editForm.allImages];
-                                                [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
+                                                [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
                                                 setEditForm({ ...editForm, allImages: updated });
-                                            }}>⬇️</button>
+                                            }} disabled={idx === editForm.allImages.length - 1}><i className="bi bi-arrow-right"></i></button>
                                         </div>
+
+                                        {/* delete */}
+                                        <button
+                                            type="button"
+                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
+                                            onClick={() => {
+                                                if (img.isNew) {
+                                                    setEditForm({ ...editForm, allImages: editForm.allImages.filter((_, i) => i !== idx) });
+                                                } else {
+                                                    const updated = [...editForm.allImages];
+                                                    updated[idx] = { ...updated[idx], toDelete: true };
+                                                    setEditForm({ ...editForm, allImages: updated });
+                                                }
+                                            }}>
+                                            <i className="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -856,40 +974,46 @@ export default function RegionalMeeting() {
                                 ...editForm,
                                 allVideos: [...editForm.allVideos, ...newVideos]
                             });
+                            e.target.value = '';
                         }} />
-                        {editForm.allVideos.length > 0 && (
+                        {editForm.allVideos.filter(v => !v.toDelete).length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
-                                {editForm.allVideos.map((vid, idx) => (
-                                    <div key={idx} className="relative border p-2">
-                                        <video src={vid.url || vid.resource_url} className="w-24 h-24" />
-
-                                        {/* delete */}
-                                        <button
-                                            className="absolute top-1 right-1 text-red-600"
-                                            onClick={() => {
-                                                const updated = [...editForm.allVideos];
-                                                updated[idx] = { ...updated[idx], toDelete: true };
-                                                setEditForm({ ...editForm, allVideos: updated });
-                                            }}>
-                                            <i className="bi bi-trash"></i>
-                                        </button>
+                                {editForm.allVideos.map((vid, idx) => vid.toDelete ? null : (
+                                    <div key={idx} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
+                                        <video src={vid.url || vid.resource_url} className="w-24 h-24 object-contain" />
 
                                         {/* reorder */}
-                                        <div className="absolute bottom-1 left-1 flex gap-1">
-                                            <button onClick={() => {
+                                        <div className="absolute top-1 left-1 flex gap-1">
+                                            <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                 if (idx === 0) return;
                                                 const updated = [...editForm.allVideos];
                                                 [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
                                                 setEditForm({ ...editForm, allVideos: updated });
-                                            }}>⬆️</button>
+                                            }} disabled={idx === 0}><i className="bi bi-arrow-left"></i></button>
 
-                                            <button onClick={() => {
+                                            <button type="button" className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200" onClick={() => {
                                                 if (idx === editForm.allVideos.length - 1) return;
                                                 const updated = [...editForm.allVideos];
-                                                [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
+                                                [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
                                                 setEditForm({ ...editForm, allVideos: updated });
-                                            }}>⬇️</button>
+                                            }} disabled={idx === editForm.allVideos.length - 1}><i className="bi bi-arrow-right"></i></button>
                                         </div>
+
+                                        {/* delete */}
+                                        <button
+                                            type="button"
+                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
+                                            onClick={() => {
+                                                if (vid.isNew) {
+                                                    setEditForm({ ...editForm, allVideos: editForm.allVideos.filter((_, i) => i !== idx) });
+                                                } else {
+                                                    const updated = [...editForm.allVideos];
+                                                    updated[idx] = { ...updated[idx], toDelete: true };
+                                                    setEditForm({ ...editForm, allVideos: updated });
+                                                }
+                                            }}>
+                                            <i className="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 ))}
                             </div>
@@ -917,7 +1041,7 @@ export default function RegionalMeeting() {
 
             <div className="py-20 px-0 duration-200">
                 <div className="flex justify-end px-10 lg:px-40 mb-4">
-                    {canEdit && <button className="button button-light" onClick={() => { setShowEditMeetingsPopup(true); }}>Edit Meetings <i className="bi bi-pencil-square ml-1"></i></button>}
+                    {canEdit && <button className="button button-light" onClick={() => { setShowEditMeetingsPopup(true); }}>Edit Meetings <i className="bi bi-pencil ml-1"></i></button>}
                 </div>
                 {loading ? (
                     <div className="px-10 lg:px-40">
@@ -953,7 +1077,11 @@ export default function RegionalMeeting() {
                                         )}
                                     </div>
                                 </div>
-                                <Link to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`} className="meeting-img" />
+                                <Link
+                                    to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`}
+                                    className="meeting-img"
+                                    style={thumbnails[mtg.id] ? { backgroundImage: `url(${thumbnails[mtg.id]})` } : {}}
+                                />
                             </div>
                         </div>
                     ))
