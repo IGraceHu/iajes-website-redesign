@@ -84,6 +84,21 @@ async function getMeetingResources(meetingId) {
     return data || [];
 }
 
+async function getMeetingThumbnail(meetingId) {
+    const { data, error } = await supabase
+        .from('regional meetings resources')
+        .select('resource_url')
+        .eq('regional_meeting_id', meetingId)
+        .eq('resource_type', 'image')
+        .order('sort_order', { ascending: true })
+        .limit(1);
+
+    if (error || !data || data.length === 0) {
+        return null;
+    }
+    return data[0].resource_url;
+}
+
 async function createMeeting(formData, extras = {}) {
     const title = (formData.get('title') || '').toString().trim() || 'Untitled Meeting';
     const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -124,19 +139,21 @@ async function createMeeting(formData, extras = {}) {
         }
 
         // Upload images
-        if (extras.images && extras.images.length > 0) {
-            for (const image of extras.images) {
-                if (image.file) {
-                    await uploadResource(meetingId, image.file, 'image');
+        if (extras.allImages) {
+            for (let i = 0; i < extras.allImages.length; i++) {
+                const img = extras.allImages[i];
+                if (img.file) {
+                    await uploadResource(meetingId, img.file, 'image', i);
                 }
             }
         }
 
         // Upload videos
-        if (extras.videos && extras.videos.length > 0) {
-            for (const video of extras.videos) {
-                if (video.file) {
-                    await uploadResource(meetingId, video.file, 'video');
+        if (extras.allVideos) {
+            for (let i = 0; i < extras.allVideos.length; i++) {
+                const vid = extras.allVideos[i];
+                if (vid.file) {
+                    await uploadResource(meetingId, vid.file, 'video', i);
                 }
             }
         }
@@ -183,20 +200,62 @@ async function updateMeeting(meetingId, formData, extras = {}) {
             await uploadPdf(meetingId, 'report', extras.reportPdf);
         }
 
-        // Upload new images
-        if (extras.images && extras.images.length > 0) {
-            for (const image of extras.images) {
-                if (image.file) {
-                    await uploadResource(meetingId, image.file, 'image');
+        // IMAGES (existing + new + reordered + deleted)
+        if (extras.allImages) {
+            for (let i = 0; i < extras.allImages.length; i++) {
+                const img = extras.allImages[i];
+
+                if (img.toDelete && img.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .delete()
+                        .eq('id', img.id);
+
+                    const path = img.resource_url.split('/regional-meeting-resources/')[1];
+                    if (path) {
+                        await supabase.storage
+                            .from('regional-meetings-resources')
+                            .remove([`regional-meeting-resources/${path}`]);
+                    }
+                }
+                else if (img.isNew && img.file) {
+                    await uploadResource(meetingId, img.file, 'image', i);
+                }
+                else if (img.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .update({ sort_order: i })
+                        .eq('id', img.id);
                 }
             }
         }
 
-        // Upload new videos
-        if (extras.videos && extras.videos.length > 0) {
-            for (const video of extras.videos) {
-                if (video.file) {
-                    await uploadResource(meetingId, video.file, 'video');
+        // VIDEOS (same logic)
+        if (extras.allVideos) {
+            for (let i = 0; i < extras.allVideos.length; i++) {
+                const vid = extras.allVideos[i];
+
+                if (vid.toDelete && vid.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .delete()
+                        .eq('id', vid.id);
+
+                    const path = vid.resource_url.split('/regional-meeting-resources/')[1];
+                    if (path) {
+                        await supabase.storage
+                            .from('regional-meetings-resources')
+                            .remove([`regional-meeting-resources/${path}`]);
+                    }
+                }
+                else if (vid.isNew && vid.file) {
+                    await uploadResource(meetingId, vid.file, 'video', i);
+                }
+                else if (vid.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .update({ sort_order: i })
+                        .eq('id', vid.id);
                 }
             }
         }
@@ -206,7 +265,29 @@ async function updateMeeting(meetingId, formData, extras = {}) {
 }
 
 async function deleteMeeting(meetingId) {
-    // Resources will be automatically deleted due to ON DELETE CASCADE
+    const prefixes = [
+        `regional-meeting-resources/${meetingId}`,
+        `regional-meetings-pdfs/${meetingId}`,
+    ];
+
+    for (const prefix of prefixes) {
+        const { data: files } = await supabase.storage
+            .from('regional-meetings-resources')
+            .list(prefix, { limit: 1000 });
+
+        if (files?.length) {
+            const paths = files.map(f => `${prefix}/${f.name}`);
+            await supabase.storage
+                .from('regional-meetings-resources')
+                .remove(paths);
+        }
+    }
+
+    await supabase
+        .from('regional meetings resources')
+        .delete()
+        .eq('regional_meeting_id', meetingId);
+
     const { error } = await supabase
         .from('regional meetings')
         .delete()
@@ -216,6 +297,21 @@ async function deleteMeeting(meetingId) {
 }
 
 async function uploadPdf(meetingId, type, file) {
+    // Delete existing PDF if it exists
+    const meeting = await getMeetingResources(meetingId);
+    const existingPdfField = type === 'agenda' ? 'agenda_pdf_url' : 'meeting_report_pdf_url';
+    const existingPdfUrl = meeting?.[existingPdfField];
+
+    if (existingPdfUrl) {
+        try {
+            const urlParts = existingPdfUrl.split('/');
+            const filePath = urlParts.slice(-2).join('/');
+            await supabase.storage.from('regional-meetings-resources').remove([filePath]);
+        } catch (e) {
+            console.error('Error deleting existing PDF:', e);
+        }
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${meetingId}/${type}.${fileExt}`;
     const filePath = `regional-meetings-pdfs/${fileName}`;
@@ -245,7 +341,7 @@ async function uploadPdf(meetingId, type, file) {
     return urlData.publicUrl;
 }
 
-async function uploadResource(meetingId, file, type) {
+async function uploadResource(meetingId, file, type, sortOrder) {
     const fileExt = file.name.split('.').pop();
     const filePath = `regional-meeting-resources/${meetingId}/${Date.now()}.${fileExt}`;
 
@@ -269,7 +365,7 @@ async function uploadResource(meetingId, file, type) {
             regional_meeting_id: meetingId,
             resource_url: urlData.publicUrl,
             resource_type: type,
-            sort_order: 0,
+            sort_order: sortOrder,
         }]);
 
     if (insertError) console.error(insertError);
@@ -325,8 +421,8 @@ export default function RegionalMeeting() {
         agendaPdf: null,
         reportLink: '',
         reportPdf: null,
-        images: [],
-        videos: []
+        allImages: [],
+        allVideos: []
     };
 
     const [showEditMeetingsPopup, setShowEditMeetingsPopup] = useState(false);
@@ -339,7 +435,17 @@ export default function RegionalMeeting() {
     const [deleteMeetingId, setDeleteMeetingId] = useState(null);
     const [saving, setSaving] = useState(false);
 
-    const openEditMeeting = (meeting) => {
+    const openEditMeeting = async (meeting) => {
+        const resources = await getMeetingResources(meeting.id);
+
+        const allImages = resources
+            .filter(r => r.resource_type === 'image')
+            .sort((a, b) => a.sort_order - b.sort_order);
+
+        const allVideos = resources
+            .filter(r => r.resource_type === 'video')
+            .sort((a, b) => a.sort_order - b.sort_order);
+
         setEditingMeeting(meeting);
         setEditForm({
             region: meeting.region,
@@ -351,9 +457,10 @@ export default function RegionalMeeting() {
             reportLink: meeting.meeting_report_url || '',
             agendaPdf: null,
             reportPdf: null,
-            images: [],
-            videos: [],
+            allImages,
+            allVideos,
         });
+
         setShowEditMeetingFormPopup(true);
     };
 
@@ -369,8 +476,8 @@ export default function RegionalMeeting() {
         const extras = {
             agendaPdf: addForm.agendaPdf,
             reportPdf: addForm.reportPdf,
-            images: addForm.images,
-            videos: addForm.videos,
+            allImages: addForm.allImages,
+            allVideos: addForm.allVideos,
         };
 
         const result = await createMeeting(formData, extras);
@@ -397,8 +504,8 @@ export default function RegionalMeeting() {
         const extras = {
             agendaPdf: editForm.agendaPdf,
             reportPdf: editForm.reportPdf,
-            images: editForm.images,
-            videos: editForm.videos,
+            allImages: editForm.allImages,
+            allVideos: editForm.allVideos,
         };
 
         const result = await updateMeeting(editingMeeting.id, formData, extras);
@@ -530,17 +637,50 @@ export default function RegionalMeeting() {
                             <label>Photos:</label>
                             <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
                                 const files = Array.from(e.target.files);
-                                const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
-                                setAddForm({ ...addForm, images: [...addForm.images, ...newImages] });
+                                const newImages = files.map(f => ({
+                                    file: f,
+                                    url: URL.createObjectURL(f),
+                                    isNew: true,
+                                }));
+
+                                setAddForm({
+                                    ...addForm,
+                                    allImages: [...addForm.allImages, ...newImages],
+                                });
                             }} />
-                            {addForm.images.length > 0 && (
+                            {addForm.allImages.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {addForm.images.map((img, idx) => (
+                                    {addForm.allImages.map((img, idx) => (
                                         <div key={idx} className="relative border p-2">
-                                            <img src={img.url} className="w-24 h-24 object-cover" />
-                                            <button className="absolute top-1 right-1 text-red-600" onClick={() => setAddForm({ ...addForm, images: addForm.images.filter((_, i) => i !== idx) })}>
+                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-cover" />
+
+                                            {/* delete */}
+                                            <button
+                                                className="absolute top-1 right-1 text-red-600"
+                                                onClick={() => {
+                                                    const updated = [...addForm.allImages];
+                                                    updated[idx] = { ...updated[idx], toDelete: true };
+                                                    setAddForm({ ...addForm, allImages: updated });
+                                                }}>
                                                 <i className="bi bi-trash"></i>
                                             </button>
+
+                                            {/* reorder */}
+                                            <div className="absolute bottom-1 left-1 flex gap-1">
+                                                <button onClick={() => {
+                                                    if (idx === 0) return;
+                                                    const updated = [...addForm.allImages];
+                                                    [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                    setAddForm({ ...addForm, allImages: updated });
+                                                }}>⬆️</button>
+
+                                                <button onClick={() => {
+                                                    if (idx === addForm.allImages.length - 1) return;
+                                                    const updated = [...addForm.allImages];
+                                                    [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
+                                                    setAddForm({ ...addForm, allImages: updated });
+                                                }}>⬇️</button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -550,17 +690,49 @@ export default function RegionalMeeting() {
                             <label>Videos:</label>
                             <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
                                 const files = Array.from(e.target.files);
-                                const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
-                                setAddForm({ ...addForm, videos: [...addForm.videos, ...newVideos] });
+                                const newVideos = files.map(f => ({
+                                    file: f,
+                                    url: URL.createObjectURL(f),
+                                    isNew: true,
+                                }));
+                                setAddForm({
+                                    ...addForm,
+                                    allVideos: [...addForm.allVideos, ...newVideos]
+                                });
                             }} />
-                            {addForm.videos.length > 0 && (
+                            {addForm.allVideos.length > 0 && (
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {addForm.videos.map((vid, idx) => (
+                                    {addForm.allVideos.map((vid, idx) => (
                                         <div key={idx} className="relative border p-2">
-                                            <video src={vid.url} className="w-24 h-24" />
-                                            <button className="absolute top-1 right-1 text-red-600" onClick={() => setAddForm({ ...addForm, videos: addForm.videos.filter((_, i) => i !== idx) })}>
+                                            <video src={vid.url || vid.resource_url} className="w-24 h-24" />
+
+                                            {/* delete */}
+                                            <button
+                                                className="absolute top-1 right-1 text-red-600"
+                                                onClick={() => {
+                                                    const updated = [...addForm.allVideos];
+                                                    updated[idx] = { ...updated[idx], toDelete: true };
+                                                    setAddForm({ ...addForm, allVideos: updated });
+                                                }}>
                                                 <i className="bi bi-trash"></i>
                                             </button>
+
+                                            {/* reorder */}
+                                            <div className="absolute bottom-1 left-1 flex gap-1">
+                                                <button onClick={() => {
+                                                    if (idx === 0) return;
+                                                    const updated = [...addForm.allVideos];
+                                                    [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                    setAddForm({ ...addForm, allVideos: updated });
+                                                }}>⬆️</button>
+
+                                                <button onClick={() => {
+                                                    if (idx === addForm.allVideos.length - 1) return;
+                                                    const updated = [...addForm.allVideos];
+                                                    [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
+                                                    setAddForm({ ...addForm, allVideos: updated });
+                                                }}>⬇️</button>
+                                            </div>
                                         </div>
                                     ))}
                                 </div>
@@ -623,17 +795,49 @@ export default function RegionalMeeting() {
                         <label>Photos (upload new photos):</label>
                         <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
                             const files = Array.from(e.target.files);
-                            const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
-                            setEditForm({ ...editForm, images: [...editForm.images, ...newImages] });
+                            const newImages = files.map(f => ({
+                                file: f,
+                                url: URL.createObjectURL(f),
+                                isNew: true,
+                            }));
+                            setEditForm({
+                                ...editForm,
+                                allImages: [...editForm.allImages, ...newImages]
+                            });
                         }} />
-                        {editForm.images.length > 0 && (
+                        {editForm.allImages.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
-                                {editForm.images.map((img, idx) => (
+                                {editForm.allImages.map((img, idx) => (
                                     <div key={idx} className="relative border p-2">
-                                        <img src={img.url} className="w-24 h-24 object-cover" />
-                                        <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, images: editForm.images.filter((_, i) => i !== idx) })}>
+                                        <img src={img.url || img.resource_url} className="w-24 h-24 object-cover" />
+
+                                        {/* delete */}
+                                        <button
+                                            className="absolute top-1 right-1 text-red-600"
+                                            onClick={() => {
+                                                const updated = [...editForm.allImages];
+                                                updated[idx] = { ...updated[idx], toDelete: true };
+                                                setEditForm({ ...editForm, allImages: updated });
+                                            }}>
                                             <i className="bi bi-trash"></i>
                                         </button>
+
+                                        {/* reorder */}
+                                        <div className="absolute bottom-1 left-1 flex gap-1">
+                                            <button onClick={() => {
+                                                if (idx === 0) return;
+                                                const updated = [...editForm.allImages];
+                                                [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                setEditForm({ ...editForm, allImages: updated });
+                                            }}>⬆️</button>
+
+                                            <button onClick={() => {
+                                                if (idx === editForm.allImages.length - 1) return;
+                                                const updated = [...editForm.allImages];
+                                                [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
+                                                setEditForm({ ...editForm, allImages: updated });
+                                            }}>⬇️</button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -643,17 +847,49 @@ export default function RegionalMeeting() {
                         <label>Videos (upload new videos):</label>
                         <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
                             const files = Array.from(e.target.files);
-                            const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
-                            setEditForm({ ...editForm, videos: [...editForm.videos, ...newVideos] });
+                            const newVideos = files.map(f => ({
+                                file: f,
+                                url: URL.createObjectURL(f),
+                                isNew: true,
+                            }));
+                            setEditForm({
+                                ...editForm,
+                                allVideos: [...editForm.allVideos, ...newVideos]
+                            });
                         }} />
-                        {editForm.videos.length > 0 && (
+                        {editForm.allVideos.length > 0 && (
                             <div className="flex flex-wrap gap-2 mt-2">
-                                {editForm.videos.map((vid, idx) => (
+                                {editForm.allVideos.map((vid, idx) => (
                                     <div key={idx} className="relative border p-2">
-                                        <video src={vid.url} className="w-24 h-24" />
-                                        <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, videos: editForm.videos.filter((_, i) => i !== idx) })}>
+                                        <video src={vid.url || vid.resource_url} className="w-24 h-24" />
+
+                                        {/* delete */}
+                                        <button
+                                            className="absolute top-1 right-1 text-red-600"
+                                            onClick={() => {
+                                                const updated = [...editForm.allVideos];
+                                                updated[idx] = { ...updated[idx], toDelete: true };
+                                                setEditForm({ ...editForm, allVideos: updated });
+                                            }}>
                                             <i className="bi bi-trash"></i>
                                         </button>
+
+                                        {/* reorder */}
+                                        <div className="absolute bottom-1 left-1 flex gap-1">
+                                            <button onClick={() => {
+                                                if (idx === 0) return;
+                                                const updated = [...editForm.allVideos];
+                                                [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                setEditForm({ ...editForm, allVideos: updated });
+                                            }}>⬆️</button>
+
+                                            <button onClick={() => {
+                                                if (idx === editForm.allVideos.length - 1) return;
+                                                const updated = [...editForm.allVideos];
+                                                [updated[idx + 1], updated[idx]] = [updated[idx], updated[idx + 1]];
+                                                setEditForm({ ...editForm, allVideos: updated });
+                                            }}>⬇️</button>
+                                        </div>
                                     </div>
                                 ))}
                             </div>
@@ -705,12 +941,16 @@ export default function RegionalMeeting() {
                                     </div>
                                     <p className="mt-2">{mtg.description}</p>
                                     <div className="meeting-buttons">
-                                        <a href={mtg.agenda_url} className="button">
-                                            Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
-                                        </a>
-                                        <a href={mtg.meeting_report_url} className="button">
-                                            Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
-                                        </a>
+                                        {mtg.agenda_url && (
+                                            <a href={mtg.agenda_url} className="button">
+                                                Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                            </a>
+                                        )}
+                                        {mtg.meeting_report_url && (
+                                            <a href={mtg.meeting_report_url} className="button">
+                                                Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                            </a>
+                                        )}
                                     </div>
                                 </div>
                                 <Link to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`} className="meeting-img" />

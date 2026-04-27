@@ -82,20 +82,64 @@ async function updateMeeting(meetingId, formData, extras = {}) {
             await uploadPdf(meetingId, 'report', extras.reportPdf);
         }
 
-        // Upload new images
-        if (extras.images && extras.images.length > 0) {
-            for (const image of extras.images) {
-                if (image.file) {
-                    await uploadResource(meetingId, image.file, 'image');
+        // Handle images (existing + new + reordered)
+        if (extras.allImages) {
+            for (let i = 0; i < extras.allImages.length; i++) {
+                const img = extras.allImages[i];
+
+                if (img.toDelete && img.id) {
+                    // delete DB row
+                    await supabase
+                        .from('regional meetings resources')
+                        .delete()
+                        .eq('id', img.id);
+
+                    // delete storage file
+                    const path = img.resource_url.split('/regional-meeting-resources/')[1];
+                    if (path) {
+                        await supabase.storage
+                            .from('regional-meetings-resources')
+                            .remove([`regional-meeting-resources/${path}`]);
+                    }
+                }
+                else if (img.isNew && img.file) {
+                    await uploadResource(meetingId, img.file, 'image', i);
+                }
+                else if (img.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .update({ sort_order: i })
+                        .eq('id', img.id);
                 }
             }
         }
 
-        // Upload new videos
-        if (extras.videos && extras.videos.length > 0) {
-            for (const video of extras.videos) {
-                if (video.file) {
-                    await uploadResource(meetingId, video.file, 'video');
+        // Handle videos (same logic)
+        if (extras.allVideos) {
+            for (let i = 0; i < extras.allVideos.length; i++) {
+                const vid = extras.allVideos[i];
+
+                if (vid.toDelete && vid.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .delete()
+                        .eq('id', vid.id);
+
+                    const path = vid.resource_url.split('/regional-meeting-resources/')[1];
+                    if (path) {
+                        await supabase.storage
+                            .from('regional-meetings-resources')
+                            .remove([`regional-meeting-resources/${path}`]);
+                    }
+                }
+                else if (vid.isNew && vid.file) {
+                    await uploadResource(meetingId, vid.file, 'video', i);
+                }
+                else if (vid.id) {
+                    await supabase
+                        .from('regional meetings resources')
+                        .update({ sort_order: i })
+                        .eq('id', vid.id);
                 }
             }
         }
@@ -105,7 +149,31 @@ async function updateMeeting(meetingId, formData, extras = {}) {
 }
 
 async function deleteMeeting(meetingId) {
-    // Resources will be automatically deleted due to ON DELETE CASCADE
+    // Delete ALL files by folder prefix (reliable)
+    const prefixes = [
+        `regional-meeting-resources/${meetingId}`,
+        `regional-meetings-pdfs/${meetingId}`,
+    ];
+
+    for (const prefix of prefixes) {
+        const { data: files } = await supabase.storage
+            .from('regional-meetings-resources')
+            .list(prefix, { limit: 1000 });
+
+        if (files && files.length > 0) {
+            const paths = files.map(f => `${prefix}/${f.name}`);
+            await supabase.storage
+                .from('regional-meetings-resources')
+                .remove(paths);
+        }
+    }
+
+    // DB cleanup
+    await supabase
+        .from('regional meetings resources')
+        .delete()
+        .eq('regional_meeting_id', meetingId);
+
     const { error } = await supabase
         .from('regional meetings')
         .delete()
@@ -115,6 +183,21 @@ async function deleteMeeting(meetingId) {
 }
 
 async function uploadPdf(meetingId, type, file) {
+    // Delete existing PDF if it exists
+    const meeting = await getMeetingById(meetingId);
+    const existingPdfField = type === 'agenda' ? 'agenda_pdf_url' : 'meeting_report_pdf_url';
+    const existingPdfUrl = meeting?.[existingPdfField];
+
+    if (existingPdfUrl) {
+        try {
+            const urlParts = existingPdfUrl.split('/');
+            const filePath = urlParts.slice(-2).join('/');
+            await supabase.storage.from('regional-meetings-resources').remove([filePath]);
+        } catch (e) {
+            console.error('Error deleting existing PDF:', e);
+        }
+    }
+
     const fileExt = file.name.split('.').pop();
     const fileName = `${meetingId}/${type}.${fileExt}`;
     const filePath = `regional-meetings-pdfs/${fileName}`;
@@ -144,7 +227,7 @@ async function uploadPdf(meetingId, type, file) {
     return urlData.publicUrl;
 }
 
-async function uploadResource(meetingId, file, type) {
+async function uploadResource(meetingId, file, type, sortOrder) {
     const fileExt = file.name.split('.').pop();
     const filePath = `regional-meeting-resources/${meetingId}/${Date.now()}.${fileExt}`;
 
@@ -168,7 +251,7 @@ async function uploadResource(meetingId, file, type) {
             regional_meeting_id: meetingId,
             resource_url: urlData.publicUrl,
             resource_type: type,
-            sort_order: 0,
+            sort_order: sortOrder,
         }]);
 
     if (insertError) console.error(insertError);
@@ -225,8 +308,8 @@ export default function RegionalMeetingDetail() {
         const extras = {
             agendaPdf: editForm?.agendaPdf,
             reportPdf: editForm?.reportPdf,
-            images: editForm?.images || [],
-            videos: editForm?.videos || [],
+            allImages: editForm?.allImages || [],
+            allVideos: editForm?.allVideos || [],
         };
 
         const result = await updateMeeting(meetingId, formData, extras);
@@ -266,6 +349,14 @@ export default function RegionalMeetingDetail() {
 
     const openEditPopup = () => {
         if (meetingData) {
+            const allImages = resources
+                .filter(r => r.resource_type === 'image')
+                .sort((a, b) => a.sort_order - b.sort_order);
+
+            const allVideos = resources
+                .filter(r => r.resource_type === 'video')
+                .sort((a, b) => a.sort_order - b.sort_order);
+
             setEditForm({
                 region: meetingData.region || regionName,
                 title: meetingData.name || '',
@@ -276,8 +367,8 @@ export default function RegionalMeetingDetail() {
                 reportLink: meetingData.meeting_report_url || '',
                 agendaPdf: null,
                 reportPdf: null,
-                images: [],
-                videos: [],
+                allImages,
+                allVideos,
             });
         }
         setShowEditPopup(true);
@@ -366,42 +457,132 @@ export default function RegionalMeetingDetail() {
                     </div>
                 </div>
                 <div>
-                    <label>Photos (upload new photos):</label>
+                    <label>Photos:</label>
                     <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
                         const files = Array.from(e.target.files);
-                        const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
-                        setEditForm({ ...editForm, images: [...(editForm?.images || []), ...newImages] });
+                        const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f), isNew: true }));
+                        setEditForm({ ...editForm, allImages: [...(editForm?.allImages || []), ...newImages] });
                     }} />
-                    {(editForm?.images || []).length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {editForm.images.map((img, idx) => (
-                                <div key={idx} className="relative border p-2">
-                                    <img src={img.url} className="w-24 h-24 object-cover" />
-                                    <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, images: editForm.images.filter((_, i) => i !== idx) })}>
-                                        <i className="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            ))}
+                    {(editForm?.allImages || []).length > 0 && (
+                        <div className="mt-2">
+                            <p className="font-bold">Photos (click arrows to reorder, X to delete):</p>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                                {editForm.allImages.map((img, idx) => (
+                                    <div key={img.id || `new-${idx}`} className="relative border p-2">
+                                        <img src={img.resource_url || img.url} className="w-24 h-24 object-cover" />
+                                        <div className="absolute top-1 left-1 flex gap-1">
+                                            <button
+                                                type="button"
+                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                onClick={() => {
+                                                    if (idx === 0) return;
+                                                    const updated = [...editForm.allImages];
+                                                    [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                    setEditForm({ ...editForm, allImages: updated });
+                                                }}
+                                                disabled={idx === 0}
+                                            >
+                                                <i className="bi bi-arrow-left"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                onClick={() => {
+                                                    if (idx === editForm.allImages.length - 1) return;
+                                                    const updated = [...editForm.allImages];
+                                                    [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
+                                                    setEditForm({ ...editForm, allImages: updated });
+                                                }}
+                                                disabled={idx === editForm.allImages.length - 1}
+                                            >
+                                                <i className="bi bi-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1"
+                                            onClick={() => {
+                                                if (img.isNew) {
+                                                    setEditForm({ ...editForm, allImages: editForm.allImages.filter((_, i) => i !== idx) });
+                                                } else {
+                                                    const updated = editForm.allImages.map((i, iIdx) =>
+                                                        iIdx === idx ? { ...i, toDelete: true } : i
+                                                    );
+                                                    setEditForm({ ...editForm, allImages: updated });
+                                                }
+                                            }}
+                                        >
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                        <span className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs p-1">{idx + 1}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
                 <div>
-                    <label>Videos (upload new videos):</label>
+                    <label>Videos:</label>
                     <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
                         const files = Array.from(e.target.files);
-                        const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f) }));
-                        setEditForm({ ...editForm, videos: [...(editForm?.videos || []), ...newVideos] });
+                        const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f), isNew: true }));
+                        setEditForm({ ...editForm, allVideos: [...(editForm?.allVideos || []), ...newVideos] });
                     }} />
-                    {(editForm?.videos || []).length > 0 && (
-                        <div className="flex flex-wrap gap-2 mt-2">
-                            {editForm.videos.map((vid, idx) => (
-                                <div key={idx} className="relative border p-2">
-                                    <video src={vid.url} className="w-24 h-24" />
-                                    <button className="absolute top-1 right-1 text-red-600" onClick={() => setEditForm({ ...editForm, videos: editForm.videos.filter((_, i) => i !== idx) })}>
-                                        <i className="bi bi-trash"></i>
-                                    </button>
-                                </div>
-                            ))}
+                    {(editForm?.allVideos || []).length > 0 && (
+                        <div className="mt-2">
+                            <p className="font-bold">Videos (click arrows to reorder, X to delete):</p>
+                            <div className="flex flex-wrap gap-2 mt-1">
+                                {editForm.allVideos.map((vid, idx) => (
+                                    <div key={vid.id || `new-${idx}`} className="relative border p-2">
+                                        <video src={vid.resource_url || vid.url} className="w-24 h-24 object-cover" />
+                                        <div className="absolute top-1 left-1 flex gap-1">
+                                            <button
+                                                type="button"
+                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                onClick={() => {
+                                                    if (idx === 0) return;
+                                                    const updated = [...editForm.allVideos];
+                                                    [updated[idx - 1], updated[idx]] = [updated[idx], updated[idx - 1]];
+                                                    setEditForm({ ...editForm, allVideos: updated });
+                                                }}
+                                                disabled={idx === 0}
+                                            >
+                                                <i className="bi bi-arrow-left"></i>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className="text-xs bg-white rounded-full p-1 hover:bg-gray-200"
+                                                onClick={() => {
+                                                    if (idx === editForm.allVideos.length - 1) return;
+                                                    const updated = [...editForm.allVideos];
+                                                    [updated[idx], updated[idx + 1]] = [updated[idx + 1], updated[idx]];
+                                                    setEditForm({ ...editForm, allVideos: updated });
+                                                }}
+                                                disabled={idx === editForm.allVideos.length - 1}
+                                            >
+                                                <i className="bi bi-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1"
+                                            onClick={() => {
+                                                if (vid.isNew) {
+                                                    setEditForm({ ...editForm, allVideos: editForm.allVideos.filter((_, i) => i !== idx) });
+                                                } else {
+                                                    const updated = editForm.allVideos.map((v, vIdx) =>
+                                                        vIdx === idx ? { ...v, toDelete: true } : v
+                                                    );
+                                                    setEditForm({ ...editForm, allVideos: updated });
+                                                }
+                                            }}
+                                        >
+                                            <i className="bi bi-x"></i>
+                                        </button>
+                                        <span className="absolute bottom-1 left-1 bg-black bg-opacity-50 text-white text-xs p-1">{idx + 1}</span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     )}
                 </div>
@@ -421,7 +602,7 @@ export default function RegionalMeetingDetail() {
         return (
             <div className="relative aspect-video max-w-2xl mx-auto bg-gray-900 overflow-hidden">
                 <button className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white text-2xl z-10" onClick={prev}><i className="bi bi-chevron-left"></i></button>
-                <img src={images[current].resource_url} className="w-full h-full object-cover" />
+                <img src={images[current].resource_url} className="w-full h-full object-contain" />
                 <div className="absolute bottom-4 left-4 text-white bg-black bg-opacity-50 p-2 rounded">
                     Image {current + 1} of {images.length}
                 </div>
@@ -460,13 +641,15 @@ export default function RegionalMeetingDetail() {
                 </div>
                 <p>{meetingData.description}</p>
                 <Break />
-                {(meetingData.meeting_report_url !== "#" || meetingData.meeting_report_pdf_url) && (meetingData.agenda_url !== "#" || meetingData.agenda_pdf_url) && (
+                {(meetingData.meeting_report_url || meetingData.meeting_report_pdf_url) && (
                     <div className="mt-10">
-                        <h2 className="text-center">Meeting Resources</h2>
+                        <h2 className="text-center">Meeting Report</h2>
                         <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
-                            <a href={meetingData.meeting_report_url} className="button button-light">
-                                Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
-                            </a>
+                            {meetingData.meeting_report_url && (
+                                <a href={meetingData.meeting_report_url} className="button button-light">
+                                    Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                </a>
+                            )}
                             {meetingData.meeting_report_pdf_url && (
                                 <button
                                     className={`button ${previewingPdf === "report" ? "button" : "button-light"}`}
@@ -476,10 +659,29 @@ export default function RegionalMeetingDetail() {
                                     {previewingPdf === "report" ? "Hide" : "Preview"}
                                 </button>
                             )}
-                            <div class="hidden min-[768px]:inline-block h-20 min-h-[1em] w-0.5 self-stretch bg-primary-dark"></div>
-                            <a href={meetingData.agenda_url} className="button button-light">
-                                Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
-                            </a>
+                        </div>
+                        {previewingPdf === "report" && meetingData.meeting_report_pdf_url && (
+                            <div className="mt-6 flex justify-center">
+                                <iframe
+                                    src={meetingData.meeting_report_pdf_url}
+                                    className="w-full lg:max-w-[75%]"
+                                    style={{ height: '80vh' }}
+                                    title="Meeting Report PDF"
+                                />
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {(meetingData.agenda_url || meetingData.agenda_pdf_url) && (
+                    <div className="mt-10">
+                        <h2 className="text-center">Meeting Agenda</h2>
+                        <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
+                            {meetingData.agenda_url && (
+                                <a href={meetingData.agenda_url} className="button button-light">
+                                    Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                </a>
+                            )}
                             {meetingData.agenda_pdf_url && (
                                 <button
                                     className={`button ${previewingPdf === "agenda" ? "button" : "button-light"}`}
@@ -490,9 +692,14 @@ export default function RegionalMeetingDetail() {
                                 </button>
                             )}
                         </div>
-                        {previewingPdf && (
+                        {previewingPdf === "agenda" && meetingData.agenda_pdf_url && (
                             <div className="mt-6 flex justify-center">
-                                <div className="bg-gray-light w-full lg:max-w-[75%]" style={{ aspectRatio: '8.5 / 11' }}></div>
+                                <iframe
+                                    src={meetingData.agenda_pdf_url}
+                                    className="w-full lg:max-w-[75%]"
+                                    style={{ height: '80vh' }}
+                                    title="Meeting Agenda PDF"
+                                />
                             </div>
                         )}
                     </div>
