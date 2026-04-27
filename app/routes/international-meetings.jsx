@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import internationalMeetingTemplate from "../templates/international-meeting-template";
@@ -132,7 +132,7 @@ const PROGRAM_SCHEDULE_2022 = [
       { title: "Coffee break", tone: "break" },
       "Mentoring and the Jesuit Ethos - Initiating an IAJES program to catalyze increased global collaborations for the common good (R. Nomen)",
       { title: "Catered Lunch + Speaker - Planet centered design for global impact (G. Yadama + A. Salifou)", tone: "break" },
-      "The futur is here: Next generation of engineers (D. Sengeh)",
+      "The future is here: Next generation of engineers (D. Sengeh)",
       "Unconference format with option for Waterworks museum - Working session findings (Poster board walk around)",
       "Election of the Board",
       { title: "Dinner & Culture + Speaker Human centered engineering: The surgery box (M. Teodorescu)", tone: "break" },
@@ -161,7 +161,7 @@ const MILESTONE_2022 = [
   "In Boston, we discussed our common ambition in response to the fervent calls signified through the 4 Universal Apostolic Preferences.",
   "Apply the \"engineering touch\" and make our network grow in efficiency",
   "The main levers for action are the task forces and projects. Beyond the joy of gathering at this event, thanks to the synergy of our expertise and common determination, our network is called to address new challenges and projects in the context of the near future.",
-  "The 3 days of our summit w as articulated around 3 axes: Inspiration-Reflection-Action. Our goal was to leave these 3 days with concrete and achievable projects to develop in order to strengthen the relationship between our universities in line with Ignatius' thinking",
+  "The 3 days of our summit were articulated around 3 axes: Inspiration-Reflection-Action. Our goal was to leave these 3 days with concrete and achievable projects to develop in order to strengthen the relationship between our universities in line with Ignatius' thinking",
   "Plan ahead for the next 2 years of IAJES",
   "An important objective was to elect the IAJES Boards and Committees for the coming years, as well as to decide on the means to manage and coordinate the task forces and projects in line with the identified plan of action. We also begin to define our roadmap that will allow us to be in line with the International Association of Jesuit Universities (IAJU).",
   "In that way, a new Executive Board constituted by the President, the Vice-president and the Secretary will work closely together to consolidate the work initiated by the former teams and find the right balance, between events, projects, and actions, for the future development of IAJES. Moreover, one of its first tasks is to write the road map that establishes the visibility inside and outside the IAJES, the relationship with IAJU and ensures the continuity of the Association.",
@@ -171,7 +171,7 @@ const MILESTONE_2022 = [
 ];
 
 const PROGRAM_2022 = [
-  "This program reflect ed the hope that everyone c ould make the most of the three days we spent together",
+  "This program reflected the hope that everyone could make the most of the three days we spent together",
   "Program details",
   "The main conclusion at the end of the Summit was to confirm that IAJES is a young family happy to meet face-to-face and enthusiastic about the future we have to deal with. In addition, we discovered a huge amount of work still to be done as most of the youngest group.",
   "Let us summarize a bit what happened those days, from 13 to 15 of July 2022 after the excellent organization given by the Boston College team with whom we have worked regularly over the past months.",
@@ -187,7 +187,7 @@ const PROGRAM_2022 = [
 
 const MILESTONE_2019 = [
   "2nd IAJES Conference Cali July 2019",
-  "July Wednesday 17th - Thursday 18th - Friday 19th, 2019",
+  "July 17-19, 2019",
   "Welcome in Javeriana Colombia",
   "From July 15th to the 19th, the IAJES conference took place over three days in Javeriana Cali with a two-day pre-conference in Javeriana Bogota.",
   "The conference gathered 50 participants representing 30 Jesuit Engineering colleges. This illustrates a good progression since the conference in Bilbao last year where 20 universities were represented.",
@@ -203,7 +203,7 @@ const MILESTONE_2019 = [
   "Energy",
   "Energy is another field where synergy among JES appears very promising. The speakers called for collaboration on Data Analytics for the Energy Sector, High Power converters for renewable energies, electric energy transportation, affordable solar energy systems for remote locations...",
   "Infrastructure",
-  "It constitutes an important field of cooperation. From Cali to Madrid, how to invent sustainable and safe mobility and transport policies? Universities are located in countries exposed to seismic risks. How earthquakes be simulated and the dramatic consequences prevented?",
+  "It constitutes an important field of cooperation. From Cali to Madrid, how to invent sustainable and safe mobility and transport policies? Universities are located in countries exposed to seismic risks. How can earthquakes be simulated and the dramatic consequences prevented?",
   "Water",
   "Access to safe water is a crucial issue for a large part of humanity. Climate change brings serious disturbances in the water cycle. Researchers of IAJES propose to share their field of expertise to design for example water quality controlling sensors, fight the contamination of water resources by pathogens and provide clean water in remote areas.",
   "Humanitarian Engineering and frugal innovation",
@@ -213,7 +213,7 @@ const MILESTONE_2019 = [
   "Engineering & Social justice",
   "A large number of JES are motivated to make progress on the following questions: How to improve social sensitivity and skills and promote committed engineers for greater social justice.",
   "The HOPE project guided by DEUSTO is an inspiring example. It aims to create a multi-stakeholder platform that focuses on the social sustainability of the electronic supply chain (from the extraction of raw materials to the smartphone).",
-  "A IAJES task force wants to constitute a repository of learning situations crossing multiple domains through which students experiment interculturality, and equip themselves as engineers for social change.",
+  "An IAJES task force wants to constitute a repository of learning situations crossing multiple domains through which students experiment interculturality, and equip themselves as engineers for social change.",
   "Science Engineering and Spirituality",
   "The first proposal around this topic is based on excellent courses \"Science and Religion\" already done in several universities in Asia, Latin America, and the US. The key principle is to use the relationship between science and religion as a platform for interreligious dialogue. A task force has been formed to pursue the work, enrich the training offer intended to students and faculty.",
   "Laudato Si and the ecological transition",
@@ -262,7 +262,7 @@ const CALI_MILESTONE_SECTIONS = [
       {
         title: "Infrastructure",
         details: [
-          "It constitutes an important field of cooperation. From Cali to Madrid, how to invent sustainable and safe mobility and transport policies? Universities are located in countries exposed to seismic risks. How earthquakes be simulated and the dramatic consequences prevented?",
+          "It constitutes an important field of cooperation. From Cali to Madrid, how to invent sustainable and safe mobility and transport policies? Universities are located in countries exposed to seismic risks. How can earthquakes be simulated and the dramatic consequences prevented?",
         ],
       },
       {
@@ -284,7 +284,7 @@ const CALI_MILESTONE_SECTIONS = [
         details: [
           "A large number of JES are motivated to make progress on the following questions: How to improve social sensitivity and skills and promote committed engineers for greater social justice.",
           "The HOPE project guided by DEUSTO is an inspiring example. It aims to create a multi-stakeholder platform that focuses on the social sustainability of the electronic supply chain (from the extraction of raw materials to the smartphone).",
-          "A IAJES task force wants to constitute a repository of learning situations crossing multiple domains through which students experiment interculturality, and equip themselves as engineers for social change.",
+          "An IAJES task force wants to constitute a repository of learning situations crossing multiple domains through which students experiment interculturality, and equip themselves as engineers for social change.",
         ],
       },
       {
@@ -752,6 +752,7 @@ const ARCHIVE_MEETINGS = [
     label: "3rd Conference - Boston 2022",
     title: "3rd Conference - Boston 2022",
     date: "July 13-15, 2022",
+    location: "Boston College, Boston",
     heroImage: HERO_2022,
     milestone: MILESTONE_2022,
     mainProgram: {
@@ -766,7 +767,7 @@ const ARCHIVE_MEETINGS = [
     id: "cali-2019",
     label: "2nd Conference - Cali 2019",
     title: "2nd Conference - Cali 2019",
-    date: "July Wednesday 17th - Thursday 18th - Friday 19th, 2019",
+    date: "July 17-19, 2019",
     location: "Welcome in Javeriana Colombia",
     heroImage: HERO_2019,
     milestone: MILESTONE_2019_BODY,
@@ -788,6 +789,7 @@ const ARCHIVE_MEETINGS = [
     label: "1st Conference - Bilbao 2018",
     title: "1st Conference - Bilbao 2018",
     date: "July 6th-7th 2018",
+    location: "University of Deusto, Bilbao",
     intro: BILBAO_INTRO,
     heroImage: HERO_2018,
     milestone: MILESTONE_2018_INTRO,
@@ -806,9 +808,9 @@ const ARCHIVE_MEETINGS = [
 
 const ALL_MEETINGS = [...UPCOMING_MEETINGS, ...ARCHIVE_MEETINGS];
 
-function SectionDropdown({ title, children }) {
+function SectionDropdown({ title, children, onToggle }) {
   return (
-    <details className="meeting-dropdown rounded-md border-2 border-gray-light bg-white">
+    <details className="meeting-dropdown rounded-md border-2 border-gray-light bg-white" onToggle={onToggle}>
       <summary className="list-none cursor-pointer">
         <div className="flex items-center justify-between gap-4 rounded-md bg-teal-50 px-4 py-3">
           <span className="font-semibold text-secondary-dark">{title}</span>
@@ -954,6 +956,9 @@ function MeetingSection({ meeting }) {
   const mediaVideos = meeting.media?.videos ?? [];
   const [imageIndex, setImageIndex] = useState(0);
   const [imageMotionDirection, setImageMotionDirection] = useState(1);
+  const [isMediaAutoAdvancePaused, setIsMediaAutoAdvancePaused] = useState(false);
+  const [isMediaSectionOpen, setIsMediaSectionOpen] = useState(false);
+  const galleryAutoAdvanceRef = useRef(null);
   const isBhubaneswar = meeting.id === "bhubaneshwar-2024";
   const isBilbao = meeting.id === "bilbao-2018";
   const isCali = meeting.id === "cali-2019";
@@ -977,29 +982,62 @@ function MeetingSection({ meeting }) {
   useEffect(() => {
     setImageIndex(0);
     setImageMotionDirection(1);
+    setIsMediaAutoAdvancePaused(false);
+    setIsMediaSectionOpen(false);
   }, [meeting.id]);
 
   useEffect(() => {
-    if (mediaImages.length <= 1) {
+    if (galleryAutoAdvanceRef.current) {
+      clearInterval(galleryAutoAdvanceRef.current);
+      galleryAutoAdvanceRef.current = null;
+    }
+
+    if (mediaImages.length <= 1 || isMediaAutoAdvancePaused || !isMediaSectionOpen) {
       return undefined;
     }
-    const intervalId = setInterval(() => {
+
+    galleryAutoAdvanceRef.current = setInterval(() => {
       setImageMotionDirection(1);
       setImageIndex((prev) => (prev + 1) % mediaImages.length);
     }, 5000);
-    return () => clearInterval(intervalId);
-  }, [mediaImages.length, meeting.id]);
+
+    return () => {
+      if (galleryAutoAdvanceRef.current) {
+        clearInterval(galleryAutoAdvanceRef.current);
+        galleryAutoAdvanceRef.current = null;
+      }
+    };
+  }, [mediaImages.length, meeting.id, isMediaAutoAdvancePaused, isMediaSectionOpen]);
 
   const handleImageStep = (direction) => {
     if (mediaImages.length <= 1) {
       return;
     }
+
+    if (galleryAutoAdvanceRef.current) {
+      clearInterval(galleryAutoAdvanceRef.current);
+      galleryAutoAdvanceRef.current = null;
+    }
+
+    setIsMediaAutoAdvancePaused(true);
     setImageMotionDirection(direction);
     setImageIndex((prev) => (prev + direction + mediaImages.length) % mediaImages.length);
   };
 
+  const handleMediaSectionToggle = (event) => {
+    const mediaSectionIsOpen = event.currentTarget.open;
+    setIsMediaSectionOpen(mediaSectionIsOpen);
+
+    if (!mediaSectionIsOpen) {
+      setIsMediaAutoAdvancePaused(false);
+    }
+  };
+
+  const videoFrameClassName = (source) =>
+    source.includes("youtube.com") || source.includes("youtu.be") ? "aspect-video" : "aspect-[4/3]";
+
   return (
-    <section id={meeting.id} className="mt-6">
+    <section id={meeting.id}>
       <div className="rounded-md border-2 border-gray-light bg-white p-4 shadow-sm">
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
           <div>
@@ -1045,73 +1083,51 @@ function MeetingSection({ meeting }) {
         {!isBilbao && milestoneLines.length ? (
           <SectionDropdown title="A milestone event">
             {isCali ? (
-              <div className="flex flex-col gap-3">
+              <div className="rounded-md border-2 border-gray-light bg-white">
                 {CALI_MILESTONE_SECTIONS.map((section, index) => {
-                  const hasDetails = section.details.length > 0 || (section.subsections?.length ?? 0) > 0;
-
-                  if (!hasDetails) {
-                    return (
-                      <div
-                        key={`${meeting.id}-milestone-section-${index}`}
-                        className="rounded-md border-2 border-gray-light bg-teal-50 px-4 py-3 font-semibold text-secondary-dark"
-                      >
-                        {section.title}
-                      </div>
-                    );
-                  }
-
                   return (
-                    <details
+                    <div
                       key={`${meeting.id}-milestone-section-${index}`}
-                      className="meeting-dropdown rounded-md border-2 border-gray-light bg-white"
+                      className={index === 0 ? "p-4" : "border-t-2 border-gray-light p-4"}
                     >
-                      <summary className="list-none cursor-pointer">
-                        <div className="flex items-center justify-between gap-4 rounded-md bg-teal-50 px-4 py-3">
-                          <span className="font-semibold text-secondary-dark">{section.title}</span>
-                          <i className="bi bi-chevron-down text-secondary-dark" aria-hidden="true" />
-                        </div>
-                      </summary>
-                      <div className="meeting-dropdown-content">
-                        <div className="border-t-2 border-gray-light p-4">
-                        <div className="flex flex-col gap-3">
-                          {section.details.map((detail, detailIndex) => (
-                            <p
-                              key={`${meeting.id}-milestone-${index}-${detailIndex}`}
-                              className="text-gray-dark/80"
-                            >
-                              {detail}
-                            </p>
-                          ))}
-                          {section.subsections?.length ? (
-                            <div className="mt-3 flex flex-col gap-3">
-                              {section.subsections.map((subsection, subIndex) => (
-                                <div
-                                  key={`${meeting.id}-milestone-sub-${index}-${subIndex}`}
-                                  className="border-l-2 border-gray-light pl-3"
-                                >
-                                  <div className="text-sm font-semibold text-secondary-dark">
-                                    {subsection.title}
-                                  </div>
-                                  {subsection.details?.length ? (
-                                    <div className="mt-2 flex flex-col gap-2">
-                                      {subsection.details.map((subDetail, subDetailIndex) => (
-                                        <p
-                                          key={`${meeting.id}-milestone-sub-${index}-${subIndex}-${subDetailIndex}`}
-                                          className="text-gray-dark/80"
-                                        >
-                                          {subDetail}
-                                        </p>
-                                      ))}
-                                    </div>
-                                  ) : null}
+                      <h4 className="mb-2 text-secondary-dark">{section.title}</h4>
+                      <div className="flex flex-col gap-3">
+                        {section.details.map((detail, detailIndex) => (
+                          <p
+                            key={`${meeting.id}-milestone-${index}-${detailIndex}`}
+                            className="text-gray-dark/80"
+                          >
+                            {detail}
+                          </p>
+                        ))}
+                        {section.subsections?.length ? (
+                          <div className="mt-2 flex flex-col gap-4">
+                            {section.subsections.map((subsection, subIndex) => (
+                              <div
+                                key={`${meeting.id}-milestone-sub-${index}-${subIndex}`}
+                                className={subIndex === 0 ? "" : "border-t-2 border-gray-light pt-4"}
+                              >
+                                <div className="text-sm font-semibold text-secondary-dark">
+                                  {subsection.title}
                                 </div>
-                              ))}
-                            </div>
-                          ) : null}
-                        </div>
+                                {subsection.details?.length ? (
+                                  <div className="mt-2 flex flex-col gap-2">
+                                    {subsection.details.map((subDetail, subDetailIndex) => (
+                                      <p
+                                        key={`${meeting.id}-milestone-sub-${index}-${subIndex}-${subDetailIndex}`}
+                                        className="text-gray-dark/80"
+                                      >
+                                        {subDetail}
+                                      </p>
+                                    ))}
+                                  </div>
+                                ) : null}
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
-                      </div>
-                    </details>
+                    </div>
                   );
                 })}
               </div>
@@ -1181,9 +1197,12 @@ function MeetingSection({ meeting }) {
           {hasMainProgramSchedule ? (
             <div className="mt-4 rounded-md bg-teal-50 px-4 py-3">
               <div className="text-sm font-semibold text-secondary-dark">Program schedule</div>
-              <div className="mt-3 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-                {mainProgramSchedule.map((day) => (
-                  <div key={`${meeting.id}-schedule-${day.day}`} className="border-l-2 border-secondary-light pl-3">
+              <div className="mt-3 flex flex-col gap-4">
+                {mainProgramSchedule.map((day, dayIndex) => (
+                  <div
+                    key={`${meeting.id}-schedule-${day.day}`}
+                    className={dayIndex === 0 ? "pl-3" : "border-t-2 border-secondary-light pt-4 pl-3"}
+                  >
                     <p className="mb-0 font-semibold text-secondary-dark">{day.day}</p>
                     {day.theme ? (
                       <p className="mb-0 text-disabled-light">
@@ -1319,7 +1338,7 @@ function MeetingSection({ meeting }) {
           </SectionDropdown>
         ) : null}
 
-        <SectionDropdown title="Videos and Pictures">
+        <SectionDropdown title="Videos and Pictures" onToggle={handleMediaSectionToggle}>
           <div className="flex flex-col gap-4">
             {mediaVideos.length ? (
               <div>
@@ -1333,11 +1352,11 @@ function MeetingSection({ meeting }) {
                       key={`${meeting.id}-video-${index}`}
                       className="overflow-hidden rounded-md border-2 border-gray-light bg-white"
                     >
-                      <div className="relative w-full bg-black pt-[56.25%]">
+                      <div className={`w-full bg-black ${videoFrameClassName(src)}`}>
                         <iframe
                           title={`${meeting.title} video ${index + 1}`}
                           src={src}
-                          className="absolute inset-0 h-full w-full"
+                          className="h-full w-full"
                           allowFullScreen
                         />
                       </div>
@@ -1354,8 +1373,28 @@ function MeetingSection({ meeting }) {
                   <div className="flex-1 border-b-2 border-gray-light" />
                 </div>
                 <div className="mt-3 overflow-hidden rounded-md border-2 border-gray-light bg-white p-3">
+                  {mediaImages.length > 1 ? (
+                    <div className="mb-3 flex items-center justify-between">
+                      <button
+                        type="button"
+                        className="button button-light px-4 py-2 opacity-70 hover:opacity-100"
+                        onClick={() => handleImageStep(-1)}
+                        aria-label="Previous photo"
+                      >
+                        <i className="bi bi-arrow-left-short" aria-hidden="true" />
+                      </button>
+                      <button
+                        type="button"
+                        className="button button-light px-4 py-2 opacity-70 hover:opacity-100"
+                        onClick={() => handleImageStep(1)}
+                        aria-label="Next photo"
+                      >
+                        <i className="bi bi-arrow-right-short" aria-hidden="true" />
+                      </button>
+                    </div>
+                  ) : null}
                   <div className="relative flex items-center justify-center overflow-hidden rounded-md bg-white p-3">
-                    <div className={`w-full ${mediaImages.length > 1 ? "px-12" : ""}`}>
+                    <div className="w-full">
                       <img
                         key={`${meeting.id}-photo-${imageIndex}`}
                         src={mediaImages[imageIndex]}
@@ -1364,26 +1403,6 @@ function MeetingSection({ meeting }) {
                         loading="lazy"
                       />
                     </div>
-                    {mediaImages.length > 1 ? (
-                      <>
-                        <button
-                          type="button"
-                          className="button button-light absolute left-3 top-1/2 -translate-y-1/2"
-                          onClick={() => handleImageStep(-1)}
-                          aria-label="Previous photo"
-                        >
-                          <i className="bi bi-chevron-left" aria-hidden="true" />
-                        </button>
-                        <button
-                          type="button"
-                          className="button button-light absolute right-3 top-1/2 -translate-y-1/2"
-                          onClick={() => handleImageStep(1)}
-                          aria-label="Next photo"
-                        >
-                          <i className="bi bi-chevron-right" aria-hidden="true" />
-                        </button>
-                      </>
-                    ) : null}
                   </div>
                   <div className="mt-3 text-xs text-gray-dark/70">
                     Photo {imageIndex + 1} of {mediaImages.length}
