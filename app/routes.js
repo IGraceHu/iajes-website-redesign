@@ -16,6 +16,7 @@ export default [
     route("task-forces", "routes/taskforces.jsx"),
     route("task-forces/:tfName", "routes/taskforce.jsx"),
     route("webinars", "routes/webinars.jsx"),
+    route("webinar/:webinarId", "routes/webinar.jsx"),
     route("video-resources", "routes/video-resources.jsx"),
     route("video-resource/:vidId", "routes/video-resource.jsx"),
     route("international-meetings", "routes/international-meetings.jsx"),

@@ -87,6 +87,10 @@ export function Menu() {
               Video Resources
             </NavLink>
 
+            <NavLink to="/webinars" end className="p-4">
+              Webinars
+            </NavLink>
+
             <div onBlur={() => setMeetingsDdActive(false)} tabIndex="0">
               <div className="link p-4" onClick={() => setMeetingsDdActive(!meetingsDdActive)}>
                 Meetings
@@ -136,6 +140,9 @@ export function Menu() {
           </NavLink>
           <NavLink to="/regional-meetings" end className="pt-10 px-7">
             Regional Meetings
+          </NavLink>
+          <NavLink to="/webinars" end className="pt-10 px-7">
+            Webinars
           </NavLink>
           <NavLink to="/international-meetings" end className="pt-10 px-7">
             International Meetings
