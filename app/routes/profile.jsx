@@ -534,7 +534,9 @@ export default function ProfileRoute({ loaderData }) {
           </div>
           {currentUserId == profile.id ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
-              <IconSquare title="Edit" icon="bi-pencil" onClick={handleOpenEdit} />
+              <IconSquare title="Edit" icon="bi-pencil" onClick={handleOpenEdit}>
+                <p className="text-base mr-3">Edit Profile</p>
+              </IconSquare>
             </div>
           ) : null}
         </div>
@@ -630,8 +632,8 @@ function InfoRow({ label, value }) {
   }
 }
 
-function IconSquare({ className, title, icon, onClick, small=false }) {
-  const size = small ? "h-10 w-10 " : "h-12 w-12 ";
+function IconSquare({ className, title, icon, onClick, small=false, children }) {
+  const size = small ? "h-10 min-w-10 " : "h-12 min-w-12 ";
   return (
     <button
       type="button"
@@ -639,6 +641,7 @@ function IconSquare({ className, title, icon, onClick, small=false }) {
       className={"button button-light flex items-center justify-center text-xl shadow-sm transition hover:shadow-md " + size + className}
       onClick={onClick}
     >
+      {children}
       <i className={`bi ${icon}`} aria-hidden="true" />
     </button>
   );
