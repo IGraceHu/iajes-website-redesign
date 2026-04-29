@@ -164,7 +164,7 @@ function AboutUs() {
   return (
     <div id="about" className="flex pb-30">
       <div className="mr-10 mb-10">
-        <H1Left stretch>About Us</H1Left>
+        <H1Left stretch>About IAJES</H1Left>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id bibendum tortor, vel volutpat risus. Praesent eu felis dapibus, sodales purus vel, pharetra dolor. Quisque venenatis ut nulla quis aliquet. Praesent at urna pharetra, volutpat justo quis, malesuada felis. Quisque in sapien felis. Aliquam egestas nulla nec eros elementum, vel auctor turpis scelerisque. Proin lacinia et enim eu tempor. Pellentesque et aliquam felis. Nam tempus varius enim, ac facilisis magna iaculis et.</p>
       </div>
       <div className="text-white flex justify-center">
@@ -420,7 +420,7 @@ export default function Landing({ loaderData }) {
         </div>
         <div id="effects" className="w-full shrink-0 -ml-[100%] z-0">
           {/* Discs */}
-          <div id="landing-discs" className="absolute w-full z-0 md:opacity-70 opacity-50 duration-200">
+          <div id="landing-discs" className="absolute w-full z-0 lg:opacity-60 opacity-30 duration-200">
             <img id="landing-disc-1" src="assets/landing-disc-2a.svg" />
             <img id="landing-disc-2" src="assets/landing-disc-2b.svg" />
             <img id="landing-disc-3" src="assets/landing-disc-3.svg" />
