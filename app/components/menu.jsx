@@ -105,7 +105,7 @@ export function Menu({ currentEndUrl }) {
 
   return (
     <>
-    <Popup show={signOutPopup} setShow={setSignOutPopup} closePopup={() => {setSignOutPopup(false); navigate("/"); navigate(0);}} stayOnBlur={true}>
+    <Popup show={signOutPopup} setShow={setSignOutPopup} closePopup={() => {setSignOutPopup(false); navigate("/");}} stayOnBlur={true}>
       <p className="text-center mt-6">You have been signed out.</p>
     </Popup>
     <div id="menu" className="sticky top-0 bg-white z-100">

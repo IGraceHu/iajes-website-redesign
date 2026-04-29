@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useActionState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
@@ -368,6 +368,8 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
 }
 
 export default function ProfileRoute({ loaderData }) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const basePerson = loaderData.person;
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
@@ -406,6 +408,10 @@ export default function ProfileRoute({ loaderData }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user.id ?? null);
     });
+
+    if (searchParams.get('new')) {
+      setShowPopup(true);
+    }
 
     return () => subscription.unsubscribe();
   }, []);
