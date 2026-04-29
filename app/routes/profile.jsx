@@ -430,11 +430,10 @@ export default function ProfileRoute({ loaderData }) {
       if (session?.user.id) {
         getIsAdmin(session?.user.id);
       }
-    });
-
-    if (searchParams.get('new')) {
+      if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
       setShowPopup(true);
     }
+    });
 
     return () => subscription.unsubscribe();
   }, []);
