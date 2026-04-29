@@ -633,7 +633,7 @@ function InfoRow({ label, value }) {
 }
 
 function IconSquare({ className, title, icon, onClick, small=false, children }) {
-  const size = small ? "h-10 min-w-10 " : "h-12 min-w-12 ";
+  const size = small ? "h-10 w-10 " : "h-12 min-w-12 ";
   return (
     <button
       type="button"
