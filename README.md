@@ -24,6 +24,16 @@ npm run dev
 
 Your application will be available at `http://localhost:5173`.
 
+### Supabase Setup (Webinars)
+
+The new `/webinars` and `/webinar/:webinarId` routes can run from Supabase.
+
+1. Create a local `.env` file from `.env.example`.
+2. Add `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY`.
+3. Run the SQL migration in `supabase/migrations/20260429_create_webinars.sql` in your Supabase SQL editor.
+
+If those env variables are missing, the app automatically falls back to static webinar data.
+
 ## Building for Production
 
 Create a production build:

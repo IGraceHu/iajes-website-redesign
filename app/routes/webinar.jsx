@@ -1,6 +1,6 @@
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { getWebinarById } from "../data/webinars";
+import { getWebinarDetailsById } from "../data/webinars.server";
 import "../styles/video-resources.css";
 
 export function meta({ data }) {
@@ -10,20 +10,23 @@ export function meta({ data }) {
 }
 
 export async function loader({ params }) {
-  const found = getWebinarById(params.webinarId);
+  const result = await getWebinarDetailsById(params.webinarId);
+  const found = result.webinar || {};
 
   return {
-    id: found?.id ?? "",
-    title: found?.title ?? "",
-    date: found?.date ?? "",
-    subtitle: found?.subtitle ?? "",
-    primaryVideo: found?.primaryVideo ?? "",
-    overview: Array.isArray(found?.overview) ? found.overview : [],
-    highlights: Array.isArray(found?.highlights) ? found.highlights : [],
-    speakers: Array.isArray(found?.speakers) ? found.speakers : [],
-    extraRecordings: Array.isArray(found?.extraRecordings) ? found.extraRecordings : [],
-    images: Array.isArray(found?.images) ? found.images : [],
-    links: Array.isArray(found?.links) ? found.links : [],
+    id: found.id ?? "",
+    title: found.title ?? "",
+    date: found.date ?? "",
+    subtitle: found.subtitle ?? "",
+    primaryVideo: found.primaryVideo ?? "",
+    overview: Array.isArray(found.overview) ? found.overview : [],
+    highlights: Array.isArray(found.highlights) ? found.highlights : [],
+    speakers: Array.isArray(found.speakers) ? found.speakers : [],
+    extraRecordings: Array.isArray(found.extraRecordings) ? found.extraRecordings : [],
+    images: Array.isArray(found.images) ? found.images : [],
+    links: Array.isArray(found.links) ? found.links : [],
+    source: result.source,
+    loadError: result.error,
   };
 }
 
@@ -67,6 +70,18 @@ export default function Webinar({ loaderData }) {
       </div>
 
       <div className="px-10 py-20 duration-200 lg:px-40">
+        {loaderData.source !== "supabase" ? (
+          <div className="mb-4 rounded-md border-2 border-primary-light bg-primary-extralight p-3 text-secondary-dark">
+            Showing fallback static webinar data.
+          </div>
+        ) : null}
+
+        {loaderData.loadError ? (
+          <div className="mb-4 rounded-md border-2 border-error/35 bg-error/10 p-3 text-error">
+            Supabase error: {loaderData.loadError}
+          </div>
+        ) : null}
+
         {loaderData.links.length ? (
           <div className="mb-6 flex flex-wrap gap-3">
             {loaderData.links.map((link, index) => (
@@ -117,12 +132,7 @@ export default function Webinar({ loaderData }) {
                 <div key={`${speaker.name}-${speakerIndex}`} className="rounded-md border-2 border-gray-light bg-white p-4">
                   <div className="grid gap-4 md:grid-cols-[12rem_1fr] md:items-start">
                     <div className="overflow-hidden rounded-md border-2 border-gray-light bg-white">
-                      <img
-                        src={speaker.image}
-                        alt={speaker.name}
-                        className="h-48 w-full object-cover"
-                        loading="lazy"
-                      />
+                      <img src={speaker.image} alt={speaker.name} className="h-48 w-full object-cover" loading="lazy" />
                     </div>
                     <div>
                       <h5>{speaker.name}</h5>
@@ -155,11 +165,7 @@ export default function Webinar({ loaderData }) {
             <h4>Additional Recordings</h4>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
               {loaderData.extraRecordings.map((recording, recordingIndex) => (
-                <RecordingFrame
-                  key={`${recording.title}-${recordingIndex}`}
-                  title={recording.title}
-                  src={recording.embed}
-                />
+                <RecordingFrame key={`${recording.title}-${recordingIndex}`} title={recording.title} src={recording.embed} />
               ))}
             </div>
           </div>
