@@ -16,7 +16,9 @@ async function getPeople() {
   const { data, error } = await supabase
     .from('users')
     .select('id, fname, lname, email, image_url, job_position, languages, country, institution, major, research_interests, task_force_role, task_force')
-    
+  if (data) {
+    data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
+  }
   return data || error;
 }
 
