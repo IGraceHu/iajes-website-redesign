@@ -131,6 +131,9 @@ export default function Webinars() {
         <p>
           Explore recordings, speaker sessions, and supporting materials from IAJES webinars.
         </p>
+        <a href="/webinars/archive" className="button button-light mt-3 inline-block">
+          View webinars archive
+        </a>
 
         <div className="my-5 grid grid-cols-1 gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
           {pagedWebinars.map((webinar) => (
