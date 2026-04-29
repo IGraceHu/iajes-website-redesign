@@ -369,6 +369,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
 
 export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const basePerson = loaderData.person;
   const [profile, setProfile] = useState(basePerson);
@@ -399,14 +400,36 @@ export default function ProfileRoute({ loaderData }) {
 
 
   useEffect(() => {
+    const getIsAdmin = async (userId) => {
+        try {
+            const { data, error } = await supabase
+            .from('users')
+            .select('role')
+            .eq("id", userId);
+            if (data[0]) {
+                setIsAdmin(data[0].role == "admin");
+            }
+            else { console.log("error"); }
+            
+        } catch (error) {
+            console.log("error");
+        }
+    }
+
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUserId(session?.user.id ?? null);
+      if (session?.user.id) {
+        getIsAdmin(session?.user.id);
+      }
     });
 
     // Check current session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user.id ?? null);
+      if (session?.user.id) {
+        getIsAdmin(session?.user.id);
+      }
     });
 
     if (searchParams.get('new')) {
@@ -498,7 +521,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={currentUserId} taskForceList={loaderData.taskForceList} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} />
       <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} stayOnBlur
              buttons={[{ text: "Save Changes", onclick: handlePhotoSave }]} >
         <div className="flex flex-col gap-4">
@@ -538,7 +561,7 @@ export default function ProfileRoute({ loaderData }) {
           <div className={"relative w-full opacity-50"}>
               <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
           </div>
-          {currentUserId == profile.id ? (
+          {(currentUserId == profile.id) || isAdmin ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
               <IconSquare title="Edit" icon="bi-pencil" onClick={handleOpenEdit}>
                 <p className="text-base mr-3">Edit Profile</p>
