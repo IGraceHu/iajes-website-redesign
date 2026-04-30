@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Form, useActionData, useLoaderData, useNavigation } from "react-router";
+import { Form, useNavigation } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup } from "../components/popup";
@@ -348,9 +348,7 @@ function WebinarCard({ webinarInfo, isAdmin, onEdit }) {
   );
 }
 
-export default function Webinars() {
-  const loaderData = useLoaderData();
-  const actionData = useActionData();
+export default function Webinars({ loaderData, actionData }) {
   const navigation = useNavigation();
 
   const isAdmin = true;
