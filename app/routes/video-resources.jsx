@@ -279,7 +279,7 @@ export default function VideoResources({ loaderData }) {
                             <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
                             <input id="vid-resource-link" name="vid-resource-link" type="text"
                                 className={"input input-text w-full " + (formRequired?.vidResourceLink && "input-required")}
-                                placeholder="Video link"
+                                placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
                                 onChange={(e) => checkEmpty(e.target.value, "vidResourceLink")} />
                             <div className="input-error">This field is required.</div>
                             <br /><br />
