@@ -164,7 +164,7 @@ function AboutUs() {
   return (
     <div id="about" className="flex pb-30">
       <div className="mr-10 mb-10">
-        <H1Left stretch>About IAJES</H1Left>
+        <H1Left stretch>What is IAJES?</H1Left>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id bibendum tortor, vel volutpat risus. Praesent eu felis dapibus, sodales purus vel, pharetra dolor. Quisque venenatis ut nulla quis aliquet. Praesent at urna pharetra, volutpat justo quis, malesuada felis. Quisque in sapien felis. Aliquam egestas nulla nec eros elementum, vel auctor turpis scelerisque. Proin lacinia et enim eu tempor. Pellentesque et aliquam felis. Nam tempus varius enim, ac facilisis magna iaculis et.</p>
       </div>
       <div className="text-white flex justify-center">
