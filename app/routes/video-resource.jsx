@@ -29,31 +29,23 @@ async function getVideoResource(resourceId) {
     return data ? data[0] : null;
 }
 
-async function deleteVideoResource(resourceId, thumbnailUrl, speakerImgUrl) {
-    const filesToRemove = [];
+function extractVideoResourcePath(url) {
+    if (!url) return null;
+    const parts = url.split('/video-resources/');
+    return parts.length > 1 ? parts[parts.length - 1] : null;
+}
 
-    // Extract the exact filename from the Supabase public URL
-    const extractFilename = (url) => {
-        if (!url) return null;
-        const parts = url.split('/video-resources/');
-        return parts.length > 1 ? parts[parts.length - 1] : null;
-    };
-
-    const thumbFilename = extractFilename(thumbnailUrl);
-    if (thumbFilename) filesToRemove.push(thumbFilename);
-
-    const speakerFilename = extractFilename(speakerImgUrl);
-    if (speakerFilename) filesToRemove.push(speakerFilename);
-
-    if (filesToRemove.length > 0) {
-        const { error: storageError } = await supabase.storage
-            .from('video-resources')
-            .remove(filesToRemove);
-
-        if (storageError) {
-            console.error("Error deleting files from storage:", storageError);
-        }
+async function removeVideoResourceFiles(urls) {
+    const paths = urls.map(extractVideoResourcePath).filter(Boolean);
+    if (paths.length === 0) return;
+    const { error } = await supabase.storage.from('video-resources').remove(paths);
+    if (error) {
+        console.error("Error deleting files from storage:", error);
     }
+}
+
+async function deleteVideoResource(resourceId, thumbnailUrl, speakerImgUrl) {
+    await removeVideoResourceFiles([thumbnailUrl, speakerImgUrl]);
 
     const response = await supabase
         .from('video resources')
@@ -66,6 +58,7 @@ async function deleteVideoResource(resourceId, thumbnailUrl, speakerImgUrl) {
 async function updateVideoResource(resourceId, formData, existingData) {
     let thumbnailUrl = existingData.video_thumbnail;
     let speakerImgUrl = existingData.speaker_image;
+    const filesToRemoveOnSuccess = [];
 
     const thumbnailFile = formData.get("vid-resource-thumbnail");
     if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
@@ -88,6 +81,9 @@ async function updateVideoResource(resourceId, formData, existingData) {
             return urlError;
         }
 
+        if (existingData.video_thumbnail) {
+            filesToRemoveOnSuccess.push(existingData.video_thumbnail);
+        }
         thumbnailUrl = data.publicUrl;
     }
 
@@ -112,6 +108,9 @@ async function updateVideoResource(resourceId, formData, existingData) {
             return urlError;
         }
 
+        if (existingData.speaker_image) {
+            filesToRemoveOnSuccess.push(existingData.speaker_image);
+        }
         speakerImgUrl = data.publicUrl;
     }
 
@@ -141,6 +140,8 @@ async function updateVideoResource(resourceId, formData, existingData) {
         console.error(rlsError.message);
         return rlsError;
     }
+
+    await removeVideoResourceFiles(filesToRemoveOnSuccess);
 
     return null;
 }

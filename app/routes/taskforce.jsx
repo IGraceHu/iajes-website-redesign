@@ -1,8 +1,40 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Banner } from "../components/graphics";
+
+async function uploadTaskForceImage(file, folder) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const path = `${folder}/${Date.now()}-${safeName}`;
+  const { error: uploadError } = await supabase.storage
+    .from('task-forces')
+    .upload(path, file);
+  if (uploadError) {
+    console.error("Error uploading task force image:", uploadError);
+    return { error: uploadError };
+  }
+  const { data } = supabase.storage.from('task-forces').getPublicUrl(path);
+  return { url: data.publicUrl };
+}
+
+function getStoragePathFromPublicUrl(url, bucket) {
+  if (!url) return null;
+  const marker = `/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
+
+async function removeTaskForceImage(url) {
+  const path = getStoragePathFromPublicUrl(url, 'task-forces');
+  if (!path) return;
+  const { error } = await supabase.storage.from('task-forces').remove([path]);
+  if (error) {
+    console.error("Error removing previous task force image:", error);
+  }
+}
 
 
 export function meta() {
@@ -176,9 +208,13 @@ function MemberCard({ memberData }) {
 function ProjectCard({ projectData }) {
   return (
     <div className="md:text-left w-full mb-5 grid grid-rows-[2.5rem_auto] md:grid-cols-[400px_auto] grid-cols-1 gap-5">
-      <a href={"/projects/" + projectData.url} className="md:order-2"><h3>{projectData.name}</h3></a>
+      <a href={"/projects/" + projectData.projectURL} className="md:order-2"><h3>{projectData.name}</h3></a>
       <div className="m-auto md:row-span-2 md:order-1">
-        <iframe src="https://drive.google.com/file/d/1Lb-tAYB5vcDcjZ4L-3u26jZ23k8dZLSy/preview" width="400" height="280"></iframe>
+        {projectData.imageURL ? (
+          <img src={projectData.imageURL} alt={projectData.name} width="400" />
+        ) : (
+          <iframe src="https://drive.google.com/file/d/1Lb-tAYB5vcDcjZ4L-3u26jZ23k8dZLSy/preview" width="400" height="280"></iframe>
+        )}
       </div>
       <p className="text-left md:order-3">
         {projectData.desc}
@@ -227,17 +263,61 @@ function EditTextarea2Popup({showPopup, setShowPopup, taskForceId, userId}) {
   )
 }
 
-function EditTeam({showPopup, setShowPopup, taskForceId, userId, people}) {
+function EditTeam({showPopup, setShowPopup, taskForceId, userId, people, setPeople}) {
   const [showMemberPopup, setShowMemberPopup] = useState(false);
-  const [editMember, setEditMember] = useState({});
+  const [editMember, setEditMember] = useState(null);
+  const [memberHasError, setMemberHasError] = useState(false);
+  const [memberImagePreview, setMemberImagePreview] = useState("");
 
-  function handleShowMemberPopup(memberId) {
+  function handleShowMemberPopup(member) {
+    setMemberHasError(false);
+    setMemberImagePreview(member?.imageURL || "");
+    setEditMember(member ?? null);
     setShowMemberPopup(true);
-    setEditMember(memberId);
   }
 
-  function validate() {
-    
+  function handleMemberImageChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setMemberImagePreview(URL.createObjectURL(file));
+  }
+
+  async function validate(formData) {
+    const imageFile = formData.get("edit-member-image");
+    const previousImageUrl = editMember?.imageURL || null;
+    let imageUrl = previousImageUrl;
+
+    if (imageFile && imageFile.name && imageFile.size > 0) {
+      const uploadResult = await uploadTaskForceImage(imageFile, `members/${taskForceId || "unknown"}`);
+      if (uploadResult.error) {
+        setMemberHasError(true);
+        return false;
+      }
+      imageUrl = uploadResult.url;
+      if (previousImageUrl) {
+        await removeTaskForceImage(previousImageUrl);
+      }
+    }
+
+    const updated = {
+      ...(editMember || {}),
+      name: formData.get("edit-person-name") || "",
+      location: formData.get("edit-member-loc") || "",
+      contact: formData.get("edit-member-contact") || "",
+      profileUrl: formData.get("edit-member-url") || "",
+      imageURL: imageUrl,
+    };
+
+    // In-memory only: there's no backing table for task force members yet, so this
+    // resets on a hard refresh.
+    setPeople((prev) => {
+      if (editMember) {
+        return prev.map((p) => (p === editMember ? updated : p));
+      }
+      return [...prev, updated];
+    });
+
+    setShowMemberPopup(false);
   }
 
   return (
@@ -256,43 +336,89 @@ function EditTeam({showPopup, setShowPopup, taskForceId, userId, people}) {
         <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup()}>Add a team member</button>
       </Popup>
 
-      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={validate} nested>
+      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={validate} hasError={memberHasError} encType="multipart/form-data" nested>
         <h4>Edit Team Member</h4>
-        <label for="edit-member-name">Name:</label><br />
-        <input id="edit-person-name" name="edit-person-name" type="text" className="input input-text w-full" />
+        <label htmlFor="edit-person-name">Name:</label><br />
+        <input id="edit-person-name" name="edit-person-name" type="text" className="input input-text w-full" defaultValue={editMember?.name || ""} />
         <br /><br />
-        <label for="edit-member-loc">Location:</label><br />
-        <input id="edit-member-loc" name="edit-member-loc" type="text" className="input input-text w-full" />
+        <label htmlFor="edit-member-loc">Location:</label><br />
+        <input id="edit-member-loc" name="edit-member-loc" type="text" className="input input-text w-full" defaultValue={editMember?.location || ""} />
         <br /><br />
-        <label for="edit-member-contact">Contact:</label><br />
-        <input id="edit-member-contact" name="edit-member-contact" type="text" className="input input-text w-full" />
+        <label htmlFor="edit-member-contact">Contact:</label><br />
+        <input id="edit-member-contact" name="edit-member-contact" type="text" className="input input-text w-full" defaultValue={editMember?.contact || ""} />
         <br /><br />
-        <label for="edit-member-url">IAJES Profile URL:</label><br />
-        <input id="edit-member-url" name="edit-member-url" type="text" className="input input-text w-full" />
+        <label htmlFor="edit-member-url">IAJES Profile URL:</label><br />
+        <input id="edit-member-url" name="edit-member-url" type="text" className="input input-text w-full" defaultValue={editMember?.profileUrl || ""} />
         <br /><br />
-        <label>
-          Image:<br />
-          <input id="edit-member-image" name="edit-member-image" type="file" />
-          <div className="input-error">This field is required.</div>
-        </label>
+        <label htmlFor="edit-member-image">Image:</label><br />
+        {editMember?.imageURL && !memberImagePreview && (
+          <p className="text-sm text-disabled-dark">Leave empty to keep existing image.</p>
+        )}
+        {memberImagePreview && (
+          <img src={memberImagePreview} alt="Member preview" className="my-2 max-h-40 object-cover rounded" />
+        )}
+        <input id="edit-member-image" name="edit-member-image" type="file" accept=".jpg,.jpeg,.png" onChange={handleMemberImageChange} />
       </PopupForm>
     </>
   )
 }
 
-function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) {
+function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects, setProjects}) {
   const [showProjectPopup, setShowProjectPopup] = useState(false);
-  const [editProject, setEditProject] = useState({});
+  const [editProject, setEditProject] = useState(null);
+  const [projectHasError, setProjectHasError] = useState(false);
+  const [projectImagePreview, setProjectImagePreview] = useState("");
 
-  function handleShowProjectPopup(projectId) {
+  function handleShowProjectPopup(project) {
+    setProjectHasError(false);
+    setProjectImagePreview(project?.imageURL || "");
+    setEditProject(project ?? null);
     setShowProjectPopup(true);
-    setEditProject(projectId);
   }
 
-  function validate() {
-    
+  function handleProjectImageChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setProjectImagePreview(URL.createObjectURL(file));
   }
-  
+
+  async function validate(formData) {
+    const imageFile = formData.get("edit-project-img");
+    const previousImageUrl = editProject?.imageURL || null;
+    let imageUrl = previousImageUrl;
+
+    if (imageFile && imageFile.name && imageFile.size > 0) {
+      const uploadResult = await uploadTaskForceImage(imageFile, `projects/${taskForceId || "unknown"}`);
+      if (uploadResult.error) {
+        setProjectHasError(true);
+        return false;
+      }
+      imageUrl = uploadResult.url;
+      if (previousImageUrl) {
+        await removeTaskForceImage(previousImageUrl);
+      }
+    }
+
+    const updated = {
+      ...(editProject || {}),
+      name: formData.get("edit-project-title") || "",
+      projectURL: formData.get("edit-project-url") || "",
+      desc: formData.get("edit-project-desc") || "",
+      imageURL: imageUrl,
+    };
+
+    // In-memory only: no backing table for task force projects yet, so this
+    // resets on a hard refresh.
+    setProjects((prev) => {
+      if (editProject) {
+        return prev.map((p) => (p === editProject ? updated : p));
+      }
+      return [...prev, updated];
+    });
+
+    setShowProjectPopup(false);
+  }
+
   return (
     <>
       <Popup id="tf-projects" show={showPopup} setShow={setShowPopup}>
@@ -309,26 +435,31 @@ function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) 
           <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup()}>Add a project</button>
       </Popup>
 
-      <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} nested>
+      <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} hasError={projectHasError} encType="multipart/form-data" nested>
         <h4>Edit Project</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
-            <label for="edit-project-title">Project title:</label><br />
-            <input id="edit-project-title" name="edit-project-title" type="text" className="input input-text md:w-70 w-full" />
+            <label htmlFor="edit-project-title">Project title:</label><br />
+            <input id="edit-project-title" name="edit-project-title" type="text" className="input input-text md:w-70 w-full" defaultValue={editProject?.name || ""} />
           </div>
-          <label>
-            Image:<br />
-            <input id="edit-project-img" name="edit-project-img" type="file" />
-            <div className="input-error">This field is required.</div>
-          </label>
+          <div>
+            <label htmlFor="edit-project-img">Image:</label><br />
+            {editProject?.imageURL && !projectImagePreview && (
+              <p className="text-sm text-disabled-dark">Leave empty to keep existing image.</p>
+            )}
+            {projectImagePreview && (
+              <img src={projectImagePreview} alt="Project preview" className="my-2 max-h-40 object-cover rounded" />
+            )}
+            <input id="edit-project-img" name="edit-project-img" type="file" accept=".jpg,.jpeg,.png" onChange={handleProjectImageChange} />
+          </div>
         </div>
         <div className="mb-5">
-          <label for="edit-project-url">Project URL:</label><br />
-          <input id="edit-project-url" name="edit-project-url" type="text" className="input input-text w-full" />
+          <label htmlFor="edit-project-url">Project URL:</label><br />
+          <input id="edit-project-url" name="edit-project-url" type="text" className="input input-text w-full" defaultValue={editProject?.projectURL || ""} />
         </div>
         <div className="">
-          <label for="edit-project-desc">Project details:</label><br />
-          <textarea id="edit-project-desc" name="edit-project-desc" className="input input-text w-full h-60" ></textarea>
+          <label htmlFor="edit-project-desc">Project details:</label><br />
+          <textarea id="edit-project-desc" name="edit-project-desc" className="input input-text w-full h-60" defaultValue={editProject?.desc || ""}></textarea>
         </div>
       </PopupForm>
     </>
@@ -338,7 +469,7 @@ function EditProjects({showPopup, setShowPopup, taskForceId, userId, projects}) 
 export default function TaskForce({ loaderData }) {
   const isAdmin = true;
 
-  const taskForceId = "";
+  const taskForceId = loaderData?.url || "";
   const currentUserId = "";
 
   const [showShortDescPopup, setShowShortDescPopup] = useState(false);
@@ -347,17 +478,23 @@ export default function TaskForce({ loaderData }) {
   const [showTeamPopup, setShowTeamPopup] = useState(false);
   const [showProjectsPopup, setShowProjectsPopup] = useState(false);
 
+  const [people, setPeople] = useState(loaderData.people || []);
+  const [projects, setProjects] = useState(loaderData.projects || []);
+
+  useEffect(() => {
+    setPeople(loaderData.people || []);
+    setProjects(loaderData.projects || []);
+  }, [loaderData]);
+
   let memberClassName = "w-full my-5 duration-200 grid gap-5 justify-items-center ";
-  if (loaderData.people) {
-    if (loaderData.people.length == 1) {
-      memberClassName += "grid-cols-1";
-    } else if (loaderData.people.length == 2) {
-      memberClassName += "grid-cols-2";
-    } else if (loaderData.people.length == 3) {
-      memberClassName += "xl:grid-cols-3 grid-cols-2";
-    } else {
-      memberClassName += "xl:grid-cols-4 lg:grid-cols-3 grid-cols-2";
-    }
+  if (people.length == 1) {
+    memberClassName += "grid-cols-1";
+  } else if (people.length == 2) {
+    memberClassName += "grid-cols-2";
+  } else if (people.length == 3) {
+    memberClassName += "xl:grid-cols-3 grid-cols-2";
+  } else {
+    memberClassName += "xl:grid-cols-4 lg:grid-cols-3 grid-cols-2";
   }
 
 
@@ -366,8 +503,8 @@ export default function TaskForce({ loaderData }) {
       <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} taskForceId={taskForceId} userId={currentUserId} />
       <EditTextarea1Popup showPopup={showTextarea1Popup} setShowPopup={setShowTextarea1Popup} taskForceId={taskForceId} userId={currentUserId} />
       <EditTextarea2Popup showPopup={showTextarea2Popup} setShowPopup={setShowTextarea2Popup} taskForceId={taskForceId} userId={currentUserId} />
-      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceId={taskForceId} userId={currentUserId} people={loaderData.people} />
-      <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceId={taskForceId} userId={currentUserId} projects={loaderData.projects} />
+      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceId={taskForceId} userId={currentUserId} people={people} setPeople={setPeople} />
+      <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceId={taskForceId} userId={currentUserId} projects={projects} setProjects={setProjects} />
       
       <Menu />
       <Banner>
@@ -405,7 +542,7 @@ export default function TaskForce({ loaderData }) {
           <h2>Team Members</h2>
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
           <div className={memberClassName}>
-            {loaderData.people.map(person => <MemberCard key={person.name} memberData={person} />)}
+            {people.map((person, idx) => <MemberCard key={`${person.name}-${idx}`} memberData={person} />)}
           </div>
         </div>
 
@@ -422,7 +559,7 @@ export default function TaskForce({ loaderData }) {
         <div className="w-full md:text-left relative duration-200 mb-10">
           <h2>Projects</h2>
           {isAdmin && <button className="button button-light md:absolute -top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
-          {loaderData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
+          {projects.map((project, idx) => <ProjectCard key={`${project.name}-${idx}`} projectData={project} />)}
         </div>
 
         {/* <div className="w-full md:text-left relative duration-200 mb-10">
