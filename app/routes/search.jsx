@@ -16,7 +16,9 @@ async function getPeople() {
   const { data, error } = await supabase
     .from('users')
     .select('id, fname, lname, email, image_url, job_position, languages, country, institution, major, research_interests, task_force_role, task_force')
-    
+  if (data) {
+    data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
+  }
   return data || error;
 }
 
@@ -51,6 +53,8 @@ export default function SearchRoute({ loaderData }) {
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTaskForces, setSelectedTaskForces] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
+  const [selectedMajors, setSelectedMajors] = useState([]);
+
 
   const taskForceOptionsSet = new Set(loaderData.map((person) => { return (person.task_force != "") ? person.task_force : null }));
   taskForceOptionsSet.delete(null);
@@ -58,12 +62,19 @@ export default function SearchRoute({ loaderData }) {
   const countryOptionsSet = new Set(loaderData.map((person) => { return (person.country != "") ? person.country : null }));
   countryOptionsSet.delete(null);
 
+  const majorOptionsSet = new Set(loaderData.map((person) => { return (person.major != "") ? person.major : null }));
+  majorOptionsSet.delete(null);
+
   const taskForceOptions = useMemo(
     () => Array.from(taskForceOptionsSet).sort(),
     []
   );
   const countryOptions = useMemo(
     () => Array.from(countryOptionsSet).sort(),
+    []
+  );
+  const majorOptions = useMemo(
+    () => Array.from(majorOptionsSet).sort(),
     []
   );
 
@@ -84,10 +95,12 @@ export default function SearchRoute({ loaderData }) {
         selectedTaskForces.length === 0 || selectedTaskForces.includes(person.task_force);
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
+      const matchesMajor =
+        selectedMajors.length === 0 || selectedMajors.includes(person.major);
 
-      return matchesQuery && matchesTaskForce && matchesCountry;
+      return matchesQuery && matchesTaskForce && matchesCountry && matchesMajor;
     });
-  }, [query, selectedTaskForces, selectedCountries]);
+  }, [query, selectedTaskForces, selectedCountries, selectedMajors]);
 
   // Reset to page 1 whenever query or filters change
   useEffect(() => {
@@ -141,7 +154,7 @@ export default function SearchRoute({ loaderData }) {
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex w-full max-w-[380px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
+          <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
             <input
               id="search-input"
@@ -194,22 +207,18 @@ export default function SearchRoute({ loaderData }) {
                 selected={selectedCountries}
                 onToggle={(value) => toggleSelection(setSelectedCountries, value)}
               />
+              <FilterGroup
+                title="Major"
+                options={majorOptions}
+                selected={selectedMajors}
+                onToggle={(value) => toggleSelection(setSelectedMajors, value)}
+              />
             </fieldset>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-6">
-          {isEmptyState ? (
-            <div className="rounded-md border-2 border-gray-light bg-white px-6 py-12 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
-                <i className="bi bi-people-fill text-[36px] text-primary-dark" aria-hidden="true" />
-              </div>
-              <div className="text-lg font-semibold text-secondary-light">Start searching</div>
-              <div className="mt-2 text-sm text-gray-dark/70">
-                Type a name, institution, or research interest to find someone.
-              </div>
-            </div>
-          ) : results.length === 0 ? (
+          { results.length === 0 ? (
             <div className="rounded-md border-2 border-gray-light bg-white px-6 py-8 text-sm text-gray-dark/70">
               No results found. Try a different name, institution, or research interest.
             </div>
@@ -290,25 +299,29 @@ function PersonResultCard({ person }) {
       </div>
 
       <div className="grid text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
-        { person?.country &&
+        { person?.country ?
           <div className="">
             <span className="mr-1">Country</span> <span className="font-semibold text-secondary-dark">{person.country}</span>
           </div>
+          : <div></div>
         }
-        { person?.languages &&
+        { person?.languages ?
           <div className="">
             <span className="mr-1">Languages</span> <span className="font-semibold text-secondary-dark">{person.languages}</span>
           </div>
+          : <div></div>
         }
-        { person?.major &&
+        { person?.major ?
           <div className="">
             <span className="mr-1">Major</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
           </div>
+          : <div></div>
         }
-        { person?.research_interests &&
+        { person?.research_interests ?
           <div className="">
             <span className="mr-1">Research Interests</span> <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
           </div>
+          : <div></div>
         }
       </div>
       <div>

@@ -116,7 +116,7 @@ export default function SignUp() {
     if (validated) {
       const result = await signUp(data);
       if (result.success) {
-        navigate("/profile/" + result.id);
+        navigate("/profile/" + result.id + "?new=true");
       } else {
         setErrorMessage(result.message);
         setShowPopup(true);
