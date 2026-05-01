@@ -1,3 +1,6 @@
+import { supabase } from "../supabase";
+
+
 /* currentHasPermissions
  * Fetches and checks the given user's role for the correct permissions
  * Parameters:
@@ -20,18 +23,19 @@ export async function currentHasPermissions(userId, targetRoles, superAllowed = 
  *     userId - user's ID
  * Returns an array of the given user's roles. False if not found.
  */
-async function getUserRoles(userId) {
+export async function getUserRoles(userId) {
     try {
         const { data, error } = await supabase
-        .from('users')
-        .select('role')
-        .eq("id", userId);
+            .from('users')
+            .select('role')
+            .eq("id", userId);
         if (data[0]) {
             return data[0];
         }
         return false;
 
     } catch (error) {
+        console.log(error);
         return false;
     }
 }

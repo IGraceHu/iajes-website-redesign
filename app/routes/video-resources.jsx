@@ -6,6 +6,7 @@ import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { updateRequired } from "../helpers/form";
+import { getUserRoles } from "../helpers/permissions";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -91,17 +92,22 @@ export default function VideoResources({ loaderData }) {
             }
         }
 
+
         // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
           if (session?.user.id) {
-            getIsAdmin(session?.user.id);
+            getUserRoles(session?.user.id).then(
+                function (user) { setIsAdmin(user.role == "admin"); }
+            );
           }
         });
     
         // Check current session on mount
         supabase.auth.getSession().then(({ data: { session } }) => {
           if (session?.user.id) {
-            getIsAdmin(session?.user.id);
+            getUserRoles(session?.user.id).then(
+                function (user) { setIsAdmin(user.role == "admin"); }
+            );
           }
         });
 
