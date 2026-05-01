@@ -99,13 +99,55 @@ async function getMeetingThumbnail(meetingId) {
     return data[0].resource_url;
 }
 
+async function getUniqueDateUrl(region, title, currentMeetingId = null, originalTitle = null) {
+    const baseUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    // If the title hasn't changed (comparing slugified versions), keep the existing URL
+    if (originalTitle) {
+        const originalSlug = originalTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (baseUrl === originalSlug) {
+            return baseUrl; // Keep existing URL (no number added/removed)
+        }
+    }
+
+    // Get all meetings in this region with similar date_url
+    const { data: existing } = await supabase
+        .from('regional meetings')
+        .select('id, date_url')
+        .eq('region', region)
+        .like('date_url', `${baseUrl}%`);
+
+    if (!existing || existing.length === 0) {
+        return baseUrl;
+    }
+
+    // Filter out the current meeting being edited
+    const otherMeetings = existing.filter(m => m.id !== currentMeetingId);
+    if (otherMeetings.length === 0) {
+        return baseUrl;
+    }
+
+    // Find the highest number suffix
+    let maxNum = 0;
+    for (const meeting of otherMeetings) {
+        const match = meeting.date_url.match(/-(\d+)$/);
+        if (match) {
+            maxNum = Math.max(maxNum, parseInt(match[1]));
+        }
+    }
+
+    return `${baseUrl}-${maxNum + 1}`;
+}
+
 async function createMeeting(formData, extras = {}) {
     const title = (formData.get('title') || '').toString().trim() || 'Untitled Meeting';
-    const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Get unique date_url based on region and title (adds number prefix if there are same-region same-name meetings)
+    const dateUrl = await getUniqueDateUrl(extras.region || formData.get('region'), title);
 
     const meetingData = {
         name: title,
-        region: formData.get('region') || '',
+        region: formData.get('region') || extras.region || '',
         date: formData.get('date') || '',
         date_url: dateUrl,
         location: formData.get('location') || '',
@@ -164,11 +206,18 @@ async function createMeeting(formData, extras = {}) {
 
 async function updateMeeting(meetingId, formData, extras = {}) {
     const title = (formData.get('title') || '').toString().trim() || 'Untitled Meeting';
-    const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Get unique date_url, passing the current meeting ID to exclude it from collision check
+    const dateUrl = await getUniqueDateUrl(
+        extras.region || formData.get('region') || '',
+        title,
+        meetingId,
+        extras.originalTitle
+    );
 
     const meetingData = {
         name: title,
-        region: formData.get('region') || '',
+        region: extras.region || formData.get('region') || '',
         date: formData.get('date') || '',
         date_url: dateUrl,
         location: formData.get('location') || '',
@@ -627,6 +676,7 @@ export default function RegionalMeeting() {
             reportPdf: addForm.reportPdf,
             allImages: addForm.allImages,
             allVideos: addForm.allVideos,
+            region: addForm.region,
         };
 
         const result = await createMeeting(formData, extras);
@@ -682,6 +732,8 @@ export default function RegionalMeeting() {
         setSaving(true);
 
         const extras = {
+            region: editForm.region,
+            originalTitle: editingMeeting.name,
             agendaPdf: editForm.agendaPdf,
             reportPdf: editForm.reportPdf,
             deleteAgendaPdf: editForm.deleteAgendaPdf,
@@ -812,9 +864,10 @@ export default function RegionalMeeting() {
                     <div className="grid gap-4">
                         <div>
                             <label>Region:</label>
-                            <select name="region" className="input input-text w-full" value={addForm.region} onChange={e => setAddForm({ ...addForm, region: e.target.value })}>
+                            {/* <select name="region" className="input input-text w-full" value={addForm.region} onChange={e => setAddForm({ ...addForm, region: e.target.value })}>
                                 {regions.map(r => <option key={r} value={r}>{r}</option>)}
-                            </select>
+                            </select> */}
+                            <p className="inline-block pl-1">{addForm.region}</p>
                         </div>
                         <div>
                             <label>Title:</label>
@@ -987,9 +1040,10 @@ export default function RegionalMeeting() {
                     <div className="grid gap-4">
                         <div>
                             <label>Region:</label>
-                            <select name="region" className="input input-text w-full" value={editForm.region || editingMeeting?.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
+                            {/* <select name="region" className="input input-text w-full" value={editForm.region || editingMeeting?.region} onChange={e => setEditForm({ ...editForm, region: e.target.value })}>
                                 {regions.map(r => <option key={r} value={r}>{r}</option>)}
-                            </select>
+                            </select> */}
+                            <p className="inline-block pl-1">{editForm.region}</p>
                         </div>
                         <div>
                             <label>Title:</label>
@@ -1242,7 +1296,8 @@ export default function RegionalMeeting() {
                         <div key={mtg.id} className={`meeting-row-wrapper ${idx % 2 === 1 ? "bg-slate-100" : ""}`}>
                             <div className={`meeting-row ${idx % 2 === 1 ? "reverse" : ""} px-10 lg:px-40`}>
                                 <div className="meeting-info">
-                                    <Link to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`}>
+                                    {/* <Link to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`}> */}
+                                    <Link to={`/regional-meetings/${regionName}/${mtg.date_url}`}>
                                         <h2>{mtg.name}</h2>
                                     </Link>
                                     <div>
@@ -1263,8 +1318,13 @@ export default function RegionalMeeting() {
                                         )}
                                     </div>
                                 </div>
-                                <Link
+                                {/* <Link
                                     to={`/regional-meetings/${regionName}/${mtg.date_url}?id=${mtg.id}`}
+                                    className="meeting-img"
+                                    style={thumbnails[mtg.id] ? { backgroundImage: `url(${thumbnails[mtg.id]})` } : {}}
+                                > */}
+                                <Link
+                                    to={`/regional-meetings/${regionName}/${mtg.date_url}`}
                                     className="meeting-img"
                                     style={thumbnails[mtg.id] ? { backgroundImage: `url(${thumbnails[mtg.id]})` } : {}}
                                 >

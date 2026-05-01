@@ -44,9 +44,71 @@ async function getMeetingResources(meetingId) {
     return data || [];
 }
 
+async function getMeetingByDateUrl(region, dateUrl) {
+    const { data, error } = await supabase
+        .from('regional meetings')
+        .select('*')
+        .eq('region', region)
+        .eq('date_url', dateUrl)
+        .single();
+
+    if (error) {
+        console.error('Error fetching meeting:', error);
+        return null;
+    }
+    return data;
+}
+
+async function getUniqueDateUrl(region, title, currentMeetingId = null, originalTitle = null) {
+    const baseUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+    // If the title hasn't changed (comparing slugified versions), keep the existing URL
+    if (originalTitle) {
+        const originalSlug = originalTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+        if (baseUrl === originalSlug) {
+            return baseUrl; // Keep existing URL (no number added/removed)
+        }
+    }
+
+    // Get all meetings in this region with similar date_url
+    const { data: existing } = await supabase
+        .from('regional meetings')
+        .select('id, date_url')
+        .eq('region', region)
+        .like('date_url', `${baseUrl}%`);
+
+    if (!existing || existing.length === 0) {
+        return baseUrl;
+    }
+
+    // Filter out the current meeting being edited
+    const otherMeetings = existing.filter(m => m.id !== currentMeetingId);
+    if (otherMeetings.length === 0) {
+        return baseUrl;
+    }
+
+    // Find the highest number suffix
+    let maxNum = 0;
+    for (const meeting of otherMeetings) {
+        const match = meeting.date_url.match(/-(\d+)$/);
+        if (match) {
+            maxNum = Math.max(maxNum, parseInt(match[1]));
+        }
+    }
+
+    return `${baseUrl}-${maxNum + 1}`;
+}
+
 async function updateMeeting(meetingId, formData, extras = {}) {
     const title = (formData.get('title') || '').toString().trim() || 'Untitled Meeting';
-    const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // const dateUrl = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    // Get unique date_url
+    const dateUrl = await getUniqueDateUrl(
+        extras.region || formData.get('region') || '',
+        title,
+        meetingId,
+        extras.originalTitle
+    );
 
     const meetingData = {
         name: title,
@@ -299,7 +361,7 @@ export default function RegionalMeetingDetail() {
     const { search } = useLocation();
     const navigate = useNavigate();
     const query = new URLSearchParams(search);
-    const meetingId = query.get("id");
+    // const meetingId = query.get("id");
 
     const [isAdmin, setIsAdmin] = useState(false);
     const canEdit = isAdmin;
@@ -360,12 +422,12 @@ export default function RegionalMeetingDetail() {
         async function loadMeeting() {
             setLoading(true);
 
-            if (meetingId) {
-                const data = await getMeetingById(meetingId);
+            if (meetingDate && regionName) {
+                const data = await getMeetingByDateUrl(regionName, meetingDate);
                 setMeetingData(data);
 
                 if (data) {
-                    const resourcesData = await getMeetingResources(meetingId);
+                    const resourcesData = await getMeetingResources(data.id);
                     setResources(resourcesData);
                 }
             }
@@ -401,14 +463,14 @@ export default function RegionalMeetingDetail() {
             }
         });
 
-        if (meetingId) {
+        if (meetingDate && regionName) {
             loadMeeting();
         } else {
             setLoading(false);
         }
 
         return () => subscription.unsubscribe();
-    }, [meetingId]);
+    }, [meetingDate, regionName]);
 
     const handleSaveEditMeeting = async (formData) => {
         if (!canEdit) {
@@ -437,11 +499,12 @@ export default function RegionalMeetingDetail() {
             return false;
         }
 
-        if (saving || !meetingId) return;
+        if (saving || !meetingData?.id) return;
         setSaving(true);
 
         const extras = {
-            region: editForm?.region,
+            region: meetingData.region,
+            originalTitle: meetingData.name,
             agendaPdf: editForm?.agendaPdf,
             reportPdf: editForm?.reportPdf,
             deleteAgendaPdf: editForm?.deleteAgendaPdf,
@@ -452,7 +515,7 @@ export default function RegionalMeetingDetail() {
             allVideos: editForm?.allVideos || [],
         };
 
-        const result = await updateMeeting(meetingId, formData, extras);
+        const result = await updateMeeting(meetingData.id, formData, extras);
 
         setSaving(false);
 
@@ -468,8 +531,17 @@ export default function RegionalMeetingDetail() {
 
         setShowEditPopup(false);
 
+        // If title changed, redirect to the new URL
+        if (editForm && editForm.title !== meetingData.name) {
+            const newDateUrl = result.data?.date_url;
+            if (newDateUrl) {
+                navigate(`/regional-meetings/${regionName}/${newDateUrl}`, { replace: true });
+                return;
+            }
+        }
+
         // Refresh meeting data
-        const data = await getMeetingById(meetingId);
+        const data = await getMeetingById(meetingData.id);
         setMeetingData(data);
 
         if (data) {
@@ -484,9 +556,9 @@ export default function RegionalMeetingDetail() {
             return;
         }
 
-        if (!meetingId) return;
+        if (!meetingData?.id) return;
 
-        const error = await deleteMeeting(meetingId);
+        const error = await deleteMeeting(meetingData.id);
 
         if (error) {
             // Check for RLS policy violation
@@ -604,7 +676,7 @@ export default function RegionalMeetingDetail() {
                     </div>
                     <div>
                         <label>Title:</label>
-                        <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" value={editForm?.title || ''} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
+                        <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" placeholder="Title" value={editForm?.title || ''} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
                         <div className="input-error">This field is required.</div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
@@ -615,21 +687,21 @@ export default function RegionalMeetingDetail() {
                         </div>
                         <div>
                             <label>Location:</label>
-                            <input name="location" className="input input-text w-full" type="text" value={editForm?.location || ''} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+                            <input name="location" className="input input-text w-full" type="text" placeholder="Location" value={editForm?.location || ''} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
                         </div>
                     </div>
                 </div>
                 <label>Description:</label>
-                <textarea name="description" className="input input-text w-full" value={editForm?.description || ''} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="12" />
+                <textarea name="description" className="input input-text w-full" placeholder="Description" value={editForm?.description || ''} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="12" />
             </div>
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
                     <label>Agenda Link:</label>
-                    <input name="agendaLink" className="input input-text w-full" type="text" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                    <input name="agendaLink" className="input input-text w-full" type="text" placeholder="Agenda Link" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
                 </div>
                 <div>
                     <label>Meeting Report Link:</label>
-                    <input name="reportLink" className="input input-text w-full" type="text" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                    <input name="reportLink" className="input input-text w-full" type="text" placeholder="Meeting Report Link" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
                 </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
