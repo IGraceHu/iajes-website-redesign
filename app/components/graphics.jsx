@@ -102,11 +102,11 @@ export function Banner({className, children, type = "green"}) {
         <div className={className + " banner relative w-full lg:px-40 px-10 py-20 overflow-hidden duration-200 " + color}>
             <div className="absolute top-0 left-0 w-full z-0">
                 <div className={"relative w-full " + discOpacity}>
-                    <img className="absolute w-50 -top-20 -right-15" src="../assets/landing-disc-2a.svg" />
-                    <img className="absolute w-60 top-15 -left-30 -rotate-20" src="../assets/landing-disc-4b.svg" />
+                    <img className="absolute w-50 -top-20 -right-15" src="/assets/landing-disc-2a.svg" />
+                    <img className="absolute w-60 top-15 -left-30 -rotate-20" src="/assets/landing-disc-4b.svg" />
                 </div>
             </div>
-            <div className="banner-content relative z-1">
+            <div className="banner-content relative z-1 text-white">
                 {children}
             </div>
         </div>

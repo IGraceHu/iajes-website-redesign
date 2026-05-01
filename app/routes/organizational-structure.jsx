@@ -20,30 +20,38 @@ function InfographicSection() {
             {/* Triangle infographic */}
             <div className="org-structure-container relative z-10">
                 {/* Top box - Governing Board */}
-                <div className="org-box org-box-top">
-                    <h4 className="text-center mb-4">Governing Board</h4>
-                    <p className="text-sm text-center">
-                        <strong>Who:</strong> President, Vice-President, Secretary, Chair of Regional Committee, Chair of Operational Committee, Past-President<br /><br />
-                        <strong>What:</strong> Guarantees the smooth running of IAJES. Supports projects within IAJES. Facilitates links between members.
-                    </p>
+                <div className="col-span-3">
+                    <div className="org-box org-box-top mx-auto">
+                        <h4 className="text-center mb-4">Governing Board</h4>
+                        <p className="text-sm text-center">
+                            <strong>Who:</strong> President, Vice-President, Secretary, Chair of Regional Committee, Chair of Operational Committee, Past-President<br /><br />
+                            <strong>What:</strong> Guarantees the smooth running of IAJES. Supports projects within IAJES. Facilitates links between members.
+                        </p>
+                    </div>
                 </div>
+            
 
                 {/* Bottom left box - Regional Committee */}
-                <div className="org-box org-box-bottom-left">
-                    <h4 className="text-center mb-4">Regional Committee</h4>
-                    <p className="text-sm text-center">
-                        <strong>Who:</strong> The 6 Regional Leaders<br /><br />
-                        <strong>What:</strong> Monitors the work of the regions. Guarantees inter-regional links. Each regional manager coordinates the university representatives in their region.
-                    </p>
+                <div className="relative">
+                    <div className="org-box org-box-bottom-left">
+                        <h4 className="text-center mb-4">Regional Committee</h4>
+                        <p className="text-sm text-center">
+                            <strong>Who:</strong> The 6 Regional Leaders<br /><br />
+                            <strong>What:</strong> Monitors the work of the regions. Guarantees inter-regional links. Each regional manager coordinates the university representatives in their region.
+                        </p>
+                    </div>
                 </div>
+                <div className="w-[10vw] md:block hidden"></div>
 
                 {/* Bottom right box - Operational Committee */}
-                <div className="org-box org-box-bottom-right">
-                    <h4 className="text-center mb-4">Operational Committee</h4>
-                    <p className="text-sm text-center">
-                        <strong>Who:</strong> All the Task Force Leaders<br /><br />
-                        <strong>What:</strong> Coordinates and encourages progress on current projects. Each TF leader is in charge of the active progress of their group.
-                    </p>
+                <div className="relative">
+                    <div className="org-box org-box-bottom-right">
+                        <h4 className="text-center mb-4">Operational Committee</h4>
+                        <p className="text-sm text-center">
+                            <strong>Who:</strong> All the Task Force Leaders<br /><br />
+                            <strong>What:</strong> Coordinates and encourages progress on current projects. Each TF leader is in charge of the active progress of their group.
+                        </p>
+                    </div>
                 </div>
 
                 {/* Connecting arrows */}
@@ -62,8 +70,8 @@ function InfographicSection() {
                     <line x1="450" y1="360" x2="350" y2="120" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
 
                     {/* Bottom Left to Bottom Right */}
-                    <line x1="210" y1="420" x2="390" y2="420" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
-                    <line x1="390" y1="420" x2="210" y2="420" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                    <line x1="210" y1="370" x2="390" y2="370" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
+                    <line x1="390" y1="370" x2="210" y2="370" stroke="#1EA493" strokeWidth="2" markerEnd="url(#arrowhead)" />
                 </svg>
             </div>
         </Banner>
@@ -76,7 +84,7 @@ function MemberCard({ name, university, location, email, region, taskForce, posi
         <div className="member-card">
             {/* Placeholder image */}
             <div className="member-image">
-                <img src="../assets/landing-disc-2a.svg" alt={name} />
+                <img src="/assets/landing-disc-2a.svg" alt={name} />
             </div>
             <div className="member-info">
                 <h5>{name}</h5>
@@ -126,7 +134,7 @@ function MembersSection() {
     ];
 
     const regionalMembers = [
-        { name: "Region Leader 1", university: "University 1", location: "North America", email: "leader1@example.com", region: "AJCU-US<br />North America", position: "Regional Leader" },
+        { name: "Region Leader 1", university: "University 1", location: "North America", email: "leader1@example.com", region: "AJCU-NA<br />North America", position: "Regional Leader" },
         { name: "Region Leader 2", university: "University 2", location: "Latin America", email: "leader2@example.com", region: "AUSJAL<br />Latin America", position: "Regional Leader" },
         { name: "Region Leader 3", university: "University 3", location: "Europe", email: "leader3@example.com", region: "KIRCHER<br />Europe and Near East", position: "Regional Leader" },
         { name: "Region Leader 4", university: "University 4", location: "Africa", email: "leader4@example.com", region: "AJCU - AM<br />Africa and Madagascar", position: "Regional Leader" },
@@ -216,7 +224,7 @@ function MembersSection() {
                         <table className="regions-table">
                             <tbody>
                                 <tr>
-                                    <td><strong>AJCU - US</strong></td>
+                                    <td><strong>AJCU - NA</strong></td>
                                     <td>North America</td>
                                 </tr>
                             </tbody>
@@ -242,6 +250,7 @@ function MembersSection() {
                         The biennial international meeting, which allows us to welcome new members, takes place in turn in the 6 regions identified by the IAJU (International Association of Jesuit Universities).
                     </p>
                 </div>
+
                 <Break dark />
 
                 {/* Task Forces */}
@@ -267,43 +276,112 @@ function RolesSection() {
     const roles = [
         {
             title: "President",
-            description: "• Chairs the Governing Board.\n• Supports the actions of regional leaders.\n• Follows and encourages the committees and task forces.\n• Represents IAJES at the IAJU Board.\n• Is elected for 2 years. After that, he or she is expected to be Past President."
+            description: (
+                <ul>
+                    <li className="role-line">Chairs the Governing Board.\nSupports the actions of regional leaders.</li>
+                    <li className="role-line">Follows and encourages the committees and task forces.</li>
+                    <li className="role-line">Represents IAJES at the IAJU Board.\nIs elected for 2 years. After that, he or she is expected to be Past President.</li>
+                </ul>
+            )
         },
         {
             title: "Vice-President",
-            description: "• Assists the President in his various tasks and replaces him or her when necessary.\n• Leads the preparation group for the biennial meeting.\n• Is elected for 2 years. After that, he or she is expected to be President."
+            description: (
+                <ul>
+                    <li className="role-line">Assists the President in his various tasks and replaces him or her when necessary.</li>
+                    <li className="role-line">Leads the preparation group for the biennial meeting.</li>
+                    <li className="role-line">Is elected for 2 years. After that, he or she is expected to be President.</li>
+                </ul>
+            )
         },
         {
             title: "Chair of the Regional Committee",
-            description: "• Chairs the Regional Committee.\n• Organizes a regional event every two years, preferably during the year when there is no summit.\n• Identifies a secretary among the other regional leaders. \n• Is elected for 2 years and can be reelected once."
+            description: (
+                <ul>
+                    <li className="role-line">Chairs the Regional Committee.</li>
+                    <li className="role-line">Organizes a regional event every two years, preferably during the year when there is no summit.</li>
+                    <li className="role-line">Identifies a secretary among the other regional leaders.</li>
+                    <li className="role-line">Is elected for 2 years and can be reelected once.</li>
+                </ul>
+            )
         },
         {
             title: "Chair of the Operational Committee",
-            description: "• Chairs the Operational Committee.\n• Identify a secretary among the other task force leaders.\n• Is elected for 2 years and can be reelected once."
+            description: (
+                <ul>
+                    <li className="role-line">Chairs the Operational Committee.</li>
+                    <li className="role-line">Identify a secretary among the other task force leaders.</li>
+                    <li className="role-line">Is elected for 2 years and can be reelected once.</li>
+                </ul>
+            )
         },
         {
             title: "Secretary",
-            description: "• Assists the President or Chair to prepare the committees and special working sessions.\n• Writes and shares session minutes.\n• Is elected for 2 years and can be reelected once."
+            description: (
+                <ul>
+                    <li className="role-line">Assists the President or Chair to prepare the committees and special working sessions.</li>
+                    <li className="role-line">Writes and shares session minutes.</li>
+                    <li className="role-line">Is elected for 2 years and can be reelected once.</li>
+                </ul>
+            )
         },
         {
             title: "Past President",
-            description: "• Assists the President and the Governing Board when necessary, offering his or her experience."
+            description: (
+                <ul>
+                    <li className="role-line">Assists the President and the Governing Board when necessary, offering his or her experience.</li>
+                </ul>
+            )
         },
         {
             title: "Regional Leader",
-            description: "• Represents and facilitates the IAJES network in its region.\n• Contacts the deans to explain the IAJES network and ensure that each Jesuit engineering and science school is an active member of the network.\n• Coordinates the group of university representatives in the region.\n• Facilitates the participation of regional members in task forces.\n• Informs other regional leaders about relevant events.\n• Promotes events proposed by other regions within the region.\n• Participates in the Regional Committee meetings.\n• Is elected for 2 years and may be reelected."
+            description: (
+                <ul>
+                    <li className="role-line">Represents and facilitates the IAJES network in its region.</li>
+                    <li className="role-line">Contacts the deans to explain the IAJES network and ensure that each Jesuit engineering and science school is an active member of the network.</li>
+                    <li className="role-line">Coordinates the group of university representatives in the region.</li>
+                    <li className="role-line">Facilitates the participation of regional members in task forces.</li>
+                    <li className="role-line">Informs other regional leaders about relevant events.</li>
+                    <li className="role-line">Promotes events proposed by other regions within the region.</li>
+                    <li className="role-line">Participates in the Regional Committee meetings.</li>
+                    <li className="role-line">Is elected for 2 years and may be reelected.</li>
+                </ul>
+            )
         },
         {
             title: "Task force and project leader",
-            description: "• Constitutes and leads its work group by ensuring a good dynamic.\n• Defines the objective in line with the vision of IAJES.\n• Strives to have active members from all regions in his group (at least 3 of the 6 regions should be represented).\n• Ensures concrete results are achieved and shared with all members.\n• Reports to the Operational Committee."
+            description: (
+                <ul>
+                    <li className="role-line">Constitutes and leads its work group by ensuring a good dynamic.</li>
+                    <li className="role-line">Defines the objective in line with the vision of IAJES.</li>
+                    <li className="role-line">Strives to have active members from all regions in his group (at least 3 of the 6 regions should be represented).</li>
+                    <li className="role-line">Ensures concrete results are achieved and shared with all members.</li>
+                    <li className="role-line">Reports to the Operational Committee.</li>
+                </ul>
+            )
         },
         {
             title: "University Representative",
-            description: "• Promotes the actions of IAJES in his own university.\n• Informs its regional leader about news to be shared in IAJES.\n• Presents the network's activities at its university and encourages participation in the various actions.\n• Updates the database for members of his or her university.\n• Designated by his or her university."
+            description: (
+                <ul>
+                    <li className="role-line">Promotes the actions of IAJES in his own university.</li>
+                    <li className="role-line">Informs its regional leader about news to be shared in IAJES.</li>
+                    <li className="role-line">Presents the network's activities at its university and encourages participation in the various actions.</li>
+                    <li className="role-line">Updates the database for members of his or her university.</li>
+                    <li className="role-line">Designated by his or her university.</li>
+                </ul>
+            )
         },
         {
             title: "Remarks:",
-            description: "• The Governing Board propose a roadmap for the development of IAJES (vision, ambition, objectives, organization). This road map must find the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, the close relationship with IAJU.\n• Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.\n• This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Chair of the Regional Committee, Chair of the Operational Committee, Secretary, Past President, Regional leader, Task force and project leader, University representative.\n• It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network",
+            description: (
+                <ul>
+                    <li className="role-line">The Governing Board propose a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This road map must find the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, the close relationship with IAJU.</li>
+                    <li className="role-line">Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.</li>
+                    <li className="role-line">This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Chair of the Regional Committee, Chair of the Operational Committee, Secretary, Past President, Regional leader, Task force and project leader, University representative.</li>
+                    <li className="role-line">It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network</li>
+                </ul>
+            ),
             isLastBox: true
         }
     ];
@@ -312,8 +390,8 @@ function RolesSection() {
         <div className="bg-secondary-dark py-20 px-0 lg:px-0 relative overflow-hidden">
             {/* Decorative discs */}
             <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
-                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="../assets/landing-disc-2a.svg" />
-                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="../assets/landing-disc-4b.svg" />
+                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="/assets/landing-disc-2a.svg" />
+                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="/assets/landing-disc-4b.svg" />
             </div>
 
             <div className="text-center mb-12 px-10 lg:px-40 relative z-10">
@@ -326,9 +404,7 @@ function RolesSection() {
                     <div key={idx} className={`role-card ${role.isLastBox ? 'role-card-last' : ''}`}>
                         <h4>{role.title}</h4>
                         <div className="role-content">
-                            {role.description.split('\n').map((line, lineIdx) => (
-                                <div key={lineIdx} className="role-line">{line}</div>
-                            ))}
+                            {role.description}
                         </div>
                     </div>
                 ))}
@@ -352,7 +428,7 @@ function LogoSection() {
 
                 <div className="flex items-stretch order-1 md:order-2">
                     <img
-                        src="../assets/logo-iajes.svg"
+                        src="/assets/logo-iajes.svg"
                         alt="IAJES Logo"
                         className="w-full h-[70vh] object-contain rounded-md md:h-auto"
                         style={{ minHeight: 160 }}
@@ -366,7 +442,7 @@ function LogoSection() {
 export default function OrganizationalStructure() {
     return (
         <>
-            <Menu />
+            <Menu currentEndUrl="/organizational-structure"/>
             <div className="w-full duration-200">
                 <InfographicSection />
                 <MembersSection />

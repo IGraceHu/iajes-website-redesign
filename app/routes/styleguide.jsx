@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { redirect } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup } from "../components/popup";
+import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
+import { updateRequired } from "../helpers/form";
 
 export function meta() {
     return [
@@ -19,50 +20,114 @@ export function action({ url }) {
 
 export default function StyleGuide() {
 
-    // POPUP -------------------------------------------------------------------
-    // The Popup component takes three parameters:
-    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
-    //      There should only be one Popup component used in a component. 
-    // show - Determines if the popup is visible or not
-    // setShow - set function for show
-    // details - an object with properties
-    //    content - Required. An element node with the contents of the popup
-    //    buttons - Optional. An array of objects with properties 'text' and 'onclick'
-    //        text - Required. A string with the button text
-    //        onclick - Required. A function that clicking the button will execute
-    //    defaultButton - Optional. Changes the default values of the 'Close' button. An object with properties 'text' and 'onclick'
-    //        text - Required.
-    //        onclick - Optional.
-    //    closeOnBlur - Optional. Defaults to true. Determines if clicking outside the popup will close the popup or not
-
-    const [showPopup, setShowPopup] = useState(false);
-    const [currentPopup, setCurrentPopup] = useState({}); // This is only needed if you have multiple popups in a component
-
-    const popupDetails1 = {
-        content: <p>This is a basic popup.</p>,
-    };
-
-    const popupDetails2 = {
-        content: <p>This is a popup with extra buttons. Clicking outside the popup will not close the popup.</p>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }, { text: "Delete", onclick: () => { console.log("deleted") } }],
-        closeOnBlur: false,
-    };
-
-    const popupDetails3 = {
-        content: <p>This is a popup with a custom default button.</p>,
-        buttons: [{ text: "Save", onclick: () => { console.log("saved") } }],
-        defaultButton: { text: "Exit", onclick: () => { setShowPopup(false); } }
-    };
-
     // PAGINATION --------------------------------------------------------------
     const [pg1, setPg1] = useState(0);
     const [pg2, setPg2] = useState(0);
 
     const [formMode, setFormMode] = useState("");
 
+    // POPUP -------------------------------------------------------------------
+    // The Popup component takes three parameters:
+    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
+    //      There should only be one Popup component used in a component. 
+    // className
+    // show - Determines if the popup is visible or not
+    // setShow - set function for show
+    //    buttons - Optional. An array of objects with properties 'text' and 'onclick'
+    //        text - Required. A string with the button text
+    //        onclick - Required. A function that clicking the button will execute
+    // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
+
+    const [showPopup1, setShowPopup1] = useState(false);
+    const [showPopup2, setShowPopup2] = useState(false);
+    const [showPopupForm, setShowPopupForm] = useState(false);
+    const [popupFormResults, setPopupFormResults] = useState("");
+    
+    const buttons = [{text: "Action", onclick: () => console.log("Action")}]
+
+    // REQUIRED FIELDS Quickguide to functions
+    //   handleShowPopupForm - Resets required inputs
+    //   validate PopupForm
+    //     - Checks if required inputs are filled in + other validations
+    //     - Extracts formData
+    //   checkEmpty - Puts an input back to normal once it is filled in
+
+    // formRequired: An object containing the current state of all required fields, true if they are current required, false if not
+    const [formRequired, setFormRequired] = useState({popupRequired: false})
+
+    function handleShowPopupForm() {
+        // This resets formRequired so that there are no error messages when the form is reloaded
+        setFormRequired({popupRequired: false})
+        setShowPopupForm(true);
+    }
+
+    function validatePopupForm(formData) {
+        let isValidated = true;
+        const isRequired = {
+            popupRequired: formData.get('popupRequired') === (null || "")
+        }
+        for (let value of Object.values(isRequired)) {
+        if (value) {
+            isValidated = false;
+            break;
+        }
+        }
+        if (!isValidated) {
+            setFormRequired(isRequired);
+            return false;
+        }
+
+        // Get formData
+        console.log(formData);
+        setPopupFormResults("Text Input: " + formData.get("popupText") + "\n" + "Required Text Input: " + formData.get("popupRequired") + "\n")
+        // setShowPopupForm(false);
+        return true;
+    }
+
+    // checkEmpty uses updatedRequired from helpers/form.js
+    // checkEmpty is called from the input element itself. Go to the input with id popupRequired to see how this works.
+    // PARAMETERS
+    //    value - User inputted value = e.target.value
+    //    inputName - The name of the input in formRequired, NOT the input element name
+    //                I suggest you make the formRequired variable names and the input elements the same to avoid confusion
+    function checkEmpty(value, inputName) {
+        const updatedFormRequired = updateRequired(value, inputName, formRequired);
+        if (updatedFormRequired != formRequired) {
+          setFormRequired(updatedFormRequired);
+        }
+    }
+
+
     return (
         <>
-            <Popup id="style" show={showPopup} setShow={setShowPopup} details={currentPopup} />
+            <Popup id="style1" show={showPopup1} setShow={setShowPopup1} >
+                <p>This is the default popup</p>
+            </Popup>
+            <Popup id="style2" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
+                <p>This is a popup that has a custom action button and will not exit when clicked off of.</p>
+            </Popup>
+            <PopupForm id="styleform" className="w-200 relative" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
+                <p>This is a popup form. Popup forms only have two buttons, 'Save' and 'Cancel'. Popup forms also do not close upon blur.</p>
+                <p>PopupForms include a form, any elements within the PopupForm goes into the form. You cannot nest PopupForms.</p>
+                <p>PopupForm requires a validate function that takes a parameter 'formData'. When 'Save' is clicked, the form is submitted and the contents of the form can be accessed in the validate function through 'formData'. Please remember that only input fields with 'name' attributes will be recognized.</p>
+                <p>The parameter 'formData' is a <a href="https://developer.mozilla.org/en-US/docs/Web/API/FormData">FormData</a> object. You can use formData to get the submitted form values with formData.get('input-name')</p>
+                <p><strong>If there are any required fields to fill in, please refer to source code for implementing that part.</strong></p>
+                <br />
+                <p>This sample popup form takes two text fields and prints them on the console upon saving.</p>
+                <br />
+                <p>{popupFormResults}</p>
+                <br />
+                <label for="popupText">Text Input:</label><br />
+                <input id="popupText" name="popupText" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
+                <br /><br />
+                <label for="popupRequired">Required Text Input:</label><br />
+                <input id="popupRequired" name="popupRequired" type="text" 
+                       className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} 
+                       placeholder="Enter text here..."
+                       onChange={(e) => checkEmpty(e.target.value, "popupRequired")} />
+                <div className="input-error">This field is required.</div>
+                <br/>
+            </PopupForm>
 
             <Menu />
             <div className="lg:px-40 px-10 py-20 duration-200">
@@ -78,6 +143,16 @@ export default function StyleGuide() {
                     <h6>Heading 6</h6>
                     <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc in nisi venenatis, faucibus lorem eu, lobortis magna. Donec at ante vel arcu mattis sagittis. Curabitur efficitur ex aliquam sapien dictum fringilla. Vestibulum sagittis sit amet quam in congue. Cras consequat, nibh auctor dapibus ultrices, arcu ex lobortis mi, eu pharetra sem metus eget mi. Sed eget bibendum ipsum. Vivamus bibendum nulla hendrerit ligula facilisis, non euismod mi cursus. Proin nec risus vel elit ullamcorper venenatis. Donec lacinia mi eu nunc vehicula, quis ullamcorper ipsum suscipit. </p>
                     <p>Example for <a href="">inline links</a></p>
+                    <ul>
+                        <li>Unordered list item 1</li>
+                        <li>Unordered list item 2</li>
+                        <li>Unordered list item 3</li>
+                    </ul>
+                    <ol>
+                        <li>Ordered list item 1</li>
+                        <li>Ordered list item 2</li>
+                        <li>Ordered list item 3</li>
+                    </ol>
                 </div>
 
                 <div className="mt-10">
@@ -202,6 +277,28 @@ export default function StyleGuide() {
                                 <br />
                             </p>
                         </div>
+                        <div className="px-5 py-7 rounded-md text-center bg-error-dark text-white">
+                            <p>
+                                #a01225
+                                <br />
+                                Error Dark
+                                <br />
+                                color-error-dark
+                                <br />
+                                <span className="text-xs">(Applied to delete buttons on hover)</span>
+                            </p>
+                        </div>
+                        <div className="px-5 py-7 rounded-md text-center bg-error-extradark text-white">
+                            <p>
+                                #7a0e1d
+                                <br />
+                                Error Extra Dark
+                                <br />
+                                color-error-extradark
+                                <br />
+                                <span className="text-xs">(Applied to delete buttons on click)</span>
+                            </p>
+                        </div>
 
                     </div>
                 </div>
@@ -211,6 +308,9 @@ export default function StyleGuide() {
                     <div>
                         <button className="button mr-5 mb-5">.button</button>
                         <button className="button button-light mr-5 mb-5">.button .button-light</button>
+                        <br />
+                        <button className="button button-delete mr-5 mb-5">.button .button-delete</button>
+                        <button className="button button-light button-delete mr-5 mb-5">.button .button-light .button-delete</button>
                         <br />
                         <button className="button button-disabled mr-5 mb-5">.button .button-disabled</button>
                         <button className="button button-light button-disabled mr-5 mb-5">.button .button-light .button-disabled</button>
@@ -252,15 +352,15 @@ export default function StyleGuide() {
                     </div>
                     <div className="grid lg:grid-cols-2 grid-cols-1 gap-x-10 gap-y-15 my-5">
                         <div className="w-full">
-                            <label for="form-text">Text Input:</label><br />
+                            <label htmlFor="form-text">Text Input:</label><br />
                             <input id="form-text" type="text" className={"input input-text w-full " + formMode} placeholder="Enter text here..." />
                             <div className="input-error">This field is required.</div>
                             <br /><br />
-                            <label for="form-textarea">Textarea Input:</label><br />
+                            <label htmlFor="form-textarea">Textarea Input:</label><br />
                             <textarea id="form-textarea" className={"input input-text w-full " + formMode} placeholder="Enter text here..." />
                             <div className="input-error">Error messages must come after the input.</div>
                             <br /><br />
-                            <label for="form-select">Select:</label><br />
+                            <label htmlFor="form-select">Select:</label><br />
                             <select id="form-select" className={"input input-text w-full " + formMode}>
                                 <option value="1">1</option>
                                 <option value="2">2</option>
@@ -272,29 +372,44 @@ export default function StyleGuide() {
 
                         <div>
                             <p>Checkbox</p>
-                            <label for="checkbox1" className="checkbox">
+                            <label htmlFor="checkbox1" className="checkbox">
                                 <input id="checkbox1" type="checkbox" className={formMode} /><p>Checkbox 1</p>
                                 <div className="input-error">This field is required.</div>
                             </label>
-                            <label for="checkbox2" className="checkbox">
+                            <label htmlFor="checkbox2" className="checkbox">
                                 <input id="checkbox2" type="checkbox" className={formMode} /><p>Checkbox 2</p>
                             </label>
-                            <label for="checkbox3" className="checkbox">
+                            <label htmlFor="checkbox3" className="checkbox">
                                 <input id="checkbox3" type="checkbox" className={formMode} /><p>Checkbox 3</p>
                             </label>
                             <br /><br />
 
                             <p>Radio</p>
-                            <label for="radio1" className="radio">
+                            <label htmlFor="radio1" className="radio">
                                 <input id="radio1" type="radio" name="radio" className={formMode} /><p>Radio 1</p>
                                 <div className="input-error">This field is required.</div>
                             </label>
-                            <label for="radio2" className="radio">
+                            <label htmlFor="radio2" className="radio">
                                 <input id="radio2" type="radio" name="radio" className={formMode} /><p>Radio 2</p>
                             </label>
-                            <label for="radio3" className="radio">
+                            <label htmlFor="radio3" className="radio">
                                 <input id="radio3" type="radio" name="radio" className={formMode} /><p>Radio 3</p>
                             </label>
+                            <br /><br />
+
+                            <p>Radio Buttons (need to be contained within an element)</p>
+                            <div>
+                                <label htmlFor="radiobutton1" className="radio-button">
+                                    <input id="radiobutton1" type="radio" name="radiobutton" className={formMode} /><p>Radio 1</p>
+                                    <div className="input-error">This field is required.</div>
+                                </label>
+                                <label htmlFor="radiobutton2" className="radio-button">
+                                    <input id="radiobutton2" type="radio" name="radiobutton" className={formMode} /><p>Radio 2</p>
+                                </label>
+                                <label htmlFor="radiobutton3" className="radio-button">
+                                    <input id="radiobutton3" type="radio" name="radiobutton" className={formMode} /><p>Radio 3</p>
+                                </label>
+                            </div>
                             <br /><br />
 
                             <p>File</p>
@@ -317,12 +432,12 @@ export default function StyleGuide() {
                 </div>
 
                 <div className="mt-10">
-                    <h2>Popup</h2>
+                    <h2>Popups</h2>
                     <p>Please refer to the Popup component for popup usage</p>
                     <br />
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails1); setShowPopup(true) }}>Popup Example 1</button>
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails2); setShowPopup(true) }}>Popup Example 2</button>
-                    <button className="button mr-5 mb-5" onClick={() => { setCurrentPopup(popupDetails3); setShowPopup(true) }}>Popup Example 3</button>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowPopup1(true) }}>Popup Example 1</button>
+                    <button className="button mr-5 mb-5" onClick={() => { setShowPopup2(true) }}>Popup Example 2</button>
+                    <button className="button mr-5 mb-5" onClick={handleShowPopupForm}>Popup Form</button>
                 </div>
 
                 <div className="mt-10">

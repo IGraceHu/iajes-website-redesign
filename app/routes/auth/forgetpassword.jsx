@@ -1,6 +1,7 @@
 import { useState, useActionState } from "react";
 import { NavLink } from "react-router";
 import { Popup } from "../../components/popup";
+import { supabase } from "../../supabase";
 
 export function meta() {
   return [
@@ -10,19 +11,35 @@ export function meta() {
 }
 
 /*
-  Returns true once user is authenticated
-  Returns "invalid" if email or password is incorrect
+  Returns true once the reset email is sent
+  Returns "invalid" if email is incorrect
   Returns "error" if there was an error
 */
-function sendReset(data) {
-  return true;
+async function sendReset(data) {
+  try {
+    const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+      redirectTo: window.location.origin + "/signin",
+    });
+
+    if (error) {
+      if (error.message.toLowerCase().includes("invalid") || error.message.toLowerCase().includes("not found")) {
+        return "invalid";
+      }
+      return "error";
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Password reset error:", err);
+    return "error";
+  }
 }
 
 function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
   const [state, formAction] = useActionState(validate, { email: null });
   const [emailRequired, setEmailRequired] = useState(false);
 
-  function validate(previousState, formData) {
+  async function validate(previousState, formData) {
     const data = {
       email: formData.get("email"),
       validated: true
@@ -34,7 +51,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
     }
 
     if (data.validated) {
-      const result = sendReset(data);
+      const result = await sendReset(data);
       if (result === true) {
         setFormSuccess(true);
       } else {
@@ -63,7 +80,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
       <p className="pb-5 text-center w-sm">Enter your email address and we will send you a password reset link.</p>
 
       <form action={formAction} className="md:w-sm w-full duration-200">
-        <label for="email">Email:</label><br />
+        <label htmlFor="email">Email:</label><br />
         <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Enter your email address"
           className={"input-text w-full " + (emailRequired && "input-required")}
           onChange={(e) => checkEmpty(e.target.value)} />
@@ -73,27 +90,28 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
 
         <input type="submit" value="Send password reset e-mail" className="button w-full"></input>
       </form>
+      <div className="w-full my-5 text-center text-disabled-light">
+        <p>Already have an account? <a href="/signin">Sign in here.</a></p>
+      </div>
     </div>
   )
 }
 
-export default function SignIn() {
+export default function ForgetPassword() {
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
 
   const [formSuccess, setFormSuccess] = useState(false);
 
-  const popup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">{popupMessage}</div>
-  }
-
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Popup id="forget-password" show={showPopup} setShow={setShowPopup} details={popup} />
+      <Popup id="forget-password" show={showPopup} setShow={setShowPopup} >
+        <div className="w-full h-30 text-center flex justify-center items-center">{popupMessage}</div>
+      </Popup>
 
-      <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
-        <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-          IAJES Home
+      <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
+        <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+          <img className="h-[2.5rem]" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
