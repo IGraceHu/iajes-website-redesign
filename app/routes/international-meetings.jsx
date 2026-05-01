@@ -667,6 +667,24 @@ const VIDEO_2018 = [
 const MILESTONE_2018_INTRO = MILESTONE_2018.slice(1, 4);
 const MILESTONE_2019_BODY = MILESTONE_2019.slice(3);
 
+function toParagraphList(value) {
+  if (Array.isArray(value)) {
+    return value
+      .map((line) => (typeof line === "string" ? line.trim() : ""))
+      .filter(Boolean);
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    return value
+      .trim()
+      .split(/\n\s*\n/g)
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+}
+
 function createUpcomingMeeting(config) {
   const label = config?.label?.trim() || "Upcoming Conference";
   const id = label
@@ -901,7 +919,7 @@ function SpeakerCard({ speaker }) {
 
 function MeetingSidebarButton({ meeting, active = false, first = false, last = false, onClick }) {
   const stateClasses = active
-    ? "border-primary-dark bg-primary-dark"
+    ? "relative z-10 border-primary-dark border-b-2 bg-primary-dark"
     : "border-gray-light bg-white hover:bg-teal-50";
   const roundingClasses = `${first ? "rounded-t-md" : ""} ${last ? "rounded-b-md border-b-2" : ""}`;
 
@@ -962,8 +980,9 @@ function MeetingSection({ meeting }) {
   const isBhubaneswar = meeting.id === "bhubaneshwar-2024";
   const isBilbao = meeting.id === "bilbao-2018";
   const isCali = meeting.id === "cali-2019";
-  const milestoneLines = meeting.milestone ?? [];
-  const mainProgramLines = meeting.mainProgram?.text ?? [];
+  const milestoneLines = toParagraphList(meeting.milestone);
+  const mainProgramLines = toParagraphList(meeting.mainProgram?.text);
+  const preConferenceLines = toParagraphList(meeting.preConference?.items);
   const mainProgramSchedule = meeting.mainProgram?.schedule ?? [];
   const hasMainProgramSchedule = mainProgramSchedule.length > 0;
   const mainProgramSections = meeting.mainProgram?.sections ?? [];
@@ -1041,8 +1060,7 @@ function MeetingSection({ meeting }) {
       <div className="rounded-md border-2 border-gray-light bg-white p-4 shadow-sm">
         <div className="grid gap-6 lg:grid-cols-[0.95fr_1.05fr] items-center">
           <div>
-            <div className="text-xs font-semibold text-secondary-dark">International meeting</div>
-            <h3 className="mt-2">{meeting.title}</h3>
+            <h3>{meeting.title}</h3>
             {meeting.intro ? (
               <p className="mt-3 text-gray-dark/80">{meeting.intro}</p>
             ) : null}
@@ -1081,17 +1099,21 @@ function MeetingSection({ meeting }) {
 
       <div className="mt-6 flex flex-col gap-4">
         {!isBilbao && milestoneLines.length ? (
-          <SectionDropdown title="A milestone event">
-            {isCali ? (
-              <div className="rounded-md border-2 border-gray-light bg-white">
-                {CALI_MILESTONE_SECTIONS.map((section, index) => {
-                  return (
+          <div className="rounded-md border-2 border-gray-light bg-white p-4">
+            <div className="flex items-center gap-3">
+              <h4 className="text-secondary-dark">A Milestone Event</h4>
+              <div className="flex-1 border-b-2 border-gray-light" />
+            </div>
+            <div className="mt-3">
+              {isCali ? (
+                <div className="flex flex-col gap-5">
+                  {CALI_MILESTONE_SECTIONS.map((section, index) => (
                     <div
                       key={`${meeting.id}-milestone-section-${index}`}
-                      className={index === 0 ? "p-4" : "border-t-2 border-gray-light p-4"}
+                      className={index === 0 ? "" : "border-t-2 border-gray-light pt-5"}
                     >
-                      <h4 className="mb-2 text-secondary-dark">{section.title}</h4>
-                      <div className="flex flex-col gap-3">
+                      <h4 className="text-secondary-dark">{section.title}</h4>
+                      <div className="mt-2 flex flex-col gap-3">
                         {section.details.map((detail, detailIndex) => (
                           <p
                             key={`${meeting.id}-milestone-${index}-${detailIndex}`}
@@ -1100,8 +1122,10 @@ function MeetingSection({ meeting }) {
                             {detail}
                           </p>
                         ))}
-                        {section.subsections?.length ? (
-                          <div className="mt-2 flex flex-col gap-4">
+                      </div>
+                      {section.subsections?.length ? (
+                        <div className="mt-4 border-t-2 border-gray-light pt-4">
+                          <div className="flex flex-col gap-4">
                             {section.subsections.map((subsection, subIndex) => (
                               <div
                                 key={`${meeting.id}-milestone-sub-${index}-${subIndex}`}
@@ -1125,22 +1149,22 @@ function MeetingSection({ meeting }) {
                               </div>
                             ))}
                           </div>
-                        ) : null}
-                      </div>
+                        </div>
+                      ) : null}
                     </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                {milestoneLines.map((line, index) => (
-                  <p key={`${meeting.id}-milestone-${index}`} className="text-gray-dark/80">
-                    {line}
-                  </p>
-                ))}
-              </div>
-            )}
-          </SectionDropdown>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col gap-3">
+                  {milestoneLines.map((line, index) => (
+                    <p key={`${meeting.id}-milestone-${index}`} className="text-gray-dark/80">
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
         ) : null}
 
         <SectionDropdown title={isCali ? "List of participants" : "Main Program"}>
@@ -1312,7 +1336,7 @@ function MeetingSection({ meeting }) {
         {meeting.preConference ? (
           <SectionDropdown title={meeting.preConference.title}>
             <div className="flex flex-col gap-3">
-              {meeting.preConference.items.map((line, index) => (
+              {preConferenceLines.map((line, index) => (
                 <p key={`${meeting.id}-preconf-${index}`} className="text-gray-dark/80">
                   {line}
                 </p>
@@ -1372,27 +1396,7 @@ function MeetingSection({ meeting }) {
                   <h4 className="text-secondary-dark">Photos</h4>
                   <div className="flex-1 border-b-2 border-gray-light" />
                 </div>
-                <div className="mt-3 overflow-hidden rounded-md border-2 border-gray-light bg-white p-3">
-                  {mediaImages.length > 1 ? (
-                    <div className="mb-3 flex items-center justify-between">
-                      <button
-                        type="button"
-                        className="button button-light px-4 py-2 opacity-70 hover:opacity-100"
-                        onClick={() => handleImageStep(-1)}
-                        aria-label="Previous photo"
-                      >
-                        <i className="bi bi-arrow-left-short" aria-hidden="true" />
-                      </button>
-                      <button
-                        type="button"
-                        className="button button-light px-4 py-2 opacity-70 hover:opacity-100"
-                        onClick={() => handleImageStep(1)}
-                        aria-label="Next photo"
-                      >
-                        <i className="bi bi-arrow-right-short" aria-hidden="true" />
-                      </button>
-                    </div>
-                  ) : null}
+                <div className="mt-3 overflow-hidden rounded-md border-2 border-gray-light bg-white p-4">
                   <div className="relative flex items-center justify-center overflow-hidden rounded-md bg-white p-3">
                     <div className="w-full">
                       <img
@@ -1404,9 +1408,33 @@ function MeetingSection({ meeting }) {
                       />
                     </div>
                   </div>
-                  <div className="mt-3 text-xs text-gray-dark/70">
-                    Photo {imageIndex + 1} of {mediaImages.length}
-                  </div>
+                  <div className="mt-3 text-xs text-gray-dark/70">Photo {imageIndex + 1} of {mediaImages.length}</div>
+                  {mediaImages.length > 1 ? (
+                    <div className="mt-3 grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        className="flex items-center justify-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 text-primary-dark opacity-70 duration-200 hover:opacity-100"
+                        onClick={() => handleImageStep(-1)}
+                        aria-label="Previous photo"
+                      >
+                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
+                          <polyline points="14,1 2,12 14,23" />
+                        </svg>
+                        <span className="font-semibold">Previous</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="flex items-center justify-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 text-primary-dark opacity-70 duration-200 hover:opacity-100"
+                        onClick={() => handleImageStep(1)}
+                        aria-label="Next photo"
+                      >
+                        <span className="font-semibold">Next</span>
+                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
+                          <polyline points="2,1 14,12 2,23" />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : null}
                 </div>
               </div>
             ) : null}
@@ -1491,15 +1519,11 @@ export default function InternationalMeetings() {
             </div>
           </aside>
 
-          <div id="conference-details">
+          <div id="conference-details" className="scroll-mt-32">
             {selectedMeeting ? <MeetingSection meeting={selectedMeeting} /> : null}
           </div>
         </section>
 
-        <div className="mt-16 text-gray-dark/70">
-          <p>IAJES works within the International Association of Jesuit Universities</p>
-          <p>and in deep synergy with the Regional Associations of Jesuit Universities</p>
-        </div>
       </div>
       <Footer />
     </div>
