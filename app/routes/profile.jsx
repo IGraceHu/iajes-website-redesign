@@ -67,7 +67,7 @@ export async function loader({ params }) {
   return { person: person, taskForceList: taskForceList };
 }
 
-function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
+function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
@@ -165,7 +165,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList }) {
             <div className="md:col-span-2">
               <label htmlFor="allow-contact" className="checkbox">
                   <input id="allow-contact" name="allow-contact" type="checkbox" 
-                         className={""} defaultChecked={draft.allow_contact} /><p>Allow site visitors to contact you?</p>
+                         className={""} defaultChecked={draft.allow_contact}
+                         disabled={currentUserId != userId}
+                          /><p>Allow site visitors to contact you?</p>
               </label>
             </div>
             <div className="">
@@ -520,7 +522,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} currentUserId={currentUserId} />
       <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} stayOnBlur
              buttons={[{ text: "Save Changes", onclick: handlePhotoSave }]} >
         <div className="flex flex-col gap-4">
