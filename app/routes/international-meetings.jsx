@@ -1413,7 +1413,7 @@ function MeetingSection({ meeting }) {
                     <div className="mt-3 grid grid-cols-2 gap-3">
                       <button
                         type="button"
-                        className="flex items-center justify-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 text-primary-dark opacity-70 duration-200 hover:opacity-100"
+                        className="button button-light flex items-center justify-center gap-2"
                         onClick={() => handleImageStep(-1)}
                         aria-label="Previous photo"
                       >
@@ -1424,7 +1424,7 @@ function MeetingSection({ meeting }) {
                       </button>
                       <button
                         type="button"
-                        className="flex items-center justify-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 text-primary-dark opacity-70 duration-200 hover:opacity-100"
+                        className="button button-light flex items-center justify-center gap-2"
                         onClick={() => handleImageStep(1)}
                         aria-label="Next photo"
                       >
