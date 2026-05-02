@@ -13,6 +13,7 @@
     "@supabase/supabase-js": "^2.99.0",
     "bootstrap-icons": "^1.13.1",
     "classnames": "^2.5.1",
+    "firebase": "^12.12.1",
     "isbot": "^5.1.31",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -25,5 +26,6 @@
     "supabase": "^2.77.1",
     "tailwindcss": "^4.1.13",
     "vite": "^7.1.7"
-  }
+  },
+  "gcp-build": ""
 }

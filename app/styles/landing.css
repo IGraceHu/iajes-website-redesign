@@ -156,3 +156,30 @@
 .about-card:hover img {
     opacity: 0;
 }
+
+
+@media (width >= 48rem) { 
+    #highlights {
+        grid-template-columns: calc(60% - 20px) calc(40% - 20px);
+    }
+}
+
+.highlight-card > p {
+    color: var(--color-black);
+}
+
+.highlight-card:hover > h2 {
+    color: var(--color-secondary-light);
+}
+
+.highlight-card:hover > .highlight-header {
+    background-color: var(--color-secondary-dark);
+}
+
+.highlight-card:hover > .highlight-header > img {
+    opacity: 90%;
+}
+
+.highlight-card:hover > .highlight-header > img.disc {
+    opacity: 20%;
+}

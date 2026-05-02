@@ -65,7 +65,7 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
     if (buttons) {
         buttons.map((button) => {
             let btnId = "popup-" + id + "-button-" + i;
-            buttonsEl.push(<button key={btnId} id={btnId} className="button button-light mx-2" onClick={button.onclick}>{button.text}</button>);
+            buttonsEl.push(<button key={btnId} id={btnId} className="button mx-2" onClick={button.onclick}>{button.text}</button>);
             i++;
         })
     }
@@ -79,7 +79,7 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
                     </div>
                     <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
                         {buttonsEl}
-                        <button type="button" className="button mx-2" onClick={closePopup}>Close</button>
+                        <button type="button" className="button button-light mx-2" onClick={closePopup}>Close</button>
                     </div>
                 </div>
             </div>
@@ -163,8 +163,8 @@ export function PopupForm({ id, className, show, setShow, validate, hasError, ne
                             <p className="text-error text-center my-2">An error occurred. Please try again later.</p>
                         }
                         <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
-                            <input id="popup-form-submit" type="submit" className="button button-light mx-2" value="Save" />
-                            <button key="popup-close-default" type="button" className="button mx-2" onClick={closePopup}>Cancel</button>
+                            <input id="popup-form-submit" type="submit" className="button mx-2" value="Save" />
+                            <button key="popup-close-default" type="button" className="button button-light mx-2" onClick={closePopup}>Cancel</button>
                         </div>
                     </div>
                 </form>
