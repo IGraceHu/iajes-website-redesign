@@ -1208,9 +1208,9 @@ function MeetingSection({ meeting }) {
                 ) : null}
               </div>
             </div>
-          ) : meeting.mainProgram?.text?.length ? (
+          ) : mainProgramLines.length ? (
             <div className="flex flex-col gap-3">
-              {meeting.mainProgram.text.map((line, index) => (
+              {mainProgramLines.map((line, index) => (
                 <p key={`${meeting.id}-program-${index}`} className="text-gray-dark/80">
                   {line}
                 </p>
