@@ -403,6 +403,73 @@ button:disabled.button.button-light {
 }
 
 
+/* INTERNATIONAL MEETINGS *****************************************************/
+
+.meeting-dropdown-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.25s ease, opacity 0.25s ease;
+}
+
+.meeting-dropdown-content > div {
+  overflow: hidden;
+}
+
+.meeting-dropdown[open] .meeting-dropdown-content {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.meeting-dropdown[open] .meeting-dropdown-content > div {
+  animation: meeting-dropdown-slide 0.25s ease;
+}
+
+@keyframes meeting-dropdown-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes meeting-gallery-slide-next {
+  from {
+    opacity: 0.45;
+    transform: translateX(26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes meeting-gallery-slide-prev {
+  from {
+    opacity: 0.45;
+    transform: translateX(-26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.meeting-gallery-image.is-next {
+  animation: meeting-gallery-slide-next 0.35s ease;
+}
+
+.meeting-gallery-image.is-prev {
+  animation: meeting-gallery-slide-prev 0.35s ease;
+}
+
+
 /* FORMS ***********************************************************************/
 
 .input-text {
@@ -775,6 +842,5 @@ input[type="file"].input-required~.input-error {
   #task-forces>div:nth-child(even) {
     background-color: var(--color-slate-100);
   }
-
 
 }
