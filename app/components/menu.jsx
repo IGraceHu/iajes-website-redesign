@@ -187,13 +187,23 @@ export function Menu({ currentEndUrl }) {
         <p className="text-center mt-6">You have been signed out.</p>
       </Popup>
       <div id="menu" className="sticky top-0 bg-white z-100">
-        <div className="border-b border-b-gray-light h-6 z-100 flex flex-row justify-start">
+        <div className="border-b border-b-gray-light h-6 relative z-999 flex flex-row justify-end">
           {/* Secondary Header */}
+          {/* Linkedin Social Media Link */}
+          <a
+            href="https://www.linkedin.com/company/iajes"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mr-3 flex items-center text-zinc-400 hover:text-[#0A66C2] transition-colors"
+            aria-label="LinkedIn"
+          >
+            <i className="bi bi-linkedin text-[0.9rem]"></i>
+          </a>
           {/* Google Translate Dropdown */}
           <select
             value={language}
             onChange={changeLanguage}
-            className="link ml-3 text-[0.75rem]! z-100 notranslate text-zinc-400!"
+            className="link mr-3 text-[0.75rem]! z-100 notranslate text-zinc-400!"
           >
             {LANGUAGES.map((l) => (
               <option key={l.code} value={l.code}>
@@ -201,16 +211,6 @@ export function Menu({ currentEndUrl }) {
               </option>
             ))}
           </select>
-          {/* Linkedin Social Media Link */}
-          <a
-            href="https://www.linkedin.com/company/iajes"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="ml-3 flex items-center text-zinc-400 hover:text-[#0A66C2] transition-colors"
-            aria-label="LinkedIn"
-          >
-            <i className="bi bi-linkedin text-[0.9rem]"></i>
-          </a>
         </div>
 
         <div className="relative flex items-center content-center md:justify-start justify-between shadow-sm z-1 duration-200">
