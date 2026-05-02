@@ -608,7 +608,7 @@ export default function ProfileRoute({ loaderData }) {
         <div className="flex flex-col gap-4">
           <div className="text-lg font-semibold text-secondary-dark">Profile Photo</div>
           <div className="flex flex-col items-center gap-3">
-            <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-md border-2 border-gray-light bg-gray-light">
+            <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-full border-2 border-gray-light bg-gray-light">
               {photoDraftUrl ? (
                 <img src={photoDraftUrl} alt="Profile preview" className="h-full w-full object-cover" />
               ) : (

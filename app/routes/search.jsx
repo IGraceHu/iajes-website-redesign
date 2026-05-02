@@ -284,10 +284,18 @@ function PersonResultCard({ person }) {
     >
       <div className="flex items-center gap-4">
         <div
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-white"
+          className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white"
           aria-hidden="true"
         >
-          <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
+          {person.image_url ? (
+            <img
+              src={person.image_url}
+              alt={`${person.fname} ${person.lname}`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
+          )}
         </div>
         <div>
           <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>

@@ -25,16 +25,41 @@ async function getHighlights() {
     return data || error;
 }
 
-async function updateHighlight(highlightId, formData) {
+async function updateHighlight(highlightId, formData, newImageUrl) {
+  const updates = {
+    title: formData.get("title"),
+    details: formData.get("details"),
+    url: formData.get("url"),
+  };
+  if (newImageUrl) updates.image_url = newImageUrl;
+
   const { error } = await supabase
     .from('highlights')
-    .update({
-      title: formData.get("title"),
-      details: formData.get("details"),
-      url: formData.get("url"),
-    })
+    .update(updates)
     .eq('id', highlightId);
     return error;
+}
+
+async function uploadHighlightImage(highlightId, file) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const path = `${highlightId}/${Date.now()}-${safeName}`;
+  const { error: uploadError } = await supabase.storage
+    .from('highlights')
+    .upload(path, file);
+  if (uploadError) {
+    console.error("Error uploading highlight image:", uploadError);
+    return { error: uploadError };
+  }
+  const { data } = supabase.storage.from('highlights').getPublicUrl(path);
+  return { url: data.publicUrl };
+}
+
+function getStoragePathFromPublicUrl(url, bucket) {
+  if (!url) return null;
+  const marker = `/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
 }
 
 
@@ -182,7 +207,7 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
   const [currentHighlights, setCurrentHighlights] = useState(highlightList);
   const [showHighlightPopup, setShowHighlightPopup] = useState(false);
   const [focusHighlight, setFocusHighlight] = useState({});
-  const [formRequired, setFormRequired] = useState({ title: false, details: false, url: false });
+  const [formRequired, setFormRequired] = useState({ title: false, details: false, url: false, imageUrl: false });
   const [hasError, setHasError] = useState(false);
 
   function handleClosePopup() {
@@ -192,17 +217,20 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
 
   function handleShowHighlightPopup(highlight) {
     setShowHighlightPopup(true);
-    setFormRequired({ title: false, details: false, url: false });
+    setFormRequired({ title: false, details: false, url: false, imageUrl: false });
     setFocusHighlight(highlight);
   }
 
   async function validate(formData) {
     let isValidated = true;
     const urlInput = formData.get("url");
+    const imageFile = formData.get("image-url");
+    const hasImageFile = imageFile && typeof imageFile === "object" && imageFile.size > 0;
     const isRequired = {
       title: formData.get('title') === (null || ""),
       details: formData.get('details') === (null || ""),
-      url: (urlInput && !urlInput.match(/https:\/\//))
+      url: (urlInput && !urlInput.match(/https:\/\//)),
+      imageUrl: hasImageFile && !imageFile.type.startsWith("image/"),
     }
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -214,9 +242,30 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
       setFormRequired(isRequired);
       return false;
     }
-    
-    const updatedHighlight = await updateHighlight(focusHighlight.id, formData);
+
+    let newImageUrl = null;
+    if (hasImageFile) {
+      const uploadResult = await uploadHighlightImage(focusHighlight.id, imageFile);
+      if (uploadResult.error) {
+        setHasError(true);
+        return false;
+      }
+      newImageUrl = uploadResult.url;
+    }
+
+    const updatedHighlight = await updateHighlight(focusHighlight.id, formData, newImageUrl);
     if (updatedHighlight === null) {
+      if (newImageUrl && focusHighlight.image_url) {
+        const previousPath = getStoragePathFromPublicUrl(focusHighlight.image_url, 'highlights');
+        if (previousPath) {
+          const { error: removeError } = await supabase.storage
+            .from('highlights')
+            .remove([previousPath]);
+          if (removeError) {
+            console.error("Error removing previous highlight image:", removeError);
+          }
+        }
+      }
       setHasError(false);
       const newHighlights = await getHighlights();
       setCurrentHighlights(newHighlights);
@@ -271,8 +320,9 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
           </div>
           <label>
             Image:<br />
-            <input id="edit-highlight-img" name="image-url" type="file" />
-            <div className="input-error">This field is required.</div>
+            <input id="edit-highlight-img" name="image-url" type="file" accept="image/*"
+                   className={formRequired?.imageUrl ? "input-required" : ""} />
+            <div className="input-error">Please select an image file.</div>
           </label>
         </div>
         <div>
