@@ -584,7 +584,7 @@ export default function ProfileRoute({ loaderData }) {
   };
 
 
-  const profilePhotoContent = profile.avatarUrl ? (
+  const profilePhotoContent = profile.image_url ? (
     <img
       src={profile.image_url}
       alt={`${profile.fname} ${profile.lname}`}
@@ -597,8 +597,14 @@ export default function ProfileRoute({ loaderData }) {
   return (
     <div className="min-h-screen bg-white">
       <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} currentUserId={currentUserId} />
-      <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} stayOnBlur
-             buttons={[{ text: "Save Changes", onclick: handlePhotoSave }]} >
+      <Popup
+        id="profile-photo"
+        show={showPhotoPopup}
+        setShow={setShowPhotoPopup}
+        closePopup={handlePhotoCancel}
+        stayOnBlur
+        buttons={[{ text: photoSaving ? "Saving..." : "Save Changes", onclick: handlePhotoSave }]}
+      >
         <div className="flex flex-col gap-4">
           <div className="text-lg font-semibold text-secondary-dark">Profile Photo</div>
           <div className="flex flex-col items-center gap-3">
@@ -609,10 +615,12 @@ export default function ProfileRoute({ loaderData }) {
                 <i className="bi bi-person-fill text-[72px] text-secondary-dark/60" aria-hidden="true" />
               )}
             </div>
-            <button type="button" className="button button-light" onClick={openPhotoPicker}>
+            <button type="button" className="button button-light" onClick={openPhotoPicker} disabled={photoSaving}>
               Change Photo
             </button>
             <div className="text-xs text-gray-dark/70">Changes apply after you click Save Changes.</div>
+            {photoSaving && <div className="text-xs text-gray-dark/70">Uploading...</div>}
+            {photoError && <div className="text-xs text-error">{photoError}</div>}
           </div>
         </div>
       </Popup>
@@ -652,7 +660,7 @@ export default function ProfileRoute({ loaderData }) {
           <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
             <div className="flex flex-col items-center text-center">
               <div className="relative -mt-8">
-                <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-white bg-gray-light overflow-hidden">
+                <div className="flex h-36 w-36 items-center justify-center rounded-full border-3 border-primary-dark bg-gray-light overflow-hidden">
                   {profilePhotoContent}
                 </div>
                 {currentUserId == profile.id ? (
