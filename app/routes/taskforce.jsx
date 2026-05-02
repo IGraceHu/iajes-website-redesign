@@ -382,7 +382,7 @@ function EditContentBottomPopup({showPopup, setShowPopup, content, taskForceUrl}
   )
 }
 
-function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers, setTeamMembers}) {
+function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   const navigate = useNavigate();
   const [currentTeamMembers, setCurrentTeamMembers] = useState(teamMembers);
   const [showMemberPopup, setShowMemberPopup] = useState(false);
@@ -584,7 +584,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers, setTeamMe
   )
 }
 
-function EditProjects({showPopup, setShowPopup, taskForceUrl, projects, setProjects}) {
+function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
   const navigate = useNavigate();
   const [currentProjects, setCurrentProjects] = useState(projects);
   const [showProjectPopup, setShowProjectPopup] = useState(false);
@@ -779,14 +779,6 @@ export default function TaskForce({ loaderData }) {
   const [showTeamPopup, setShowTeamPopup] = useState(false);
   const [showProjectsPopup, setShowProjectsPopup] = useState(false);
 
-  const [teamMembers, setTeamMembers] = useState(loaderData.team_members || []);
-  const [projects, setProjects] = useState(loaderData.projects || []);
-
-  useEffect(() => {
-    setTeamMembers(loaderData.team_members || []);
-    setProjects(loaderData.projects || []);
-  }, [loaderData]);
-
   let memberClassName = "w-full my-5 duration-200 grid gap-5 justify-items-center ";
   if (taskForceData.team_members) {
     if (taskForceData.team_members.length == 1) {
@@ -847,7 +839,6 @@ export default function TaskForce({ loaderData }) {
         taskForceUrl={taskForceData.url} 
         taskForceId={taskForceData.id}
         teamMembers={taskForceData.team_members} 
-        setTeamMembers={setTeamMembers} 
       />
       <EditProjects 
         showPopup={showProjectsPopup} 
@@ -855,7 +846,6 @@ export default function TaskForce({ loaderData }) {
         taskForceUrl={taskForceData.url} 
         taskForceId={taskForceData.id}
         projects={taskForceData.projects} 
-        setProjects={setProjects} 
       />
       
       <Menu />
