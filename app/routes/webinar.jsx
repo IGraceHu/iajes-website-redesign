@@ -1,15 +1,18 @@
+import { useEffect, useState } from "react";
+import { Form, redirect, useNavigation } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { getWebinarDetailsById } from "../data/webinars.server";
+import { Popup } from "../components/popup";
+import { isAdminRequest } from "../lib/auth.server";
+import { buildWebinarPayloadFromForm, deleteWebinar, getWebinarDetailsById, updateWebinar } from "../data/webinars.server";
+import { WebinarFormFields, emptyFormValues, toFieldErrorState, webinarToFormValues } from "../components/webinar-form-fields";
 import "../styles/video-resources.css";
 
 export function meta({ data }) {
-  return [
-    { title: data?.title ? `${data.title} | Webinar` : "Webinar" },
-  ];
+  return [{ title: data?.title ? `${data.title} | Webinar` : "Webinar" }];
 }
 
-export async function loader({ params }) {
+export async function loader({ params, request }) {
   const result = await getWebinarDetailsById(params.webinarId);
   const found = result.webinar || {};
 
@@ -25,8 +28,80 @@ export async function loader({ params }) {
     extraRecordings: Array.isArray(found.extraRecordings) ? found.extraRecordings : [],
     images: Array.isArray(found.images) ? found.images : [],
     links: Array.isArray(found.links) ? found.links : [],
+    thumbnail: found.thumbnail ?? "",
     source: result.source,
     loadError: result.error,
+    isAdmin: isAdminRequest(request),
+  };
+}
+
+export async function action({ request, params }) {
+  if (!isAdminRequest(request)) {
+    return {
+      ok: false,
+      error: "Only logged-in admins can edit webinars.",
+      intent: "update",
+      fieldErrors: {},
+      values: emptyFormValues(),
+    };
+  }
+
+  const formData = await request.formData();
+  const intent = typeof formData.get("intent") === "string" ? formData.get("intent").trim() : "";
+
+  if (intent === "delete") {
+    const result = await deleteWebinar(params.webinarId);
+    if (result.error) {
+      return {
+        ok: false,
+        error: result.error,
+        intent,
+        fieldErrors: {},
+        values: emptyFormValues(),
+      };
+    }
+
+    return redirect("/webinars");
+  }
+
+  if (intent !== "update") {
+    return {
+      ok: false,
+      error: "Unknown action.",
+      intent,
+      fieldErrors: {},
+      values: emptyFormValues(),
+    };
+  }
+
+  const parsed = buildWebinarPayloadFromForm(formData);
+  if (parsed.error) {
+    return {
+      ok: false,
+      error: parsed.error,
+      intent,
+      fieldErrors: parsed.fieldErrors,
+      values: parsed.values,
+    };
+  }
+
+  const result = await updateWebinar(params.webinarId, parsed.payload);
+  if (result.error) {
+    return {
+      ok: false,
+      error: result.error,
+      intent,
+      fieldErrors: {},
+      values: parsed.values,
+    };
+  }
+
+  return {
+    ok: true,
+    message: "Webinar updated.",
+    intent,
+    fieldErrors: {},
+    values: webinarToFormValues(result.webinar),
   };
 }
 
@@ -43,11 +118,64 @@ function RecordingFrame({ title, src }) {
   );
 }
 
-export default function Webinar({ loaderData }) {
+export default function Webinar({ loaderData, actionData }) {
+  const navigation = useNavigation();
+  const [showEditPopup, setShowEditPopup] = useState(false);
+
+  const isSubmitting = navigation.state === "submitting";
+  const isAdmin = Boolean(loaderData?.isAdmin);
+
+  useEffect(() => {
+    if (actionData?.ok) {
+      setShowEditPopup(false);
+    }
+  }, [actionData]);
+
+  const editValues = actionData?.intent === "update" ? actionData?.values || webinarToFormValues(loaderData) : webinarToFormValues(loaderData);
+  const editErrors = actionData?.intent === "update" ? actionData?.fieldErrors || {} : {};
+
+  const editPopupDetails = {
+    content: (
+      <div className="h-[80vh] md:w-[70vw]" key={loaderData.id || "webinar-edit"}>
+        <h4>Edit webinar</h4>
+        <Form id="edit-webinar-form" method="post" className="mb-5 h-[80%] overflow-y-auto">
+          <input type="hidden" name="intent" value="update" />
+          <WebinarFormFields values={editValues} fieldErrors={toFieldErrorState(editErrors)} />
+        </Form>
+      </div>
+    ),
+    buttons: [
+      {
+        text: isSubmitting ? "Saving..." : "Save",
+        onclick: () => {
+          if (isSubmitting) {
+            return;
+          }
+          document.getElementById("edit-webinar-form")?.requestSubmit();
+        },
+      },
+    ],
+    defaultButton: {
+      text: "Cancel",
+      onclick: () => {
+        if (!isSubmitting) {
+          setShowEditPopup(false);
+        }
+      },
+    },
+    closeOnBlur: false,
+  };
+
   const isExternalLink = (href) => typeof href === "string" && href.startsWith("http");
 
   return (
     <>
+      {isAdmin ? (
+        <div className="absolute left-0 top-0 z-1000">
+          <Popup id="webinar-edit" show={showEditPopup} setShow={setShowEditPopup} details={editPopupDetails} />
+        </div>
+      ) : null}
+
       <Menu />
       <div className="relative w-full overflow-hidden bg-secondary-light px-10 py-20 lg:px-40" style={{ color: "white" }}>
         <div className="absolute left-0 top-0 z-0 w-full">
@@ -72,13 +200,44 @@ export default function Webinar({ loaderData }) {
       <div className="px-10 py-20 duration-200 lg:px-40">
         {loaderData.source !== "supabase" ? (
           <div className="mb-4 rounded-md border-2 border-primary-light bg-primary-extralight p-3 text-secondary-dark">
-            Showing fallback static webinar data.
+            Supabase webinar data is unavailable right now, so this page is showing temporary test webinar content.
           </div>
         ) : null}
 
         {loaderData.loadError ? (
           <div className="mb-4 rounded-md border-2 border-error/35 bg-error/10 p-3 text-error">
             Supabase error: {loaderData.loadError}
+          </div>
+        ) : null}
+
+        {actionData?.error ? (
+          <div className="mb-4 rounded-md border-2 border-error/35 bg-error/10 p-3 text-error">{actionData.error}</div>
+        ) : null}
+
+        {actionData?.ok ? (
+          <div className="mb-4 rounded-md border-2 border-primary-light bg-primary-extralight p-3 text-secondary-dark">
+            {actionData.message}
+          </div>
+        ) : null}
+
+        {isAdmin ? (
+          <div className="mb-6 flex flex-wrap gap-2">
+            <button type="button" className="button button-light" onClick={() => setShowEditPopup(true)}>
+              Edit
+            </button>
+            <Form
+              method="post"
+              onSubmit={(event) => {
+                if (!window.confirm(`Delete webinar "${loaderData.title}"?`)) {
+                  event.preventDefault();
+                }
+              }}
+            >
+              <input type="hidden" name="intent" value="delete" />
+              <button type="submit" className="button button-light button-red">
+                Delete
+              </button>
+            </Form>
           </div>
         ) : null}
 
@@ -132,7 +291,11 @@ export default function Webinar({ loaderData }) {
                 <div key={`${speaker.name}-${speakerIndex}`} className="rounded-md border-2 border-gray-light bg-white p-4">
                   <div className="grid gap-4 md:grid-cols-[12rem_1fr] md:items-start">
                     <div className="overflow-hidden rounded-md border-2 border-gray-light bg-white">
-                      <img src={speaker.image} alt={speaker.name} className="h-48 w-full object-cover" loading="lazy" />
+                      {speaker.image ? (
+                        <img src={speaker.image} alt={speaker.name} className="h-48 w-full object-cover" loading="lazy" />
+                      ) : (
+                        <div className="flex h-48 items-center justify-center bg-primary-extralight text-secondary-dark">No image</div>
+                      )}
                     </div>
                     <div>
                       <h5>{speaker.name}</h5>
