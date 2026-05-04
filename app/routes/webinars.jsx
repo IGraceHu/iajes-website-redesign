@@ -28,78 +28,128 @@ export async function loader({ params }) {
     return { webinars: webinars };
 }
 
-// async function createWebinars(formData) {
-//     let thumbnailUrl = null;
-//     let speakerImgUrl = null;
+async function createWebinar(formData) {
+    // return false;
+    const error = null;
 
-//     const thumbnailFile = formData.get("vid-resource-thumbnail");
-//     if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
-//         const path = `${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-//         const { error: uploadError } = await supabase.storage
-//             .from('video-resources')
-//             .upload(path, thumbnailFile);
+    // const { data, error } = await supabase
+    //     .from('webinars')
+    //     .insert({
+    //         title: formData.get("webinars-title"),
+    //         pdf_url: formData.get("webinars-pdf-link"),
+    //         video_url: formData.get("webinar-video-link"),
+    //         date: formData.get("webinar-date"),
+    //         description: formData.get("webinar-desc"),
+    //     })
+    //     .select('id')
 
-//         if (uploadError) {
-//             console.error("Error uploading thumbnail:", uploadError);
-//             return uploadError;
-//         }
+    console.log({
+            title: formData.get("webinar-title"),
+            pdf_url: formData.get("webinar-pdf-link"),
+            video_url: formData.get("webinar-video-link"),
+            date: formData.get("webinar-date"),
+            description: formData.get("webinar-desc"),
+        })
 
-//         const { data, error: urlError } = supabase.storage
-//             .from('video-resources')
-//             .getPublicUrl(path);
+    // if (data[0].id) {
+    if (true) {
 
-//         if (urlError) {
-//             console.error("Error getting thumbnail URL:", urlError);
-//             return urlError;
-//         }
+        // const webinarId = data[0].id;
 
-//         thumbnailUrl = data.publicUrl;
-//     }
+        // let thumbnailUrl = null;
+        // let speakerImgUrl = null;
 
-//     const speakerImgFile = formData.get("vid-resource-speaker-img");
-//     if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
-//         const path = `${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-//         const { error: uploadError } = await supabase.storage
-//             .from('video-resources')
-//             .upload(path, speakerImgFile);
+        // const thumbnailFile = formData.get("webinar-thumbnail");
+        // if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
+        //     const path = `${webinarId}/${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        //     const { error: uploadError } = await supabase.storage
+        //         .from('webinars')
+        //         .upload(path, thumbnailFile);
 
-//         if (uploadError) {
-//             console.error("Error uploading speaker image:", uploadError);
-//             return uploadError;
-//         }
+        //     if (uploadError) {
+        //         console.error("Error uploading thumbnail:", uploadError);
+        //         return uploadError;
+        //     }
 
-//         const { data, error: urlError } = supabase.storage
-//             .from('video-resources')
-//             .getPublicUrl(path);
+        //     const { data, error: urlError } = supabase.storage
+        //         .from('webinars')
+        //         .getPublicUrl(path);
 
-//         if (urlError) {
-//             console.error("Error getting speaker image URL:", urlError);
-//             return urlError;
-//         }
+        //     if (urlError) {
+        //         console.error("Error getting thumbnail URL:", urlError);
+        //         return urlError;
+        //     }
 
-//         speakerImgUrl = data.publicUrl;
-//     }
+        //     thumbnailUrl = data.publicUrl;
+        // }
 
-//     const { error } = await supabase
-//         .from('video resources')
-//         .insert({
-//             title: formData.get("vid-resource-title"),
-//             video_url: formData.get("vid-resource-link"),
-//             date: formData.get("vid-resource-date"),
-//             video_thumbnail: thumbnailUrl,
-//             video_description: formData.get("vid-resource-desc"),
-//             speaker: formData.get("vid-resource-speaker-name"),
-//             speaker_university: formData.get("vid-resource-speaker-uni"),
-//             speaker_image: speakerImgUrl,
-//             speaker_details: formData.get("vid-resource-speaker-desc"),
-//         })
+        let hasSpeakers = true;
+        let i = 0;
+        const speakersData = []
+        while (hasSpeakers) {
+            if (formData.get("webinar-speaker-name-" + i) == null) {
+                hasSpeakers = false;
+                break;
+            }
 
-//     if (error) {
-//         console.error("Database insert error:", error);
-//     }
+            // const speakerImgFile = formData.get("webinar-speaker-image-" + i);
+            // if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
+            //     const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+            //     const { error: uploadError } = await supabase.storage
+            //         .from('webinars')
+            //         .upload(path, speakerImgFile);
 
-//     return error;
-// }
+            //     if (uploadError) {
+            //         console.error("Error uploading speaker image:", uploadError);
+            //         return uploadError;
+            //     }
+
+            //     const { data, error: urlError } = supabase.storage
+            //         .from('webinars')
+            //         .getPublicUrl(path);
+
+            //     if (urlError) {
+            //         console.error("Error getting speaker image URL:", urlError);
+            //         return urlError;
+            //     }
+
+            //     speakerImgUrl = data.publicUrl;
+            // }
+
+            speakersData.push({
+                name: formData.get("webinar-speaker-name-" + i),
+                university: formData.get("webinar-speaker-university-" + i),
+                position: formData.get("webinar-speaker-position-" + i),
+                // image_url: speakerImageUrl,
+                slidesURL: formData.get("webinar-speaker-slides-" + i),
+            })
+            i++;
+        }
+
+        const speakerDataJSON = JSON.stringify(speakersData);
+        console.log(speakersData);
+
+        // const { imgError } = await supabase
+        // .from('webinars')
+        // .update({
+        //     thumbnail: thumbnailUrl,
+        //     speakers_json: speakerDataJSON
+        // })
+        // .eq('id', webinarId)
+
+        // if (imgError) {
+        //     console.error("Image insert error:", imgError);
+        // }
+    }
+    else if (error) {
+        console.error("Database insert error:", error);
+    }
+    else {
+        console.error("Something went wrong");
+    }
+
+    return error;
+}
 
 function WebinarCard({ webinarInfo }) {
     webinarInfo.video_thumbnail = (webinarInfo.video_thumbnail == "{}") ? null : webinarInfo.video_thumbnail;
@@ -310,7 +360,7 @@ export default function Webinars({ loaderData }) {
             return false;
         }
 
-        const createError = await createVideoResource(formData);
+        const createError = await createWebinar(formData);
         if (createError === null) {
             setShowResolvePopup(true);
         } else {
@@ -326,6 +376,7 @@ export default function Webinars({ loaderData }) {
         })
         setSpeakers([]);
         setShowCreatePopup(true);
+        setHasError(false);
     }
 
     // This resolves required fields once fields are no longer empty
@@ -357,11 +408,11 @@ export default function Webinars({ loaderData }) {
         <>
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm id="video-resource" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                    <PopupForm id="webinar" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
                         <h4>Create new webinar</h4>
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
-                                <label htmlFor="vid-resource-title">Webinar title:</label><br />
+                                <label htmlFor="webinar-title">Webinar title:</label><br />
                                 <input id="webinar-title" name="webinar-title" type="text"
                                     className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
                                     placeholder="Webinar title"
