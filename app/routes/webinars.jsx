@@ -168,8 +168,6 @@ function WebinarCard({ webinarInfo }) {
                     }
                 </div>
                 <h6>{webinarInfo.title}</h6>
-                <p className="font-semibold text-black"><i>{webinarInfo.speaker}</i></p>
-                <p className="text-sm text-disabled-light"><i>{webinarInfo.speaker_university}</i></p>
             </a>
         </div>
     )
