@@ -47,7 +47,7 @@ async function getTeamMembers(teamMemberList) {
 // And adds the member's id to the list of team members of the task force
 // Returns the list of task force members
 //   Will be updated if successful
-async function addTeamMember(taskForceUrl, teamMemberList, formData) {
+async function addTeamMember(taskForceUrl, teamMemberList, formData, imageUrl) {
   const { data, errorMembers } = await supabase
     .from('task force members')
     .insert({
@@ -56,6 +56,7 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
       location: formData.get("location"),
       contact: formData.get("contact"),
       iajes_url: formData.get("iajes-url"),
+      image_url: imageUrl
     })
     .select()
 
@@ -73,18 +74,34 @@ async function addTeamMember(taskForceUrl, teamMemberList, formData) {
     return teamMemberList;
 }
 
-async function updateTeamMember(memberId, formData) {
-  const { error } = await supabase
-    .from('task force members')
-    .update({
-      name: formData.get("name"),
-      role: formData.get("role"),
-      location: formData.get("location"),
-      contact: formData.get("contact"),
-      iajes_url: formData.get("iajes-url"),
-    })
-    .eq('id', memberId)
-    return error;
+async function updateTeamMember(memberId, formData, imageUrl) {
+  if (imageUrl == null || imageUrl == "") {
+    const { error } = await supabase
+      .from('task force members')
+      .update({
+        name: formData.get("name"),
+        role: formData.get("role"),
+        location: formData.get("location"),
+        contact: formData.get("contact"),
+        iajes_url: formData.get("iajes-url"),
+      })
+      .eq('id', memberId)
+      return error;
+  } else {
+    const { error } = await supabase
+      .from('task force members')
+      .update({
+        name: formData.get("name"),
+        role: formData.get("role"),
+        location: formData.get("location"),
+        contact: formData.get("contact"),
+        iajes_url: formData.get("iajes-url"),
+        image_url: imageUrl
+      })
+      .eq('id', memberId)
+      return error;
+  }
+  
 }
 
 async function deleteTeamMember(taskForceUrl, teamMemberList, memberId) {
@@ -121,13 +138,14 @@ async function getProjects(projectList) {
 // And adds the member's id to the list of team members of the task force
 // Returns the list of task force members
 //   Will be updated if successful
-async function addProject(taskForceUrl, projectList, formData) {
+async function addProject(taskForceUrl, projectList, formData, imageUrl) {
   const { data, errorProjects } = await supabase
     .from('task force projects')
     .insert({
       name: formData.get("name"),
       details: formData.get("details"),
-      url: formData.get("url")
+      url: formData.get("url"),
+      image_url: imageUrl
     })
     .select()
 
@@ -145,16 +163,29 @@ async function addProject(taskForceUrl, projectList, formData) {
     return projectList;
 }
 
-async function updateProject(projectId, formData) {
-  const { error } = await supabase
-    .from('task force projects')
-    .update({
-      name: formData.get("name"),
-      details: formData.get("details"),
-      url: formData.get("url")
-    })
-    .eq('id', projectId)
+async function updateProject(projectId, formData, imageUrl) {
+  if (imageUrl == null || imageUrl == "") {
+    const { error } = await supabase
+      .from('task force projects')
+      .update({
+        name: formData.get("name"),
+        details: formData.get("details"),
+        url: formData.get("url")
+      })
+      .eq('id', projectId)
     return error;
+  } else {
+    const { error } = await supabase
+      .from('task force projects')
+      .update({
+        name: formData.get("name"),
+        details: formData.get("details"),
+        url: formData.get("url"),
+        image_url: imageUrl
+      })
+      .eq('id', projectId)
+    return error;
+  }
 }
 
 async function deleteProject(taskForceUrl, projectList, projectId) {
@@ -177,6 +208,45 @@ async function deleteProject(taskForceUrl, projectList, projectId) {
   }
   return projectList;
 }
+
+
+async function uploadTaskForceImage(file, folder) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const path = `${folder}/${Date.now()}-${safeName}`;
+  const { error: uploadError } = await supabase.storage
+    .from('task-forces')
+    .upload(path, file);
+  if (uploadError) {
+    console.error("Error uploading task force image:", uploadError);
+    return { error: uploadError };
+  }
+  const { data } = supabase.storage.from('task-forces').getPublicUrl(path);
+  return { url: data.publicUrl };
+}
+
+function getStoragePathFromPublicUrl(url, bucket) {
+  if (!url) return null;
+  const marker = `/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
+
+async function removeTaskForceImage(url) {
+  const path = getStoragePathFromPublicUrl(url, 'task-forces');
+  if (!path) return;
+  const { error } = await supabase.storage.from('task-forces').remove([path]);
+  if (error) {
+    console.error("Error removing previous task force image:", error);
+  }
+}
+
+
+
+// -------------------------------------------------------------------------------------------
+
+
+
 
 export async function loader({ params }) {
   // const found = tfInfoTemp.find((tfInf) => tfInf.url == params.tfName);
@@ -217,8 +287,8 @@ function MemberCard({ memberData }) {
 function ProjectCard({ projectData }) {
   return (
     <div className="mb-5 mt-5">
-      { projectData.url ? 
-          <a href={projectData.url} className="hover:text-primary-dark duration-200"><h4>{projectData.name}</h4></a> 
+      { projectData.projectURL ? 
+          <a href={projectData.projectURL} className="hover:text-primary-dark duration-200"><h4>{projectData.name}</h4></a> 
           :
           <h4>{projectData.name}</h4> 
         }
@@ -320,6 +390,9 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   const [focusMember, setFocusMember] = useState(null);
   const [formRequired, setFormRequired] = useState({ name: false, iajesUrl: false });
 
+  const [memberHasError, setMemberHasError] = useState(false);
+  const [memberImagePreview, setMemberImagePreview] = useState("");
+
 
   function handleClosePopup() {
     setShowPopup(false);
@@ -327,6 +400,8 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
   }
 
   function handleShowMemberPopup(memberData) {
+    setMemberHasError(false);
+    setMemberImagePreview(memberData?.image_url || "");    
     setShowMemberPopup(true);
     setFormRequired({ name: false, iajesUrl: false });
     setFocusMember(memberData);
@@ -337,12 +412,37 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
     setFocusMember(memberData);
   }
 
+  function handleMemberImageChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setMemberImagePreview(URL.createObjectURL(file));
+  }
+
 
   // create and update
   async function memberValidate(formData) {
     let isValidated = true;
 
+    // IMAGE HANDLING -------------------------------------
+    const imageFile = formData.get("edit-member-image");
+    const previousImageUrl = focusMember?.image_url || null;
+    let imageUrl = previousImageUrl;
+
+    if (imageFile && imageFile.name && imageFile.size > 0) {
+      const uploadResult = await uploadTaskForceImage(imageFile, `members/${taskForceUrl || "unknown"}`);
+      if (uploadResult.error) {
+        setMemberHasError(true);
+        return false;
+      }
+      imageUrl = uploadResult.url;
+      if (previousImageUrl) {
+        await removeTaskForceImage(previousImageUrl);
+      }
+    }
+
+    // URL HANDLING -------------------------------------
     const iajesUrl = formData.get("iajes-url")
+
     const isRequired = {
       name: formData.get('name') === (null || ""),
       iajesUrl: (iajesUrl && !iajesUrl.match(/\/profile\/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/))
@@ -366,14 +466,14 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
     
     // if focus member is null => new member
     if (focusMember == null) {
-      const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData);
+      const updatedTeamMemberList = await addTeamMember(taskForceUrl, teamMemberList, formData, imageUrl);
 
       // if the team member is successfully created, fetch team members again to update UI
       const newMembers = await getTeamMembers(updatedTeamMemberList)
       setCurrentTeamMembers(newMembers);
       setShowMemberPopup(false);
     } else {
-      const updateMember = await updateTeamMember(focusMember.id, formData);
+      const updateMember = await updateTeamMember(focusMember.id, formData, imageUrl);
       if (updateMember === null) {
         const newMembers = await getTeamMembers(teamMemberList);
         setCurrentTeamMembers(newMembers);
@@ -439,7 +539,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
           <div className="text-center mt-6">Remove {focusMember?.name}?</div>
       </Popup>
 
-      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={memberValidate} nested>
+      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={memberValidate} hasError={memberHasError} encType="multipart/form-data"  nested>
         <h4>Edit Team Member</h4>
         <label htmlFor="edit-member-name">Name:</label><br />
         <input id="edit-person-name" name="name" type="text" className={"input input-text w-full " + (formRequired?.name && "input-required")}
@@ -469,11 +569,16 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
                defaultValue={focusMember?.iajes_url} />
         <div className="input-error">Invalid profile URL. IAJES profile URL must start with /profile/</div>
         <br /><br />
-        <label>
-          Image:<br />
-          <input id="edit-member-image" name="image" type="file" />
-          <div className="input-error">This field is required.</div>
-        </label>
+
+        <label htmlFor="edit-member-image">Image:</label><br />
+          {focusMember?.image_url && !memberImagePreview && (
+            <p className="text-sm text-disabled-dark">Leave empty to keep existing image.</p>
+          )}
+          {memberImagePreview && (
+            <img src={memberImagePreview} alt="Member preview" className="my-2 max-h-40 object-cover rounded" />
+          )}
+        <input id="edit-member-image" name="edit-member-image" type="file" accept=".jpg,.jpeg,.png" onChange={handleMemberImageChange} />
+
       </PopupForm>
     </>
   )
@@ -487,6 +592,9 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
   const [focusProject, setFocusProject] = useState({});
   const [formRequired, setFormRequired] = useState({ name: false });
 
+  const [projectHasError, setProjectHasError] = useState(false);
+  const [projectImagePreview, setProjectImagePreview] = useState("");
+
 
   function handleClosePopup() {
     setShowPopup(false);
@@ -494,6 +602,8 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
   }
 
   function handleShowProjectPopup(projectData) {
+    setProjectHasError(false);
+    setProjectImagePreview(projectData?.image_url || "");    
     setShowProjectPopup(true);
     setFormRequired({ name: false });
     setFocusProject(projectData);
@@ -505,8 +615,33 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
   }
 
 
+  function handleProjectImageChange(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setProjectImagePreview(URL.createObjectURL(file));
+  }
+
+
   async function validate(formData) {
     let isValidated = true;
+
+
+    const imageFile = formData.get("edit-project-img");
+    const previousImageUrl = focusProject?.image_url || null;
+    let imageUrl = previousImageUrl;
+
+    if (imageFile && imageFile.name && imageFile.size > 0) {
+      const uploadResult = await uploadTaskForceImage(imageFile, `projects/${taskForceUrl || "unknown"}`);
+      if (uploadResult.error) {
+        setProjectHasError(true);
+        return false;
+      }
+      imageUrl = uploadResult.url;
+      if (previousImageUrl) {
+        await removeTaskForceImage(previousImageUrl);
+      }
+    }
+
 
     const isRequired = {
       name: formData.get('name') === (null || ""),
@@ -530,14 +665,14 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
     
     // if focus project is null => new project
     if (focusProject == null) {
-      const updatedProjectList = await addProject(taskForceUrl, projectList, formData);
+      const updatedProjectList = await addProject(taskForceUrl, projectList, formData, imageUrl);
 
       // if the team project is successfully created, fetch project again to update UI
       const newProjects = await getProjects(updatedProjectList)
       setCurrentProjects(newProjects);
       setShowProjectPopup(false);
     } else {
-      const updatedProject = await updateProject(focusProject.id, formData);
+      const updatedProject = await updateProject(focusProject.id, formData, imageUrl);
       if (updatedProject === null) {
         const newProjects = await getProjects(projectList);
         setCurrentProjects(newProjects);
@@ -573,10 +708,10 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
     }
     setFocusProject(null);
   }
-  
+
   return (
     <>
-      <Popup id="tf-projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
+      <Popup id="tf-projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup} hasError={projectHasError} encType="multipart/form-data">
         <h4>Edit Task Force Projects</h4>
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
             {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
@@ -595,7 +730,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
           <div className="text-center mt-6">Remove {focusProject?.name}?</div>
       </Popup>
 
-      <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} nested>
+      <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} hasError={projectHasError} encType="multipart/form-data" nested>
         <h4>Edit Project</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
@@ -605,11 +740,16 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
                    defaultValue={focusProject?.name} />
             <div className="input-error">This field is required.</div>
           </div>
-          <label>
-            Image:<br />
-            <input id="edit-project-img" name="image-url" type="file" />
-            <div className="input-error">This field is required.</div>
-          </label>
+          <div>
+            <label htmlFor="edit-project-img">Image:</label><br />
+            {focusProject?.image_url && !projectImagePreview && (
+              <p className="text-sm text-disabled-dark">Leave empty to keep existing image.</p>
+            )}
+            {projectImagePreview && (
+              <img src={projectImagePreview} alt="Project preview" className="my-2 max-h-40 object-cover rounded" />
+            )}
+            <input id="edit-project-img" name="edit-project-img" type="file" accept=".jpg,.jpeg,.png" onChange={handleProjectImageChange} />
+          </div>
         </div>
         <div className="mb-5">
           <label htmlFor="edit-project-url">Project URL:</label><br />
@@ -693,8 +833,20 @@ export default function TaskForce({ loaderData }) {
       <EditShortDescPopup showPopup={showShortDescPopup} setShowPopup={setShowShortDescPopup} content={taskForceData.short_desc} taskForceUrl={taskForceData.url} />
       <EditContentTopPopup showPopup={showContentTopPopup} setShowPopup={setShowContentTopPopup} content={taskForceData.content_top} taskForceUrl={taskForceData.url} />
       <EditContentBottomPopup showPopup={showContentBottomPopup} setShowPopup={setShowContentBottomPopup} content={taskForceData.content_bottom} taskForceUrl={taskForceData.url} />
-      <EditTeam showPopup={showTeamPopup} setShowPopup={setShowTeamPopup} taskForceUrl={taskForceData.url} teamMembers={taskForceData.team_members} />
-      <EditProjects showPopup={showProjectsPopup} setShowPopup={setShowProjectsPopup} taskForceUrl={taskForceData.url} projects={taskForceData.projects} />
+      <EditTeam 
+        showPopup={showTeamPopup} 
+        setShowPopup={setShowTeamPopup} 
+        taskForceUrl={taskForceData.url} 
+        taskForceId={taskForceData.id}
+        teamMembers={taskForceData.team_members} 
+      />
+      <EditProjects 
+        showPopup={showProjectsPopup} 
+        setShowPopup={setShowProjectsPopup} 
+        taskForceUrl={taskForceData.url} 
+        taskForceId={taskForceData.id}
+        projects={taskForceData.projects} 
+      />
       
       <Menu />
       <Banner>
@@ -736,7 +888,7 @@ export default function TaskForce({ loaderData }) {
             <h2>Team Members</h2>
             {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowTeamPopup(true) }}>Edit People</button>}
             <div className={memberClassName}>
-              {taskForceData.team_members.map(person => <MemberCard key={person.name} memberData={person} />)}
+              {taskForceData.team_members.map((member, idx) => <MemberCard key={`${member.name}-${idx}`} memberData={member} />)}
             </div>
           </div>
         }
@@ -756,7 +908,7 @@ export default function TaskForce({ loaderData }) {
           <div className="w-full md:text-left relative duration-200 mb-10">
             <h2>Projects</h2>
             {isAdmin && <button className="button button-light md:absolute top-1 right-0" onClick={() => { setShowProjectsPopup(true) }}>Edit Projects</button>}
-            {taskForceData.projects.map(project => <ProjectCard key={project.name} projectData={project} />)}
+            {taskForceData.projects.map((project, idx) => <ProjectCard key={`${project.name}-${idx}`} projectData={project} />)}
           </div>
         }
 

@@ -61,6 +61,36 @@ async function updateProfile(userId, formData) {
   return error;
 }
 
+async function uploadProfileImage(userId, file) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
+  const path = `${userId}/${Date.now()}-${safeName}`;
+  const { error: uploadError } = await supabase.storage
+    .from('user-images')
+    .upload(path, file);
+  if (uploadError) {
+    console.error("Error uploading profile image:", uploadError);
+    return { error: uploadError };
+  }
+  const { data } = supabase.storage.from('user-images').getPublicUrl(path);
+  return { url: data.publicUrl };
+}
+
+function getStoragePathFromPublicUrl(url, bucket) {
+  if (!url) return null;
+  const marker = `/${bucket}/`;
+  const idx = url.indexOf(marker);
+  if (idx === -1) return null;
+  return url.slice(idx + marker.length);
+}
+
+async function updateProfileImage(userId, imageUrl) {
+  const { error } = await supabase
+    .from('users')
+    .update({ image_url: imageUrl })
+    .eq('id', userId);
+  return error;
+}
+
 export async function loader({ params }) {
   const person = await getProfile(params.id);
   const taskForceList = await getTaskForces();
@@ -377,8 +407,11 @@ export default function ProfileRoute({ loaderData }) {
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
   const [showPhotoPopup, setShowPhotoPopup] = useState(false);
-  const [photoDraftUrl, setPhotoDraftUrl] = useState(basePerson?.avatarUrl || "");
+  const [photoDraftUrl, setPhotoDraftUrl] = useState(basePerson?.image_url || "");
   const [photoObjectUrl, setPhotoObjectUrl] = useState("");
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoSaving, setPhotoSaving] = useState(false);
+  const [photoError, setPhotoError] = useState("");
   const fileInputRef = useRef(null);
 
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -442,11 +475,13 @@ export default function ProfileRoute({ loaderData }) {
 
   useEffect(() => {
     setProfile(basePerson);
-    setPhotoDraftUrl(basePerson?.avatarUrl || "");
+    setPhotoDraftUrl(basePerson?.image_url || "");
     setPhotoObjectUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return "";
     });
+    setPhotoFile(null);
+    setPhotoError("");
   }, [basePerson]);
 
   useEffect(() => {
@@ -487,32 +522,71 @@ export default function ProfileRoute({ loaderData }) {
     if (!file) return;
     const url = URL.createObjectURL(file);
     setPhotoObjectUrl((prev) => {
-      if (prev && prev !== profile.avatarUrl) URL.revokeObjectURL(prev);
+      if (prev && prev !== profile.image_url) URL.revokeObjectURL(prev);
       return url;
     });
     setPhotoDraftUrl(url);
+    setPhotoFile(file);
+    setPhotoError("");
     setShowPhotoPopup(true);
     event.target.value = "";
   };
 
-  const handlePhotoSave = () => {
-    setProfile((prev) => ({ ...prev, avatarUrl: photoDraftUrl }));
+  const handlePhotoSave = async () => {
+    if (!photoFile || !currentUserId || currentUserId !== profile.id) {
+      setShowPhotoPopup(false);
+      return;
+    }
+    setPhotoSaving(true);
+    setPhotoError("");
+
+    const uploadResult = await uploadProfileImage(currentUserId, photoFile);
+    if (uploadResult.error) {
+      setPhotoError("Failed to upload image. Please try again.");
+      setPhotoSaving(false);
+      return;
+    }
+
+    const dbError = await updateProfileImage(currentUserId, uploadResult.url);
+    if (dbError) {
+      console.error("Error saving image URL to profile:", dbError);
+      setPhotoError("Image uploaded but profile update failed. Please try again.");
+      setPhotoSaving(false);
+      return;
+    }
+
+    const previousPath = getStoragePathFromPublicUrl(profile.image_url, 'user-images');
+    if (previousPath) {
+      const { error: removeError } = await supabase.storage
+        .from('user-images')
+        .remove([previousPath]);
+      if (removeError) {
+        console.error("Error removing previous profile image:", removeError);
+      }
+    }
+
+    setProfile((prev) => ({ ...prev, image_url: uploadResult.url }));
+    setPhotoFile(null);
+    setPhotoSaving(false);
     setShowPhotoPopup(false);
+    navigate(0);
   };
 
   const handlePhotoCancel = () => {
-    if (photoObjectUrl && photoDraftUrl === photoObjectUrl && profile.avatarUrl !== photoObjectUrl) {
+    if (photoObjectUrl && photoDraftUrl === photoObjectUrl && profile.image_url !== photoObjectUrl) {
       URL.revokeObjectURL(photoObjectUrl);
       setPhotoObjectUrl("");
     }
-    setPhotoDraftUrl(profile.avatarUrl || "");
+    setPhotoDraftUrl(profile.image_url || "");
+    setPhotoFile(null);
+    setPhotoError("");
     setShowPhotoPopup(false);
   };
 
 
-  const profilePhotoContent = profile.avatarUrl ? (
+  const profilePhotoContent = profile.image_url ? (
     <img
-      src={profile.avatarUrl}
+      src={profile.image_url}
       alt={`${profile.fname} ${profile.lname}`}
       className="h-full w-full object-cover"
     />
@@ -523,22 +597,30 @@ export default function ProfileRoute({ loaderData }) {
   return (
     <div className="min-h-screen bg-white">
       <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} currentUserId={currentUserId} />
-      <Popup id="profile-photo" show={showPhotoPopup} setShow={setShowPhotoPopup} stayOnBlur
-             buttons={[{ text: "Save Changes", onclick: handlePhotoSave }]} >
+      <Popup
+        id="profile-photo"
+        show={showPhotoPopup}
+        setShow={setShowPhotoPopup}
+        closePopup={handlePhotoCancel}
+        stayOnBlur
+        buttons={[{ text: photoSaving ? "Saving..." : "Save Changes", onclick: handlePhotoSave }]}
+      >
         <div className="flex flex-col gap-4">
           <div className="text-lg font-semibold text-secondary-dark">Profile Photo</div>
           <div className="flex flex-col items-center gap-3">
-            <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-md border-2 border-gray-light bg-gray-light">
+            <div className="flex h-48 w-48 items-center justify-center overflow-hidden rounded-full border-2 border-gray-light bg-gray-light">
               {photoDraftUrl ? (
                 <img src={photoDraftUrl} alt="Profile preview" className="h-full w-full object-cover" />
               ) : (
                 <i className="bi bi-person-fill text-[72px] text-secondary-dark/60" aria-hidden="true" />
               )}
             </div>
-            <button type="button" className="button button-light" onClick={openPhotoPicker}>
+            <button type="button" className="button button-light" onClick={openPhotoPicker} disabled={photoSaving}>
               Change Photo
             </button>
             <div className="text-xs text-gray-dark/70">Changes apply after you click Save Changes.</div>
+            {photoSaving && <div className="text-xs text-gray-dark/70">Uploading...</div>}
+            {photoError && <div className="text-xs text-error">{photoError}</div>}
           </div>
         </div>
       </Popup>
@@ -578,7 +660,7 @@ export default function ProfileRoute({ loaderData }) {
           <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
             <div className="flex flex-col items-center text-center">
               <div className="relative -mt-8">
-                <div className="flex h-36 w-36 items-center justify-center rounded-full border-4 border-white bg-gray-light overflow-hidden">
+                <div className="flex h-36 w-36 items-center justify-center rounded-full border-3 border-primary-dark bg-gray-light overflow-hidden">
                   {profilePhotoContent}
                 </div>
                 {currentUserId == profile.id ? (
