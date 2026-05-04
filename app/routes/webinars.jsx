@@ -276,7 +276,7 @@ export default function Webinars({ loaderData }) {
 
     // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
     const [showResolvePopup, setShowResolvePopup] = useState(false);
-    const [speakers, setSpeakers] = useState([{name: "", university: "", position: "", image: "", slidesURL: ""}])
+    const [speakers, setSpeakers] = useState([])
 
     function addSpeaker(e) {
         e.preventDefault();
@@ -284,21 +284,23 @@ export default function Webinars({ loaderData }) {
     }
 
     const [formRequired, setFormRequired] = useState({
-        vidResourceTitle: "",
-        vidResourceLink: "",
-        vidResourceSpeakerName: "",
+        webinarTitle: "",
     })
     const [hasError, setHasError] = useState(false);
 
     async function validate(formData) {
         let isValidated = true;
         const isRequired = {
-            vidResourceTitle: formData.get('vid-resource-title') === (null || ""),
-            vidResourceLink: formData.get('vid-resource-link') === (null || ""),
-            vidResourceSpeakerName: formData.get('vid-resource-speaker-name') === (null || "")
+            webinarTitle: formData.get('webinar-title') === (null || ""),
         }
         for (let value of Object.values(isRequired)) {
             if (value) {
+                isValidated = false;
+                break;
+            }
+        }
+        for (let speaker of speakers) {
+            if (speaker.name == "") {
                 isValidated = false;
                 break;
             }
@@ -320,11 +322,9 @@ export default function Webinars({ loaderData }) {
     // This resets formRequired so that there are no error messages when the form is reloaded
     function handleShowCreatePopupForm() {
         setFormRequired({
-            vidResourceTitle: "",
-            vidResourceLink: "",
-            vidResourceSpeakerName: ""
+            webinarTitle: "",
         })
-        setSpeakers([{name: "", university: "", position: "", image: "", slidesURL: ""}]);
+        setSpeakers([]);
         setShowCreatePopup(true);
     }
 
@@ -363,9 +363,9 @@ export default function Webinars({ loaderData }) {
                             <div>
                                 <label htmlFor="vid-resource-title">Webinar title:</label><br />
                                 <input id="webinar-title" name="webinar-title" type="text"
-                                    className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")}
-                                    placeholder="Video title"
-                                    onChange={(e) => checkEmpty(e.target.value, "vidResourceTitle")} />
+                                    className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
+                                    placeholder="Webinar title"
+                                    onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="webinar-date">Webinar date:</label><br />
