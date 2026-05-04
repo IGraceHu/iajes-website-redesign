@@ -103,8 +103,8 @@ async function createVideoResource(formData) {
 function ResourceCard({ resourceInfo }) {
     resourceInfo.video_thumbnail = (resourceInfo.video_thumbnail == "{}") ? null : resourceInfo.video_thumbnail;
     return (
-        <div className="resource-card">
-            <a href={"video-resource/" + resourceInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light rounded-md">
+        <div className="resource-card duration-200">
+            <a href={"video-resource/" + resourceInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
                     {resourceInfo.video_thumbnail ?
                         <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} />
