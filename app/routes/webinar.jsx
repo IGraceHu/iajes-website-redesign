@@ -40,45 +40,46 @@ const tempData = {
 async function getWebinar(webinarId) {
     return tempData;
     const { data, error } = await supabase
-        .from('video resources')
+        .from('webinars')
         .select()
-        .eq('id', resourceId)
+        .eq('id', webinarId)
 
     if (error) {
-        console.error("Error fetching video resource:", error);
+        console.error("Error fetching webinar:", error);
         return null;
     }
 
     return data ? data[0] : null;
 }
 
-function extractVideoResourcePath(url) {
+function extractWebinarPath(url) {
     if (!url) return null;
-    const parts = url.split('/video-resources/');
+    const parts = url.split('/webinars/');
     return parts.length > 1 ? parts[parts.length - 1] : null;
 }
 
-async function removeVideoResourceFiles(urls) {
-    const paths = urls.map(extractVideoResourcePath).filter(Boolean);
+async function removeWebinarFiles(urls) {
+    const paths = urls.map(extractWebinarPath).filter(Boolean);
     if (paths.length === 0) return;
-    const { error } = await supabase.storage.from('video-resources').remove(paths);
+    const { error } = await supabase.storage.from('webinars').remove(paths);
     if (error) {
         console.error("Error deleting files from storage:", error);
     }
 }
 
-async function deleteVideoResource(resourceId, thumbnailUrl, speakerImgUrl) {
-    await removeVideoResourceFiles([thumbnailUrl, speakerImgUrl]);
+async function deleteWebinar(webinarId, thumbnailUrl, speakersData) {
+    const speakerUrls = Array.from(speakersData, (speaker) => speaker.image_url);
+    await removeWebinarFiles([thumbnailUrl, ...speakerUrls]);
 
     const response = await supabase
-        .from('video resources')
+        .from('webinars')
         .delete()
-        .eq('id', resourceId)
+        .eq('id', webinarId)
 
     return response;
 }
 
-async function updateWebinar(webinarId, formData, existingData, existingSpeakerData) {
+async function updateWebinar(webinarId, formData, existingData) {
     let thumbnailUrl = existingData.thumbnail_url;
     const filesToRemoveOnSuccess = [];
 
@@ -162,7 +163,7 @@ async function updateWebinar(webinarId, formData, existingData, existingSpeakerD
     }
 
     // get all old speaker image urls that are now unused
-    for (let speaker in existingSpeakerData) {
+    for (let speaker in existingData.speakers) {
         if (!speakerImageUrls.includes(speaker.image_url)) {
             filesToRemoveOnSuccess.push(speaker.image_url);
         }
