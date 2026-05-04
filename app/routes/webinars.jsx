@@ -35,11 +35,11 @@ async function createWebinar(formData) {
     // const { data, error } = await supabase
     //     .from('webinars')
     //     .insert({
-    //         title: formData.get("webinars-title"),
-    //         pdf_url: formData.get("webinars-pdf-link"),
-    //         video_url: formData.get("webinar-video-link"),
-    //         date: formData.get("webinar-date"),
-    //         description: formData.get("webinar-desc"),
+            // title: formData.get("webinars-title"),
+            // pdf_url: formData.get("webinars-pdf-link"),
+            // video_url: formData.get("webinar-video-link"),
+            // date: formData.get("webinar-date"),
+            // description: formData.get("webinar-desc"),
     //     })
     //     .select('id')
 
@@ -57,7 +57,6 @@ async function createWebinar(formData) {
         // const webinarId = data[0].id;
 
         // let thumbnailUrl = null;
-        // let speakerImgUrl = null;
 
         // const thumbnailFile = formData.get("webinar-thumbnail");
         // if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
@@ -91,7 +90,7 @@ async function createWebinar(formData) {
                 hasSpeakers = false;
                 break;
             }
-
+            // let speakerImgUrl = null;
             // const speakerImgFile = formData.get("webinar-speaker-image-" + i);
             // if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
             //     const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
@@ -223,7 +222,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                 <div className="text-secondary-dark">Speaker Details</div>
                 <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}>Remove Speaker</button>
             </div>
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
+            <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
                     <label htmlFor={"webinar-speaker-name-" + id}>Name:</label><br />
                     <input id={"webinar-speaker-name-" + id} name={"webinar-speaker-name-" + id} type="text"
@@ -234,20 +233,20 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                     <div className="input-error">This field is required.</div>
                 </div>
                 <div>
-                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
-                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
-                    className="input input-text w-full" 
-                    placeholder="University"
-                    value={speakers[id].university}
-                    onChange={(e) => {handleUniversityChange(e)}} />
-                </div>
-                <div>
                     <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
                     <input id={"webinar-speaker-position-" + id} name={"webinar-speaker-position-" + id} type="text" 
                     className="input input-text w-full" 
                     placeholder="Position"
                     value={speakers[id].position}
                     onChange={(e) => {handlePositionChange(e)}} />
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
+                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="University"
+                    value={speakers[id].university}
+                    onChange={(e) => {handleUniversityChange(e)}} />
                 </div>
                 <label>
                     Speaker image:
@@ -408,7 +407,7 @@ export default function Webinars({ loaderData }) {
                 <div className="z-1000 absolute top-0 left-0">
                     <PopupForm id="webinar" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
                         <h4>Create new webinar</h4>
-                        <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
+                        <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
                             <div>
                                 <label htmlFor="webinar-title">Webinar title:</label><br />
                                 <input id="webinar-title" name="webinar-title" type="text"

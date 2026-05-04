@@ -78,16 +78,15 @@ async function deleteVideoResource(resourceId, thumbnailUrl, speakerImgUrl) {
     return response;
 }
 
-async function updateVideoResource(resourceId, formData, existingData) {
-    let thumbnailUrl = existingData.video_thumbnail;
-    let speakerImgUrl = existingData.speaker_image;
+async function updateWebinar(webinarId, formData, existingData, existingSpeakerData) {
+    let thumbnailUrl = existingData.thumbnail_url;
     const filesToRemoveOnSuccess = [];
 
-    const thumbnailFile = formData.get("vid-resource-thumbnail");
+    const thumbnailFile = formData.get("webinar-thumbnail");
     if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
-        const path = `${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        const path = `${webinarId}/${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
         const { error: uploadError } = await supabase.storage
-            .from('video-resources')
+            .from('webinars')
             .upload(path, thumbnailFile);
 
         if (uploadError) {
@@ -96,7 +95,7 @@ async function updateVideoResource(resourceId, formData, existingData) {
         }
 
         const { data, error: urlError } = supabase.storage
-            .from('video-resources')
+            .from('webinars')
             .getPublicUrl(path);
 
         if (urlError) {
@@ -110,47 +109,80 @@ async function updateVideoResource(resourceId, formData, existingData) {
         thumbnailUrl = data.publicUrl;
     }
 
-    const speakerImgFile = formData.get("vid-resource-speaker-img");
-    if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
-        const path = `${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-        const { error: uploadError } = await supabase.storage
-            .from('video-resources')
-            .upload(path, speakerImgFile);
-
-        if (uploadError) {
-            console.error("Error uploading speaker image:", uploadError);
-            return uploadError;
+    let hasSpeakers = true;
+    let i = 0;
+    const speakersData = []
+    const speakerImageUrls = [];
+    while (hasSpeakers) {
+        if (formData.get("webinar-speaker-name-" + i) == null) {
+            hasSpeakers = false;
+            break;
         }
 
-        const { data, error: urlError } = supabase.storage
-            .from('video-resources')
-            .getPublicUrl(path);
+        let speakerImgUrl = formData.get("webinar-speaker-image-url-" + i);
+        const speakerImgFile = formData.get("webinar-speaker-image-" + i);
+        // If new image upload
+        if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
+            const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+            const { error: uploadError } = await supabase.storage
+                .from('webinars')
+                .upload(path, speakerImgFile);
 
-        if (urlError) {
-            console.error("Error getting speaker image URL:", urlError);
-            return urlError;
-        }
+            if (uploadError) {
+                console.error("Error uploading speaker image:", uploadError);
+                return uploadError;
+            }
 
-        if (existingData.speaker_image) {
-            filesToRemoveOnSuccess.push(existingData.speaker_image);
+            const { data, error: urlError } = supabase.storage
+                .from('webinars')
+                .getPublicUrl(path);
+
+            if (urlError) {
+                console.error("Error getting speaker image URL:", urlError);
+                return urlError;
+            }
+
+            // If there was a previous image url
+            if (formData.get("webinar-speaker-image-url-" + i)) {
+                filesToRemoveOnSuccess.push(existingData.speaker_image);
+            }
+
+            speakerImgUrl = data.publicUrl;
         }
-        speakerImgUrl = data.publicUrl;
+        speakerImageUrls.push(speakerImgUrl);
+
+        speakersData.push({
+            name: formData.get("webinar-speaker-name-" + i),
+            university: formData.get("webinar-speaker-university-" + i),
+            position: formData.get("webinar-speaker-position-" + i),
+            // image_url: speakerImageUrl,
+            slidesURL: formData.get("webinar-speaker-slides-" + i),
+        })
+        i++;
     }
 
+    // get all old speaker image urls that are now unused
+    for (let speaker in existingSpeakerData) {
+        if (!speakerImageUrls.includes(speaker.image_url)) {
+            filesToRemoveOnSuccess.push(speaker.image_url);
+        }
+    }
+
+    const speakerDataJSON = JSON.stringify(speakersData);
+    console.log(speakersData);
+
     const { data, error } = await supabase
-        .from('video resources')
+        .from('webinars')
         .update({
-            title: formData.get("vid-resource-title"),
-            video_url: formData.get("vid-resource-link"),
-            date: formData.get("vid-resource-date"),
-            video_thumbnail: thumbnailUrl,
-            video_description: formData.get("vid-resource-desc"),
-            speaker: formData.get("vid-resource-speaker-name"),
-            speaker_university: formData.get("vid-resource-speaker-uni"),
-            speaker_image: speakerImgUrl,
-            speaker_details: formData.get("vid-resource-speaker-desc"),
+            title: formData.get("webinars-title"),
+            pdf_url: formData.get("webinars-pdf-link"),
+            video_url: formData.get("webinar-video-link"),
+            date: formData.get("webinar-date"),
+            description: formData.get("webinar-desc"),
+            thumbnail_url: thumbnailUrl,
+            speakers_json: speakerDataJSON
         })
-        .eq('id', resourceId)
+        .eq('id', webinarId)
         .select();
 
     if (error) {
@@ -228,7 +260,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                 <div className="text-secondary-dark">Speaker Details</div>
                 <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}>Remove Speaker</button>
             </div>
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
+            <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
                     <label htmlFor={"webinar-speaker-name-" + id}>Name:</label><br />
                     <input id={"webinar-speaker-name-" + id} name={"webinar-speaker-name-" + id} type="text"
@@ -239,20 +271,20 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                     <div className="input-error">This field is required.</div>
                 </div>
                 <div>
-                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
-                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
-                    className="input input-text w-full" 
-                    placeholder="University"
-                    value={speakers[id].university}
-                    onChange={(e) => {handleUniversityChange(e)}} />
-                </div>
-                <div>
                     <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
                     <input id={"webinar-speaker-position-" + id} name={"webinar-speaker-position-" + id} type="text" 
                     className="input input-text w-full" 
                     placeholder="Position"
                     value={speakers[id].position}
                     onChange={(e) => {handlePositionChange(e)}} />
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
+                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="University"
+                    value={speakers[id].university}
+                    onChange={(e) => {handleUniversityChange(e)}} />
                 </div>
                 <label>
                     Speaker image:
@@ -261,6 +293,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                     onChange={(e) => {handleImageChange(e)}} />
                     <div className="input-error">This field is required.</div>
                 </label>
+                <input className="hidden" name={"webinar-speaker-image-url-" + id} value={speakers[id].image_url} />
                 <div className="col-span-2">
                     <label htmlFor={"webinar-speaker-slides-" + id}>Slides:</label><br />
                     <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
@@ -294,6 +327,15 @@ export default function Webinar({ loaderData }) {
     });
     const [hasError, setHasError] = useState(false);
 
+    function handleShowEditPopupForm() {
+        setFormRequired({
+            webinarTitle: false,
+        });
+        setSpeakers(loaderData.speakers);
+        setHasError(false);
+        setShowEditPopup(true);
+    }
+
     async function validate(formData) {
         let isValidated = true;
         const isRequired = {
@@ -305,27 +347,24 @@ export default function Webinar({ loaderData }) {
                 break;
             }
         }
+        for (let speaker of speakers) {
+            if (speaker.name == "") {
+                isValidated = false;
+                break;
+            }
+        }
         if (!isValidated) {
             setFormRequired(isRequired);
             return false;
         }
 
-        const updateError = await updateVideoResource(loaderData.id, formData, loaderData);
+        const updateError = await updateWebinar(loaderData.id, formData, loaderData);
         if (updateError === null) {
             setShowResolvePopup(true);
         } else {
             console.error("Failed to update video resource:", updateError);
             setHasError(true);
         }
-    }
-
-    function handleShowEditPopupForm() {
-        setFormRequired({
-            webinarTitle: false,
-        });
-        setSpeakers(loaderData.speakers);
-        setHasError(false);
-        setShowEditPopup(true);
     }
 
     function checkEmpty(value, inputName) {
@@ -378,7 +417,7 @@ export default function Webinar({ loaderData }) {
 
     async function handleDelete() {
         try {
-            await deleteVideoResource(loaderData.id, loaderData.thumbnail_url, loaderData.speakers);
+            await deleteWebinar(loaderData.id, loaderData.thumbnail_url, loaderData.speakers);
             navigate({ pathname: "/webinars" });
         }
         catch (error) {
@@ -390,14 +429,14 @@ export default function Webinar({ loaderData }) {
         <>
             <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}
                 buttons={[{ text: "Delete", onclick: handleDelete }]}>
-                <div className="text-center mt-6">Delete this video resource?</div>
+                <div className="text-center mt-6">Delete this webinar?</div>
             </Popup>
 
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
                     <PopupForm id="edit-webinar" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
                         <h4>Create new webinar</h4>
-                        <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
+                        <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
                             <div>
                                 <label htmlFor="webinar-title">Webinar title:</label><br />
                                 <input id="webinar-title" name="webinar-title" type="text"
