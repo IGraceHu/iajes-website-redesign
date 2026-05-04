@@ -8,9 +8,9 @@ import { Popup, PopupForm } from "../components/popup";
 import { updateRequired } from "../helpers/form";
 import "../styles/video-resources.css";
 
-export function meta() {
+export function meta({ loaderData }) {
     return [
-        { title: "Video Resource" },
+        { title: "Webinar: " + loaderData.title },
         // { name: "description", content: "Welcome to React Router!" },
     ];
 }
@@ -39,6 +39,7 @@ const tempData = {
 
 async function getWebinar(webinarId) {
     return tempData;
+
     const { data, error } = await supabase
         .from('webinars')
         .select()
@@ -49,7 +50,13 @@ async function getWebinar(webinarId) {
         return null;
     }
 
-    return data ? data[0] : null;
+    if (data[0]) {
+        const speakerData = JSON.parse(data[0].speakers);
+        const webinarData = { ...data[0], speakers: speakerData }
+        return webinarData;
+    }
+
+    return null;
 }
 
 function extractWebinarPath(url) {

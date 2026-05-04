@@ -16,11 +16,11 @@ export function meta() {
 }
 
 async function getWebinars() {
-    return [];
-    // const { data, error } = await supabase
-    //     .from('webinars')
-    //     .select('id, title, date, speaker, speaker_university, video_thumbnail')
-    // return data || error;
+    // return [];
+    const { data, error } = await supabase
+        .from('webinars')
+        .select('id, title, date, thumbnail_url')
+    return data || error;
 }
 
 export async function loader({ params }) {
