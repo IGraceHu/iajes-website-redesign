@@ -509,7 +509,7 @@ export default function Webinar({ loaderData }) {
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
                     <p className="opacity-70">
-                        <i>{loaderData.date}</i>
+                        <i>{loaderData.date.replace(/-/g, '\/')}</i>
                     </p>
                 </div>
             </Banner>

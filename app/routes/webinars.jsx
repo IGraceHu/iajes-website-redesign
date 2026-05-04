@@ -16,7 +16,7 @@ export function meta() {
 }
 
 async function getWebinars() {
-    // return [];
+    return [];
     const { data, error } = await supabase
         .from('webinars')
         .select('id, title, date, thumbnail_url')
