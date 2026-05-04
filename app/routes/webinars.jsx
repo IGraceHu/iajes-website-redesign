@@ -132,7 +132,7 @@ async function createWebinar(formData) {
         // const { imgError } = await supabase
         // .from('webinars')
         // .update({
-        //     thumbnail: thumbnailUrl,
+        //     thumbnail_url: thumbnailUrl,
         //     speakers_json: speakerDataJSON
         // })
         // .eq('id', webinarId)
@@ -152,13 +152,13 @@ async function createWebinar(formData) {
 }
 
 function WebinarCard({ webinarInfo }) {
-    webinarInfo.video_thumbnail = (webinarInfo.video_thumbnail == "{}") ? null : webinarInfo.video_thumbnail;
+    webinarInfo.thumbnail_url = (webinarInfo.thumbnail_url == "{}") ? null : webinarInfo.thumbnail_url;
     return (
         <div className="resource-card duration-200">
             <a href={"webinars/" + webinarInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
-                    {webinarInfo.video_thumbnail ?
-                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.video_thumbnail} />
+                    {webinarInfo.thumbnail_url ?
+                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.thumbnail_url} />
                         :
                         <div className="relative w-full h-full p-5">
                             <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />

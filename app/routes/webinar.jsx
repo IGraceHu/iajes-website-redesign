@@ -178,6 +178,102 @@ export async function loader({ params }) {
     return webinar;
 }
 
+function SpeakerEdit({ id, speakers, setSpeakers }) {
+    const [nameRequired, setNameRequired] = useState(false);
+
+    function removeSpeaker(e) {
+        e.preventDefault();
+        setSpeakers(speakers.toSpliced(id, 1));
+    }
+
+    function handleNameChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1, {
+            ...speakers[id],
+            name: e.target.value
+        }));
+        setNameRequired(e.target.value.length == 0);
+    }
+
+    function handleUniversityChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            university: e.target.value
+        }));
+    }
+
+    function handlePositionChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            position: e.target.value
+        }));
+    }
+
+    function handleImageChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            image: e.target.value
+        }));
+    }
+
+    function handleSlidesChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            slidesURL: e.target.value
+        }));
+    }
+
+    return (
+        <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
+            <div className="text-sm font-semibold mb-2 flex justify-between">
+                <div className="text-secondary-dark">Speaker Details</div>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}>Remove Speaker</button>
+            </div>
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
+                <div>
+                    <label htmlFor={"webinar-speaker-name-" + id}>Name:</label><br />
+                    <input id={"webinar-speaker-name-" + id} name={"webinar-speaker-name-" + id} type="text"
+                        className={"input input-text w-full " + (nameRequired && "input-required")}
+                        placeholder="Name"
+                        value={speakers[id].name}
+                        onChange={(e) => {handleNameChange(e)}} />
+                    <div className="input-error">This field is required.</div>
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
+                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="University"
+                    value={speakers[id].university}
+                    onChange={(e) => {handleUniversityChange(e)}} />
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
+                    <input id={"webinar-speaker-position-" + id} name={"webinar-speaker-position-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="Position"
+                    value={speakers[id].position}
+                    onChange={(e) => {handlePositionChange(e)}} />
+                </div>
+                <label>
+                    Speaker image:
+                    <input id={"webinar-speaker-image-" + id} name={"webinar-speaker-image-" + id} type="file" accept=".jpg,.jpeg,.png" className="ml-3"
+                    value={speakers[id].image}
+                    onChange={(e) => {handleImageChange(e)}} />
+                    <div className="input-error">This field is required.</div>
+                </label>
+                <div className="col-span-2">
+                    <label htmlFor={"webinar-speaker-slides-" + id}>Slides:</label><br />
+                    <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="https://drive.google.com/file/d/...."
+                    value={speakers[id].slidesURL}
+                    onChange={(e) => {handleSlidesChange(e)}} />
+                </div>
+            </div>
+        </div>
+    )
+}
+
 export default function Webinar({ loaderData }) {
     const navigate = useNavigate();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
@@ -280,8 +376,8 @@ export default function Webinar({ loaderData }) {
 
     async function handleDelete() {
         try {
-            await deleteVideoResource(loaderData.id, loaderData.video_thumbnail, loaderData.speaker_image);
-            navigate({ pathname: "/video-resources" });
+            await deleteVideoResource(loaderData.id, loaderData.thumbnail_url, loaderData.speakers);
+            navigate({ pathname: "/webinars" });
         }
         catch (error) {
             console.error("Error during deletion:", error);
@@ -290,81 +386,64 @@ export default function Webinar({ loaderData }) {
 
     return (
         <>
-            <Popup id="delete-vidr" show={showDeletePopup} setShow={setShowDeletePopup}
+            <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}
                 buttons={[{ text: "Delete", onclick: handleDelete }]}>
                 <div className="text-center mt-6">Delete this video resource?</div>
             </Popup>
 
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm id="edit-video-resource" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
-                        <h4>Edit video resource</h4>
+                    <PopupForm id="edit-webinar" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                        <h4>Create new webinar</h4>
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
-                                <label htmlFor="vid-resource-title">Video resource title:</label><br />
-                                <input id="vid-resource-title" name="vid-resource-title" type="text"
-                                    className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")}
-                                    placeholder="Video title"
-                                    defaultValue={loaderData.title}
-                                    onChange={(e) => checkEmpty(e.target.value, "vidResourceTitle")} />
+                                <label htmlFor="webinar-title">Webinar title:</label><br />
+                                <input id="webinar-title" name="webinar-title" type="text"
+                                    className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
+                                    placeholder="Webinar title"
+                                    onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
-                                <label htmlFor="vid-resource-date">Video resource date:</label><br />
-                                {/* Expected format for <input type="date"> is YYYY-MM-DD */}
-                                <input id="vid-resource-date" name="vid-resource-date" type="date" className="input input-text w-full" defaultValue={loaderData.date.replace(/\//g, '-')} />
+                                <label htmlFor="webinar-date">Webinar date:</label><br />
+                                <input id="webinar-date" name="webinar-date" type="date" className="input input-text w-full" defaultValue={todayString} />
                             </div>
                             <label>
-                                Video resource thumbnail image:
-                                <p className="text-sm text-disabled-dark">Leave empty to keep existing thumbnail.</p>
-                                <input id="vid-resource-thumbnail" name="vid-resource-thumbnail" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
+                                Webinar thumbnail image:
+                                <input id="webinar-thumbnail" name="webinar-thumbnail" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
+                                <div className="input-error">This field is required.</div>
                             </label>
                         </div>
 
                         <div className="relative">
-                            <label htmlFor="vid-resource-link">Video resource link:</label><br />
-                            <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
-                            <input id="vid-resource-link" name="vid-resource-link" type="text"
-                                className={"input input-text w-full " + (formRequired?.vidResourceLink && "input-required")}
-                                placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
-                                defaultValue={loaderData.video_url}
-                                onChange={(e) => checkEmpty(e.target.value, "vidResourceLink")} />
-                            <div className="input-error">This field is required.</div>
+                            <label htmlFor="webinar-pdf-link">Webinar PDF link:</label><br />
+                            <p className="text-sm text-disabled-dark mt-1">This is the PDF that will be embedded. Please only include the link and not the entire embed.</p>
+                            <input id="webinar-pdf-link" name="webinar-pdf-link" type="text"
+                                className="input input-text w-full"
+                                placeholder="https://drive.google.com/file/d/...."
+                                onChange={(e) => {}} />
                             <br /><br />
-                            <label htmlFor="vid-resource-desc">Video description:</label><br />
-                            <textarea id="vid-resource-desc" name="vid-resource-desc" className="input input-text w-full h-30" placeholder="Enter your video description..." defaultValue={loaderData.video_description}></textarea>
+                            <label htmlFor="webinar-video-link">Webinar video link:</label><br />
+                            <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
+                            <input id="webinar-video-link" name="webinar-video-link" type="text"
+                                className="input input-text w-full"
+                                placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
+                                onChange={(e) => {}} />
+                            <br /><br />
+                            <label htmlFor="webinar-desc">Webinar description:</label><br />
+                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter your video description..."></textarea>
                             <br /> <br />
                         </div>
 
                         <fieldset className="border-t-2 border-gray-light pt-4 relative">
-                            <div className="text-sm font-semibold text-secondary-dark">Speaker Details</div>
-                            <div className="mt-3 grid md:grid-cols-2 grid-cols-1 gap-5">
-                                <div>
-                                    <label htmlFor="vid-resource-speaker-name">Name:</label><br />
-                                    <input id="vid-resource-speaker-name" name="vid-resource-speaker-name" type="text"
-                                        className={"input input-text w-full " + (formRequired?.vidResourceSpeakerName && "input-required")}
-                                        placeholder="Name"
-                                        defaultValue={loaderData.speaker}
-                                        onChange={(e) => checkEmpty(e.target.value, "vidResourceSpeakerName")} />
-                                    <div className="input-error">This field is required.</div>
-                                </div>
-                                <div>
-                                    <label htmlFor="vid-resource-speaker-uni">University:</label><br />
-                                    <input id="vid-resource-speaker-uni" name="vid-resource-speaker-uni" type="text" className="input input-text w-full" placeholder="University" defaultValue={loaderData.speaker_university} />
-                                </div>
+                            <h5 >Speaker Details</h5>
+                            <div>
+                                { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
                             </div>
-                            <br />
-                            <label>
-                                Speaker image:
-                                <p className="text-sm text-disabled-dark">Leave empty to keep existing speaker image.</p>
-                                <input id="vid-resource-speaker-img" name="vid-resource-speaker-img" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
-                            </label>
-                            <br /><br />
-                            <label htmlFor="vid-resource-speaker-desc">Description:</label><br />
-                            <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker description..." defaultValue={loaderData.speaker_details}></textarea>
+                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
-                        <br /><p className="m-2">Video resource updated successfully!</p>
+                        <br /><p className="m-2">Webinar updated successfully!</p>
                     </Popup>
                 </div>
             }
