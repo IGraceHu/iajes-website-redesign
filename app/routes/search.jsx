@@ -284,7 +284,7 @@ function PersonResultCard({ person }) {
     >
       <div className="flex items-center gap-4">
         <div
-          className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-white"
+          className="flex shrink-0 h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gray-light border-primary-dark border-3 border-box"
           aria-hidden="true"
         >
           {person.image_url ? (
@@ -294,7 +294,7 @@ function PersonResultCard({ person }) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
+            <i className="bi bi-person-fill text-[40px] text-secondary-dark/60" aria-hidden="true" />
           )}
         </div>
         <div>
