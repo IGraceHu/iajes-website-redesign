@@ -218,7 +218,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
     function handleSlidesChange(e) {
         setSpeakers(speakers.toSpliced(id, 1,{
             ...speakers[id],
-            slidesURL: e.target.value
+            slides_url: e.target.value
         }));
     }
 
@@ -266,7 +266,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                     <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
                     className="input input-text w-full" 
                     placeholder="https://drive.google.com/file/d/...."
-                    value={speakers[id].slidesURL}
+                    value={speakers[id].slides_url}
                     onChange={(e) => {handleSlidesChange(e)}} />
                 </div>
             </div>
@@ -282,19 +282,22 @@ export default function Webinar({ loaderData }) {
     // EDIT LOGIC ADDITION
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [showResolvePopup, setShowResolvePopup] = useState(false);
+    const [speakers, setSpeakers] = useState([])
+
+    function addSpeaker(e) {
+        e.preventDefault();
+        setSpeakers([...speakers, {name: "", university: "", position: "", image: "", slidesURL: ""}]);
+    }
+
     const [formRequired, setFormRequired] = useState({
-        vidResourceTitle: false,
-        vidResourceLink: false,
-        vidResourceSpeakerName: false
+        webinarTitle: false,
     });
     const [hasError, setHasError] = useState(false);
 
     async function validate(formData) {
         let isValidated = true;
         const isRequired = {
-            vidResourceTitle: formData.get('vid-resource-title') === (null || ""),
-            vidResourceLink: formData.get('vid-resource-link') === (null || ""),
-            vidResourceSpeakerName: formData.get('vid-resource-speaker-name') === (null || "")
+            webinarTitle: formData.get('webinar-title') === (null || ""),
         }
         for (let value of Object.values(isRequired)) {
             if (value) {
@@ -318,10 +321,9 @@ export default function Webinar({ loaderData }) {
 
     function handleShowEditPopupForm() {
         setFormRequired({
-            vidResourceTitle: false,
-            vidResourceLink: false,
-            vidResourceSpeakerName: false
+            webinarTitle: false,
         });
+        setSpeakers(loaderData.speakers);
         setHasError(false);
         setShowEditPopup(true);
     }
@@ -401,11 +403,12 @@ export default function Webinar({ loaderData }) {
                                 <input id="webinar-title" name="webinar-title" type="text"
                                     className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
                                     placeholder="Webinar title"
+                                    defaultValue={loaderData.title}
                                     onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="webinar-date">Webinar date:</label><br />
-                                <input id="webinar-date" name="webinar-date" type="date" className="input input-text w-full" defaultValue={todayString} />
+                                <input id="webinar-date" name="webinar-date" type="date" defaultValue={loaderData.date} className="input input-text w-full" />
                             </div>
                             <label>
                                 Webinar thumbnail image:
@@ -419,6 +422,7 @@ export default function Webinar({ loaderData }) {
                             <p className="text-sm text-disabled-dark mt-1">This is the PDF that will be embedded. Please only include the link and not the entire embed.</p>
                             <input id="webinar-pdf-link" name="webinar-pdf-link" type="text"
                                 className="input input-text w-full"
+                                defaultValue={loaderData.pdf_url}
                                 placeholder="https://drive.google.com/file/d/...."
                                 onChange={(e) => {}} />
                             <br /><br />
@@ -426,11 +430,12 @@ export default function Webinar({ loaderData }) {
                             <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
                             <input id="webinar-video-link" name="webinar-video-link" type="text"
                                 className="input input-text w-full"
+                                defaultValue={loaderData.video_url}
                                 placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
                                 onChange={(e) => {}} />
                             <br /><br />
                             <label htmlFor="webinar-desc">Webinar description:</label><br />
-                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter your video description..."></textarea>
+                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter your video description..." defaultValue={loaderData.description}></textarea>
                             <br /> <br />
                         </div>
 
