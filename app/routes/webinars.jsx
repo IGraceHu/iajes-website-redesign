@@ -125,33 +125,98 @@ function WebinarCard({ webinarInfo }) {
     )
 }
 
-function SpeakerEdit({ id, currentSpeakerInfo }) {
+function SpeakerEdit({ id, speakers, setSpeakers }) {
+    const [nameRequired, setNameRequired] = useState(false);
+
+    function removeSpeaker(e) {
+        e.preventDefault();
+        setSpeakers(speakers.toSpliced(id, 1));
+    }
+
+    function handleNameChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1, {
+            ...speakers[id],
+            name: e.target.value
+        }));
+        setNameRequired(e.target.value.length == 0);
+    }
+
+    function handleUniversityChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            university: e.target.value
+        }));
+    }
+
+    function handlePositionChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            position: e.target.value
+        }));
+    }
+
+    function handleImageChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            image: e.target.value
+        }));
+    }
+
+    function handleSlidesChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            slidesURL: e.target.value
+        }));
+    }
+
     return (
-        <div className="border-b-2 border-primary-light">
-            <div className="mt-3 grid md:grid-cols-2 grid-cols-1 gap-5">
+        <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
+            <div className="text-sm font-semibold mb-2 flex justify-between">
+                <div className="text-secondary-dark">Speaker Details</div>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}>Remove Speaker</button>
+            </div>
+            <div className="grid md:grid-cols-2 grid-cols-1 gap-5">
                 <div>
-                    <label htmlFor="webinar-speaker-name">Name:</label><br />
-                    <input id="webinar-speaker-name" name="webinar-speaker-name" type="text"
-                        className={"input input-text w-full "}
+                    <label htmlFor={"webinar-speaker-name-" + id}>Name:</label><br />
+                    <input id={"webinar-speaker-name-" + id} name={"webinar-speaker-name-" + id} type="text"
+                        className={"input input-text w-full " + (nameRequired && "input-required")}
                         placeholder="Name"
-                        onChange={(e) => {}} />
+                        value={speakers[id].name}
+                        onChange={(e) => {handleNameChange(e)}} />
                     <div className="input-error">This field is required.</div>
                 </div>
                 <div>
-                    <label htmlFor="webinar-speaker-uni">University:</label><br />
-                    <input id="webinar-speaker-uni" name="webinar-speaker-uni" type="text" className="input input-text w-full" placeholder="University" />
+                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
+                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="University"
+                    value={speakers[id].university}
+                    onChange={(e) => {handleUniversityChange(e)}} />
                 </div>
                 <div>
-                    <label htmlFor="webinar-speaker-position">Position:</label><br />
-                    <input id="webinar-speaker-position" name="webinar-speaker-position" type="text" className="input input-text w-full" placeholder="Position" />
+                    <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
+                    <input id={"webinar-speaker-position-" + id} name={"webinar-speaker-position-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="Position"
+                    value={speakers[id].position}
+                    onChange={(e) => {handlePositionChange(e)}} />
                 </div>
                 <label>
                     Speaker image:
-                    <input id="webinar-speaker-img" name="webinar-speaker-img" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
+                    <input id={"webinar-speaker-image-" + id} name={"webinar-speaker-image-" + id} type="file" accept=".jpg,.jpeg,.png" className="ml-3"
+                    value={speakers[id].image}
+                    onChange={(e) => {handleImageChange(e)}} />
                     <div className="input-error">This field is required.</div>
                 </label>
+                <div className="col-span-2">
+                    <label htmlFor={"webinar-speaker-slides-" + id}>Slides:</label><br />
+                    <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="https://drive.google.com/file/d/...."
+                    value={speakers[id].slidesURL}
+                    onChange={(e) => {handleSlidesChange(e)}} />
+                </div>
             </div>
-            <br />
         </div>
     )
 }
@@ -211,6 +276,12 @@ export default function Webinars({ loaderData }) {
 
     // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
     const [showResolvePopup, setShowResolvePopup] = useState(false);
+    const [speakers, setSpeakers] = useState([{name: "", university: "", position: "", image: "", slidesURL: ""}])
+
+    function addSpeaker(e) {
+        e.preventDefault();
+        setSpeakers([...speakers, {name: "", university: "", position: "", image: "", slidesURL: ""}]);
+    }
 
     const [formRequired, setFormRequired] = useState({
         vidResourceTitle: "",
@@ -253,6 +324,7 @@ export default function Webinars({ loaderData }) {
             vidResourceLink: "",
             vidResourceSpeakerName: ""
         })
+        setSpeakers([{name: "", university: "", position: "", image: "", slidesURL: ""}]);
         setShowCreatePopup(true);
     }
 
@@ -328,7 +400,10 @@ export default function Webinars({ loaderData }) {
 
                         <fieldset className="border-t-2 border-gray-light pt-4 relative">
                             <h5 >Speaker Details</h5>
-                            <SpeakerEdit id={0} />
+                            <div>
+                                { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
+                            </div>
+                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
