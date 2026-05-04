@@ -15,7 +15,30 @@ export function meta() {
     ];
 }
 
-async function getVideoResource(resourceId) {
+const tempData = {
+    title: "Webinar Title",
+    date: "2025-04-02",
+    pdf_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview",
+    video_url: "https://drive.google.com/file/d/1gd2J8PqdCEGIMtpfd-eJ-ju70iUReXoQ/preview",
+    description: "Description",
+    speakers: [
+        {
+            name: "Name 1",
+            university: "University",
+            position: "position",
+            slides_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview"
+        },
+        {
+            name: "Name 2",
+            university: "University",
+            position: "position",
+            slides_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview"
+        }
+    ]
+}
+
+async function getWebinar(webinarId) {
+    return tempData;
     const { data, error } = await supabase
         .from('video resources')
         .select()
@@ -147,26 +170,15 @@ async function updateVideoResource(resourceId, formData, existingData) {
 }
 
 export async function loader({ params }) {
-    const vid = await getVideoResource(params.vidId);
+    const webinar = await getWebinar(params.webinarId);
 
-    if (!vid) {
-        throw new Response("Video resource not found", { status: 404 });
+    if (!webinar) {
+        throw new Response("Webinar not found", { status: 404 });
     }
-
-    // Ensure expected arrays/fields exist to avoid runtime errors when mapping
-    vid.title = vid.title || "";
-    vid.date = (vid.date || "").replace(/-/g, '\/') || "";
-    vid.speaker = vid.speaker || "";
-    vid.speaker_university = vid.speaker_university || "";
-    vid.speaker_details = vid.speaker_details || "";
-    vid.speaker_image = (vid.speaker_image == "{}") ? null : vid.speaker_image;
-    vid.video_url = vid.video_url || null;
-    vid.video_thumbnail = (vid.video_thumbnail == "{}") ? null : vid.video_thumbnail;
-    vid.video_description = vid.video_description || "";
-    return vid;
+    return webinar;
 }
 
-export default function VideoResource({ loaderData }) {
+export default function Webinar({ loaderData }) {
     const navigate = useNavigate();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -362,11 +374,11 @@ export default function VideoResource({ loaderData }) {
                 <div className="relative z-1">
                     <a href="/video-resources" className="banner-breadcrumb">
                         <i className="bi bi-caret-left-fill"></i>
-                        <strong>VIDEO RESOURCES</strong>
+                        <strong>WEBINARS</strong>
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
-                    <p>
-                        <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date}</i></span>
+                    <p className="opacity-70">
+                        <i>{loaderData.date}</i>
                     </p>
                 </div>
             </Banner>
@@ -374,23 +386,50 @@ export default function VideoResource({ loaderData }) {
             <div className="py-20 px-10 lg:px-40 duration-200">
                 {isAdmin ? (
                     <div className="text-right mb-4 flex justify-end gap-2">
-                        <button className="button button-light" onClick={handleShowEditPopupForm}>Edit Video Resource</button>
-                        <button className="button button-light button-red" onClick={() => setShowDeletePopup(true)}>Delete Video Resource</button>
+                        <button className="button button-light" onClick={handleShowEditPopupForm}>Edit Webinar</button>
+                        <button className="button button-light button-red" onClick={() => setShowDeletePopup(true)}>Delete Webinar</button>
                     </div>
                 ) : <></>}
-                <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                    <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
-                </div>
-                <p>{loaderData.video_description}</p>
-
-                <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
-                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" />}
-                    <div className="w-full md:w-70 shrink-0 grow-0 m-3">
-                        <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
-                        <p className="text-disabled-light">{loaderData.speaker_university}</p>
+                { loaderData?.pdf_url &&
+                    <div className="mt-6 flex justify-center">
+                        <iframe
+                            src={loaderData.pdf_url}
+                            className="w-full lg:max-w-[75%]"
+                            style={{ height: '80vh' }}
+                            title="Webinar Details PDF"
+                        />
                     </div>
-                    <p>{loaderData.speaker_details}</p>
-                </div>
+                }
+                <br />
+                { loaderData?.video_url &&
+                    <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
+                        <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                    </div>
+                }
+
+                <p>{loaderData.description}</p>
+
+                { loaderData.speakers.map((speaker, idx) => 
+                    <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center justify-between">
+                        <div className="flex flex-row place-items-center md:mb-0 mb-5 text-center">
+                            {speaker?.image_url && <img className="mx-auto w-50 shrink-0 grow-0" src={speaker.image_url} alt="" />}
+                            
+                            <div className="shrink-0 grow-0 m-3 md:text-left text-center">
+                                <p className="font-semibold mr-2"><i>{speaker.name}</i></p>
+                                <p className="text-disabled-light">{speaker.university}</p>
+                                <p>{speaker.position}</p>
+                            </div>
+                        </div>
+                        <div>
+                            <iframe
+                            src={loaderData.pdf_url}
+                            className="w-sm"
+                            style={{ height: '200px' }}
+                            title="Webinar Details PDF"
+                        />
+                        </div>
+                    </div>
+                )}
 
             </div>
 
