@@ -195,6 +195,10 @@ export function Footer() {
               ))}
             </div>
           </div>
+
+          <p className="!mb-0 mt-3 border-t-2 border-primary-light pt-3 text-center text-xs text-secondary-dark">
+            Anisha Malani, Isabelle Hu, Justin Fan, and Nicolas Gibson | Frugal Innovation Hub
+          </p>
         </div>
       </div>
     </footer>
