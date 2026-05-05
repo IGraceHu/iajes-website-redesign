@@ -2,183 +2,210 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
-import { Banner } from "../components/graphics";
+import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { updateRequired } from "../helpers/form";
+import "../styles/video-resources.css";
 
-export function meta() {
+export function meta({ loaderData }) {
     return [
-        { title: "Webinar" },
-        { name: "", content: "" },
+        { title: "Webinar: " + loaderData.title },
+        // { name: "description", content: "Welcome to React Router!" },
     ];
 }
 
-function formatDisplayDate(dateValue) {
-    if (!dateValue) return "";
-    return String(dateValue).split("T")[0].replace(/-/g, "/");
-}
-
-function normalizeDateForDatabase(dateValue) {
-    return String(dateValue || "").trim().replace(/\//g, "-");
-}
-
-function isBlank(value) {
-    return String(value || "").trim() === "";
-}
-
-function isValidDisplayDate(dateValue) {
-    const value = String(dateValue || "").trim();
-    if (!/^\d{4}\/\d{2}\/\d{2}$/.test(value)) return false;
-
-    const [year, month, day] = value.split("/").map(Number);
-    const date = new Date(Date.UTC(year, month - 1, day));
-
-    return (
-        date.getUTCFullYear() === year &&
-        date.getUTCMonth() === month - 1 &&
-        date.getUTCDate() === day
-    );
+const tempData = {
+    title: "Webinar Title",
+    date: "2025-04-02",
+    pdf_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview",
+    video_url: "https://drive.google.com/file/d/1gd2J8PqdCEGIMtpfd-eJ-ju70iUReXoQ/preview",
+    description: "Description",
+    speakers: [
+        {
+            name: "Name 1",
+            university: "University",
+            position: "position",
+            slides_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview"
+        },
+        {
+            name: "Name 2",
+            university: "University",
+            position: "position",
+            slides_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview"
+        }
+    ]
 }
 
 async function getWebinar(webinarId) {
     const { data, error } = await supabase
-        .from("webinars")
+        .from('webinars')
         .select()
-        .eq("id", webinarId);
+        .eq('id', webinarId)
 
     if (error) {
         console.error("Error fetching webinar:", error);
         return null;
     }
 
-    return data ? data[0] : null;
-}
-
-function extractWebinarFilePath(url) {
-    if (!url) return null;
-    const parts = url.split("/webinars/");
-    return parts.length > 1 ? parts[parts.length - 1] : null;
-}
-
-async function removeWebinarFiles(urls) {
-    const paths = urls.map(extractWebinarFilePath).filter(Boolean);
-    if (paths.length === 0) return;
-
-    const { error } = await supabase.storage.from("webinars").remove(paths);
-    if (error) {
-        console.error("Error deleting webinar files from storage:", error);
+    if (data[0]) {
+        try {
+            data[0].speakers = JSON.parse(data[0].speakers);
+            for (let i = 0; i < data[0].speakers.length; i++) {
+                if (data[0].speakers.image_url == "") {
+                    data[0].speakers.image_url = null;
+                }
+            }
+        } catch(e) {
+            data[0].speakers = [];
+        }
+        return data[0];
     }
-}
-
-async function uploadWebinarFile(file, folder) {
-    if (!file || !file.name || file.size <= 0) return null;
-
-    const path = `${folder}/${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-    const { error: uploadError } = await supabase.storage
-        .from("webinars")
-        .upload(path, file);
-
-    if (uploadError) {
-        console.error("Error uploading webinar file:", uploadError);
-        throw uploadError;
-    }
-
-    const { data, error: urlError } = supabase.storage
-        .from("webinars")
-        .getPublicUrl(path);
-
-    if (urlError) {
-        console.error("Error getting webinar file URL:", urlError);
-        throw urlError;
-    }
-
-    return data.publicUrl;
-}
-
-function inputClass(isRequired) {
-    return "input input-text w-full " + (isRequired ? "input-required" : "");
-}
-
-async function deleteWebinar(webinarId, thumbnailUrl, speakerImgUrl) {
-    const { data, error } = await supabase
-        .from("webinars")
-        .delete()
-        .eq("id", webinarId)
-        .select("id");
-
-    if (error) {
-        console.error("Database delete error:", error);
-        return error;
-    }
-
-    if (!data || data.length === 0) {
-        const rlsError = new Error("No webinar was deleted. You may be missing a DELETE policy in Supabase.");
-        console.error(rlsError.message);
-        return rlsError;
-    }
-
-    await removeWebinarFiles([thumbnailUrl, speakerImgUrl]);
 
     return null;
 }
 
+function extractWebinarPath(url) {
+    if (!url) return null;
+    const parts = url.split('/webinars/');
+    return parts.length > 1 ? parts[parts.length - 1] : null;
+}
+
+async function removeWebinarFiles(urls) {
+    const paths = urls.map(extractWebinarPath).filter(Boolean);
+    if (paths.length === 0) return;
+    const { error } = await supabase.storage.from('webinars').remove(paths);
+    if (error) {
+        console.error("Error deleting files from storage:", error);
+    }
+}
+
+async function deleteWebinar(webinarId, thumbnailUrl, speakersData) {
+    const speakerUrls = Array.from(speakersData, (speaker) => speaker.image_url);
+    await removeWebinarFiles([thumbnailUrl, ...speakerUrls]);
+
+    const response = await supabase
+        .from('webinars')
+        .delete()
+        .eq('id', webinarId)
+
+    return response;
+}
+
 async function updateWebinar(webinarId, formData, existingData) {
-    let thumbnailUrl = existingData.webinar_thumbnail;
-    let speakerImgUrl = existingData.speaker_image;
+    let thumbnailUrl = existingData.thumbnail_url;
     const filesToRemoveOnSuccess = [];
-    const uploadedFilesToRemoveOnError = [];
 
-    try {
-        const thumbnailFile = formData.get("webinar-thumbnail");
-        if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
-            const uploadedThumbnailUrl = await uploadWebinarFile(thumbnailFile, "thumbnails");
-            uploadedFilesToRemoveOnError.push(uploadedThumbnailUrl);
-            if (existingData.webinar_thumbnail) {
-                filesToRemoveOnSuccess.push(existingData.webinar_thumbnail);
-            }
-            thumbnailUrl = uploadedThumbnailUrl;
+    const thumbnailFile = formData.get("webinar-thumbnail");
+    if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
+        const path = `${webinarId}/${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        const { error: uploadError } = await supabase.storage
+            .from('webinars')
+            .upload(path, thumbnailFile);
+
+        if (uploadError) {
+            console.error("Error uploading thumbnail:", uploadError);
+            return uploadError;
         }
 
-        const speakerImgFile = formData.get("webinar-speaker-img");
-        if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
-            const uploadedSpeakerImgUrl = await uploadWebinarFile(speakerImgFile, "speakers");
-            uploadedFilesToRemoveOnError.push(uploadedSpeakerImgUrl);
-            if (existingData.speaker_image) {
-                filesToRemoveOnSuccess.push(existingData.speaker_image);
-            }
-            speakerImgUrl = uploadedSpeakerImgUrl;
+        const { data, error: urlError } = supabase.storage
+            .from('webinars')
+            .getPublicUrl(path);
+
+        if (urlError) {
+            console.error("Error getting thumbnail URL:", urlError);
+            return urlError;
         }
-    } catch (error) {
-        return error;
+
+        if (existingData.thumbnail_url) {
+            filesToRemoveOnSuccess.push(existingData.thumbnail_url);
+        }
+        thumbnailUrl = data.publicUrl;
     }
 
+    let hasSpeakers = true;
+    let i = 0;
+    const speakersData = []
+    const speakerImageUrls = [];
+    while (hasSpeakers) {
+        if (formData.get("webinar-speaker-name-" + i) == null) {
+            hasSpeakers = false;
+            break;
+        }
+
+        let speakerImageUrl = formData.get("webinar-speaker-image-url-" + i) || null;
+        const speakerImgFile = formData.get("webinar-speaker-image-" + i);
+        // If new image upload
+        if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
+            const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+            const { error: uploadError } = await supabase.storage
+                .from('webinars')
+                .upload(path, speakerImgFile);
+
+            if (uploadError) {
+                console.error("Error uploading speaker image:", uploadError);
+                return uploadError;
+            }
+
+            const { data, error: urlError } = supabase.storage
+                .from('webinars')
+                .getPublicUrl(path);
+
+            if (urlError) {
+                console.error("Error getting speaker image URL:", urlError);
+                return urlError;
+            }
+
+            // If there was a previous image url
+            if (formData.get("webinar-speaker-image-url-" + i)) {
+                filesToRemoveOnSuccess.push(formData.get("webinar-speaker-image-url-" + i));
+            }
+
+            speakerImageUrl = data.publicUrl;
+        }
+        speakerImageUrls.push(speakerImageUrl);
+
+        speakersData.push({
+            name: formData.get("webinar-speaker-name-" + i),
+            university: formData.get("webinar-speaker-university-" + i),
+            position: formData.get("webinar-speaker-position-" + i),
+            image_url: speakerImageUrl,
+            slidesURL: formData.get("webinar-speaker-slides-" + i),
+        })
+        i++;
+    }
+
+    // get all old speaker image urls that are now unused
+    for (let speaker in existingData.speakers) {
+        if (!speakerImageUrls.includes(speaker.image_url)) {
+            filesToRemoveOnSuccess.push(speaker.image_url);
+        }
+    }
+
+    const speakerDataJSON = JSON.stringify(speakersData);
+
     const { data, error } = await supabase
-        .from("webinars")
+        .from('webinars')
         .update({
             title: formData.get("webinar-title"),
-            webinar_url: formData.get("webinar-link"),
-            date: normalizeDateForDatabase(formData.get("webinar-date")),
-            webinar_thumbnail: thumbnailUrl,
-            webinar_description: formData.get("webinar-desc"),
-            speaker: formData.get("webinar-speaker-name"),
-            speaker_university: formData.get("webinar-speaker-uni"),
-            speaker_image: speakerImgUrl,
-            speaker_details: formData.get("webinar-speaker-desc"),
+            pdf_url: formData.get("webinar-pdf-link"),
+            video_url: formData.get("webinar-video-link"),
+            date: formData.get("webinar-date"),
+            description: formData.get("webinar-desc"),
+            thumbnail_url: thumbnailUrl,
+            speakers: speakerDataJSON
         })
-        .eq("id", webinarId)
-        .select("id");
+        .eq('id', webinarId)
+        .select();
 
     if (error) {
         console.error("Database update error:", error);
-        await removeWebinarFiles(uploadedFilesToRemoveOnError);
         return error;
     }
 
     if (!data || data.length === 0) {
-        const rlsError = new Error("No webinar was updated. You may be missing an UPDATE policy in Supabase.");
+        const rlsError = new Error("No rows updated. You may be missing an UPDATE policy in Supabase.");
         console.error(rlsError.message);
-        await removeWebinarFiles(uploadedFilesToRemoveOnError);
         return rlsError;
     }
 
@@ -188,58 +215,157 @@ async function updateWebinar(webinarId, formData, existingData) {
 }
 
 export async function loader({ params }) {
-    const webinar = await getWebinar(params.id);
+    const webinar = await getWebinar(params.webinarId);
 
     if (!webinar) {
         throw new Response("Webinar not found", { status: 404 });
     }
-
-    webinar.title = webinar.title || "";
-    webinar.date = formatDisplayDate(webinar.date);
-    webinar.speaker = webinar.speaker || "";
-    webinar.speaker_university = webinar.speaker_university || "";
-    webinar.speaker_details = webinar.speaker_details || "";
-    webinar.speaker_image = webinar.speaker_image === "{}" ? null : webinar.speaker_image;
-    webinar.webinar_url = webinar.webinar_url || null;
-    webinar.webinar_thumbnail = webinar.webinar_thumbnail === "{}" ? null : webinar.webinar_thumbnail;
-    webinar.webinar_description = webinar.webinar_description || "";
-
     return webinar;
+}
+
+function SpeakerEdit({ id, speakers, setSpeakers }) {
+    const [nameRequired, setNameRequired] = useState(false);
+
+    function removeSpeaker(e) {
+        e.preventDefault();
+        setSpeakers(speakers.toSpliced(id, 1));
+    }
+
+    function handleNameChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1, {
+            ...speakers[id],
+            name: e.target.value
+        }));
+        setNameRequired(e.target.value.length == 0);
+    }
+
+    function handleUniversityChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            university: e.target.value
+        }));
+    }
+
+    function handlePositionChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            position: e.target.value
+        }));
+    }
+
+    function handleImageChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            image: e.target.value
+        }));
+    }
+
+    function handleSlidesChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            slides_url: e.target.value
+        }));
+    }
+
+    return (
+        <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
+            <div className="text-sm font-semibold mb-2 flex justify-between">
+                <div className="text-secondary-dark">Speaker Details</div>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}>Remove Speaker</button>
+            </div>
+            <div className="md:grid grid-cols-2 flex flex-col gap-5">
+                <div>
+                    <label htmlFor={"webinar-speaker-name-" + id}>Name:</label><br />
+                    <input id={"webinar-speaker-name-" + id} name={"webinar-speaker-name-" + id} type="text"
+                        className={"input input-text w-full " + (nameRequired && "input-required")}
+                        placeholder="Name"
+                        value={speakers[id].name}
+                        onChange={(e) => {handleNameChange(e)}} />
+                    <div className="input-error">This field is required.</div>
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
+                    <input id={"webinar-speaker-position-" + id} name={"webinar-speaker-position-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="Position"
+                    value={speakers[id].position}
+                    onChange={(e) => {handlePositionChange(e)}} />
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
+                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="University"
+                    value={speakers[id].university}
+                    onChange={(e) => {handleUniversityChange(e)}} />
+                </div>
+                <label>
+                    Speaker image:
+                    <input id={"webinar-speaker-image-" + id} name={"webinar-speaker-image-" + id} type="file" accept=".jpg,.jpeg,.png" className="ml-3"
+                    value={speakers[id].image || null}
+                    onChange={(e) => {handleImageChange(e)}} />
+                    <div className="input-error">This field is required.</div>
+                </label>
+                <input className="hidden" name={"webinar-speaker-image-url-" + id} defaultValue={speakers[id].image_url || ""} />
+                <div className="col-span-2">
+                    <label htmlFor={"webinar-speaker-slides-" + id}>Slides:</label><br />
+                    <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="https://drive.google.com/file/d/...."
+                    value={speakers[id].slides_url}
+                    onChange={(e) => {handleSlidesChange(e)}} />
+                </div>
+            </div>
+        </div>
+    )
 }
 
 export default function Webinar({ loaderData }) {
     const navigate = useNavigate();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
+
+    // EDIT LOGIC ADDITION
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [showResolvePopup, setShowResolvePopup] = useState(false);
+    const [speakers, setSpeakers] = useState([])
+
+    function addSpeaker(e) {
+        e.preventDefault();
+        setSpeakers([...speakers, {name: "", university: "", position: "", image: "", slidesURL: ""}]);
+    }
+
     const [formRequired, setFormRequired] = useState({
         webinarTitle: false,
-        webinarDate: false,
-        webinarLink: false,
-        webinarSpeakerName: false,
     });
     const [hasError, setHasError] = useState(false);
 
-    async function validate(formData) {
+    function handleShowEditPopupForm() {
+        setFormRequired({
+            webinarTitle: false,
+        });
+        setSpeakers(loaderData.speakers);
         setHasError(false);
+        setShowEditPopup(true);
+    }
 
+    async function validate(formData) {
         let isValidated = true;
-        const dateValue = formData.get("webinar-date");
         const isRequired = {
-            webinarTitle: isBlank(formData.get("webinar-title")),
-            webinarDate: !isValidDisplayDate(dateValue),
-            webinarLink: isBlank(formData.get("webinar-link")),
-            webinarSpeakerName: isBlank(formData.get("webinar-speaker-name")),
-        };
-
+            webinarTitle: formData.get('webinar-title') === (null || ""),
+        }
         for (let value of Object.values(isRequired)) {
             if (value) {
                 isValidated = false;
                 break;
             }
         }
-
+        for (let speaker of speakers) {
+            if (speaker.name == "") {
+                isValidated = false;
+                break;
+            }
+        }
         if (!isValidated) {
             setFormRequired(isRequired);
             return false;
@@ -254,23 +380,9 @@ export default function Webinar({ loaderData }) {
         }
     }
 
-    function handleShowEditPopupForm() {
-        setFormRequired({
-            webinarTitle: false,
-            webinarDate: false,
-            webinarLink: false,
-            webinarSpeakerName: false,
-        });
-        setHasError(false);
-        setShowEditPopup(true);
-    }
-
     function checkEmpty(value, inputName) {
-        const updatedFormRequired = inputName === "webinarDate"
-            ? { ...formRequired, webinarDate: !isValidDisplayDate(value) }
-            : updateRequired(value, inputName, formRequired);
-
-        if (updatedFormRequired !== formRequired) {
+        const updatedFormRequired = updateRequired(value, inputName, formRequired);
+        if (updatedFormRequired != formRequired) {
             setFormRequired(updatedFormRequired);
         }
     }
@@ -285,135 +397,106 @@ export default function Webinar({ loaderData }) {
         const getIsAdmin = async (userId) => {
             try {
                 const { data, error } = await supabase
-                    .from("users")
-                    .select("role")
+                    .from('users')
+                    .select('role')
                     .eq("id", userId);
-
-                if (error) {
-                    console.log("error");
-                    return;
-                }
-
                 if (data[0]) {
-                    setIsAdmin(data[0].role === "admin");
-                } else {
-                    console.log("error");
+                    setIsAdmin(data[0].role == "admin");
                 }
+                else { console.log("error"); }
+
             } catch (error) {
                 console.log("error");
             }
-        };
+        }
 
+        // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             if (session?.user.id) {
-                getIsAdmin(session.user.id);
-            } else {
-                setIsAdmin(false);
+                getIsAdmin(session?.user.id);
             }
         });
 
+        // Check current session on mount
         supabase.auth.getSession().then(({ data: { session } }) => {
             if (session?.user.id) {
-                getIsAdmin(session.user.id);
+                getIsAdmin(session?.user.id);
             }
         });
+
 
         return () => subscription.unsubscribe();
     }, []);
 
     async function handleDelete() {
-        const deleteError = await deleteWebinar(loaderData.id, loaderData.webinar_thumbnail, loaderData.speaker_image);
-
-        if (deleteError === null) {
+        try {
+            await deleteWebinar(loaderData.id, loaderData.thumbnail_url, loaderData.speakers);
             navigate({ pathname: "/webinars" });
-        } else {
-            console.error("Error during deletion:", deleteError);
-            setHasError(true);
+        }
+        catch (error) {
+            console.error("Error during deletion:", error);
         }
     }
 
     return (
         <>
-            {isAdmin &&
-                <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}>
-                    <div className="text-center mt-6">Delete this webinar?</div>
-                    {hasError && <p className="text-error text-center my-2">An error occurred. Please try again later.</p>}
-                    <div className="text-center mt-4">
-                        <button type="button" className="button button-light button-delete" onClick={handleDelete}>Delete</button>
-                    </div>
-                </Popup>
-            }
+            <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}
+                buttons={[{ text: "Delete", onclick: handleDelete }]}>
+                <div className="text-center mt-6">Delete this webinar?</div>
+            </Popup>
 
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
                     <PopupForm id="edit-webinar" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
-                        <h4>Edit webinar</h4>
-                        <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
+                        <h4>Create new webinar</h4>
+                        <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
                             <div>
                                 <label htmlFor="webinar-title">Webinar title:</label><br />
                                 <input id="webinar-title" name="webinar-title" type="text"
-                                    className={inputClass(formRequired?.webinarTitle)}
+                                    className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
                                     placeholder="Webinar title"
                                     defaultValue={loaderData.title}
                                     onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="webinar-date">Webinar date:</label><br />
-                                <input id="webinar-date" name="webinar-date" type="text"
-                                    className={inputClass(formRequired?.webinarDate)}
-                                    placeholder="YYYY/MM/DD"
-                                    defaultValue={loaderData.date}
-                                    onChange={(e) => checkEmpty(e.target.value, "webinarDate")} />
-                                <div className="input-error">Use YYYY/MM/DD.</div>
+                                <input id="webinar-date" name="webinar-date" type="date" defaultValue={loaderData.date} className="input input-text w-full" />
                             </div>
                             <label>
                                 Webinar thumbnail image:
-                                <p className="text-sm text-disabled-dark">Leave empty to keep existing thumbnail.</p>
                                 <input id="webinar-thumbnail" name="webinar-thumbnail" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
+                                <div className="input-error">This field is required.</div>
                             </label>
                         </div>
 
                         <div className="relative">
-                            <label htmlFor="webinar-link">Webinar link:</label><br />
-                            <p className="text-sm text-disabled-dark mt-1">This is the webinar link that will be embedded. Please only include the link and not the entire embed.</p>
-                            <input id="webinar-link" name="webinar-link" type="text"
-                                className={inputClass(formRequired?.webinarLink)}
+                            <label htmlFor="webinar-pdf-link">Webinar PDF link:</label><br />
+                            <p className="text-sm text-disabled-dark mt-1">This is the PDF that will be embedded. Please only include the link and not the entire embed.</p>
+                            <input id="webinar-pdf-link" name="webinar-pdf-link" type="text"
+                                className="input input-text w-full"
+                                defaultValue={loaderData.pdf_url}
+                                placeholder="https://drive.google.com/file/d/...."
+                                onChange={(e) => {}} />
+                            <br /><br />
+                            <label htmlFor="webinar-video-link">Webinar video link:</label><br />
+                            <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
+                            <input id="webinar-video-link" name="webinar-video-link" type="text"
+                                className="input input-text w-full"
+                                defaultValue={loaderData.video_url}
                                 placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
-                                defaultValue={loaderData.webinar_url}
-                                onChange={(e) => checkEmpty(e.target.value, "webinarLink")} />
-                            <div className="input-error">This field is required.</div>
+                                onChange={(e) => {}} />
                             <br /><br />
                             <label htmlFor="webinar-desc">Webinar description:</label><br />
-                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter your webinar description..." defaultValue={loaderData.webinar_description}></textarea>
+                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter your video description..." defaultValue={loaderData.description}></textarea>
                             <br /> <br />
                         </div>
 
                         <fieldset className="border-t-2 border-gray-light pt-4 relative">
-                            <div className="text-sm font-semibold text-secondary-dark">Speaker Details</div>
-                            <div className="mt-3 grid md:grid-cols-2 grid-cols-1 gap-5">
-                                <div>
-                                    <label htmlFor="webinar-speaker-name">Name:</label><br />
-                                    <input id="webinar-speaker-name" name="webinar-speaker-name" type="text"
-                                        className={inputClass(formRequired?.webinarSpeakerName)}
-                                        placeholder="Name"
-                                        defaultValue={loaderData.speaker}
-                                        onChange={(e) => checkEmpty(e.target.value, "webinarSpeakerName")} />
-                                    <div className="input-error">This field is required.</div>
-                                </div>
-                                <div>
-                                    <label htmlFor="webinar-speaker-uni">University:</label><br />
-                                    <input id="webinar-speaker-uni" name="webinar-speaker-uni" type="text" className="input input-text w-full" placeholder="University" defaultValue={loaderData.speaker_university} />
-                                </div>
+                            <h5 >Speaker Details</h5>
+                            <div>
+                                { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
                             </div>
-                            <br />
-                            <label>
-                                Speaker image:
-                                <p className="text-sm text-disabled-dark">Leave empty to keep existing speaker image.</p>
-                                <input id="webinar-speaker-img" name="webinar-speaker-img" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
-                            </label>
-                            <br /><br />
-                            <label htmlFor="webinar-speaker-desc">Description:</label><br />
-                            <textarea id="webinar-speaker-desc" name="webinar-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker description..." defaultValue={loaderData.speaker_details}></textarea>
+                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
@@ -422,7 +505,7 @@ export default function Webinar({ loaderData }) {
                 </div>
             }
 
-            <Menu currentEndUrl="/webinars" />
+            <Menu />
             <Banner type="blue">
                 <div className="relative z-1">
                     <a href="/webinars" className="banner-breadcrumb">
@@ -430,8 +513,8 @@ export default function Webinar({ loaderData }) {
                         <strong>WEBINARS</strong>
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
-                    <p>
-                        <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date}</i></span>
+                    <p className="opacity-70">
+                        <i>{loaderData?.date.replace(/-/g, '\/')}</i>
                     </p>
                 </div>
             </Banner>
@@ -440,25 +523,55 @@ export default function Webinar({ loaderData }) {
                 {isAdmin ? (
                     <div className="text-right mb-4 flex justify-end gap-2">
                         <button className="button button-light" onClick={handleShowEditPopupForm}>Edit Webinar</button>
-                        <button className="button button-light button-delete" onClick={() => { setHasError(false); setShowDeletePopup(true); }}>Delete Webinar</button>
+                        <button className="button button-light button-red" onClick={() => setShowDeletePopup(true)}>Delete Webinar</button>
                     </div>
                 ) : <></>}
-                <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                    <iframe src={loaderData.webinar_url} width="100%" height="100%"></iframe>
-                </div>
-                <p>{loaderData.webinar_description}</p>
-
-                <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
-                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" />}
-                    <div className="w-full md:w-70 shrink-0 grow-0 m-3">
-                        <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
-                        <p className="text-disabled-light">{loaderData.speaker_university}</p>
+                { loaderData?.pdf_url &&
+                    <div className="mt-6 flex justify-center">
+                        <iframe
+                            src={loaderData.pdf_url}
+                            className="w-full lg:max-w-[75%]"
+                            style={{ height: '80vh' }}
+                            title="Webinar Details PDF"
+                        />
                     </div>
-                    <p>{loaderData.speaker_details}</p>
-                </div>
+                }
+                <br />
+                { loaderData?.video_url &&
+                    <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
+                        <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                    </div>
+                }
+
+                <p>{loaderData.description}</p>
+
+                { loaderData.speakers.map((speaker, idx) => 
+                    <div key={idx} className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col lg:flex-row place-items-center justify-between">
+                        <div className="flex flex-row place-items-center lg:mb-0 mb-5 text-center">
+                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt="" />}
+                            
+                            <div className="shrink-0 grow-0 m-3 lg:text-left text-center">
+                                <p className="font-semibold mr-2"><i>{speaker.name}</i></p>
+                                <p className="text-disabled-light">{speaker.university}</p>
+                                <p>{speaker.position}</p>
+                            </div>
+                        </div>
+                        <div>
+                            { speaker?.slidesURL &&
+                                <iframe
+                                    src={speaker.slidesURL}
+                                    className="w-sm"
+                                    style={{ height: '200px' }}
+                                    title="Webinar Details PDF"
+                                />
+                            }
+                        </div>
+                    </div>
+                )}
+
             </div>
 
             <Footer />
         </>
-    );
+    )
 }
