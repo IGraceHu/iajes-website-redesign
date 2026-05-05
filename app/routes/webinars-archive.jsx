@@ -339,7 +339,13 @@ export default function Webinars() {
         <>
             <Menu currentEndUrl="/webinars" />
             <div className="lg:px-40 px-10 py-20 duration-200">
-                <h1>Webinars Archive</h1>
+                <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
+                    
+                    <h1>Webinars Archive</h1>
+                        
+                    <a href="/webinars" className="button button-light block">Current Webinars</a>
+
+                </div>
                 <div className="relative w-full grid lg:grid-cols-[min-content_auto] grid-rows-[min-content_auto] gap-5 z-1">
                     <div className="flex flex-col justify-between">
                         <div className="relative flex flex-col mb-10 lg:w-xs z-1">

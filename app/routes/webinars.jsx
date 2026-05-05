@@ -449,8 +449,13 @@ export default function Webinars({ loaderData }) {
             <Menu currentEndUrl="/webinars" />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
+                    
                     <h1>Webinars</h1>
-                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new webinar</button>}
+                        
+                    <div className="flex items-center">
+                        <a href="/webinars/archive" className="button button-light block">Archive</a>
+                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new webinar</button>}
+                    </div>
                 </div>
                 <p>
                     Pilot test the onset of a branded forward thinking interactive online workshop series that would help IAJES members share experiences and lessons learned in delivering quality Jesuit engineering education for the current and future society 
