@@ -16,7 +16,6 @@ export function meta() {
 }
 
 async function getWebinars() {
-    return [];
     const { data, error } = await supabase
         .from('webinars')
         .select('id, title, date, thumbnail_url')
@@ -29,58 +28,47 @@ export async function loader({ params }) {
 }
 
 async function createWebinar(formData) {
-    // return false;
-    const error = null;
 
-    // const { data, error } = await supabase
-    //     .from('webinars')
-    //     .insert({
-            // title: formData.get("webinars-title"),
-            // pdf_url: formData.get("webinars-pdf-link"),
-            // video_url: formData.get("webinar-video-link"),
-            // date: formData.get("webinar-date"),
-            // description: formData.get("webinar-desc"),
-    //     })
-    //     .select('id')
-
-    console.log({
+    const { data, error } = await supabase
+        .from('webinars')
+        .insert({
             title: formData.get("webinar-title"),
             pdf_url: formData.get("webinar-pdf-link"),
             video_url: formData.get("webinar-video-link"),
             date: formData.get("webinar-date"),
             description: formData.get("webinar-desc"),
         })
+        .select('id')
 
-    // if (data[0].id) {
-    if (true) {
+    if (data[0].id) {
 
-        // const webinarId = data[0].id;
+        const webinarId = data[0].id;
 
-        // let thumbnailUrl = null;
+        let thumbnailUrl = null;
 
-        // const thumbnailFile = formData.get("webinar-thumbnail");
-        // if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
-        //     const path = `${webinarId}/${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-        //     const { error: uploadError } = await supabase.storage
-        //         .from('webinars')
-        //         .upload(path, thumbnailFile);
+        const thumbnailFile = formData.get("webinar-thumbnail");
+        if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
+            const path = `${webinarId}/${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+            const { error: uploadError } = await supabase.storage
+                .from('webinars')
+                .upload(path, thumbnailFile);
 
-        //     if (uploadError) {
-        //         console.error("Error uploading thumbnail:", uploadError);
-        //         return uploadError;
-        //     }
+            if (uploadError) {
+                console.error("Error uploading thumbnail:", uploadError);
+                return uploadError;
+            }
 
-        //     const { data, error: urlError } = supabase.storage
-        //         .from('webinars')
-        //         .getPublicUrl(path);
+            const { data, error: urlError } = supabase.storage
+                .from('webinars')
+                .getPublicUrl(path);
 
-        //     if (urlError) {
-        //         console.error("Error getting thumbnail URL:", urlError);
-        //         return urlError;
-        //     }
+            if (urlError) {
+                console.error("Error getting thumbnail URL:", urlError);
+                return urlError;
+            }
 
-        //     thumbnailUrl = data.publicUrl;
-        // }
+            thumbnailUrl = data.publicUrl;
+        }
 
         let hasSpeakers = true;
         let i = 0;
@@ -90,55 +78,54 @@ async function createWebinar(formData) {
                 hasSpeakers = false;
                 break;
             }
-            // let speakerImgUrl = null;
-            // const speakerImgFile = formData.get("webinar-speaker-image-" + i);
-            // if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
-            //     const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
-            //     const { error: uploadError } = await supabase.storage
-            //         .from('webinars')
-            //         .upload(path, speakerImgFile);
+            let speakerImgUrl = null;
+            const speakerImgFile = formData.get("webinar-speaker-image-" + i);
+            if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
+                const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+                const { error: uploadError } = await supabase.storage
+                    .from('webinars')
+                    .upload(path, speakerImgFile);
 
-            //     if (uploadError) {
-            //         console.error("Error uploading speaker image:", uploadError);
-            //         return uploadError;
-            //     }
+                if (uploadError) {
+                    console.error("Error uploading speaker image:", uploadError);
+                    return uploadError;
+                }
 
-            //     const { data, error: urlError } = supabase.storage
-            //         .from('webinars')
-            //         .getPublicUrl(path);
+                const { data, error: urlError } = supabase.storage
+                    .from('webinars')
+                    .getPublicUrl(path);
 
-            //     if (urlError) {
-            //         console.error("Error getting speaker image URL:", urlError);
-            //         return urlError;
-            //     }
+                if (urlError) {
+                    console.error("Error getting speaker image URL:", urlError);
+                    return urlError;
+                }
 
-            //     speakerImgUrl = data.publicUrl;
-            // }
+                speakerImgUrl = data.publicUrl;
+            }
 
             speakersData.push({
                 name: formData.get("webinar-speaker-name-" + i),
                 university: formData.get("webinar-speaker-university-" + i),
                 position: formData.get("webinar-speaker-position-" + i),
-                // image_url: speakerImageUrl,
+                image_url: speakerImageUrl,
                 slidesURL: formData.get("webinar-speaker-slides-" + i),
             })
             i++;
         }
 
         const speakerDataJSON = JSON.stringify(speakersData);
-        console.log(speakersData);
 
-        // const { imgError } = await supabase
-        // .from('webinars')
-        // .update({
-        //     thumbnail_url: thumbnailUrl,
-        //     speakers_json: speakerDataJSON
-        // })
-        // .eq('id', webinarId)
+        const { imgError } = await supabase
+        .from('webinars')
+        .update({
+            thumbnail_url: thumbnailUrl,
+            speakers: speakerDataJSON
+        })
+        .eq('id', webinarId)
 
-        // if (imgError) {
-        //     console.error("Image insert error:", imgError);
-        // }
+        if (imgError) {
+            console.error("Image insert error:", imgError);
+        }
     }
     else if (error) {
         console.error("Database insert error:", error);
@@ -162,7 +149,7 @@ function WebinarCard({ webinarInfo }) {
                         <div className="relative w-full h-full p-5">
                             <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
                             <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{webinarInfo.title}</h5>
-                            <p style={{ color: "var(--color-white)" }}>{webinarInfo.date.replace(/-/g, '\/')}</p>
+                            <p style={{ color: "var(--color-white)" }}>{webinarInfo?.date.replace(/-/g, '\/')}</p>
                         </div>
                     }
                 </div>
@@ -314,7 +301,7 @@ export default function Webinars({ loaderData }) {
     const webinars = [];
     for (let i = (currentPage * 6); i < currentPage + 6; i++) {
         if (i < webinarsData.length) {
-            webinars.push(<ResourceCard key={webinarsData[i].id} webinarInfo={webinarsData[i]} />)
+            webinars.push(<WebinarCard key={webinarsData[i].id} webinarInfo={webinarsData[i]} />)
         } else {
             break;
         }

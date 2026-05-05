@@ -38,8 +38,6 @@ const tempData = {
 }
 
 async function getWebinar(webinarId) {
-    return tempData;
-
     const { data, error } = await supabase
         .from('webinars')
         .select()
@@ -51,9 +49,12 @@ async function getWebinar(webinarId) {
     }
 
     if (data[0]) {
-        const speakerData = JSON.parse(data[0].speakers);
-        const webinarData = { ...data[0], speakers: speakerData }
-        return webinarData;
+        try {
+            data[0].speakers = JSON.parse(data[0].speakers);
+        } catch(e) {
+            data[0].speakers = [];
+        }
+        return data[0];
     }
 
     return null;
@@ -177,18 +178,17 @@ async function updateWebinar(webinarId, formData, existingData) {
     }
 
     const speakerDataJSON = JSON.stringify(speakersData);
-    console.log(speakersData);
 
     const { data, error } = await supabase
         .from('webinars')
         .update({
-            title: formData.get("webinars-title"),
-            pdf_url: formData.get("webinars-pdf-link"),
+            title: formData.get("webinar-title"),
+            pdf_url: formData.get("webinar-pdf-link"),
             video_url: formData.get("webinar-video-link"),
             date: formData.get("webinar-date"),
             description: formData.get("webinar-desc"),
             thumbnail_url: thumbnailUrl,
-            speakers_json: speakerDataJSON
+            speakers: speakerDataJSON
         })
         .eq('id', webinarId)
         .select();
@@ -204,7 +204,7 @@ async function updateWebinar(webinarId, formData, existingData) {
         return rlsError;
     }
 
-    await removeVideoResourceFiles(filesToRemoveOnSuccess);
+    await removeWebinarFiles(filesToRemoveOnSuccess);
 
     return null;
 }
@@ -316,6 +316,9 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
 }
 
 export default function Webinar({ loaderData }) {
+    // console.log(loaderData);
+
+    // return (<div></div>);
     const navigate = useNavigate();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -509,7 +512,7 @@ export default function Webinar({ loaderData }) {
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
                     <p className="opacity-70">
-                        <i>{loaderData.date.replace(/-/g, '\/')}</i>
+                        <i>{loaderData?.date.replace(/-/g, '\/')}</i>
                     </p>
                 </div>
             </Banner>
