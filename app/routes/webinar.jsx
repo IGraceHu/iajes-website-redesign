@@ -51,6 +51,11 @@ async function getWebinar(webinarId) {
     if (data[0]) {
         try {
             data[0].speakers = JSON.parse(data[0].speakers);
+            for (let i = 0; i < data[0].speakers.length; i++) {
+                if (data[0].speakers.image_url == "") {
+                    data[0].speakers.image_url = null;
+                }
+            }
         } catch(e) {
             data[0].speakers = [];
         }
@@ -112,8 +117,8 @@ async function updateWebinar(webinarId, formData, existingData) {
             return urlError;
         }
 
-        if (existingData.video_thumbnail) {
-            filesToRemoveOnSuccess.push(existingData.video_thumbnail);
+        if (existingData.thumbnail_url) {
+            filesToRemoveOnSuccess.push(existingData.thumbnail_url);
         }
         thumbnailUrl = data.publicUrl;
     }
@@ -128,7 +133,7 @@ async function updateWebinar(webinarId, formData, existingData) {
             break;
         }
 
-        let speakerImgUrl = formData.get("webinar-speaker-image-url-" + i);
+        let speakerImageUrl = formData.get("webinar-speaker-image-url-" + i) || null;
         const speakerImgFile = formData.get("webinar-speaker-image-" + i);
         // If new image upload
         if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
@@ -153,18 +158,18 @@ async function updateWebinar(webinarId, formData, existingData) {
 
             // If there was a previous image url
             if (formData.get("webinar-speaker-image-url-" + i)) {
-                filesToRemoveOnSuccess.push(existingData.speaker_image);
+                filesToRemoveOnSuccess.push(formData.get("webinar-speaker-image-url-" + i));
             }
 
-            speakerImgUrl = data.publicUrl;
+            speakerImageUrl = data.publicUrl;
         }
-        speakerImageUrls.push(speakerImgUrl);
+        speakerImageUrls.push(speakerImageUrl);
 
         speakersData.push({
             name: formData.get("webinar-speaker-name-" + i),
             university: formData.get("webinar-speaker-university-" + i),
             position: formData.get("webinar-speaker-position-" + i),
-            // image_url: speakerImageUrl,
+            image_url: speakerImageUrl,
             slidesURL: formData.get("webinar-speaker-slides-" + i),
         })
         i++;
@@ -297,11 +302,11 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                 <label>
                     Speaker image:
                     <input id={"webinar-speaker-image-" + id} name={"webinar-speaker-image-" + id} type="file" accept=".jpg,.jpeg,.png" className="ml-3"
-                    value={speakers[id].image}
+                    value={speakers[id].image || null}
                     onChange={(e) => {handleImageChange(e)}} />
                     <div className="input-error">This field is required.</div>
                 </label>
-                <input className="hidden" name={"webinar-speaker-image-url-" + id} value={speakers[id].image_url} />
+                <input className="hidden" name={"webinar-speaker-image-url-" + id} defaultValue={speakers[id].image_url || ""} />
                 <div className="col-span-2">
                     <label htmlFor={"webinar-speaker-slides-" + id}>Slides:</label><br />
                     <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
@@ -316,9 +321,6 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
 }
 
 export default function Webinar({ loaderData }) {
-    // console.log(loaderData);
-
-    // return (<div></div>);
     const navigate = useNavigate();
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
@@ -373,7 +375,7 @@ export default function Webinar({ loaderData }) {
         if (updateError === null) {
             setShowResolvePopup(true);
         } else {
-            console.error("Failed to update video resource:", updateError);
+            console.error("Failed to update webinar:", updateError);
             setHasError(true);
         }
     }
@@ -506,7 +508,7 @@ export default function Webinar({ loaderData }) {
             <Menu />
             <Banner type="blue">
                 <div className="relative z-1">
-                    <a href="/video-resources" className="banner-breadcrumb">
+                    <a href="/webinars" className="banner-breadcrumb">
                         <i className="bi bi-caret-left-fill"></i>
                         <strong>WEBINARS</strong>
                     </a>
@@ -544,23 +546,25 @@ export default function Webinar({ loaderData }) {
                 <p>{loaderData.description}</p>
 
                 { loaderData.speakers.map((speaker, idx) => 
-                    <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center justify-between">
-                        <div className="flex flex-row place-items-center md:mb-0 mb-5 text-center">
-                            {speaker?.image_url && <img className="mx-auto w-50 shrink-0 grow-0" src={speaker.image_url} alt="" />}
+                    <div key={idx} className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col lg:flex-row place-items-center justify-between">
+                        <div className="flex flex-row place-items-center lg:mb-0 mb-5 text-center">
+                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt="" />}
                             
-                            <div className="shrink-0 grow-0 m-3 md:text-left text-center">
+                            <div className="shrink-0 grow-0 m-3 lg:text-left text-center">
                                 <p className="font-semibold mr-2"><i>{speaker.name}</i></p>
                                 <p className="text-disabled-light">{speaker.university}</p>
                                 <p>{speaker.position}</p>
                             </div>
                         </div>
                         <div>
-                            <iframe
-                            src={loaderData.pdf_url}
-                            className="w-sm"
-                            style={{ height: '200px' }}
-                            title="Webinar Details PDF"
-                        />
+                            { speaker?.slidesURL &&
+                                <iframe
+                                    src={speaker.slidesURL}
+                                    className="w-sm"
+                                    style={{ height: '200px' }}
+                                    title="Webinar Details PDF"
+                                />
+                            }
                         </div>
                     </div>
                 )}
