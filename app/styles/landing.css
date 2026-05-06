@@ -96,7 +96,7 @@
 }
 
 
-#about-cards-grid {
+#link-cards-grid {
     height: fit-content;
     display: grid;
     /* grid-template-columns: calc(var(--card-width) + (var(--card-margin) * 2)) calc(var(--card-width) + (var(--card-margin) * 2)); */
@@ -111,7 +111,7 @@
 }
 
 @media (width >=40rem) {
-    #about-cards-grid {
+    #link-cards-grid {
         grid-template-columns: auto auto;
 
         --card-width: 230px;

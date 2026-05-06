@@ -1,6 +1,6 @@
 import { useState, useEffect, useActionState } from "react";
 import { supabase } from "../supabase";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup, PopupForm } from "../components/popup";
 import { Footer } from "../components/footer";
@@ -143,27 +143,32 @@ function Carousel() {
   );
 }
 
-function AboutUs() {
+function LinkCards() {
   const cardsInfo = [
     {
-      title: "card 1",
-      url: "tes",
+      title: "Task Forces",
+      url: "/task-forces",
       imageURL: null
     },
     {
-      title: "card 2"
+      title: "Organizational Structure",
+      url: "/organizational-structure"
     },
     {
-      title: "card 3"
+      title: "Video Resources",
+      url: "/video-resources"
     },
     {
-      title: "card 4"
+      title: "Webinars",
+      url: "/webinars"
     },
     {
-      title: "card 5"
+      title: "International Meetings",
+      url: "/international-meetings"
     },
     {
-      title: "card 6"
+      title: "Regional Meetings",
+      url: "/regional-meetings"
     }
   ];
 
@@ -187,16 +192,8 @@ function AboutUs() {
   })
 
   return (
-    <div id="about" className="flex pb-30">
-      <div className="mr-10 mb-10">
-        <H1Left stretch>What is IAJES?</H1Left>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id bibendum tortor, vel volutpat risus. Praesent eu felis dapibus, sodales purus vel, pharetra dolor. Quisque venenatis ut nulla quis aliquet. Praesent at urna pharetra, volutpat justo quis, malesuada felis. Quisque in sapien felis. Aliquam egestas nulla nec eros elementum, vel auctor turpis scelerisque. Proin lacinia et enim eu tempor. Pellentesque et aliquam felis. Nam tempus varius enim, ac facilisis magna iaculis et.</p>
-      </div>
-      <div className="text-white flex justify-center">
-        <div id="about-cards-grid">
-          {cardsEl}
-        </div>
-      </div>
+    <div id="link-cards-grid">
+      {cardsEl}
     </div>
   );
 }
@@ -435,7 +432,21 @@ export default function Landing({ loaderData }) {
       <Carousel />
       <div className="flex height-fit">
         <div id="content" className="items-center text-black lg:px-40 px-10 py-20 w-full h-fit duration-200 z-1">
-          <AboutUs />
+
+          <div id="about" className="flex pb-30">
+            <div className="mr-10 mb-10">
+              <H1Left stretch>What is IAJES?</H1Left>
+              <p>
+                The International Association of Jesuit Engineering and Science Schools (IAJES) is a global collaborative network of Jesuit universities that brings together engineering and science schools to advance academic excellence, interdisciplinary research, and socially responsible innovation.
+                <br /><br />
+                Rooted in the Jesuit educational tradition and aligned with the Universal Apostolic Preferences, IAJES fosters international cooperation to form engineers and scientists committed to addressing complex global challenges, promoting human dignity, and contributing to a more just, equitable, and sustainable world through technology and knowledge.
+              </p>
+              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]"></i></a>
+            </div>
+            <div className="text-white flex justify-center">
+              <LinkCards />
+            </div>
+          </div>
           
           { hasHighlights && 
             <div className="text-center relative mb-10">
@@ -458,6 +469,8 @@ export default function Landing({ loaderData }) {
               <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
             </form>
           </div>
+
+
 
           {/* <div className="h-100"></div> */}
         </div>
