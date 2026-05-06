@@ -15,14 +15,14 @@ export function meta() {
 }
 
 async function getHighlights() {
-    const { data, error } = await supabase
-      .from('highlights')
-      .select();
-    if (data) {
-      data.sort((a, b) => { return a.id - b.id });
-    }
-    
-    return data || error;
+  const { data, error } = await supabase
+    .from('highlights')
+    .select();
+  if (data) {
+    data.sort((a, b) => { return a.id - b.id });
+  }
+
+  return data || error;
 }
 
 async function updateHighlight(highlightId, formData, newImageUrl) {
@@ -37,7 +37,7 @@ async function updateHighlight(highlightId, formData, newImageUrl) {
     .from('highlights')
     .update(updates)
     .eq('id', highlightId);
-    return error;
+  return error;
 }
 
 async function uploadHighlightImage(highlightId, file) {
@@ -71,16 +71,24 @@ export async function loader({ params }) {
 function Carousel() {
   const carouselContent = [
     {
-      text: "Lorum ipsum 1"
+      // text: "Lorum ipsum 1",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel7.png"
     },
     {
-      text: "Lorum ipsum 2"
+      text: "Lorum ipsum 1",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel1.png"
     },
     {
-      text: "Lorum ipsum 3"
+      text: "Lorum ipsum 2",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel2.png"
     },
     {
-      text: "Lorum ipsum 4"
+      text: "Lorum ipsum 3",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel3.png"
+    },
+    {
+      text: "Lorum ipsum 4",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel4.png"
     }
   ];
   const carouselEl = [];
@@ -146,29 +154,34 @@ function Carousel() {
 function LinkCards() {
   const cardsInfo = [
     {
-      title: "Task Forces",
-      url: "/task-forces",
-      imageURL: null
-    },
-    {
-      title: "Organizational Structure",
-      url: "/organizational-structure"
-    },
-    {
-      title: "Video Resources",
-      url: "/video-resources"
-    },
-    {
-      title: "Webinars",
-      url: "/webinars"
+      title: "About IAJES",
+      url: "/about",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-About.png"
     },
     {
       title: "International Meetings",
-      url: "/international-meetings"
+      url: "/international-meetings",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-InternationalMeetings.png"
     },
     {
       title: "Regional Meetings",
-      url: "/regional-meetings"
+      url: "/regional-meetings",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-RegionalMeetings.png"
+    },
+    {
+      title: "Video Resources",
+      url: "/video-resources",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-VideoResources.png"
+    },
+    {
+      title: "Webinars",
+      url: "/webinars",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-Webinars.png"
+    },
+    {
+      title: "Task Forces",
+      url: "/task-forces",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-TaskForces.png"
     }
   ];
 
@@ -199,7 +212,7 @@ function LinkCards() {
 }
 
 
-function EditHighlights({showPopup, setShowPopup, highlightList}) {
+function EditHighlights({ showPopup, setShowPopup, highlightList }) {
   const navigate = useNavigate();
   const [currentHighlights, setCurrentHighlights] = useState(highlightList);
   const [showHighlightPopup, setShowHighlightPopup] = useState(false);
@@ -274,10 +287,10 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
   }
 
   function checkEmpty(value, inputName) {
-      const updatedFormRequired = updateRequired(value, inputName, formRequired);
-      if (updatedFormRequired != formRequired) {
-        setFormRequired(updatedFormRequired);
-      }
+    const updatedFormRequired = updateRequired(value, inputName, formRequired);
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
   }
 
   function urlChange() {
@@ -287,21 +300,21 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
       setFormRequired(updatedFormRequired);
     }
   }
-  
+
   return (
     <>
       <Popup id="edit-highlights" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Highlights</h4>
-          <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
-            {currentHighlights.map(highlight => 
-              <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-                <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
-                  <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
-                  <i className="bi bi-pencil-square"></i>
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
+          {currentHighlights.map(highlight =>
+            <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+              <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
+                <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
+                <i className="bi bi-pencil-square"></i>
+              </button>
+            </div>
+          )}
+        </div>
       </Popup>
 
       <PopupForm id="edit-highlight" className="md:w-200" show={showHighlightPopup} setShow={setShowHighlightPopup} validate={validate} hasError={hasError} nested>
@@ -309,34 +322,34 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
             <label htmlFor="edit-highlight-title">Highlight title:</label><br />
-            <input id="edit-highlight-title" name="title" type="text" 
-                   className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
-                   placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
-                   defaultValue={focusHighlight.title} />
+            <input id="edit-highlight-title" name="title" type="text"
+              className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
+              placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
+              defaultValue={focusHighlight.title} />
             <div className="input-error">This field is required.</div>
           </div>
           <label>
             Image:<br />
             <input id="edit-highlight-img" name="image-url" type="file" accept="image/*"
-                   className={formRequired?.imageUrl ? "input-required" : ""} />
+              className={formRequired?.imageUrl ? "input-required" : ""} />
             <div className="input-error">Please select an image file.</div>
           </label>
         </div>
         <div>
           <label htmlFor="edit-highlight-url">Highlight URL:</label><br />
-          <input id="edit-highlight-url" name="url" type="text" 
-                  className={"input input-text w-full " + (formRequired?.url && "input-required")}
-                  placeholder="https://..." onChange={urlChange}
-                  defaultValue={focusHighlight.url} />
+          <input id="edit-highlight-url" name="url" type="text"
+            className={"input input-text w-full " + (formRequired?.url && "input-required")}
+            placeholder="https://..." onChange={urlChange}
+            defaultValue={focusHighlight.url} />
           <div className="input-error">Invalid link.</div>
         </div>
-        <br/>
+        <br />
         <div className="">
           <label htmlFor="edit-highlight-desc">Highlight details:</label><br />
-          <textarea id="edit-highlight-desc" name="details" 
-                    className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
-                    placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
-                    defaultValue={focusHighlight.details} ></textarea>
+          <textarea id="edit-highlight-desc" name="details"
+            className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
+            placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
+            defaultValue={focusHighlight.details} ></textarea>
           <div className="input-error">This field is required.</div>
         </div>
       </PopupForm>
@@ -345,39 +358,39 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
 }
 
 
-function HighlightContent({ content, side = false }) {  
+function HighlightContent({ content, side = false }) {
   const contentEls = (
-      <>
-        <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
-          
-          { content?.image_url ?
-           <img src={content.image_url} className="size-full object-cover duration-200" />
-          :
-            <>
-              <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
-              <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
-            </>
-          }
-        </div>
+    <>
+      <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
 
-        <h2>{content.title}</h2>
-        
-        <p>{content.details}</p>
-      </>
-    );
+        {content?.image_url ?
+          <img src={content.image_url} className="size-full object-cover duration-200" />
+          :
+          <>
+            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
+            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
+          </>
+        }
+      </div>
+
+      <h2>{content.title}</h2>
+
+      <p>{content.details}</p>
+    </>
+  );
 
   const height = side ? "h-80" : "h-120"
   return (
     <>
-    { content?.url ? 
-      <a href={content.url} className={"highlight-card flex flex-col justify-stretch text-left " + height}>
-        {contentEls}
-      </a>
-    :
-      <div className={"size-full flex flex-col justify-stretch text-left " + height}>
-        {contentEls}
-      </div>
-    }
+      {content?.url ?
+        <a href={content.url} className={"highlight-card flex flex-col justify-stretch text-left " + height}>
+          {contentEls}
+        </a>
+        :
+        <div className={"size-full flex flex-col justify-stretch text-left " + height}>
+          {contentEls}
+        </div>
+      }
     </>
   )
 }
@@ -391,19 +404,19 @@ export default function Landing({ loaderData }) {
 
   useEffect(() => {
     const getIsAdmin = async (userId) => {
-        try {
-            const { data, error } = await supabase
-            .from('users')
-            .select('role')
-            .eq("id", userId);
-            if (data[0]) {
-                setIsAdmin(data[0].role == "admin");
-            }
-            else { console.log("error"); }
-            
-        } catch (error) {
-            console.log("error");
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq("id", userId);
+        if (data[0]) {
+          setIsAdmin(data[0].role == "admin");
         }
+        else { console.log("error"); }
+
+      } catch (error) {
+        console.log("error");
+      }
     }
 
     // Listen for auth state changes
@@ -447,17 +460,17 @@ export default function Landing({ loaderData }) {
               <LinkCards />
             </div>
           </div>
-          
-          { hasHighlights && 
+
+          {hasHighlights &&
             <div className="text-center relative mb-10">
               <H1Middle className="text-glow">Highlights</H1Middle>
-              { isAdmin && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
+              {isAdmin && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
               <div id="highlights" className="relative width-full py-5 grid md:grid-rows-6 gap-10" >
-                <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlightList[0]}/></div>
-                <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlightList[1]}/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]} side/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]} side/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]} side/></div>
+                <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlightList[0]} /></div>
+                <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlightList[1]} /></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]} side /></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]} side /></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]} side /></div>
               </div>
             </div>
           }
