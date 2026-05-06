@@ -385,18 +385,6 @@ function HighlightContent({ content, side = false }) {
   )
 }
 
-function LandingSubscribe() {
-  return (
-    <div className="h-150 flex flex-col justify-center items-center text-center">
-      <h4 className="text-glow">Subscribe to our Newsletter</h4>
-      <form className="flex flex-col justify-center items-center">
-        <input name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." />
-        <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
-      </form>
-    </div>
-  );
-}
-
 export default function Landing({ loaderData }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [editHighlights, setEditHighlights] = useState(false);
@@ -450,7 +438,7 @@ export default function Landing({ loaderData }) {
           <AboutUs />
           
           { hasHighlights && 
-            <div className="text-center relative">
+            <div className="text-center relative mb-10">
               <H1Middle className="text-glow">Highlights</H1Middle>
               { isAdmin && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
               <div id="highlights" className="relative width-full py-5 grid md:grid-rows-6 gap-10" >
@@ -463,10 +451,15 @@ export default function Landing({ loaderData }) {
             </div>
           }
 
-          <LandingSubscribe />
-          <div className="h-100">
-
+          <div className="h-100 my-20 flex flex-col justify-center items-center text-center">
+            <h4 className="text-glow">Subscribe to our Newsletter</h4>
+            <form className="flex flex-col justify-center items-center">
+              <input name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." />
+              <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
+            </form>
           </div>
+
+          {/* <div className="h-100"></div> */}
         </div>
         <div id="effects" className="w-full shrink-0 -ml-[100%] z-0">
           {/* Discs */}
@@ -479,17 +472,17 @@ export default function Landing({ loaderData }) {
           </div>
 
           {/* Background Lines */}
-          <div className="size-full grid grid-cols-1 grid-rows-[auto_min-content] justify-center justify-items-center">
+          <div className="size-full grid grid-cols-1 grid-rows-[auto_min-content] justify-center justify-items-center opacity-60">
             <div className="flex space-x-4 justify-center">
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
             </div>
-            <div className="md:w-[70%] w-full md:px-0 px-10 duration-200 h-125 grid grid-cols-[30%_20%_20%_30%] justify-items-stretch">
+            <div className="md:w-[70%] w-full md:px-0 px-10 duration-200 h-150 grid grid-cols-[30%_20%_20%_30%] justify-items-stretch">
               <div className="relative">
-                <div className="absolute right-0 top-5 w-full h-120 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
-                <div className="absolute right-0 top-15 w-[50%] h-110 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
+                <div className="absolute right-0 top-5 w-full h-145 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
+                <div className="absolute right-0 top-15 w-[50%] h-135 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
               </div>
               <div className="relative mr-2">
                 <div className="absolute right-9 w-full h-10 border-b-20 border-r-20 rounded-br-[80px] border-primary-light"></div>
@@ -500,8 +493,8 @@ export default function Landing({ loaderData }) {
                 <div className="absolute left-9 w-full h-10 border-b-20 border-l-20 rounded-bl-[80px] border-primary-light"></div>
               </div>
               <div className="relative">
-                <div className="absolute top-15 w-[50%] h-110 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
-                <div className="absolute right-0 top-5 w-full h-120 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
+                <div className="absolute top-15 w-[50%] h-135 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
+                <div className="absolute right-0 top-5 w-full h-145 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
               </div>
             </div>
           </div>
