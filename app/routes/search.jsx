@@ -1,83 +1,28 @@
-import React, { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Pagination } from "../components/pagination";
+import { Footer } from "../components/footer";
 
-// ---- Placeholder data (replace later with real backend data) ----
-const PEOPLE = [
-  {
-    id: "1",
-    name: "John Smith",
-    title: "Professor",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "2",
-    name: "John Smith",
-    title: "Researcher",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Information Systems",
-    interests: "Digital collaboration, web platforms",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "3",
-    name: "John Smith",
-    title: "Professor",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "4",
-    name: "John Smith",
-    title: "Professor",
-    institution: "XIM University",
-    email: "johnsmith@gmail.com",
-    country: "India",
-    school: "XIM University",
-    major: "Computer Science",
-    interests: "Human-computer interaction, education, systems",
-    taskForceRole: "Task Force Member",
-    taskForce: "Affiliated Task Force",
-    region: "Asia",
-  },
-  {
-    id: "5",
-    name: "Jane Doe",
-    title: "Dean",
-    institution: "Santa Clara University",
-    email: "janedoe@scu.edu",
-    country: "USA",
-    school: "Santa Clara University",
-    major: "Engineering",
-    interests: "Systems design, security, leadership",
-    taskForceRole: "Task Force Lead",
-    taskForce: "Governing Board",
-    region: "North America",
-  },
-];
+export function meta() {
+  return [
+    { title: "People" },
+    { name: "", content: "" },
+  ];
+}
 
-const PAGE_SIZE = 4; // Figma shows 4 cards on the page screenshot
+async function getPeople() {
+  const { data, error } = await supabase
+    .from('users')
+    .select('id, fname, lname, email, image_url, job_position, languages, country, institution, major, research_interests, task_force_role, task_force')
+  if (data) {
+    data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
+  }
+  return data || error;
+}
+
+const PAGE_SIZE = 8; 
 
 const formatFilterLabel = (value) => {
   if (!value) return value;
@@ -98,40 +43,64 @@ const formatFilterLabel = (value) => {
     .join(" ");
 };
 
-export default function SearchRoute() {
+export async function loader({}) {
+  return getPeople();
+}
+
+export default function SearchRoute({ loaderData }) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedTaskForces, setSelectedTaskForces] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
+  const [selectedMajors, setSelectedMajors] = useState([]);
+
+
+  const taskForceOptionsSet = new Set(loaderData.map((person) => { return (person.task_force != "") ? person.task_force : null }));
+  taskForceOptionsSet.delete(null);
+
+  const countryOptionsSet = new Set(loaderData.map((person) => { return (person.country != "") ? person.country : null }));
+  countryOptionsSet.delete(null);
+
+  const majorOptionsSet = new Set(loaderData.map((person) => { return (person.major != "") ? person.major : null }));
+  majorOptionsSet.delete(null);
 
   const taskForceOptions = useMemo(
-    () => Array.from(new Set(PEOPLE.map((person) => person.taskForce))).sort(),
+    () => Array.from(taskForceOptionsSet).sort(),
     []
   );
   const countryOptions = useMemo(
-    () => Array.from(new Set(PEOPLE.map((person) => person.country))).sort(),
+    () => Array.from(countryOptionsSet).sort(),
     []
   );
+  const majorOptions = useMemo(
+    () => Array.from(majorOptionsSet).sort(),
+    []
+  );
+
+
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return PEOPLE.filter((person) => {
+    return loaderData.filter((person) => {
+
       const matchesQuery =
         !q ||
-        person.name.toLowerCase().includes(q) ||
-        person.title.toLowerCase().includes(q) ||
-        person.institution.toLowerCase().includes(q) ||
-        person.school.toLowerCase().includes(q) ||
-        person.interests.toLowerCase().includes(q);
+        person?.fname?.toLowerCase().includes(q) ||
+        person?.institution?.toLowerCase().includes(q) ||
+        person?.major?.toLowerCase().includes(q) ||
+        person?.languages?.toLowerCase().includes(q) ||
+        person?.research_interests?.toLowerCase().includes(q);
 
       const matchesTaskForce =
-        selectedTaskForces.length === 0 || selectedTaskForces.includes(person.taskForce);
+        selectedTaskForces.length === 0 || selectedTaskForces.includes(person.task_force);
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
+      const matchesMajor =
+        selectedMajors.length === 0 || selectedMajors.includes(person.major);
 
-      return matchesQuery && matchesTaskForce && matchesCountry;
+      return matchesQuery && matchesTaskForce && matchesCountry && matchesMajor;
     });
-  }, [query, selectedTaskForces, selectedCountries]);
+  }, [query, selectedTaskForces, selectedCountries, selectedMajors]);
 
   // Reset to page 1 whenever query or filters change
   useEffect(() => {
@@ -171,7 +140,7 @@ export default function SearchRoute() {
       <div className="mx-auto max-w-[1100px] px-6 pb-20 pt-10">
         <div className="text-center">
           <h2 className="mb-2 normal-case text-primary-dark">
-            Search people, university, research interests
+            Search People
           </h2>
           <p
             className={`text-sm text-gray-dark/70 transition-opacity duration-200 ${
@@ -185,15 +154,20 @@ export default function SearchRoute() {
         </div>
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex w-full max-w-[380px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
+          <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
             <input
+              id="search-input"
               value={query}
               onChange={handleQueryChange}
               onInput={handleQueryChange}
-              placeholder="Search people, university, research interests"
+              placeholder="Search people, institutions, or research interests"
               className="w-full bg-transparent text-sm text-gray-dark outline-none"
             />
+            <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
+                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
+              <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+            </button>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -233,24 +207,20 @@ export default function SearchRoute() {
                 selected={selectedCountries}
                 onToggle={(value) => toggleSelection(setSelectedCountries, value)}
               />
+              <FilterGroup
+                title="Major"
+                options={majorOptions}
+                selected={selectedMajors}
+                onToggle={(value) => toggleSelection(setSelectedMajors, value)}
+              />
             </fieldset>
           </div>
         </div>
 
         <div className="mt-8 flex flex-col gap-6">
-          {isEmptyState ? (
-            <div className="rounded-md border-2 border-gray-light bg-white px-6 py-12 text-center">
-              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-50">
-                <i className="bi bi-people-fill text-[36px] text-primary-dark" aria-hidden="true" />
-              </div>
-              <div className="text-lg font-semibold text-secondary-light">Start searching</div>
-              <div className="mt-2 text-sm text-gray-dark/70">
-                Type a name, university, or research interest to find someone.
-              </div>
-            </div>
-          ) : results.length === 0 ? (
+          { results.length === 0 ? (
             <div className="rounded-md border-2 border-gray-light bg-white px-6 py-8 text-sm text-gray-dark/70">
-              No results found. Try a different name, university, or research interest.
+              No results found. Try a different name, institution, or research interest.
             </div>
           ) : (
             <>
@@ -270,104 +240,107 @@ export default function SearchRoute() {
           )}
         </div>
       </div>
+      <Footer />
     </div>
   );
 }
 
 function FilterGroup({ title, options, selected, onToggle }) {
-  return (
-    <div>
-      <div className="mb-3 text-sm font-semibold text-secondary-dark">{title}</div>
-      <div className="flex flex-col gap-2">
-        {options.map((option) => (
-          <label key={option} className="checkbox">
-            <input
-              type="checkbox"
-              checked={selected.includes(option)}
-              onChange={() => onToggle(option)}
-            />
-            <p className="text-sm text-gray-dark/80">{formatFilterLabel(option)}</p>
-          </label>
-        ))}
+  if (options.length > 0) {
+    return (
+      <div>
+        <div className="mb-3 font-semibold text-secondary-dark">{title}</div>
+        <div className="flex flex-col gap-2">
+          {options.map((option) => (
+            <label key={option} className="checkbox">
+              <input
+                type="checkbox"
+                checked={selected.includes(option)}
+                onChange={() => onToggle(option)}
+              />
+              <p className="text-gray-dark/80">{formatFilterLabel(option)}</p>
+            </label>
+          ))}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 function PersonResultCard({ person }) {
-  const navigate = useNavigate();
-
-  const handleNavigate = () => {
-    navigate(`/profile/${person.id}`);
-  };
-
   return (
-    <div
+    <a
+      href={`/profile/${person.id}`}
       role="link"
       tabIndex={0}
-      aria-label={`View profile for ${person.name}`}
-      onClick={handleNavigate}
+      aria-label={`View profile for ${person.fname}`}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
           handleNavigate();
         }
       }}
-      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-[260px_1fr_320px]"
+      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-3"
     >
       <div className="flex items-center gap-4">
         <div
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-white"
+          className="flex shrink-0 h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gray-light border-primary-dark border-3 border-box"
           aria-hidden="true"
         >
-          <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
+          {person.image_url ? (
+            <img
+              src={person.image_url}
+              alt={`${person.fname} ${person.lname}`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <i className="bi bi-person-fill text-[40px] text-secondary-dark/60" aria-hidden="true" />
+          )}
         </div>
         <div>
-          <div className="text-lg font-semibold text-secondary-dark">{person.name}</div>
-          <div className="mt-1 text-sm italic text-secondary-light">
-            {person.title}, {person.institution}
+          <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
+          <div className="my-1 italic text-secondary-light">
+            {person.job_position}{ person?.job_position && person?.institution && <span>, </span>}{person.institution}
           </div>
           <div className="text-sm text-gray-dark/70">{person.email}</div>
         </div>
       </div>
 
-      <div className="grid gap-2 text-sm text-gray-dark/80 sm:grid-cols-2">
-        <div className="space-y-2">
-          <div className="italic">
-            Country <span className="text-gray-dark/60">{person.country}</span>
+      <div className="grid text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
+        { person?.country ?
+          <div className="">
+            <span className="mr-1">Country</span> <span className="font-semibold text-secondary-dark">{person.country}</span>
           </div>
-          <div className="italic">
-            School <span className="text-gray-dark/60">{person.school}</span>
+          : <div></div>
+        }
+        { person?.languages ?
+          <div className="">
+            <span className="mr-1">Languages</span> <span className="font-semibold text-secondary-dark">{person.languages}</span>
           </div>
-        </div>
-        <div className="space-y-2">
-          <div className="italic">
-            Major <span className="text-gray-dark/60">{person.major}</span>
+          : <div></div>
+        }
+        { person?.major ?
+          <div className="">
+            <span className="mr-1">Major</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
           </div>
-          <div className="italic">
-            Research Interests <span className="text-gray-dark/60">{person.interests}</span>
+          : <div></div>
+        }
+        { person?.research_interests ?
+          <div className="">
+            <span className="mr-1">Research Interests</span> <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
           </div>
-        </div>
+          : <div></div>
+        }
       </div>
-
-      <div className="flex flex-col items-end gap-4">
-        <div className="w-full max-w-[240px] rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-          <div className="font-semibold text-secondary-dark">{person.taskForceRole}:</div>
-          <div className="mt-1 text-gray-dark/70">{person.taskForce}</div>
-        </div>
-
-        <button
-          type="button"
-          className="button flex w-full max-w-[240px] items-center justify-center gap-3 text-lg font-semibold"
-          onClick={(event) => {
-            event.stopPropagation();
-            window.location.href = `mailto:${person.email}?subject=IAJES%20Connection`;
-          }}
-        >
-          <i className="bi bi-envelope" aria-hidden="true" />
-          Contact
-        </button>
+      <div>
+        { person.task_force && 
+        <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
+          <div className="font-semibold text-secondary-dark">{person.task_force}</div>
+          <div className="mt-1 text-gray-dark/70">{person.task_force_role}</div>
+        </div> 
+        }
       </div>
-    </div>
+      
+    </a>
   );
 }

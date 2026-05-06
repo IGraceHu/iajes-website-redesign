@@ -1,0 +1,195 @@
+.regional-meetings-container {
+    background-color: white;
+    padding: 40px 20px;
+}
+
+.regional-meetings-content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.regional-subheader {
+    margin-bottom: 20px;
+}
+
+.regional-description {
+    margin-bottom: 40px !important;
+    color: var(--color-gray-dark);
+    line-height: 1.6;
+}
+
+.regional-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    margin-bottom: 60px;
+}
+
+.regional-card:hover a {
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.regional-card-content {
+    margin-bottom: 8px;
+}
+
+.regional-card-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.regional-card-title {
+    font-weight: 600;
+    margin: 0;
+    font-family: "Quicksand";
+    flex: 1;
+}
+
+.regional-card-title:hover {
+    color: var(--color-primary-dark);
+    /* Keep the same color*/
+}
+
+.regional-card-stat-section {
+    text-align: right;
+    margin-left: 10px;
+}
+
+.regional-card-statistic {
+    color: var(--color-secondary-dark);
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+    font-family: "Quicksand";
+    display: block;
+}
+
+.regional-card-caption {
+    color: var(--color-gray-dark);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.regional-card-location {
+    color: var(--color-gray-dark);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0;
+    line-height: 1.3;
+}
+
+.regional-card-bottom-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* extra metadata banner info on regional-meeting page */
+
+.regional-meeting-banner-meta {
+    text-align: right;
+    position: relative;
+    top: -55px;
+    margin-bottom: -55px;
+    /* remove space it takes up in the document flow*/
+
+    /* text-transform: uppercase; */
+    /* font-weight: 700; */
+}
+
+/* link-back from video-resources.css */
+
+a.link-back {
+    color: white;
+}
+
+a.link-back:hover {
+    color: var(--color-primary-light);
+}
+
+/* Meeting row styles for region-specific pages */
+.meeting-row {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    /* padding: 2rem 1rem; */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    align-items: flex-start;
+}
+
+.meeting-row.reverse {
+    flex-direction: row-reverse;
+}
+
+.meeting-info {
+    flex: 3;
+}
+
+/* meeting-img flex handled below */
+
+.meeting-row.bg-gray {
+    background-color: var(--color-slate-100);
+}
+
+/* ensure image placeholder and sizing */
+.meeting-img {
+    background-color: var(--color-slate-100);
+    border-radius: 8px;
+    min-height: 200px;
+    width: 100%;
+    flex: 2;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+/* on small screens stack rows vertically */
+@media (max-width: 768px) {
+
+    .meeting-row,
+    .meeting-row.reverse {
+        flex-direction: column;
+    }
+}
+
+.reverse .meeting-img {
+    background-color: var(--color-white);
+}
+
+.meeting-info h2 {
+    margin: 0 0 0.5rem 0;
+}
+
+.meeting-buttons {
+    margin-top: 1rem;
+    display: flex;
+    gap: 1rem;
+}
+
+.meeting-buttons .button {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .regional-cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .regional-meeting-banner-meta {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .regional-meetings-container {
+        padding: 20px 10px;
+    }
+}

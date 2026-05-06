@@ -6,7 +6,7 @@ import "../styles/webinars.css";
 
 export function meta() {
     return [
-        { title: "Webinars" },
+        { title: "Webinars Archive" },
         { name: "", content: "" },
     ];
 }
@@ -23,7 +23,7 @@ const urbanMobilityWebinar = (
             <div className="flex flex-col gap-5 p-5 bg-teal-50">
                 <div className="flex">
                     <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="img/webinars/urban_nicolas_rincon_garcia.png" />
+                        <img className="w-full h-full" src="/img/webinars/urban_nicolas_rincon_garcia.png" />
                     </div>
                     <div className="">
                         <h6>Nicolas Rincon Garcia</h6>
@@ -40,7 +40,7 @@ const urbanMobilityWebinar = (
             <div className="flex flex-col gap-5 p-5">
                 <div className="flex">
                     <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="img/webinars/urban_marcus_meyers.png" />
+                        <img className="w-full h-full" src="/img/webinars/urban_marcus_meyers.png" />
                     </div>
                     <div className="">
                         <h6>Marcus Mayers</h6>
@@ -57,7 +57,7 @@ const urbanMobilityWebinar = (
             <div className="flex flex-col gap-5 p-5 bg-teal-50">
                 <div className="flex">
                     <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="img/webinars/urban_karla_denis_castro_leite.png" />
+                        <img className="w-full h-full" src="/img/webinars/urban_karla_denis_castro_leite.png" />
                     </div>
                     <div className="">
                         <h6>Karla Denis Castro Leite</h6>
@@ -79,7 +79,7 @@ const firstTaskForceWebinar = (
     <div>
         <a href="/task-forces/research-and-academic-cooperation" className="button block w-md">
             Research and Academic Cooperation Task Force
-            <i class="bi bi-arrow-right ml-2 mt-1"></i>
+            <i className="bi bi-arrow-right ml-2 mt-1"></i>
         </a>
         <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
             <iframe src="https://drive.google.com/file/d/1IYsGuviohJKb8AxZim83DMQocxrY7AtJ/preview" width="100%" height="100%"></iframe>
@@ -94,7 +94,7 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_lanny_vincent.jpg" />
+                <img className="w-full h-full" src="/img/webinars/embody_lanny_vincent.jpg" />
             </div>
             <div>
                 <h6>Lanny Vincent</h6>
@@ -115,7 +115,7 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_celina_andino.png" />
+                <img className="w-full h-full" src="/img/webinars/embody_celina_andino.png" />
             </div>
             <div>
                 <h6>Celina Andino</h6>
@@ -136,7 +136,7 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_carlos_toto_oppus.png" />
+                <img className="w-full h-full" src="/img/webinars/embody_carlos_toto_oppus.png" />
             </div>
             <div>
                 <h6>Carlos Toto Oppus</h6>
@@ -157,7 +157,7 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_tonya_nilsson.jpg" />
+                <img className="w-full h-full" src="/img/webinars/embody_tonya_nilsson.jpg" />
             </div>
             <div>
                 <h6>Tonya Nilsson</h6>
@@ -195,7 +195,7 @@ const covidWebinar = (
 const icamWebinar = (
     <div>
         <p>
-            <img className="xl:float-right xl:w-sm mb-5" src="img/webinars/icam_intro.png" />
+            <img className="xl:float-right xl:w-sm mb-5" src="/img/webinars/icam_intro.png" />
             <strong>In 2017, Icam launched the “Parcours Ouvert”</strong> - Considering the changing profile of the younger generation and the complexity of the issues that engineers will have to address in the coming years, Icam has taken a bold step forward in the pedagogical innovation. The “Parcours ouvert” is built on five founding principles:
             <ul className="my-2 ml-2 list-disc list-inside">
                 <li>Larger scale of student profiles</li>
@@ -215,15 +215,15 @@ const icamWebinar = (
         <div className="grid grid-cols-2 gap-2 text-center items-top justify-items-top">
             <p>First Session</p>
             <p>Second Session</p>
-            <img src="img/webinars/icam_words_1.png" />
-            <img src="img/webinars/icam_words_2.png" />
+            <img src="/img/webinars/icam_words_1.png" />
+            <img src="/img/webinars/icam_words_2.png" />
         </div>
     </div>
 );
 
 const bostonWebinar = (
     <div>
-        <img className="float-right" src="img/webinars/boston_image.png" />
+        <img className="float-right" src="/img/webinars/boston_image.png" />
         <ul className="my-2 ml-2 list-disc list-inside">
             <li>THE PRESENTATION - Human-centered Engineering at BC</li>
 
@@ -339,7 +339,7 @@ export default function Webinars() {
         <>
             <Menu />
             <div className="lg:px-40 px-10 py-20 duration-200">
-                <h1>Webinars</h1>
+                <h1>Webinars Archive</h1>
                 <div className="relative w-full grid lg:grid-cols-[min-content_auto] grid-rows-[min-content_auto] gap-5 z-1">
                     <div className="flex flex-col justify-between">
                         <div className="relative flex flex-col mb-10 lg:w-xs z-1">

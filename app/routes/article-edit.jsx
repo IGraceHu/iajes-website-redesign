@@ -126,7 +126,7 @@ export default function ArticleEdit() {
                                 </div>
                             ))}
                             <div>
-                                <button onClick={addBlock} className="button button-light w-full">Add block <i class="bi bi-plus"></i></button>
+                                <button onClick={addBlock} className="button button-light w-full">Add block <i className="bi bi-plus"></i></button>
                             </div>
                         </div>
                     </div>

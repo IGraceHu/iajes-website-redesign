@@ -6,11 +6,3 @@
 .resource-card > a > h6:hover {
     color: var(--color-secondary-light); 
 }
-
-a.link-back {
-    color: white;
-}
-
-a.link-back:hover {
-    color: var(--color-primary-light);
-}

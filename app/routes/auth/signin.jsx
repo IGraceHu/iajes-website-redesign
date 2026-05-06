@@ -2,6 +2,7 @@ import { useState, useActionState } from "react";
 import { NavLink, useNavigate } from "react-router";
 import { Popup } from "../../components/popup";
 import { updateRequired } from "../../helpers/form";
+import { supabase } from "../../supabase";
 
 export function meta() {
   return [
@@ -15,8 +16,33 @@ export function meta() {
   Returns "invalid" if email or password is incorrect
   Returns "error" if there was an error
 */
-function signIn(data) {
-  return true;
+async function signIn(data) {
+  try {
+    const { data: authData, error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.pwd,
+    });
+
+    if (error) {
+      if (error.message.toLowerCase().includes("invalid")) {
+        return "invalid";
+      }
+      return "error";
+    }
+
+    // Update last_sign_in in custom users table
+    if (authData.user) {
+      await supabase
+        .from('users')
+        .update({ last_sign_in: authData.user.last_sign_in_at || new Date().toISOString() })
+        .eq('id', authData.user.id);
+    }
+
+    return true;
+  } catch (err) {
+    console.error("Sign in error:", err);
+    return "error";
+  }
 }
 
 export default function SignIn() {
@@ -27,7 +53,7 @@ export default function SignIn() {
   const [state, formAction] = useActionState(validate, { email: null, pwd: null });
   const [formRequired, setFormRequired] = useState({ email: false, pwd: false });
 
-  function validate(previousState, formData) {
+  async function validate(previousState, formData) {
     const data = { email: formData.get("email"), pwd: formData.get("pwd") };
     let validated = true;
 
@@ -45,7 +71,7 @@ export default function SignIn() {
     setFormRequired(updatedFormRequired);
 
     if (validated) {
-      const result = signIn(data);
+      const result = await signIn(data);
       if (result === true) {
         navigate("/");
       } else {
@@ -68,25 +94,23 @@ export default function SignIn() {
     }
   }
 
-  const errorPopup = {
-    content: <div className="w-full h-30 text-center flex justify-center items-center">{popupErrorMessage}</div>
-  }
-
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Popup id="sign-in" show={showPopup} setShow={setShowPopup} details={errorPopup} />
+      <Popup id="sign-in" show={showPopup} setShow={setShowPopup} >
+        <div className="w-full h-30 text-center flex justify-center items-center">{popupErrorMessage}</div>
+      </Popup>
 
-      <div className="relative flex justify-between content-center p-2 shadow-sm z-1">
-        <NavLink to="/" end className="relative hover:text-teal-500 duration-200 p-4 bg-white z-1">
-          IAJES Home
+      <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
+        <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
+          <img className="h-[2.5rem]" src="/assets/logo.svg" />
         </NavLink>
       </div>
 
       <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
         <h4>Sign in to <span className="text-primary-dark">IAJES</span></h4>
         <form action={formAction} className="md:w-md w-full duration-200">
-          <label for="email">Email:</label><br />
-          <input id="email" name="email" type="text" defaultValue={state?.email}
+          <label htmlFor="email">Email:</label><br />
+          <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
           <div className="input-error">Please enter a valid email address.</div>
@@ -94,10 +118,10 @@ export default function SignIn() {
           <br /><br />
 
           <div className="w-full flex justify-between">
-            <label for="pwd">Password:</label>
-            <p><a href="/forget-password">Forgot password?</a></p>
+            <label htmlFor="pwd">Password:</label>
+            <p><a tabIndex="3" href="/forget-password">Forgot password?</a></p>
           </div>
-          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd}
+          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "pwd")} />
           <div className="input-error">Please enter your password.</div>

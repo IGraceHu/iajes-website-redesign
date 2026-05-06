@@ -1,7 +1,7 @@
 import { index, route } from "@react-router/dev/routes";
 
 export default [
-    index("routes/home.jsx"),
+    index("routes/landing.jsx"),
     route("about", "routes/about.jsx"),
     route("organizational-structure", "routes/organizational-structure.jsx"),
     route("styleguide", "routes/styleguide.jsx"),
@@ -15,8 +15,11 @@ export default [
     route("profile/:id", "routes/profile.jsx"),
     route("task-forces", "routes/taskforces.jsx"),
     route("task-forces/:tfName", "routes/taskforce.jsx"),
-    route("webinars", "routes/webinars.jsx"),
+    route("regional-meetings", "routes/regional-meetings.jsx"),
+    route("regional-meetings/:regionName", "routes/regional-meeting.jsx"),
+    route("regional-meetings/:regionName/:meetingDate", "routes/regional-meeting-detail.jsx"),
     route("video-resources", "routes/video-resources.jsx"),
     route("video-resource/:vidId", "routes/video-resource.jsx"),
     route("international-meetings", "routes/international-meetings.jsx"),
+    route("supabasetest", "routes/supabasetest.jsx"),
 ];
