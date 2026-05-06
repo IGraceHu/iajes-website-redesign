@@ -287,7 +287,7 @@ export function Menu({ currentEndUrl }) {
             <div className="menu-dropdown-container">
               <div className="menu-dropdown-button rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark size-11 my-1.5 ml-2 mr-4 flex items-center justify-center text-white hover:text-primary-light hover:border-secondary-light hover:bg-secondary-light duration-200 cursor-pointer">
                 {(userInfo?.image_url != null && userInfo?.image_url != "") ?
-                  <img className="hover:opacity-90 duration-200 min-w-full min-h-full" src={userInfo.image_url} />
+                  <img className="hover:opacity-90 duration-200 min-w-full min-h-full object-cover" src={userInfo.image_url} />
                   :
                   <i className="bi bi-person-fill text-[1.5rem]"></i>}
               </div>
