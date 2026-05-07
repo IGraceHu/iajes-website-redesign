@@ -29,7 +29,7 @@ function InfographicSection() {
                         </p>
                     </div>
                 </div>
-            
+
 
                 {/* Bottom left box - Regional Committee */}
                 <div className="relative">
@@ -79,27 +79,34 @@ function InfographicSection() {
 }
 
 // Member card component
-function MemberCard({ name, university, location, email, region, taskForce, position }) {
+function MemberCard({ name, university, location, email, region, taskForce, position, imageURL }) {
     return (
         <div className="member-card">
-            {/* Placeholder image */}
-            <div className="member-image">
-                <img src="/assets/landing-disc-2a.svg" alt={name} />
+            <div className="member-image-container flex justify-start">
+                <div className="member-image">
+                    <img src={imageURL} alt={name} />
+                </div>
             </div>
             <div className="member-info">
                 <h5>{name}</h5>
-                <div className="member-detail">
-                    <span className="label">University:</span>
-                    <span>{university}</span>
-                </div>
-                <div className="member-detail">
-                    <span className="label">Location:</span>
-                    <span>{location}</span>
-                </div>
-                <div className="member-detail">
-                    <span className="label">Email:</span>
-                    <span>{email}</span>
-                </div>
+                {university && (
+                    <div className="member-detail">
+                        <span className="label">University:</span>
+                        <span>{university}</span>
+                    </div>
+                )}
+                {location && (
+                    <div className="member-detail">
+                        <span className="label">Location:</span>
+                        <span>{location}</span>
+                    </div>
+                )}
+                {email && (
+                    <div className="member-detail">
+                        <span className="label">Email:</span>
+                        <span>{email}</span>
+                    </div>
+                )}
                 {region && (
                     <div className="member-detail">
                         <span className="label">Region:</span>
@@ -108,14 +115,16 @@ function MemberCard({ name, university, location, email, region, taskForce, posi
                 )}
                 {taskForce && (
                     <div className="member-detail">
-                        <span className="label">Role:</span>
-                        <span>{taskForce}</span>
+                        <span className="label">Task Force:</span>
+                        <span dangerouslySetInnerHTML={{ __html: taskForce }} />
                     </div>
                 )}
-                <div className="member-detail member-position">
-                    <span className="label">Position:</span>
-                    <span>{position}</span>
-                </div>
+                {position && (
+                    <div className="member-detail member-position">
+                        <span className="label">Position:</span>
+                        <span dangerouslySetInnerHTML={{ __html: position }} />
+                    </div>
+                )}
             </div>
         </div>
     );
@@ -125,33 +134,33 @@ function MemberCard({ name, university, location, email, region, taskForce, posi
 function MembersSection() {
     // Placeholder data
     const governingBoardMembers = [
-        { name: "John Doe", university: "University 1", location: "Location 1", email: "john@example.com", position: "President" },
-        { name: "Jane Smith", university: "University 2", location: "Location 2", email: "jane@example.com", position: "Vice-President" },
-        { name: "Michael Brown", university: "University 3", location: "Location 3", email: "michael@example.com", position: "Secretary" },
-        { name: "Sarah Williams", university: "University 4", location: "Location 4", email: "sarah@example.com", position: "Chair of Regional Committee" },
-        { name: "David Johnson", university: "University 5", location: "Location 5", email: "david@example.com", position: "Chair of Operational Committee" },
-        { name: "Emily Davis", university: "University 6", location: "Location 6", email: "emily@example.com", position: "Past-President" },
+        { name: "Carlos Rivas", university: "Universidad Centroamericana", location: "El Salvador", email: "crivas@uca.edu.sv", position: "President", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/GoverningBoard%20(1).jpeg" },
+        { name: "Raúl García", university: "ITESO", location: "Mexico", email: "ragarcia@iteso.mx", position: "Vice President", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/GoverningBoard%20(2).jpeg" },
+        { name: "Pascal Berthouloux", university: "Icam", location: "France", email: "pascal.berthouloux@icam.fr", position: "Secretary", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/GoverningBoard%20(3).jpeg" },
+        { name: "Siddhartan Govindasamy", university: "Boston College", location: "US", email: "govindsi@bc.edu", position: "Regional Committee Chair", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/GoverningBoard%20(4).jpeg" },
+        { name: "Arpita Jena", university: null, location: "India", email: "arpitaj@xim.edu.in", position: "Operational Committee Chair", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/GoverningBoard%20(5).jpeg" },
+        { name: "Rosa Nomen", university: "IQS-URL", location: "Spain", email: "rosa.nomen@iqs.url.edu", position: "Past President", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/GoverningBoard%20(6).jpeg" },
     ];
 
     const regionalMembers = [
-        { name: "Region Leader 1", university: "University 1", location: "North America", email: "leader1@example.com", region: "AJCU-NA<br />North America", position: "Regional Leader" },
-        { name: "Region Leader 2", university: "University 2", location: "Latin America", email: "leader2@example.com", region: "AUSJAL<br />Latin America", position: "Regional Leader" },
-        { name: "Region Leader 3", university: "University 3", location: "Europe", email: "leader3@example.com", region: "KIRCHER<br />Europe and Near East", position: "Regional Leader" },
-        { name: "Region Leader 4", university: "University 4", location: "Africa", email: "leader4@example.com", region: "AJCU - AM<br />Africa and Madagascar", position: "Regional Leader" },
-        { name: "Region Leader 5", university: "University 5", location: "South Asia", email: "leader5@example.com", region: "JHEASA<br />South Asia", position: "Regional Leader" },
-        { name: "Region Leader 6", university: "University 6", location: "Asia Pacific", email: "leader6@example.com", region: "AJCU - AP<br />Asia Pacific", position: "Regional Leader" },
+        { name: "Siddhartan Govindasamy", university: "Boston College", location: "US", email: "govindsi@bc.edu", region: "AJCU-NA<br />North America", position: "Regional Committee Chair<br />Regional Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/RegionalCommittee%20(1).jpeg" },
+        { name: "Collins Obidiagha SJ", university: "Arrupe Jesuit University", location: "Zimbabwe", email: "collins.obidiagha@aju.ac.zw", region: "AJCU - AM<br />Africa and Madagascar", position: "Regional Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/RegionalCommittee%20(2).jpeg" },
+        { name: "Arpita Jena", university: null, location: "India", email: "arpitaj@xim.edu.in", region: "JHEASA<br />South Asia", position: "Regional Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/RegionalCommittee%20(3).jpeg" },
+        { name: "Jenith Banluta", university: "Ateneo de Davao University", location: "Philippines", email: "jlbanluta@addu.edu.ph", region: "AJCU - AP<br />Asia Pacific", position: "Regional Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/RegionalCommittee%20(4).jpeg" },
+        { name: "Constanza Bauer", university: "Universidad Alberto Hurtado", location: "Chile", email: "cbauer@uahurtado.cl", region: "AUSJAL<br />Latin America", position: "Regional Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/RegionalCommittee%20(5).jpeg" },
+        { name: "Alejandro López", university: "Deusto", location: "Spain", email: "alejandro.lopez@deusto.es", region: "Kircher<br />Europe and Near East", position: "Regional Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/RegionalCommittee%20(6).jpeg" },
     ];
 
     const operationalMembers = [
-        { name: "TF Leader 1", university: "University 1", location: "Location 1", email: "tf1@example.com", taskForce: "Task Force Leader (Research & Academic Cooperation)", position: "Task Force Leader" },
-        { name: "TF Leader 2", university: "University 2", location: "Location 2", email: "tf2@example.com", taskForce: "Task Force Leader (Women In STEM)", position: "Task Force Leader" },
-        { name: "TF Leader 3", university: "University 3", location: "Location 3", email: "tf3@example.com", taskForce: "Task Force Leader (Healthcare)", position: "Task Force Leader" },
-        { name: "TF Leader 4", university: "University 4", location: "Location 4", email: "tf4@example.com", taskForce: "Task Force Leader (Artificial Intelligence & Humanity)", position: "Task Force Leader" },
-        { name: "TF Leader 5", university: "University 5", location: "Location 5", email: "tf5@example.com", taskForce: "Task Force Leader (Engineering and Social Justice)", position: "Task Force Leader" },
-        { name: "TF Leader 6", university: "University 6", location: "Location 6", email: "tf6@example.com", taskForce: "Task Force Leader (Humanitarian Technology)", position: "Task Force Leader" },
-        { name: "TF Leader 7", university: "University 7", location: "Location 7", email: "tf7@example.com", taskForce: "Task Force Leader (Infrastructure)", position: "Task Force Leader" },
-        { name: "TF Leader 8", university: "University 8", location: "Location 8", email: "tf8@example.com", taskForce: "Task Force Leader (Energy)", position: "Task Force Leader" },
-        { name: "TF Leader 9", university: "University 9", location: "Location 9", email: "tf9@example.com", taskForce: "Task Force Leader (Communication)", position: "Task Force Leader" },
+        { name: "Arpita Jena", university: null, location: "India", email: "arpitaj@xim.edu.in", taskForce: "Artificial Intelligence & Humanity", position: "Operational Committee Chair<br />Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(1).jpeg" },
+        { name: "Bryan Ranger", university: "Boston College", location: "US", email: "rangerb@bc.edu", taskForce: "Health Care", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(2).jpeg" },
+        { name: "Gail Baura", university: "Loyola University Chicago", location: "US", email: "gbaura@luc.edu", taskForce: "Engineering and Social Justice", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(3).jpeg" },
+        { name: "Allan Báez", university: "Santa Clara University", location: "US", email: "abaezmorales@scu.edu", taskForce: "Humanitarian Engineering & Frugal Innovation", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(4).jpeg" },
+        { name: "Nicolás Rincon", university: "Pontificia Universidad Javeriana", location: "Columbia", email: "nicolas.rincon@javeriana.edu.co", taskForce: "Infrastructure", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(5).jpeg" },
+        { name: "Pablo Frías", university: "ICAI", location: "Spain", email: "pablof@comillas.edu", taskForce: "Energy", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(6).jpeg" },
+        { name: "Luis Martínez", university: "Universidad Centroamericana José Simeón Cañas", location: "El Salvador", email: "lamartinez", taskForce: "Research & Academic Cooperation", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(7).jpeg" },
+        { name: "Andrés García", university: "IQS", location: "Spain", email: "andres.garcia@iqs.url.edu", taskForce: "Student Challenge", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(8).jpeg" },
+        { name: "Constanza Bauer", university: "Universidad Alberto Hurtado", location: "Chile", email: "cbauer@uahurtado.cl", taskForce: "Women in STEM", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(9).jpeg" },
     ];
 
     return (
@@ -285,7 +294,7 @@ function RolesSection() {
             )
         },
         {
-            title: "Vice-President",
+            title: "Vice President",
             description: (
                 <ul>
                     <li className="role-line">Assists the President in his various tasks and replaces him or her when necessary.</li>
@@ -295,7 +304,7 @@ function RolesSection() {
             )
         },
         {
-            title: "Chair of the Regional Committee",
+            title: "Regional Committee Chair",
             description: (
                 <ul>
                     <li className="role-line">Chairs the Regional Committee.</li>
@@ -306,7 +315,7 @@ function RolesSection() {
             )
         },
         {
-            title: "Chair of the Operational Committee",
+            title: "Operational Committee Chair",
             description: (
                 <ul>
                     <li className="role-line">Chairs the Operational Committee.</li>
@@ -349,7 +358,7 @@ function RolesSection() {
             )
         },
         {
-            title: "Task force and project leader",
+            title: "Task Force and Project Leader",
             description: (
                 <ul>
                     <li className="role-line">Constitutes and leads its work group by ensuring a good dynamic.</li>
@@ -376,10 +385,10 @@ function RolesSection() {
             title: "Remarks:",
             description: (
                 <ul>
-                    <li className="role-line">The Governing Board propose a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This road map must find the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, the close relationship with IAJU.</li>
+                    <li className="role-line">The Governing Board proposed a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="blank"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This roadmap must have the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, and a close relationship with IAJU.</li>
                     <li className="role-line">Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.</li>
-                    <li className="role-line">This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Chair of the Regional Committee, Chair of the Operational Committee, Secretary, Past President, Regional leader, Task force and project leader, University representative.</li>
-                    <li className="role-line">It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network</li>
+                    <li className="role-line">This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Regional Committee Chair, Operational Committee Chair, Secretary, Past President, Regional Leader, Task Force and Project Leader, University Representative.</li>
+                    <li className="role-line">It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network.</li>
                 </ul>
             ),
             isLastBox: true
@@ -421,7 +430,7 @@ function LogoSection() {
                 <div className="flex flex-col justify-center order-2 md:order-1">
                     <h2 className="mb-6">The IAJES Logo</h2>
                     <p className="text-gray-dark">
-                        The logo was designed by students of Javeriana Cali <a href="#" target="_blank" rel="noopener noreferrer">Arte, Arquitectura y Diseño</a> section.<br /><br />
+                        The logo was designed by students of Javeriana Cali <a href="https://www.javerianacali.edu.co/departamentos/creacion" target="_blank" rel="noopener noreferrer">Arte, Arquitectura y Diseño</a> section.<br /><br />
                         It was received with enthusiasm and agreement from the participating members and has become the official logo of IAJES.
                     </p>
                 </div>
@@ -442,7 +451,7 @@ function LogoSection() {
 export default function OrganizationalStructure() {
     return (
         <>
-            <Menu currentEndUrl="/organizational-structure"/>
+            <Menu currentEndUrl="/organizational-structure" />
             <div className="w-full duration-200">
                 <InfographicSection />
                 <MembersSection />
