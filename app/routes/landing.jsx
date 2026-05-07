@@ -155,12 +155,12 @@ function Carousel() {
 
   return (
     <div className="relative h-120 flex justify-between text-white z-2">
-      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-zinc-300 hover:text-white hover:cursor-pointer" onClick={carouselPrev}>
+      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselPrev}>
         <svg height="70" width="35" className="carousel-arrow-prev fill-none stroke-current stroke-5">
           <polyline points="35,0 5,35 35,70" />
         </svg>
       </button>
-      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-zinc-300 hover:text-white hover:cursor-pointer" onClick={carouselNext}>
+      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselNext}>
         <svg height="70" width="35" className="carousel-arrow-next fill-none stroke-current stroke-5">
           <polyline points="0,0 30,35 0,70" />
         </svg>
