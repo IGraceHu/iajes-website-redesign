@@ -40,11 +40,11 @@ function TitleSection() {
 // Section 2: What We Do - Image Buttons
 function WhatWeDoSection() {
     const cards = [
-        { title: "Regional Meetings", href: "/regional-meetings", img: "../assets/landing-disc-2a.svg" },
-        { title: "Biennial Meetings", href: "/biennial-meetings", img: "../assets/landing-disc-4b.svg" },
-        { title: "Task Forces", href: "/task-forces", img: "../assets/landing-disc-2a.svg" },
-        { title: "Projects", href: "/projects", img: "../assets/landing-disc-4b.svg" },
-        { title: "Webinars", href: "/webinars", img: "../assets/landing-disc-2a.svg" },
+        { title: "International Meetings", href: "/international-meetings", img: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutCard-InternationalMeetings.jpeg" },
+        { title: "Regional Meetings", href: "/regional-meetings", img: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutCard-RegionalMeetings.jpeg" },
+        { title: "Task Forces", href: "/task-forces", img: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutCard-TaskForces.jpeg" },
+        { title: "Video Resources", href: "/video-resources", img: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutCard-VideoResources.jpeg" },
+        { title: "Webinars", href: "/webinars", img: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutCard-Webinars.jpeg" },
     ];
 
     const Card = ({ title, href, img }) => (
@@ -58,7 +58,7 @@ function WhatWeDoSection() {
                 />
 
                 {/* Dark overlay */}
-                <div className="absolute inset-0 bg-black/50" />
+                <div className="absolute inset-0 bg-black/25" />
 
                 {/* Text */}
                 <div className="relative z-10 size-full flex items-center justify-center">
@@ -116,7 +116,7 @@ function ThreeColumnSection() {
             <div className="grid lg:grid-cols-8 md:grid-cols-1 gap-10">
                 <div className="lg:col-span-3">
                     <h3>Our Mission</h3>
-                    <img src="/assets/landing-disc-2a.svg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-OurMission.jpeg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         To join the engineering schools in Jesuit Universities worldwide, in order to promote the development and growth of our society through academic activities, research and social action.
                         <br /><br />
@@ -136,7 +136,7 @@ function ThreeColumnSection() {
 
                 <div className="lg:col-span-2">
                     <h3>Our Vision</h3>
-                    <img src="/assets/landing-disc-4b.svg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-OurVision.jpeg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         Make IAJES a worldwide leader and reference organization in the promotion of a new generation of engineers, scientists, and researchers deeply rooted and trained in the spirit of the Jesuit mission and Universal Apostolic Preferences.
                     </p>
@@ -180,7 +180,7 @@ function SpeakerHighlightSection() {
                 {/* Middle: Speaker Image (thinner) */}
                 <div className="flex justify-center lg:col-span-2 order-1 lg:order-1">
                     <div className="w-45 h-60 bg-gray-light rounded-lg overflow-hidden flex items-center justify-center">
-                        <img src="/assets/landing-disc-2a.svg" alt="General Arturo Sosa SJ" className="w-full h-full object-cover" />
+                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-GeneralArturo%20SosaSJ.png" alt="General Arturo Sosa SJ" className="w-full h-full object-cover" />
                     </div>
                 </div>
 
@@ -189,9 +189,18 @@ function SpeakerHighlightSection() {
                     <blockquote className="italic text-sm lg:text-base text-gray-dark mb-4 leading-relaxed wrap-break-word text-pretty">
                         “The International Association of Jesuit Universities finds its purpose and gives meaning to what it does by living and promoting collaboration and solidarity within and from the university institutions that make it up. It is a matter of making the best possible use of the enormous potential for collaboration and solidarity that exists in the universities that make up this network. Little by little we have been embarking on this path. As we move forward we recognize the advantages of collaboration and solidarity. We are learning better ways to take advantage of the resources we have, which are always scarce for the magnitude of the task...”
                     </blockquote>
-                    <button className="button w-full mt-2">
-                        View Fr. Sosa's Full Speech
-                    </button>
+                    <div className="flex gap-4 flex-row">
+                        <a href="https://drive.google.com/file/d/1ViiIfKjNLUwg05wkEASFJuoK5OKpIh0E/view?usp=sharing" target="blank" className="w-1/2 flex align-middle">
+                            <button className="button w-full mt-2">
+                                View Fr. Sosa's Full Speech
+                            </button>
+                        </a>
+                        <a href="https://drive.google.com/file/d/1FOSxR-BrZIzmQss7Nm6iR3pDgmPjd4pU/view?usp=sharing" target="blank" className="w-1/2 flex align-middle">
+                            <button className="button w-full mt-2">
+                                Lea el discurso completo del Padre Sosa
+                            </button>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -206,11 +215,13 @@ function OriginTimelineSection() {
                 <p className="text-gray-dark mb-6">
                     As agreed, the Governing Board, elected at the Bhubaneswar Summit in July 2024, wrote a roadmap for the development of IAJES. This road map had to find the right balance to allow the development of the association, the realization of the actions, the right rhythm of the events, the necessary involvement of the members, and the close relationship with IAJU. It had been validated with the Governing Board on December, 2024.
                 </p>
-                <button className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
-                    <span className="mx-auto">
-                        <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right"></i></span>
-                    </span>
-                </button>
+                <a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="blank">
+                    <button className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
+                        <span className="mx-auto">
+                            <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right"></i></span>
+                        </span>
+                    </button>
+                </a>
             </div>
 
             <Break dark />
@@ -221,7 +232,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2015</div>
-                        <img src="/assets/landing-disc-4b.svg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-MichaelGaranziniSJ.jpg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">Our initiative is both a response to a call from Pope Franciscus and Society of Jesus, especially through his secretary for higher education, Fr. Michael Garanzini and the expression of a strong shared desire to foster fruitful links of communion and cooperation among our Jesuit engineering schools.
                             <br /><br />
                             The concept was launched in July 2015 in Melbourne during the Assembly of Presidents and Rectors of Jesuit universities.</p>
@@ -235,7 +246,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2017 / 2018</div>
-                        <img src="/assets/landing-disc-2a.svg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-Bilbao1.jpg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">A brief prospection in the fall 2017 led to the constitution of the first task force with worldwide representatives. Its main task was to prepare and promote a first founding conference for the IAJES International Association of Jesuit Engineering Schools.
                             <br /><br />
                             Foreseen in <strong>DEUSTO BILBAO in July 2018</strong>, this event would find a meaningful place just before the Assembly of Presidents and Rectors of Jesuit Universities where the IAJU (International Association of Jesuit Universities) would solemnly be founded.</p>
@@ -249,7 +260,7 @@ function OriginTimelineSection() {
 export default function About() {
     return (
         <>
-            <Menu currentEndUrl="/about"/>
+            <Menu currentEndUrl="/about" />
             <div className="w-full duration-200">
                 <TitleSection />
                 <WhatWeDoSection />
