@@ -72,23 +72,23 @@ function Carousel() {
   const carouselContent = [
     {
       // text: "Lorum ipsum 1",
-      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel7.png"
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel0.jpeg"
     },
     {
-      text: "Lorum ipsum 1",
-      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel1.png"
+      text: "2nd IAJES Conference<br />Pontificia Universidad Javeriana Cali, Columbia, South America<br />July 2019",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel1.jpeg"
     },
     {
-      text: "Lorum ipsum 2",
-      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel2.png"
+      text: "3rd IAJES Conference<br />Boston College, Boston, USA<br />July 2022",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel2.jpeg"
     },
     {
-      text: "Lorum ipsum 3",
-      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel3.png"
+      text: "4th IAJES Conference<br />Bhubanewar, India<br />July 2024",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel3.jpeg"
     },
     {
-      text: "Lorum ipsum 4",
-      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel4.png"
+      text: "4th IAJES Conference<br />Bhubanewar, India<br />July 2024",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel4.jpeg"
     }
   ];
   const carouselEl = [];
@@ -100,7 +100,7 @@ function Carousel() {
         {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
 
         <div className="relative z-1 size-full box-border m-40">
-          <p>{content.text}</p>
+          <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p>
         </div>
       </div>
     )
@@ -156,32 +156,32 @@ function LinkCards() {
     {
       title: "About IAJES",
       url: "/about",
-      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-About.png"
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-About.jpeg"
     },
     {
       title: "International Meetings",
       url: "/international-meetings",
-      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-InternationalMeetings.png"
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-InternationalMeetings.jpeg"
     },
     {
       title: "Regional Meetings",
       url: "/regional-meetings",
-      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-RegionalMeetings.png"
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-RegionalMeetings.jpeg"
     },
     {
       title: "Video Resources",
       url: "/video-resources",
-      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-VideoResources.png"
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-VideoResources.jpeg"
     },
     {
       title: "Webinars",
       url: "/webinars",
-      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-Webinars.png"
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-Webinars.jpeg"
     },
     {
       title: "Task Forces",
       url: "/task-forces",
-      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-TaskForces.png"
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-TaskForces.jpeg"
     }
   ];
 
