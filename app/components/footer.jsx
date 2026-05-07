@@ -179,11 +179,13 @@ export function Footer() {
 
           <div className="mt-3 flex flex-col items-center justify-center gap-3 border-t-2 border-primary-light pt-3 text-center text-xs text-white sm:flex-row">
             <span>Anisha Malani, Isabelle Hu, Justin Fan, and Nicolas Gibson |</span>
-            <img
-              className="h-8 w-auto max-w-[220px]"
-              src="/assets/frugal-innovation-hub-logo.png"
-              alt="Frugal Innovation Hub"
-            />
+            <span className="inline-flex min-h-12 items-center rounded-md bg-white p-2">
+              <img
+                className="h-8 w-auto max-w-[220px]"
+                src="/assets/frugal-innovation-hub-logo.png"
+                alt="Frugal Innovation Hub"
+              />
+            </span>
           </div>
         </div>
       </div>
