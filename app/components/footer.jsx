@@ -42,7 +42,7 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="bg-linear-to-b from-secondary-light to-secondary-dark text-white">
+    <footer className="relative bg-linear-to-b from-secondary-light to-secondary-dark text-white z-999">
       <div className="lg:px-40 px-10 py-20 duration-200">
         <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-10">
           <div>
