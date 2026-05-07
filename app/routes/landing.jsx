@@ -71,23 +71,47 @@ export async function loader({ params }) {
 function Carousel() {
   const carouselContent = [
     {
-      // text: "Lorum ipsum 1",
+      // caption: "Lorum ipsum 1",
       image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel0.jpeg"
     },
     {
-      text: "2nd IAJES Conference<br />Pontificia Universidad Javeriana Cali, Columbia, South America<br />July 2019",
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">2nd IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Pontificia Universidad Javeriana Cali, Columbia, South America</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2019</p>
+        </div>
+      ),
       image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel1.jpeg"
     },
     {
-      text: "3rd IAJES Conference<br />Boston College, Boston, USA<br />July 2022",
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">3rd IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Boston College, Boston, USA</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2022</p>
+        </div>
+      ),
       image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel2.jpeg"
     },
     {
-      text: "4th IAJES Conference<br />Bhubanewar, India<br />July 2024",
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubanewar, India</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2024</p>
+        </div>
+      ),
       image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel3.jpeg"
     },
     {
-      text: "4th IAJES Conference<br />Bhubanewar, India<br />July 2024",
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubanewar, India</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2024</p>
+        </div>
+      ),
       image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel4.jpeg"
     }
   ];
@@ -99,8 +123,9 @@ function Carousel() {
 
         {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
 
-        <div className="relative z-1 size-full box-border m-40">
-          <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p>
+        <div className="relative z-1 size-full box-border mt-40 ml-40">
+          {/* <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p> */}
+          {content.caption}
         </div>
       </div>
     )
@@ -130,12 +155,12 @@ function Carousel() {
 
   return (
     <div className="relative h-120 flex justify-between text-white z-2">
-      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-zinc-400 hover:text-zinc-50 hover:cursor-pointer" onClick={carouselPrev}>
+      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-zinc-300 hover:text-white hover:cursor-pointer" onClick={carouselPrev}>
         <svg height="70" width="35" className="carousel-arrow-prev fill-none stroke-current stroke-5">
           <polyline points="35,0 5,35 35,70" />
         </svg>
       </button>
-      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-zinc-400 hover:text-zinc-50 hover:cursor-pointer" onClick={carouselNext}>
+      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-zinc-300 hover:text-white hover:cursor-pointer" onClick={carouselNext}>
         <svg height="70" width="35" className="carousel-arrow-next fill-none stroke-current stroke-5">
           <polyline points="0,0 30,35 0,70" />
         </svg>

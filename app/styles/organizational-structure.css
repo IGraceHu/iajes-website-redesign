@@ -121,7 +121,7 @@
 .member-image {
     width: 50%;
     aspect-ratio: 3 / 4;
-    border-radius: 0;
+    /* border-radius: 0; */
     overflow: hidden;
     background-color: var(--color-gray-light);
     margin-bottom: 16px;

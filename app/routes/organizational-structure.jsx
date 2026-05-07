@@ -83,7 +83,7 @@ function MemberCard({ name, university, location, email, region, taskForce, posi
     return (
         <div className="member-card">
             <div className="member-image-container flex justify-start">
-                <div className="member-image">
+                <div className="member-image rounded-md">
                     <img src={imageURL} alt={name} />
                 </div>
             </div>
