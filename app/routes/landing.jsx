@@ -1,6 +1,6 @@
 import { useState, useEffect, useActionState } from "react";
 import { supabase } from "../supabase";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup, PopupForm } from "../components/popup";
 import { Footer } from "../components/footer";
@@ -15,14 +15,14 @@ export function meta() {
 }
 
 async function getHighlights() {
-    const { data, error } = await supabase
-      .from('highlights')
-      .select();
-    if (data) {
-      data.sort((a, b) => { return a.id - b.id });
-    }
-    
-    return data || error;
+  const { data, error } = await supabase
+    .from('highlights')
+    .select();
+  if (data) {
+    data.sort((a, b) => { return a.id - b.id });
+  }
+
+  return data || error;
 }
 
 async function updateHighlight(highlightId, formData, newImageUrl) {
@@ -37,7 +37,7 @@ async function updateHighlight(highlightId, formData, newImageUrl) {
     .from('highlights')
     .update(updates)
     .eq('id', highlightId);
-    return error;
+  return error;
 }
 
 async function uploadHighlightImage(highlightId, file) {
@@ -71,16 +71,48 @@ export async function loader({ params }) {
 function Carousel() {
   const carouselContent = [
     {
-      text: "Lorum ipsum 1"
+      // caption: "Lorum ipsum 1",
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel0.jpeg"
     },
     {
-      text: "Lorum ipsum 2"
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">2nd IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Pontificia Universidad Javeriana Cali, Columbia, South America</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2019</p>
+        </div>
+      ),
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel1.jpeg"
     },
     {
-      text: "Lorum ipsum 3"
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">3rd IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Boston College, Boston, USA</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2022</p>
+        </div>
+      ),
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel2.jpeg"
     },
     {
-      text: "Lorum ipsum 4"
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubanewar, India</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2024</p>
+        </div>
+      ),
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel3.jpeg"
+    },
+    {
+      caption: (
+        <div className="carousel-caption">
+          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</h1>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubanewar, India</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2024</p>
+        </div>
+      ),
+      image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel4.jpeg"
     }
   ];
   const carouselEl = [];
@@ -91,8 +123,9 @@ function Carousel() {
 
         {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
 
-        <div className="relative z-1 size-full box-border m-40">
-          <p>{content.text}</p>
+        <div className="relative z-1 size-full box-border mt-40 ml-40">
+          {/* <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p> */}
+          {content.caption}
         </div>
       </div>
     )
@@ -122,12 +155,12 @@ function Carousel() {
 
   return (
     <div className="relative h-120 flex justify-between text-white z-2">
-      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-zinc-400 hover:text-zinc-50 hover:cursor-pointer" onClick={carouselPrev}>
+      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselPrev}>
         <svg height="70" width="35" className="carousel-arrow-prev fill-none stroke-current stroke-5">
           <polyline points="35,0 5,35 35,70" />
         </svg>
       </button>
-      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-zinc-400 hover:text-zinc-50 hover:cursor-pointer" onClick={carouselNext}>
+      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselNext}>
         <svg height="70" width="35" className="carousel-arrow-next fill-none stroke-current stroke-5">
           <polyline points="0,0 30,35 0,70" />
         </svg>
@@ -143,27 +176,37 @@ function Carousel() {
   );
 }
 
-function AboutUs() {
+function LinkCards() {
   const cardsInfo = [
     {
-      title: "card 1",
-      url: "tes",
-      imageURL: null
+      title: "About IAJES",
+      url: "/about",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-About.jpeg"
     },
     {
-      title: "card 2"
+      title: "International Meetings",
+      url: "/international-meetings",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-InternationalMeetings.jpeg"
     },
     {
-      title: "card 3"
+      title: "Regional Meetings",
+      url: "/regional-meetings",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-RegionalMeetings.jpeg"
     },
     {
-      title: "card 4"
+      title: "Video Resources",
+      url: "/video-resources",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-VideoResources.jpeg"
     },
     {
-      title: "card 5"
+      title: "Webinars",
+      url: "/webinars",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-Webinars.jpeg"
     },
     {
-      title: "card 6"
+      title: "Task Forces",
+      url: "/task-forces",
+      imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCard-TaskForces.jpeg"
     }
   ];
 
@@ -187,22 +230,14 @@ function AboutUs() {
   })
 
   return (
-    <div id="about" className="flex pb-30">
-      <div className="mr-10 mb-10">
-        <H1Left stretch>What is IAJES?</H1Left>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris id bibendum tortor, vel volutpat risus. Praesent eu felis dapibus, sodales purus vel, pharetra dolor. Quisque venenatis ut nulla quis aliquet. Praesent at urna pharetra, volutpat justo quis, malesuada felis. Quisque in sapien felis. Aliquam egestas nulla nec eros elementum, vel auctor turpis scelerisque. Proin lacinia et enim eu tempor. Pellentesque et aliquam felis. Nam tempus varius enim, ac facilisis magna iaculis et.</p>
-      </div>
-      <div className="text-white flex justify-center">
-        <div id="about-cards-grid">
-          {cardsEl}
-        </div>
-      </div>
+    <div id="link-cards-grid">
+      {cardsEl}
     </div>
   );
 }
 
 
-function EditHighlights({showPopup, setShowPopup, highlightList}) {
+function EditHighlights({ showPopup, setShowPopup, highlightList }) {
   const navigate = useNavigate();
   const [currentHighlights, setCurrentHighlights] = useState(highlightList);
   const [showHighlightPopup, setShowHighlightPopup] = useState(false);
@@ -277,10 +312,10 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
   }
 
   function checkEmpty(value, inputName) {
-      const updatedFormRequired = updateRequired(value, inputName, formRequired);
-      if (updatedFormRequired != formRequired) {
-        setFormRequired(updatedFormRequired);
-      }
+    const updatedFormRequired = updateRequired(value, inputName, formRequired);
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
   }
 
   function urlChange() {
@@ -290,21 +325,21 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
       setFormRequired(updatedFormRequired);
     }
   }
-  
+
   return (
     <>
       <Popup id="edit-highlights" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Highlights</h4>
-          <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
-            {currentHighlights.map(highlight => 
-              <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-                <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
-                  <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
-                  <i className="bi bi-pencil-square"></i>
-                </button>
-              </div>
-            )}
-          </div>
+        <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
+          {currentHighlights.map(highlight =>
+            <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+              <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
+                <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
+                <i className="bi bi-pencil-square"></i>
+              </button>
+            </div>
+          )}
+        </div>
       </Popup>
 
       <PopupForm id="edit-highlight" className="md:w-200" show={showHighlightPopup} setShow={setShowHighlightPopup} validate={validate} hasError={hasError} nested>
@@ -312,34 +347,34 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
             <label htmlFor="edit-highlight-title">Highlight title:</label><br />
-            <input id="edit-highlight-title" name="title" type="text" 
-                   className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
-                   placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
-                   defaultValue={focusHighlight.title} />
+            <input id="edit-highlight-title" name="title" type="text"
+              className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
+              placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
+              defaultValue={focusHighlight.title} />
             <div className="input-error">This field is required.</div>
           </div>
           <label>
             Image:<br />
             <input id="edit-highlight-img" name="image-url" type="file" accept="image/*"
-                   className={formRequired?.imageUrl ? "input-required" : ""} />
+              className={formRequired?.imageUrl ? "input-required" : ""} />
             <div className="input-error">Please select an image file.</div>
           </label>
         </div>
         <div>
           <label htmlFor="edit-highlight-url">Highlight URL:</label><br />
-          <input id="edit-highlight-url" name="url" type="text" 
-                  className={"input input-text w-full " + (formRequired?.url && "input-required")}
-                  placeholder="https://..." onChange={urlChange}
-                  defaultValue={focusHighlight.url} />
+          <input id="edit-highlight-url" name="url" type="text"
+            className={"input input-text w-full " + (formRequired?.url && "input-required")}
+            placeholder="https://..." onChange={urlChange}
+            defaultValue={focusHighlight.url} />
           <div className="input-error">Invalid link.</div>
         </div>
-        <br/>
+        <br />
         <div className="">
           <label htmlFor="edit-highlight-desc">Highlight details:</label><br />
-          <textarea id="edit-highlight-desc" name="details" 
-                    className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
-                    placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
-                    defaultValue={focusHighlight.details} ></textarea>
+          <textarea id="edit-highlight-desc" name="details"
+            className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
+            placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
+            defaultValue={focusHighlight.details} ></textarea>
           <div className="input-error">This field is required.</div>
         </div>
       </PopupForm>
@@ -348,53 +383,41 @@ function EditHighlights({showPopup, setShowPopup, highlightList}) {
 }
 
 
-function HighlightContent({ content, side = false }) {  
+function HighlightContent({ content, side = false }) {
   const contentEls = (
-      <>
-        <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
-          
-          { content?.image_url ?
-           <img src={content.image_url} className="size-full object-cover duration-200" />
-          :
-            <>
-              <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
-              <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
-            </>
-          }
-        </div>
+    <>
+      <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
 
-        <h2>{content.title}</h2>
-        
-        <p>{content.details}</p>
-      </>
-    );
+        {content?.image_url ?
+          <img src={content.image_url} className="size-full object-cover duration-200" />
+          :
+          <>
+            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
+            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
+          </>
+        }
+      </div>
+
+      <h2>{content.title}</h2>
+
+      <p>{content.details}</p>
+    </>
+  );
 
   const height = side ? "h-80" : "h-120"
   return (
     <>
-    { content?.url ? 
-      <a href={content.url} className={"highlight-card flex flex-col justify-stretch text-left " + height}>
-        {contentEls}
-      </a>
-    :
-      <div className={"size-full flex flex-col justify-stretch text-left " + height}>
-        {contentEls}
-      </div>
-    }
+      {content?.url ?
+        <a href={content.url} className={"highlight-card flex flex-col justify-stretch text-left " + height}>
+          {contentEls}
+        </a>
+        :
+        <div className={"size-full flex flex-col justify-stretch text-left " + height}>
+          {contentEls}
+        </div>
+      }
     </>
   )
-}
-
-function LandingSubscribe() {
-  return (
-    <div className="h-150 flex flex-col justify-center items-center text-center">
-      <h4 className="text-glow">Subscribe to our Newsletter</h4>
-      <form className="flex flex-col justify-center items-center">
-        <input name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." />
-        <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
-      </form>
-    </div>
-  );
 }
 
 export default function Landing({ loaderData }) {
@@ -406,19 +429,19 @@ export default function Landing({ loaderData }) {
 
   useEffect(() => {
     const getIsAdmin = async (userId) => {
-        try {
-            const { data, error } = await supabase
-            .from('users')
-            .select('role')
-            .eq("id", userId);
-            if (data[0]) {
-                setIsAdmin(data[0].role == "admin");
-            }
-            else { console.log("error"); }
-            
-        } catch (error) {
-            console.log("error");
+      try {
+        const { data, error } = await supabase
+          .from('users')
+          .select('role')
+          .eq("id", userId);
+        if (data[0]) {
+          setIsAdmin(data[0].role == "admin");
         }
+        else { console.log("error"); }
+
+      } catch (error) {
+        console.log("error");
+      }
     }
 
     // Listen for auth state changes
@@ -447,26 +470,47 @@ export default function Landing({ loaderData }) {
       <Carousel />
       <div className="flex height-fit">
         <div id="content" className="items-center text-black lg:px-40 px-10 py-20 w-full h-fit duration-200 z-1">
-          <AboutUs />
-          
-          { hasHighlights && 
-            <div className="text-center relative">
+
+          <div id="about" className="flex pb-30">
+            <div className="mr-10 mb-10">
+              <H1Left stretch>What is IAJES?</H1Left>
+              <p>
+                The International Association of Jesuit Engineering and Science Schools (IAJES) is a global collaborative network of Jesuit universities that brings together engineering and science schools to advance academic excellence, interdisciplinary research, and socially responsible innovation.
+                <br /><br />
+                Rooted in the Jesuit educational tradition and aligned with the Universal Apostolic Preferences, IAJES fosters international cooperation to form engineers and scientists committed to addressing complex global challenges, promoting human dignity, and contributing to a more just, equitable, and sustainable world through technology and knowledge.
+              </p>
+              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]"></i></a>
+            </div>
+            <div className="text-white flex justify-center">
+              <LinkCards />
+            </div>
+          </div>
+
+          {hasHighlights &&
+            <div className="text-center relative mb-10">
               <H1Middle className="text-glow">Highlights</H1Middle>
-              { isAdmin && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
+              {isAdmin && <button className="button" onClick={() => setEditHighlights(true)}>Edit Highlights</button>}
               <div id="highlights" className="relative width-full py-5 grid md:grid-rows-6 gap-10" >
-                <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlightList[0]}/></div>
-                <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlightList[1]}/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]} side/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]} side/></div>
-                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]} side/></div>
+                <div className="md:row-start-1 md:row-end-4" ><HighlightContent content={highlightList[0]} /></div>
+                <div className="md:row-start-4 md:row-end-7" ><HighlightContent content={highlightList[1]} /></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[2]} side /></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[3]} side /></div>
+                <div className="md:row-span-2" ><HighlightContent content={highlightList[4]} side /></div>
               </div>
             </div>
           }
 
-          <LandingSubscribe />
-          <div className="h-100">
-
+          <div className="h-100 my-20 flex flex-col justify-center items-center text-center">
+            <h4 className="text-glow">Subscribe to our Newsletter</h4>
+            <form className="flex flex-col justify-center items-center">
+              <input name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." />
+              <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
+            </form>
           </div>
+
+
+
+          {/* <div className="h-100"></div> */}
         </div>
         <div id="effects" className="w-full shrink-0 -ml-[100%] z-0">
           {/* Discs */}
@@ -479,17 +523,17 @@ export default function Landing({ loaderData }) {
           </div>
 
           {/* Background Lines */}
-          <div className="size-full grid grid-cols-1 grid-rows-[auto_min-content] justify-center justify-items-center">
+          <div className="size-full grid grid-cols-1 grid-rows-[auto_min-content] justify-center justify-items-center opacity-60">
             <div className="flex space-x-4 justify-center">
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
               <div className="w-5 h-full bg-linear-to-b from-white to-primary-light"></div>
             </div>
-            <div className="md:w-[70%] w-full md:px-0 px-10 duration-200 h-125 grid grid-cols-[30%_20%_20%_30%] justify-items-stretch">
+            <div className="md:w-[70%] w-full md:px-0 px-10 duration-200 h-150 grid grid-cols-[30%_20%_20%_30%] justify-items-stretch">
               <div className="relative">
-                <div className="absolute right-0 top-5 w-full h-120 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
-                <div className="absolute right-0 top-15 w-[50%] h-110 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
+                <div className="absolute right-0 top-5 w-full h-145 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
+                <div className="absolute right-0 top-15 w-[50%] h-135 border-t-20 border-l-20 rounded-tl-[80px] border-primary-light"></div>
               </div>
               <div className="relative mr-2">
                 <div className="absolute right-9 w-full h-10 border-b-20 border-r-20 rounded-br-[80px] border-primary-light"></div>
@@ -500,8 +544,8 @@ export default function Landing({ loaderData }) {
                 <div className="absolute left-9 w-full h-10 border-b-20 border-l-20 rounded-bl-[80px] border-primary-light"></div>
               </div>
               <div className="relative">
-                <div className="absolute top-15 w-[50%] h-110 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
-                <div className="absolute right-0 top-5 w-full h-120 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
+                <div className="absolute top-15 w-[50%] h-135 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
+                <div className="absolute right-0 top-5 w-full h-145 border-t-20 border-r-20 rounded-tr-[80px] border-primary-light"></div>
               </div>
             </div>
           </div>

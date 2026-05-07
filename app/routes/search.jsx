@@ -194,7 +194,7 @@ export default function SearchRoute({ loaderData }) {
           }`}
         >
           <div className="rounded-md border-2 border-gray-light bg-white p-4">
-            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-2">
+            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3">
               <FilterGroup
                 title="Task Force"
                 options={taskForceOptions}

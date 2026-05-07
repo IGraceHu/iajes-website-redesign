@@ -697,11 +697,11 @@ export default function RegionalMeetingDetail() {
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
                     <label>Agenda Link:</label>
-                    <input name="agendaLink" className="input input-text w-full" type="text" placeholder="Agenda Link" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                    <input name="agendaLink" className="input input-text w-full" type="text" placeholder="https://drive.google.com/file/d/.../preview" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
                 </div>
                 <div>
                     <label>Meeting Report Link:</label>
-                    <input name="reportLink" className="input input-text w-full" type="text" placeholder="Meeting Report Link" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                    <input name="reportLink" className="input input-text w-full" type="text" placeholder="https://drive.google.com/file/d/.../preview" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
                 </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">

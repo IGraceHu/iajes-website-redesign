@@ -42,6 +42,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {
+
     .org-box-bottom-left,
     .org-box-bottom-right {
         width: 350px;
@@ -118,12 +119,39 @@
 }
 
 .member-image {
-    width: 100%;
+    width: 50%;
     aspect-ratio: 3 / 4;
-    border-radius: 0;
+    /* border-radius: 0; */
     overflow: hidden;
     background-color: var(--color-gray-light);
     margin-bottom: 16px;
+}
+
+@media (max-width: 1440px) {
+    .member-image {
+        width: 75%;
+    }
+}
+
+@media (max-width: 1024px) {
+    .member-image {
+        width: 50%;
+    }
+}
+
+@media (max-width: 500px) {
+    .member-image-container {
+        justify-content: center;
+    }
+
+    .member-info {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .member-card h5 {
+        text-align: center;
+    }
 }
 
 .member-image img {
@@ -143,7 +171,7 @@
     font-weight: 600;
     color: var(--color-gray-dark);
     margin-bottom: 12px;
-    text-align: left;
+    /* text-align: left; */
 }
 
 .member-detail {

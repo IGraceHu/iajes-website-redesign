@@ -128,7 +128,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
     const update = await updateProfile(userId, formData);
     if (update === null) {
       setShowPopup(false);
-      navigate(0);
+      navigate("/profile/" + userId);
     } else {
       setHasError(true);
     }
