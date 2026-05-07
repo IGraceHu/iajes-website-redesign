@@ -8,6 +8,7 @@ const navigationLinks = [
   { label: "Task Forces", href: "/task-forces" },
   { label: "Video Resources", href: "/video-resources" },
   { label: "Webinars", href: "/webinars" },
+  { label: "Regional Meetings", href: "/regional-meetings" },
   { label: "International Meetings", href: "/international-meetings" },
   { label: "Newsletter", href: "/newsletter" },
   { label: "People", href: "/search" },
@@ -25,40 +26,35 @@ const socialLinks = [
   { label: "LinkedIn", icon: "bi-linkedin", href: "https://www.linkedin.com/company/iajes/" },
 ];
 
-const legalLinks = [
-  { label: "Legal", href: "#" },
-  { label: "Privacy Policy", href: "#" },
-  { label: "Terms of Use", href: "#" },
-  { label: "Cookie Policy", href: "#" },
-];
-
 export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="relative overflow-hidden border-b-4 border-secondary-light bg-primary-extralight">
+    <footer
+      className="relative overflow-hidden border-b-4 border-primary-light"
+      style={{ background: "linear-gradient(180deg, #136E8D 0%, #063751 100%)" }}
+    >
       <img
         src="/assets/landing-disc-2b.svg"
         alt=""
-        className="pointer-events-none absolute -left-52 -top-28 w-120 opacity-18"
+        aria-hidden="true"
+        className="pointer-events-none absolute -left-32 -top-28 hidden w-100 md:block"
+        style={{ filter: "brightness(0) invert(1)", opacity: 0.1 }}
       />
       <img
         src="/assets/landing-disc-4a.svg"
         alt=""
-        className="pointer-events-none absolute -right-24 -top-16 w-90 opacity-35"
-      />
-      <img
-        src="/assets/landing-disc-2a.svg"
-        alt=""
-        className="pointer-events-none absolute -right-32 top-48 w-105 opacity-25"
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-20 -top-16 hidden w-80 md:block"
+        style={{ filter: "brightness(0) invert(1)", opacity: 0.12 }}
       />
 
-      <div className="relative lg:px-40 px-10 py-7 duration-200">
+      <div className="relative z-10 lg:px-40 px-10 py-7 duration-200">
         <div className="grid gap-6 xl:grid-cols-[1fr_1.7fr] xl:items-center">
           <div className="flex items-center gap-5">
-            <div className="h-20 w-1 shrink-0 rounded-full bg-primary-dark"></div>
+            <div className="h-20 w-1 shrink-0 rounded-full bg-primary-light"></div>
             <div>
-              <h5 className="!mb-0 !text-secondary-light">
+              <h5 className="!mb-0 !text-primary-light">
                 International Association of
                 <br />
                 Jesuit Engineering and Science Schools
@@ -72,14 +68,14 @@ export function Footer() {
                 key={pillar.label}
                 className="flex min-h-24 flex-col items-center justify-center rounded-md border-2 border-primary-light px-3 py-3 text-center lg:rounded-none lg:border-y-0 lg:border-r-0"
               >
-                <i className={`bi ${pillar.icon} text-3xl text-secondary-light`} />
+                <i className={`bi ${pillar.icon} text-3xl text-white`} />
                 {pillar.label === "Engineering & Science" ? (
-                  <i className="bi bi-flask text-lg text-primary-dark -mt-3 ml-8" />
+                  <i className="bi bi-flask text-lg text-primary-light -mt-3 ml-8" />
                 ) : null}
                 {pillar.label === "Driving Social Innovation" ? (
-                  <i className="bi bi-leaf text-lg text-primary-dark -mt-3 ml-8" />
+                  <i className="bi bi-leaf text-lg text-primary-light -mt-3 ml-8" />
                 ) : null}
-                <h6 className="!mb-0 !text-secondary-light mt-2 !text-base">
+                <h6 className="!mb-0 !text-white mt-2 !text-base">
                   {pillar.lines.map((line) => (
                     <span key={line} className="block">
                       {line}
@@ -96,7 +92,7 @@ export function Footer() {
             <div className="flex flex-col gap-4">
               <div className="flex flex-wrap items-center gap-4">
                 <a href="/" className="inline-flex min-h-14 items-center rounded-md bg-white p-2 duration-200 hover:opacity-70">
-                  <img className="h-10 w-auto" src="/assets/logo.svg" alt="IAJES logo" />
+                  <img className="h-12 w-auto" src="/assets/logo-iajes.svg" alt="IAJES logo" />
                 </a>
                 <a
                   href="https://iaju.org/"
@@ -111,26 +107,26 @@ export function Footer() {
                   />
                 </a>
               </div>
-              <p className="!mb-0 text-sm leading-6 text-secondary-dark">{missionStatement}</p>
+              <p className="!mb-0 text-sm leading-6 text-white">{missionStatement}</p>
             </div>
 
             <div>
-              <h6 className="!text-secondary-light mb-2">Contact</h6>
-              <p className="text-sm leading-6 text-secondary-dark">
+              <h6 className="!text-primary-light mb-2">Contact</h6>
+              <p className="text-sm leading-6 text-white">
                 Pascal Berthouloux, IAJES Secretary
                 <br />
                 Development of International Partnerships, ICAM
               </p>
               <a
                 href="mailto:Pascal.berthouloux@icam.fr"
-                className="!text-secondary-dark text-sm duration-200 hover:!text-primary-dark"
+                className="!text-white text-sm duration-200 hover:!text-primary-light"
               >
                 Pascal.berthouloux@icam.fr
               </a>
             </div>
 
             <div>
-              <h6 className="!text-secondary-light mb-2">Social</h6>
+              <h6 className="!text-primary-light mb-2">Social</h6>
               <div className="mb-2 flex gap-5 text-2xl">
                 {socialLinks.map((social) => (
                   <a
@@ -139,66 +135,56 @@ export function Footer() {
                     target="_blank"
                     rel="noreferrer"
                     aria-label={social.label}
-                    className="!text-secondary-light duration-200 hover:!text-primary-dark"
+                    className="!text-white duration-200 hover:!text-primary-light"
                   >
                     <i className={`bi ${social.icon}`}></i>
                   </a>
                 ))}
               </div>
-              <p className="!mb-0 text-sm leading-6 text-secondary-dark">
+              <p className="!mb-0 text-sm leading-6 text-white">
                 Follow IAJES on LinkedIn for network updates and collaboration news.
               </p>
             </div>
 
             <div>
-              <h6 className="!text-secondary-light mb-2">Stay Informed</h6>
-              <p className="text-sm leading-6 text-secondary-dark">
+              <h6 className="!text-primary-light mb-2">Stay Informed</h6>
+              <p className="text-sm leading-6 text-white">
                 Get updates on international meetings, task force activity, and newly released resources.
               </p>
-              <a href="/newsletter" className="button mt-1 inline-block text-sm">
+              <a href="/newsletter" className="button button-light mt-1 inline-block text-sm">
                 Newsletter
               </a>
             </div>
           </div>
 
-          <div className="mt-5 flex flex-col items-center gap-2 border-t-2 border-primary-light pt-4 text-center text-sm lg:flex-row lg:justify-center">
-            <span className="shrink-0 font-bold text-secondary-light">Navigate</span>
-            <div className="flex flex-wrap justify-center gap-x-5 gap-y-2">
-              {navigationLinks.map((item) => (
-                <a
-                  key={item.href}
-                  href={item.href}
-                  className="!text-secondary-dark duration-200 hover:!text-primary-dark"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
+          <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t-2 border-primary-light pt-4 text-center text-sm">
+            {navigationLinks.map((item) => (
+              <a
+                key={item.href}
+                href={item.href}
+                className="!text-white duration-200 hover:!text-primary-light"
+              >
+                {item.label}
+              </a>
+            ))}
           </div>
 
           <div className="mt-4 flex flex-col gap-3 border-t-2 border-primary-light pt-4 text-sm lg:flex-row lg:items-center lg:justify-between">
-            <p className="!mb-0 text-secondary-dark">
+            <p className="!mb-0 text-white">
               © {currentYear} International Association of Jesuit Engineering and Science Schools (IAJES). All
               rights reserved. Content is provided for informational purposes.
             </p>
-            <div className="flex flex-wrap gap-x-5 gap-y-2">
-              {legalLinks.map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={(event) => event.preventDefault()}
-                  className="!text-secondary-dark duration-200 hover:!text-primary-dark"
-                  aria-disabled="true"
-                >
-                  {item.label}
-                </a>
-              ))}
-            </div>
+            <span className="text-white">Privacy Policy</span>
           </div>
 
-          <p className="!mb-0 mt-3 border-t-2 border-primary-light pt-3 text-center text-xs text-secondary-dark">
-            Anisha Malani, Isabelle Hu, Justin Fan, and Nicolas Gibson | Frugal Innovation Hub
-          </p>
+          <div className="mt-3 flex flex-col items-center justify-center gap-3 border-t-2 border-primary-light pt-3 text-center text-xs text-white sm:flex-row">
+            <span>Anisha Malani, Isabelle Hu, Justin Fan, and Nicolas Gibson |</span>
+            <img
+              className="h-8 w-auto max-w-[220px]"
+              src="/assets/frugal-innovation-hub-logo.png"
+              alt="Frugal Innovation Hub"
+            />
+          </div>
         </div>
       </div>
     </footer>
