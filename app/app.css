@@ -291,7 +291,7 @@ body>.goog-text-highlight {
   cursor: pointer;
 }
 
-.button:hover:active {
+.button:active {
   background-color: var(--color-secondary-dark);
   border-color: var(--color-secondary-dark);
 }
@@ -307,7 +307,7 @@ body>.goog-text-highlight {
   cursor: pointer;
 }
 
-.button.button-light:hover:active {
+.button.button-light:active {
   color: var(--color-secondary-dark);
 }
 
@@ -358,7 +358,7 @@ button:disabled.button.button-light {
   border-color: var(--color-error-dark);
 }
 
-.button.button-delete:hover:active {
+.button.button-delete:active {
   background-color: var(--color-error-extradark);
   border-color: var(--color-error-extradark);
 }
@@ -375,7 +375,7 @@ button:disabled.button.button-light {
   border-color: var(--color-error-dark);
 }
 
-.button.button-light.button-delete:hover:active {
+.button.button-light.button-delete:active {
   color: var(--color-error-extradark);
   border-color: var(--color-error-extradark);
 }
