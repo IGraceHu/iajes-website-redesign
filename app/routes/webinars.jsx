@@ -6,7 +6,7 @@ import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { updateRequired } from "../helpers/form";
-import "../styles/webinars.css";
+import "../styles/video-resources.css";
 
 export function meta() {
     return [
@@ -207,7 +207,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}>Remove Speaker</button>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -396,40 +396,40 @@ export default function Webinars({ loaderData }) {
                         <h4>Create new webinar</h4>
                         <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
                             <div>
-                                <label htmlFor="webinar-title">Webinar title:</label><br />
+                                <label htmlFor="webinar-title">Title:</label><br />
                                 <input id="webinar-title" name="webinar-title" type="text"
                                     className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
-                                    placeholder="Webinar title"
+                                    placeholder="Title"
                                     onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
                                 <div className="input-error">This field is required.</div>
                                 <br /><br />
-                                <label htmlFor="webinar-date">Webinar date:</label><br />
+                                <label htmlFor="webinar-date">Date:</label><br />
                                 <input id="webinar-date" name="webinar-date" type="date" className="input input-text w-full" defaultValue={todayString} />
                             </div>
                             <label>
-                                Webinar thumbnail image:
+                                Thumbnail image:
                                 <input id="webinar-thumbnail" name="webinar-thumbnail" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
                                 <div className="input-error">This field is required.</div>
                             </label>
                         </div>
 
                         <div className="relative">
-                            <label htmlFor="webinar-pdf-link">Webinar PDF link:</label><br />
+                            <label htmlFor="webinar-pdf-link">PDF link:</label><br />
                             <p className="text-sm text-disabled-dark mt-1">This is the PDF that will be embedded. Please only include the link and not the entire embed.</p>
                             <input id="webinar-pdf-link" name="webinar-pdf-link" type="text"
                                 className="input input-text w-full"
                                 placeholder="https://drive.google.com/file/d/...."
                                 onChange={(e) => {}} />
                             <br /><br />
-                            <label htmlFor="webinar-video-link">Webinar video link:</label><br />
+                            <label htmlFor="webinar-video-link">Video link:</label><br />
                             <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
                             <input id="webinar-video-link" name="webinar-video-link" type="text"
                                 className="input input-text w-full"
                                 placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
                                 onChange={(e) => {}} />
                             <br /><br />
-                            <label htmlFor="webinar-desc">Webinar description:</label><br />
-                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter your video description..."></textarea>
+                            <label htmlFor="webinar-desc">Description:</label><br />
+                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter description..."></textarea>
                             <br /> <br />
                         </div>
 
