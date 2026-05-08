@@ -20,6 +20,9 @@ export default [
     route("regional-meetings/:regionName/:meetingDate", "routes/regional-meeting-detail.jsx"),
     route("video-resources", "routes/video-resources.jsx"),
     route("video-resource/:vidId", "routes/video-resource.jsx"),
+    route("webinars", "routes/webinars.jsx"),
+    route("webinars/:webinarId", "routes/webinar.jsx"),
+    route("webinars/archive", "routes/webinars-archive.jsx"),
     route("international-meetings", "routes/international-meetings.jsx"),
     route("supabasetest", "routes/supabasetest.jsx"),
 ];

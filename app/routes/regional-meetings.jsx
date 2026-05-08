@@ -120,8 +120,8 @@ async function uploadRegionThumbnail(regionUrl, file) {
 
 function RegionalCard({ region, imageUrl }) {
     return (
-        <div className="regional-card">
-            <Link to={`/regional-meetings/${region.url}`} className="block w-full p-2 border-2 border-transparent hover:border-primary-light rounded-md">
+        <div className="regional-card duration-200">
+            <Link to={`/regional-meetings/${region.url}`} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-slate-100 flex items-center">
                     {imageUrl ? (
                         <img className="min-w-full h-full object-cover grow-0 shrink-0" src={imageUrl} alt={region.name} />
