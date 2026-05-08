@@ -67,7 +67,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Quicksand";
+  font-family: "Quicksand", ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   margin-bottom: calc(var(--spacing) * 2);
   transition: 0.2s;
@@ -164,6 +164,10 @@ ol {
 }
 
 /* MENU ********************************************************************/
+
+#logo-title {
+  font-family: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+}
 
 #menu .link,
 #side-menu .link {

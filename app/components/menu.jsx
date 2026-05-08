@@ -217,13 +217,14 @@ export function Menu({ currentEndUrl }) {
           <button onClick={() => setSideMenuActive(!sideMenuActive)} className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1">
             <i className="bi bi-list text-[1.7rem]"></i>
           </button>
-          <NavLink to="/" end className="relative duration-200 hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto">
+          <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">
             <img className="h-[2.5rem]" src="/assets/logo.svg" />
+            <p id="logo-title" className="ml-2 text-secondary-light text-xs w-38" style={{fontWeight: 400}}>International Association of Jesuit Engineering Schools</p>
             {/* <img className="h-[1.5rem] ml-4 md:hidden block" src="/assets/logo-iajes-text.svg" /> */}
           </NavLink>
 
 
-          <div className="relative flex items-center justify-end w-130 hidden md:flex">
+          <div className="relative flex items-center justify-end hidden md:flex shrink-0">
             <div className="menu-dropdown-container">
               <div className={"menu-dropdown-button link p-4" + (isGroupActive.whatWeDo ? " active" : "")}>
                 What We Do

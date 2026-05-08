@@ -1481,7 +1481,7 @@ export default function InternationalMeetings() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Menu />
+      <Menu currentEndUrl="/regional-meetings" />
       <div className="lg:px-40 px-10 py-20 duration-200">
         <h1>International meetings</h1>
 

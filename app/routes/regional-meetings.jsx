@@ -330,7 +330,7 @@ export default function RegionalMeetings() {
                 </div>
             </PopupForm>
 
-            <Menu />
+            <Menu currentEndUrl="/regional-meetings" />
             <div className="w-full duration-200">
                 <Banner type="blue">
                     <h1 className="w-full text-center" style={{ color: "white" }}>Regional Meetings</h1>

@@ -519,7 +519,7 @@ export default function RegionalMeeting() {
     if (!region) {
         return (
             <>
-                <Menu />
+                <Menu currentEndUrl="/regional-meetings" />
                 <div className="w-full bg-white">
                     <div className="lg:px-40 px-10 py-20">
                         <p>Region not found</p>
@@ -1265,7 +1265,7 @@ export default function RegionalMeeting() {
                     <p className="mt-2">This action cannot be undone.</p>
                 </div>
             </Popup>
-            <Menu />
+            <Menu currentEndUrl="/regional-meetings" />
             <Banner>
                 <a href="/regional-meetings" className="banner-breadcrumb">
                     <i className="bi bi-caret-left-fill"></i>

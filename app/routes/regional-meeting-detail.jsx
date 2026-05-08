@@ -640,7 +640,7 @@ export default function RegionalMeetingDetail() {
     if (loading) {
         return (
             <>
-                <Menu />
+                <Menu currentEndUrl="/regional-meetings" />
                 <div className="w-full bg-white">
                     <div className="lg:px-40 px-10 py-20">
                         <p>Loading...</p>
@@ -654,7 +654,7 @@ export default function RegionalMeetingDetail() {
     if (!meetingData) {
         return (
             <>
-                <Menu />
+                <Menu currentEndUrl="/regional-meetings" />
                 <div className="w-full bg-white">
                     <div className="lg:px-40 px-10 py-20">
                         <p>Meeting not found</p>
@@ -1010,7 +1010,7 @@ export default function RegionalMeetingDetail() {
             <Popup id="delete-meeting-detail" show={showDeletePopup} setShow={setShowDeletePopup} stayOnBlur={true} buttons={[{ text: "Delete", onclick: handleConfirmDeleteMeeting }]}>
                 {deletePopupContent}
             </Popup>
-            <Menu />
+            <Menu currentEndUrl="/regional-meetings" />
             <Banner>
                 <a href="/regional-meetings" className="banner-breadcrumb">
                     <i className="bi bi-caret-left-fill"></i>
