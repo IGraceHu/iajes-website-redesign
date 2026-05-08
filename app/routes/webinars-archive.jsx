@@ -244,33 +244,32 @@ const bostonWebinar = (
 const webinars = [
     {
         title: "Urban mobility in the Perspective of Integral Ecology & Digitalisation",
-        date: "05/23/2021",
+        date: "2021/05/23",
         content: urbanMobilityWebinar,
     },
     {
         title: 'First "Research & Academic Cooperation" Task Force Webinar',
-        date: "05/11/2021",
+        date: "2021/05/11",
         content: firstTaskForceWebinar
     },
     {
         title: "Embodying Integral Ecology in Learning Design",
-        date: "4/21/2021",
+        date: "2021/4/21",
         content: embodyEcologyWebinar
     },
     {
         title: "Covid 19, Opened New Doors for Web-Cooperation",
-        date: "03/16/2021",
+        date: "2021/03/16",
         content: covidWebinar
     },
     {
         title: 'Icam "Parcours Ouvert" Engineering program',
-        desc: "description",
-        date: "10/20/2020",
+        date: "2020/10/20",
         content: icamWebinar
     },
     {
         title: "Boston College Human Centered Engineering Program",
-        date: "07/08/2020",
+        date: "2020/07/08",
         content: bostonWebinar
     },
 ]
