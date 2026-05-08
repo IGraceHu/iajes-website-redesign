@@ -544,7 +544,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
 .checkbox>p {
   width: fit-content;
   display: flex;
-  align-items: center;
+  align-items: top;
 }
 
 .checkbox>p::before {
@@ -552,6 +552,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
   font-family: "Bootstrap-icons";
   width: 1.25rem;
   height: 1.25rem;
+  margin: 3px;
   margin-right: 5px;
   border: 2px solid var(--color-primary-light);
   border-radius: var(--radius-md);
@@ -612,7 +613,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
 .radio>p {
   width: fit-content;
   display: flex;
-  align-items: center;
+  align-items: top;
 }
 
 .radio>p::before {
@@ -620,6 +621,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
   display: block;
   width: 1.25rem;
   height: 1.25rem;
+  margin: 3px;
   margin-right: 5px;
   border: 2px solid var(--color-primary-light);
   border-radius: calc(infinity * 1px);
