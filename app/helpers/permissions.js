@@ -11,6 +11,7 @@ import { supabase } from "../supabase";
  */
 export async function currentHasPermissions(userId, targetRoles, superAllowed = true) {
     const userRoles = await getUserRoles(userId);
+    if (!Array.isArray(targetRoles)) { targetRoles = [targetRoles] }
     if (userRoles) {
         return hasPermissions(userRoles, targetRoles, superAllowed);
     }
@@ -27,10 +28,10 @@ export async function getUserRoles(userId) {
     try {
         const { data, error } = await supabase
             .from('users')
-            .select('role')
+            .select('roles')
             .eq("id", userId);
         if (data[0]) {
-            return data[0];
+            return data[0].roles;
         }
         return false;
 
@@ -63,3 +64,5 @@ function hasPermissions(userRoles, targetRoles, superAllowed = true) {
     }
     return false;
 }
+
+

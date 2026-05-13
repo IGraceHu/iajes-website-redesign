@@ -6,6 +6,7 @@ import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { updateRequired } from "../helpers/form";
+import { currentHasPermissions } from "../helpers/permissions";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -248,18 +249,22 @@ export default function VideoResource({ loaderData }) {
             }
         }
 
-        // Listen for auth state changes
+         // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user.id) {
-                getIsAdmin(session?.user.id);
-            }
+          if (session?.user.id) {
+            currentHasPermissions(session?.user.id, "admin-resources").then(
+                function (hasPermissions) { setIsAdmin(hasPermissions); }
+            );
+          }
         });
 
         // Check current session on mount
         supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session?.user.id) {
-                getIsAdmin(session?.user.id);
-            }
+          if (session?.user.id) {
+            currentHasPermissions(session?.user.id, "admin-resources").then(
+                function (hasPermissions) { setIsAdmin(hasPermissions); }
+            );
+          }
         });
 
 

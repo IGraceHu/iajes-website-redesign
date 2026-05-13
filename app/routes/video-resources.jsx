@@ -152,18 +152,18 @@ export default function VideoResources({ loaderData }) {
         // Listen for auth state changes
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
           if (session?.user.id) {
-            getUserRoles(session?.user.id).then(
-                function (user) { setIsAdmin(user.role == "admin"); }
-            );
+            if (session?.user.id) {
+                getIsAdmin(session?.user.id);
+            }
           }
         });
 
         // Check current session on mount
         supabase.auth.getSession().then(({ data: { session } }) => {
           if (session?.user.id) {
-            getUserRoles(session?.user.id).then(
-                function (user) { setIsAdmin(user.role == "admin"); }
-            );
+            if (session?.user.id) {
+                getIsAdmin(session?.user.id);
+            }
           }
         });
 
