@@ -67,7 +67,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Quicksand";
+  font-family: "Quicksand", ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   margin-bottom: calc(var(--spacing) * 2);
   transition: 0.2s;
@@ -127,13 +127,13 @@ p:last-of-type {
   margin-bottom: 0;
 }
 
-p > a,
+p>a,
 .link {
   color: var(--color-primary-dark);
   transition: 0.2s;
 }
 
-p > a:hover,
+p>a:hover,
 .link:hover {
   color: var(--color-primary-light);
   cursor: pointer;
@@ -164,6 +164,10 @@ ol {
 }
 
 /* MENU ********************************************************************/
+
+#logo-title {
+  font-family: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+}
 
 #menu .link,
 #side-menu .link {
@@ -236,6 +240,41 @@ ol {
   opacity: 1;
 }
 
+/* GOOGLE TRANSLATE WIDGET ***************************************************/
+
+/* Hide Google banner */
+.goog-te-banner-frame.skiptranslate {
+  display: none !important;
+}
+
+body>.skiptranslate {
+  display: none !important;
+}
+
+.skiptranslate {
+  display: none !important;
+}
+
+/* Google adds inline style "top: 40px" to body when banner appears */
+body {
+  top: 0px !important;
+}
+
+/* Hide Google default UI */
+.goog-te-gadget {
+  display: none !important;
+}
+
+.goog-te-gadget img {
+  display: none !important;
+}
+
+/* Hide the small "translated" tooltip highlight (doesn't work) */
+body>.goog-text-highlight {
+  background: none !important;
+  box-shadow: none !important;
+}
+
 
 /* BUTTONS ********************************************************************/
 
@@ -256,7 +295,7 @@ ol {
   cursor: pointer;
 }
 
-.button:hover:active {
+.button:active {
   background-color: var(--color-secondary-dark);
   border-color: var(--color-secondary-dark);
 }
@@ -272,7 +311,7 @@ ol {
   cursor: pointer;
 }
 
-.button.button-light:hover:active {
+.button.button-light:active {
   color: var(--color-secondary-dark);
 }
 
@@ -323,7 +362,7 @@ button:disabled.button.button-light {
   border-color: var(--color-error-dark);
 }
 
-.button.button-delete:hover:active {
+.button.button-delete:active {
   background-color: var(--color-error-extradark);
   border-color: var(--color-error-extradark);
 }
@@ -340,7 +379,7 @@ button:disabled.button.button-light {
   border-color: var(--color-error-dark);
 }
 
-.button.button-light.button-delete:hover:active {
+.button.button-light.button-delete:active {
   color: var(--color-error-extradark);
   border-color: var(--color-error-extradark);
 }
@@ -355,16 +394,83 @@ button:disabled.button.button-light {
   cursor: pointer;
 }
 
-.button-red {
+.button.button-red {
   color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
-.button-red:hover {
+.button.button-red:hover {
   color: #71000f;
   border-color: #71000f;
   cursor: pointer;
+}
+
+
+/* INTERNATIONAL MEETINGS *****************************************************/
+
+.meeting-dropdown-content {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition: grid-template-rows 0.25s ease, opacity 0.25s ease;
+}
+
+.meeting-dropdown-content > div {
+  overflow: hidden;
+}
+
+.meeting-dropdown[open] .meeting-dropdown-content {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.meeting-dropdown[open] .meeting-dropdown-content > div {
+  animation: meeting-dropdown-slide 0.25s ease;
+}
+
+@keyframes meeting-dropdown-slide {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes meeting-gallery-slide-next {
+  from {
+    opacity: 0.45;
+    transform: translateX(26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes meeting-gallery-slide-prev {
+  from {
+    opacity: 0.45;
+    transform: translateX(-26px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.meeting-gallery-image.is-next {
+  animation: meeting-gallery-slide-next 0.35s ease;
+}
+
+.meeting-gallery-image.is-prev {
+  animation: meeting-gallery-slide-prev 0.35s ease;
 }
 
 
@@ -442,7 +548,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
 .checkbox>p {
   width: fit-content;
   display: flex;
-  align-items: center;
+  align-items: top;
 }
 
 .checkbox>p::before {
@@ -450,6 +556,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
   font-family: "Bootstrap-icons";
   width: 1.25rem;
   height: 1.25rem;
+  margin: 3px;
   margin-right: 5px;
   border: 2px solid var(--color-primary-light);
   border-radius: var(--radius-md);
@@ -510,7 +617,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
 .radio>p {
   width: fit-content;
   display: flex;
-  align-items: center;
+  align-items: top;
 }
 
 .radio>p::before {
@@ -518,6 +625,7 @@ input[type="file"].input-disabled::file-selector-button:hover {
   display: block;
   width: 1.25rem;
   height: 1.25rem;
+  margin: 3px;
   margin-right: 5px;
   border: 2px solid var(--color-primary-light);
   border-radius: calc(infinity * 1px);
@@ -563,11 +671,11 @@ input[type="file"].input-disabled::file-selector-button:hover {
   cursor: pointer;
 }
 
-.radio-button > input {
+.radio-button>input {
   display: none;
 }
 
-.radio-button > p {
+.radio-button>p {
   background-color: var(--color-white);
   color: var(--color-primary-dark);
   padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
@@ -577,29 +685,29 @@ input[type="file"].input-disabled::file-selector-button:hover {
   transition: 0.2s;
 }
 
-.radio-button:hover > p {
+.radio-button:hover>p {
   border-color: var(--color-secondary-light);
   color: var(--color-secondary-light);
 }
 
-.radio-button > input:checked + p {
+.radio-button>input:checked+p {
   background-color: var(--color-primary-dark);
   color: var(--color-white);
 }
 
-.radio-button:hover > input:checked + p {
+.radio-button:hover>input:checked+p {
   border-color: var(--color-primary-dark);
 }
 
-.radio-button > input[type="radio"]:disabled + p,
-.radio-button > input[type="radio"].input-disabled + p {
+.radio-button>input[type="radio"]:disabled+p,
+.radio-button>input[type="radio"].input-disabled+p {
   cursor: default;
   border-color: var(--color-disabled-light);
   color: var(--color-disabled-light);
 }
 
-.radio-button > input[type="radio"]:disabled:checked + p,
-.radio-button > input[type="radio"].input-disabled:checked + p {
+.radio-button>input[type="radio"]:disabled:checked+p,
+.radio-button>input[type="radio"].input-disabled:checked+p {
   background-color: var(--color-disabled-light);
   color: var(--color-white);
 }
@@ -628,19 +736,22 @@ input[type="file"].input-disabled::file-selector-button:hover {
   background-color: var(--color-red-100);
 }
 
-.radio-button > input[type="radio"].input-required + p {
+.radio-button>input[type="radio"].input-required+p {
   border-color: var(--color-error);
   color: var(--color-error);
 }
-.radio-button:hover > input[type="radio"].input-required + p {
+
+.radio-button:hover>input[type="radio"].input-required+p {
   border-color: #71000f;
   color: #71000f;
 }
-.radio-button > input[type="radio"].input-required:checked + p {
+
+.radio-button>input[type="radio"].input-required:checked+p {
   background-color: var(--color-error);
   color: var(--color-white);
 }
-.radio-button:hover > input[type="radio"].input-required:checked + p {
+
+.radio-button:hover>input[type="radio"].input-required:checked+p {
   border-color: var(--color-error);
 }
 
@@ -737,6 +848,5 @@ input[type="file"].input-required~.input-error {
   #task-forces>div:nth-child(even) {
     background-color: var(--color-slate-100);
   }
-
 
 }

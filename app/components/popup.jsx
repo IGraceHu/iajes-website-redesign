@@ -1,24 +1,24 @@
 import { useEffect } from 'react';
 
 // POPUP -----------------------------------------------------------------------
-    // PARAMETERS
-    // id - Unique ID for the popup. Ensures that popups from different components do not overlap
-    //      There should only be one Popup component used in a component. 
-    //
-    // show - Determines if the popup is visible or not
-    //
-    // setShow - set function for show
-    //
-    // buttons - Optional. An array of objects with properties 'text' and 'onclick'
-    //     text - Required. A string with the button text
-    //     onclick - Required. A function that clicking the button will execute
-    //
-    // closePopup - Optional. A function that runs when the close button is clicked.
-    //     Note: This does not apply to closeOnBlur. If the user clicks outside of the popup, it will just close normally
-    //
-    // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
+// PARAMETERS
+// id - Unique ID for the popup. Ensures that popups from different components do not overlap
+//      There should only be one Popup component used in a component. 
+//
+// show - Determines if the popup is visible or not
+//
+// setShow - set function for show
+//
+// buttons - Optional. An array of objects with properties 'text' and 'onclick'
+//     text - Required. A string with the button text
+//     onclick - Required. A function that clicking the button will execute
+//
+// closePopup - Optional. A function that runs when the close button is clicked.
+//     Note: This does not apply to closeOnBlur. If the user clicks outside of the popup, it will just close normally
+//
+// stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
 
-export function Popup({id, className, show, setShow, buttons, closePopup=null, stayOnBlur=false, nested=false, children}) {
+export function Popup({ id, className, show, setShow, buttons, closePopup = null, stayOnBlur = false, nested = false, children }) {
 
     const popupId = "popup-" + id;
     useEffect(() => {
@@ -58,8 +58,8 @@ export function Popup({id, className, show, setShow, buttons, closePopup=null, s
     if (closePopup == null) {
         closePopup = defaultClosePopup;
     }
-    
-    
+
+
     const buttonsEl = [];
     let i = 0;
     if (buttons) {
@@ -84,7 +84,7 @@ export function Popup({id, className, show, setShow, buttons, closePopup=null, s
                 </div>
             </div>
 
-            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => {if (!stayOnBlur) {defaultClosePopup()}}} ></div>
+            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => { if (!stayOnBlur) { defaultClosePopup() } }} ></div>
         </div>
     )
 }
@@ -102,7 +102,7 @@ export function Popup({id, className, show, setShow, buttons, closePopup=null, s
 // 
 // hasError - Optional. Default is false
 
-export function PopupForm({ id, className, show, setShow, validate, hasError, nested = false, children }) {
+export function PopupForm({ id, className, show, setShow, validate, hasError, nested = false, children, encType }) {
     // const [state, formAction] = useActionState(saveForm, {});
 
     const popupId = "popup-" + id;
@@ -154,7 +154,7 @@ export function PopupForm({ id, className, show, setShow, validate, hasError, ne
     return (
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
-                <form id={popupId + "-form"} onSubmit={handleSubmit} className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
+                <form id={popupId + "-form"} encType={encType} onSubmit={handleSubmit} className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
                     <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>

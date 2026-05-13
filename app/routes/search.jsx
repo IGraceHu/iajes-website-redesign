@@ -194,7 +194,7 @@ export default function SearchRoute({ loaderData }) {
           }`}
         >
           <div className="rounded-md border-2 border-gray-light bg-white p-4">
-            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-2">
+            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3">
               <FilterGroup
                 title="Task Force"
                 options={taskForceOptions}
@@ -284,10 +284,18 @@ function PersonResultCard({ person }) {
     >
       <div className="flex items-center gap-4">
         <div
-          className="flex h-20 w-20 items-center justify-center rounded-full bg-white"
+          className="flex shrink-0 h-20 w-20 items-center justify-center overflow-hidden rounded-full bg-gray-light border-primary-dark border-3 border-box"
           aria-hidden="true"
         >
-          <i className="bi bi-person-fill text-[40px] text-secondary-dark/70" aria-hidden="true" />
+          {person.image_url ? (
+            <img
+              src={person.image_url}
+              alt={`${person.fname} ${person.lname}`}
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <i className="bi bi-person-fill text-[40px] text-secondary-dark/60" aria-hidden="true" />
+          )}
         </div>
         <div>
           <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>

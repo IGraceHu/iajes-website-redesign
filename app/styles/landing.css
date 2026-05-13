@@ -61,6 +61,10 @@
     z-index: 1;
 }
 
+.carousel-item h1 {
+    color: var(--color-white);
+}
+
 .carousel-btn>svg {
     transition: 0.2s;
 }
@@ -96,7 +100,7 @@
 }
 
 
-#about-cards-grid {
+#link-cards-grid {
     height: fit-content;
     display: grid;
     /* grid-template-columns: calc(var(--card-width) + (var(--card-margin) * 2)) calc(var(--card-width) + (var(--card-margin) * 2)); */
@@ -111,7 +115,7 @@
 }
 
 @media (width >=40rem) {
-    #about-cards-grid {
+    #link-cards-grid {
         grid-template-columns: auto auto;
 
         --card-width: 230px;
@@ -154,32 +158,32 @@
 }
 
 .about-card:hover img {
-    opacity: 0;
+    opacity: 0.5;
 }
 
 
-@media (width >= 48rem) { 
+@media (width >=48rem) {
     #highlights {
         grid-template-columns: calc(60% - 20px) calc(40% - 20px);
     }
 }
 
-.highlight-card > p {
+.highlight-card>p {
     color: var(--color-black);
 }
 
-.highlight-card:hover > h2 {
+.highlight-card:hover>h2 {
     color: var(--color-secondary-light);
 }
 
-.highlight-card:hover > .highlight-header {
+.highlight-card:hover>.highlight-header {
     background-color: var(--color-secondary-dark);
 }
 
-.highlight-card:hover > .highlight-header > img {
+.highlight-card:hover>.highlight-header>img {
     opacity: 90%;
 }
 
-.highlight-card:hover > .highlight-header > img.disc {
+.highlight-card:hover>.highlight-header>img.disc {
     opacity: 20%;
 }

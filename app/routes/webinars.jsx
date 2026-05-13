@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from 'react';
-import cn from 'classnames';
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import "../styles/webinars.css";
+import { Popup, PopupForm } from "../components/popup";
+import { Pagination } from "../components/pagination";
+import { updateRequired } from "../helpers/form";
+import "../styles/video-resources.css";
 
 export function meta() {
     return [
@@ -11,358 +15,456 @@ export function meta() {
     ];
 }
 
-
-const urbanMobilityWebinar = (
-    <div>
-        <p className="text-md font-semibold">First webinar of the "Infrastructure" Task Force</p>
-        <div className="w-full overflow-hidden my-5 lg:h-[70vw] h-[110vw]">
-            <iframe src="https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview" width="100%" height="100%"></iframe>
-        </div>
-        <h4>Speakers</h4>
-        <div>
-            <div className="flex flex-col gap-5 p-5 bg-teal-50">
-                <div className="flex">
-                    <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="img/webinars/urban_nicolas_rincon_garcia.png" />
-                    </div>
-                    <div className="">
-                        <h6>Nicolas Rincon Garcia</h6>
-                        <p className="font-semibold">Javeriana University - Bogota, Colombia</p>
-                        <p><i>Professor of Industrial Engineering</i></p>
-                        <p>Transport Observatory & Data Sciences</p>
-                    </div>
-                </div>
-
-                <div className="self-center w-full lg:h-[25vw] h-[35vw]">
-                    <iframe src="https://drive.google.com/file/d/1lUJKXjJmHK1_bKm8q9g6wBo7kdkUYZyA/preview" width="100%" height="100%"></iframe>
-                </div>
-            </div>
-            <div className="flex flex-col gap-5 p-5">
-                <div className="flex">
-                    <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="img/webinars/urban_marcus_meyers.png" />
-                    </div>
-                    <div className="">
-                        <h6>Marcus Mayers</h6>
-                        <p className="font-semibold">Manchester Metropolitan University</p>
-                        <p><i>Research fellow</i></p>
-                        <p>Train infrastructure rehabilitation in Colombia</p>
-                    </div>
-                </div>
-
-                <div className="self-center w-full lg:h-[25vw] h-[35vw]">
-                    <iframe src="https://drive.google.com/file/d/1cxvV09iHECCd-3OgESWC3XUvbvdrg_wa/preview" width="100%" height="100%"></iframe>
-                </div>
-            </div>
-            <div className="flex flex-col gap-5 p-5 bg-teal-50">
-                <div className="flex">
-                    <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="img/webinars/urban_karla_denis_castro_leite.png" />
-                    </div>
-                    <div className="">
-                        <h6>Karla Denis Castro Leite</h6>
-                        <p className="font-semibold">Catholic University of Pernambuco - Brazil</p>
-                        <p><i>Professor of Civil Engineering</i></p>
-                        <p>The role of citizen participation in the implementation of public policies for sustainable mobility: the case of the bicycle office in Pernambuco, Brazil</p>
-                    </div>
-                </div>
-
-                <div className="self-center w-full lg:h-[25vw] h-[35vw]">
-                    <iframe src="https://drive.google.com/file/d/1cgb_yN5sV9TYrb11zTbJOlHwmBYx91Su/preview" width="100%" height="100%"></iframe>
-                </div>
-            </div>
-        </div>
-    </div>
-);
-
-const firstTaskForceWebinar = (
-    <div>
-        <a href="/task-forces/research-and-academic-cooperation" className="button block w-md">
-            Research and Academic Cooperation Task Force
-            <i className="bi bi-arrow-right ml-2 mt-1"></i>
-        </a>
-        <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
-            <iframe src="https://drive.google.com/file/d/1IYsGuviohJKb8AxZim83DMQocxrY7AtJ/preview" width="100%" height="100%"></iframe>
-        </div>
-    </div>
-);
-
-const embodyEcologyWebinar = (
-    <div>
-        <div className="p-10 bg-secondary-light text-center text-white rounded-md">
-            <p className="text-md font-semibold">"What does integral ecology bring to the learning of design thinking? Why does it matter? What might be implications for Jesuit schools of engineering?"</p>
-        </div>
-        <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
-            <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_lanny_vincent.jpg" />
-            </div>
-            <div>
-                <h6>Lanny Vincent</h6>
-                <p>Adjunct Lecturer Innovation Theology, Intrapreneurship, Collaborative Creativity, Systems Thinking, Design and innovation - Santa Clara University (SCU)</p>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/1xmWGxc7kqXWLgDOKV1FZrRV0WPhvNg-I/preview" width="100%" height="100%"></iframe>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/14oPb6ghOh4iWYLcb1SEHU4o1xK7SxcDu/preview" width="100%" height="100%"></iframe>
-            </div>
-        </div>
-        <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
-
-
-        <div className="p-10 bg-secondary-light text-center text-white rounded-md">
-            <p className="text-md font-semibold">"What if speculative design could be applied in order to develop experimental architecture / design projects at undergraduate level?"</p>
-        </div>
-        <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
-            <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_celina_andino.png" />
-            </div>
-            <div>
-                <h6>Celina Andino</h6>
-                <p>Program Director of Product Design Master degree - Universidad Centroamericana "José Simeón Cañas" - San Salvador</p>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/1PPphj1Jz2nDfz95wGfEHrovSr8OZZ3Nc/preview" width="100%" height="100%"></iframe>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/1knDXu15fi872jEJw5pI6ZMiepZquc3m0/preview" width="100%" height="100%"></iframe>
-            </div>
-        </div>
-        <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
-
-
-        <div className="p-10 bg-secondary-light text-center text-white rounded-md">
-            <p className="text-md font-semibold">"...to create an impact for the betterment of our society in the empowerment of the next generation of innovators and technopreneurs..."</p>
-        </div>
-        <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
-            <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_carlos_toto_oppus.png" />
-            </div>
-            <div>
-                <h6>Carlos Toto Oppus</h6>
-                <p>Director, Ateneo Innovation Center - Computer Engineering - Manila</p>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/1U492PBs5fdmd1MNklb2GZiyVdUFl83ZJ/preview" width="100%" height="100%"></iframe>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/11-9mcORt9-VmuMtJINaxyS82fCx9wLgX/preview" width="100%" height="100%"></iframe>
-            </div>
-        </div>
-        <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
-
-
-        <div className="p-10 bg-secondary-light text-center text-white rounded-md">
-            <p className="text-md font-semibold">"Teaching this Jesuit value while meeting students and engineering curriculums where they are."</p>
-        </div>
-        <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
-            <div className="h-40">
-                <img className="w-full h-full" src="img/webinars/embody_tonya_nilsson.jpg" />
-            </div>
-            <div>
-                <h6>Tonya Nilsson</h6>
-                <p>Senior Lecturer - Civil - environment and  sustainable Engineering - Santa Clara University (SCU)</p>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/1SCHpSQWDXHP3lPZ_xMQpw9-PYAUjcssD/preview" width="100%" height="100%"></iframe>
-            </div>
-            <div>
-                <iframe src="https://drive.google.com/file/d/1hTtjruvo0Z81bTeILPPpGiKfDnD1zfP5/preview" width="100%" height="100%"></iframe>
-            </div>
-        </div>
-
-        <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
-        <h4>Q & A Session</h4>
-        <div className="w-full lg:h-[30vw] h-[50vw]">
-            <iframe src="https://drive.google.com/file/d/1orgU9xY3zrZiBoB77ISVc6sPy7F-a5xF/preview" width="100%" height="100%"></iframe>
-        </div>
-    </div>
-);
-
-const covidWebinar = (
-    <div>
-        <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
-            <iframe src="https://drive.google.com/file/d/1a1DNVV1_tafmCm3nnEVz_Ych1lBbQigA/preview" width="100%" height="100%"></iframe>
-        </div>
-        <br />
-        <h4>Webinar Recording</h4>
-        <div className="w-full lg:h-[30vw] h-[50vw]">
-            <iframe src="https://drive.google.com/file/d/18giFFUSupFJ9baMfzWFXgCOWqdn1RHqu/preview" width="100%" height="100%"></iframe>
-        </div>
-    </div>
-);
-
-const icamWebinar = (
-    <div>
-        <p>
-            <img className="xl:float-right xl:w-sm mb-5" src="img/webinars/icam_intro.png" />
-            <strong>In 2017, Icam launched the “Parcours Ouvert”</strong> - Considering the changing profile of the younger generation and the complexity of the issues that engineers will have to address in the coming years, Icam has taken a bold step forward in the pedagogical innovation. The “Parcours ouvert” is built on five founding principles:
-            <ul className="my-2 ml-2 list-disc list-inside">
-                <li>Larger scale of student profiles</li>
-                <li>A cross-disciplinary, experiential curriculum</li>
-                <li>International inter-campus synchronized program</li>
-                <li>Project and Problem based learning as the royal path to creativity and innovation</li>
-                <li>Addressing of the real world problems in the vision of Integral ecology</li>
-            </ul>
-            This program with students distributed in Douala, Recife, Kinshasa … and in the near future in other places around the world is an extraordinary promising opportunity for new generations of international multi-disciplinary engineers.
-            <br /><br />
-            <strong>In this activity, we</strong> introduce the "Parcours Ouvert" to the broader IAJES community with the hopes of obtaining feedback from participants on the design of the program, and to stimulate discussions on topics of common interest. This online event will include an introduction to the "Parcours ouvert" program followed by exchanges based on the questions.
-        </p>
-        <div className="w-full my-5 lg:h-[30vw] h-[50vw]">
-            <iframe src="https://drive.google.com/file/d/1wCNq24bStjSvzrJb3Bf_LIZS4t8vcLOo/preview" width="100%" height="100%"></iframe>
-        </div>
-        <h4>Collection of words at the end of the webinar</h4>
-        <div className="grid grid-cols-2 gap-2 text-center items-top justify-items-top">
-            <p>First Session</p>
-            <p>Second Session</p>
-            <img src="img/webinars/icam_words_1.png" />
-            <img src="img/webinars/icam_words_2.png" />
-        </div>
-    </div>
-);
-
-const bostonWebinar = (
-    <div>
-        <img className="float-right" src="img/webinars/boston_image.png" />
-        <ul className="my-2 ml-2 list-disc list-inside">
-            <li>THE PRESENTATION - Human-centered Engineering at BC</li>
-
-            <li>RESULTS: Share and Learn breakout sessions</li>
-            <ul className="my-2 ml-2 list-disc list-inside">
-                <li>Curricular Balance</li>
-                <li>Organization and Administration</li>
-                <li>Curricular Elements related to the Common Good</li>
-                <li>Integration of Ethics in the Curriculum</li>
-                <li>Foundational Experiences</li>
-            </ul>
-
-            <li>BC WEBSITE - HCE Engineering Program</li>
-        </ul>
-    </div>
-);
-
-const webinars = [
-    {
-        title: "Urban mobility in the Perspective of Integral Ecology & Digitalisation",
-        date: "05/23/2021",
-        content: urbanMobilityWebinar,
-    },
-    {
-        title: 'First "Research & Academic Cooperation" Task Force Webinar',
-        date: "05/11/2021",
-        content: firstTaskForceWebinar
-    },
-    {
-        title: "Embodying Integral Ecology in Learning Design",
-        date: "4/21/2021",
-        content: embodyEcologyWebinar
-    },
-    {
-        title: "Covid 19, Opened New Doors for Web-Cooperation",
-        date: "03/16/2021",
-        content: covidWebinar
-    },
-    {
-        title: 'Icam "Parcours Ouvert" Engineering program',
-        desc: "description",
-        date: "10/20/2020",
-        content: icamWebinar
-    },
-    {
-        title: "Boston College Human Centered Engineering Program",
-        date: "07/08/2020",
-        content: bostonWebinar
-    },
-]
-
-function Webinar({ info }) {
-    useEffect(() => {
-
-    })
-
-    return (
-        <div>
-            <span id="webinar" className="block h-30 -mt-30"></span>
-            <h3>{info.title}</h3>
-            <p className="text-disabled-light" style={{ marginBottom: "calc(var(--spacing) * 2)" }}><i>{info.date}</i></p>
-            {info.content}
-        </div>
-    )
+async function getWebinars() {
+    const { data, error } = await supabase
+        .from('webinars')
+        .select('id, title, date, thumbnail_url')
+    return data || error;
 }
 
-function WebinarButton({ className, title, date, active = false, onClick }) {
-    let buttonClasses = "webinar-list-button w-full p-4 flex justify-between items-center border-x-2 border-t-2 border-gray-light text-left hover:bg-teal-50 hover:cursor-pointer duration-200";
-    buttonClasses += (active) ? " active" : "";
-    return (
-        <a href="#webinar" className="block">
-            <button className={buttonClasses + " " + className} onClick={onClick}>
-                <div>
-                    <p className="mr-5 font-semibold text-secondary-dark lg:block inline">{title}</p>
-                    <p className="text-s text-disabled-light lg:block inline"><i>{date}</i></p>
-                </div>
-                <i className="bi bi-chevron-double-right duration-500 text-white" style={{ fontSize: "1.8rem" }}></i>
-            </button>
-        </a>
-    )
+export async function loader({ params }) {
+    const webinars = await getWebinars();
+    return { webinars: webinars };
 }
 
+async function createWebinar(formData) {
 
+    const { data, error } = await supabase
+        .from('webinars')
+        .insert({
+            title: formData.get("webinar-title"),
+            pdf_url: formData.get("webinar-pdf-link"),
+            video_url: formData.get("webinar-video-link"),
+            date: formData.get("webinar-date"),
+            description: formData.get("webinar-desc"),
+        })
+        .select('id')
 
-export default function Webinars() {
-    const [activeWebinar, setActiveWebinar] = useState(0);
+    if (data[0].id) {
 
-    const webinarList = [];
-    for (let i = 0; i < webinars.length; i++) {
-        let itemClasses = "";
-        if (i == 0) {
-            itemClasses = "rounded-t-md";
+        const webinarId = data[0].id;
+
+        let thumbnailUrl = null;
+
+        const thumbnailFile = formData.get("webinar-thumbnail");
+        if (thumbnailFile && thumbnailFile.name && thumbnailFile.size > 0) {
+            const path = `${webinarId}/${Date.now()}-${thumbnailFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+            const { error: uploadError } = await supabase.storage
+                .from('webinars')
+                .upload(path, thumbnailFile);
+
+            if (uploadError) {
+                console.error("Error uploading thumbnail:", uploadError);
+                return uploadError;
+            }
+
+            const { data, error: urlError } = supabase.storage
+                .from('webinars')
+                .getPublicUrl(path);
+
+            if (urlError) {
+                console.error("Error getting thumbnail URL:", urlError);
+                return urlError;
+            }
+
+            thumbnailUrl = data.publicUrl;
         }
-        if (i == webinars.length - 1) {
-            itemClasses = "rounded-b-md border-b-2";
+
+        let hasSpeakers = true;
+        let i = 0;
+        const speakersData = []
+        while (hasSpeakers) {
+            if (formData.get("webinar-speaker-name-" + i) == null) {
+                hasSpeakers = false;
+                break;
+            }
+            let speakerImgUrl = null;
+            const speakerImgFile = formData.get("webinar-speaker-image-" + i);
+            if (speakerImgFile && speakerImgFile.name && speakerImgFile.size > 0) {
+                const path = `${webinarId}/${Date.now()}-${speakerImgFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+                const { error: uploadError } = await supabase.storage
+                    .from('webinars')
+                    .upload(path, speakerImgFile);
+
+                if (uploadError) {
+                    console.error("Error uploading speaker image:", uploadError);
+                    return uploadError;
+                }
+
+                const { data, error: urlError } = supabase.storage
+                    .from('webinars')
+                    .getPublicUrl(path);
+
+                if (urlError) {
+                    console.error("Error getting speaker image URL:", urlError);
+                    return urlError;
+                }
+
+                speakerImgUrl = data.publicUrl;
+            }
+
+            speakersData.push({
+                name: formData.get("webinar-speaker-name-" + i),
+                university: formData.get("webinar-speaker-university-" + i),
+                position: formData.get("webinar-speaker-position-" + i),
+                image_url: speakerImageUrl,
+                slidesURL: formData.get("webinar-speaker-slides-" + i),
+            })
+            i++;
         }
 
-        webinarList.push(<WebinarButton key={i} className={itemClasses} title={webinars[i].title} date={webinars[i].date} active={i == activeWebinar} onClick={() => setActiveWebinar(i)} />);
+        const speakerDataJSON = JSON.stringify(speakersData);
+
+        const { imgError } = await supabase
+        .from('webinars')
+        .update({
+            thumbnail_url: thumbnailUrl,
+            speakers: speakerDataJSON
+        })
+        .eq('id', webinarId)
+
+        if (imgError) {
+            console.error("Image insert error:", imgError);
+        }
+    }
+    else if (error) {
+        console.error("Database insert error:", error);
+    }
+    else {
+        console.error("Something went wrong");
     }
 
-    const [showScrollContainer, setShowScrollContainer] = useState(false);
+    return error;
+}
+
+function WebinarCard({ webinarInfo }) {
+    webinarInfo.thumbnail_url = (webinarInfo.thumbnail_url == "{}") ? null : webinarInfo.thumbnail_url;
+    return (
+        <div className="resource-card duration-200">
+            <a href={"webinars/" + webinarInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
+                <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
+                    {webinarInfo.thumbnail_url ?
+                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.thumbnail_url} />
+                        :
+                        <div className="relative w-full h-full p-5">
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
+                            <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{webinarInfo.title}</h5>
+                            <p style={{ color: "var(--color-white)" }}>{webinarInfo?.date.replace(/-/g, '\/')}</p>
+                        </div>
+                    }
+                </div>
+                <h6>{webinarInfo.title}</h6>
+            </a>
+        </div>
+    )
+}
+
+function SpeakerEdit({ id, speakers, setSpeakers }) {
+    const [nameRequired, setNameRequired] = useState(false);
+
+    function removeSpeaker(e) {
+        e.preventDefault();
+        setSpeakers(speakers.toSpliced(id, 1));
+    }
+
+    function handleNameChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1, {
+            ...speakers[id],
+            name: e.target.value
+        }));
+        setNameRequired(e.target.value.length == 0);
+    }
+
+    function handleUniversityChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            university: e.target.value
+        }));
+    }
+
+    function handlePositionChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            position: e.target.value
+        }));
+    }
+
+    function handleImageChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            image: e.target.value
+        }));
+    }
+
+    function handleSlidesChange(e) {
+        setSpeakers(speakers.toSpliced(id, 1,{
+            ...speakers[id],
+            slidesURL: e.target.value
+        }));
+    }
+
+    return (
+        <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
+            <div className="text-sm font-semibold mb-2 flex justify-between">
+                <div className="text-secondary-dark">Speaker Details</div>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+            </div>
+            <div className="md:grid grid-cols-2 flex flex-col gap-5">
+                <div>
+                    <label htmlFor={"webinar-speaker-name-" + id}>Name:</label><br />
+                    <input id={"webinar-speaker-name-" + id} name={"webinar-speaker-name-" + id} type="text"
+                        className={"input input-text w-full " + (nameRequired && "input-required")}
+                        placeholder="Name"
+                        value={speakers[id].name}
+                        onChange={(e) => {handleNameChange(e)}} />
+                    <div className="input-error">This field is required.</div>
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
+                    <input id={"webinar-speaker-position-" + id} name={"webinar-speaker-position-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="Position"
+                    value={speakers[id].position}
+                    onChange={(e) => {handlePositionChange(e)}} />
+                </div>
+                <div>
+                    <label htmlFor={"webinar-speaker-university-" + id}>University:</label><br />
+                    <input id={"webinar-speaker-university-" + id} name={"webinar-speaker-university-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="University"
+                    value={speakers[id].university}
+                    onChange={(e) => {handleUniversityChange(e)}} />
+                </div>
+                <label>
+                    Speaker image:
+                    <input id={"webinar-speaker-image-" + id} name={"webinar-speaker-image-" + id} type="file" accept=".jpg,.jpeg,.png" className="ml-3"
+                    value={speakers[id].image}
+                    onChange={(e) => {handleImageChange(e)}} />
+                    <div className="input-error">This field is required.</div>
+                </label>
+                <div className="col-span-2">
+                    <label htmlFor={"webinar-speaker-slides-" + id}>Slides:</label><br />
+                    <input id={"webinar-speaker-slides-" + id} name={"webinar-speaker-slides-" + id} type="text" 
+                    className="input input-text w-full" 
+                    placeholder="https://drive.google.com/file/d/...."
+                    value={speakers[id].slidesURL}
+                    onChange={(e) => {handleSlidesChange(e)}} />
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default function Webinars({ loaderData }) {
+    const navigate = useNavigate();
+    const [isAdmin, setIsAdmin] = useState(false);
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
+    const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollContainer(window.scrollY > 500);
-        };
+        const getIsAdmin = async (userId) => {
+            try {
+                const { data, error } = await supabase
+                    .from('users')
+                    .select('role')
+                    .eq("id", userId);
+                if (data[0]) {
+                    setIsAdmin(data[0].role == "admin");
+                }
+                else { console.log("error"); }
 
-        window.addEventListener("scroll", handleScroll);
+            } catch (error) {
+                console.log("error");
+            }
+        }
 
-    }, [showScrollContainer]);
+        // Listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            if (session?.user.id) {
+                getIsAdmin(session?.user.id);
+            }
+        });
+
+        // Check current session on mount
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            if (session?.user.id) {
+                getIsAdmin(session?.user.id);
+            }
+        });
+
+
+        return () => subscription.unsubscribe();
+    }, []);
+
+    const webinarsData = loaderData.webinars.sort(function (a, b) { return new Date(b.date) - new Date(a.date) });
+
+    const webinars = [];
+    for (let i = (currentPage * 6); i < currentPage + 6; i++) {
+        if (i < webinarsData.length) {
+            webinars.push(<WebinarCard key={webinarsData[i].id} webinarInfo={webinarsData[i]} />)
+        } else {
+            break;
+        }
+    }
+
+
+    // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
+    const [showResolvePopup, setShowResolvePopup] = useState(false);
+    const [speakers, setSpeakers] = useState([])
+
+    function addSpeaker(e) {
+        e.preventDefault();
+        setSpeakers([...speakers, {name: "", university: "", position: "", image: "", slidesURL: ""}]);
+    }
+
+    const [formRequired, setFormRequired] = useState({
+        webinarTitle: "",
+    })
+    const [hasError, setHasError] = useState(false);
+
+    async function validate(formData) {
+        let isValidated = true;
+        const isRequired = {
+            webinarTitle: formData.get('webinar-title') === (null || ""),
+        }
+        for (let value of Object.values(isRequired)) {
+            if (value) {
+                isValidated = false;
+                break;
+            }
+        }
+        for (let speaker of speakers) {
+            if (speaker.name == "") {
+                isValidated = false;
+                break;
+            }
+        }
+        if (!isValidated) {
+            setFormRequired(isRequired);
+            return false;
+        }
+
+        const createError = await createWebinar(formData);
+        if (createError === null) {
+            setShowResolvePopup(true);
+        } else {
+            console.error("Failed to create webinar:", createError);
+            setHasError(true);
+        }
+    }
+
+    // This resets formRequired so that there are no error messages when the form is reloaded
+    function handleShowCreatePopupForm() {
+        setFormRequired({
+            webinarTitle: "",
+        })
+        setSpeakers([]);
+        setShowCreatePopup(true);
+        setHasError(false);
+    }
+
+    // This resolves required fields once fields are no longer empty
+    function checkEmpty(value, inputName) {
+        const updatedFormRequired = updateRequired(value, inputName, formRequired);
+        if (updatedFormRequired != formRequired) {
+            setFormRequired(updatedFormRequired);
+        }
+    }
+
+    const today = new Date();
+
+    let day = today.getDate();
+    let month = today.getMonth() + 1;
+    let year = today.getFullYear();
+
+    if (month < 10) month = "0" + month;
+    if (day < 10) day = "0" + day;
+
+    const todayString = `${year}\-${month}\-${day}`
+
+    function closeResolvePopup() {
+        setShowResolvePopup(false);
+        setShowCreatePopup(false);
+        navigate(0);
+    }
 
     return (
         <>
+            {isAdmin &&
+                <div className="z-1000 absolute top-0 left-0">
+                    <PopupForm id="webinar" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                        <h4>Create new webinar</h4>
+                        <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
+                            <div>
+                                <label htmlFor="webinar-title">Title:</label><br />
+                                <input id="webinar-title" name="webinar-title" type="text"
+                                    className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
+                                    placeholder="Title"
+                                    onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
+                                <div className="input-error">This field is required.</div>
+                                <br /><br />
+                                <label htmlFor="webinar-date">Date:</label><br />
+                                <input id="webinar-date" name="webinar-date" type="date" className="input input-text w-full" defaultValue={todayString} />
+                            </div>
+                            <label>
+                                Thumbnail image:
+                                <input id="webinar-thumbnail" name="webinar-thumbnail" type="file" accept=".jpg,.jpeg,.png" className="ml-3" />
+                                <div className="input-error">This field is required.</div>
+                            </label>
+                        </div>
+
+                        <div className="relative">
+                            <label htmlFor="webinar-pdf-link">PDF link:</label><br />
+                            <p className="text-sm text-disabled-dark mt-1">This is the PDF that will be embedded. Please only include the link and not the entire embed.</p>
+                            <input id="webinar-pdf-link" name="webinar-pdf-link" type="text"
+                                className="input input-text w-full"
+                                placeholder="https://drive.google.com/file/d/...."
+                                onChange={(e) => {}} />
+                            <br /><br />
+                            <label htmlFor="webinar-video-link">Video link:</label><br />
+                            <p className="text-sm text-disabled-dark mt-1">This is the video link that will be embedded. Please only include the link and not the entire embed.</p>
+                            <input id="webinar-video-link" name="webinar-video-link" type="text"
+                                className="input input-text w-full"
+                                placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/...."
+                                onChange={(e) => {}} />
+                            <br /><br />
+                            <label htmlFor="webinar-desc">Description:</label><br />
+                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter description..."></textarea>
+                            <br /> <br />
+                        </div>
+
+                        <fieldset className="border-t-2 border-gray-light pt-4 relative">
+                            <h5 >Speaker Details</h5>
+                            <div>
+                                { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
+                            </div>
+                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
+                        </fieldset>
+                    </PopupForm>
+                    <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
+                        <br /><p className="m-2">New video resource created!</p>
+                    </Popup>
+                </div>
+            }
             <Menu currentEndUrl="/webinars" />
-            <div className="lg:px-40 px-10 py-20 duration-200">
-                <h1>Webinars</h1>
-                <div className="relative w-full grid lg:grid-cols-[min-content_auto] grid-rows-[min-content_auto] gap-5 z-1">
-                    <div className="flex flex-col justify-between">
-                        <div className="relative flex flex-col mb-10 lg:w-xs z-1">
-                            {webinarList}
-                        </div>
-                        <div className={cn("z-0 sticky w-min bottom-10 opacity-0 duration-200 overflow-visible lg:block hidden", showScrollContainer && "opacity-100")}>
-                            <p className="text-primary-light w-min"><strong>WEBINAR</strong></p>
-                            <h4 className="w-xs">{webinars[activeWebinar].title}</h4>
-                            <p className="text-s text-disabled-light w-min"><i>{webinars[activeWebinar].date}</i></p>
-                        </div>
-                    </div>
-                    <div className="relative w-full overflow-hidden">
-                        <Webinar info={webinars[activeWebinar]} />
+            <div className="py-20 px-10 lg:px-40 duration-200">
+                <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
+                    
+                    <h1>Webinars</h1>
+                        
+                    <div className="flex items-center">
+                        <a href="/webinars/archive" className="button button-light block">Archive</a>
+                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new webinar</button>}
                     </div>
                 </div>
-
-                <div className={cn("z-2 h-0 sticky -bottom-20 lg:-mt-20 mt-3 float-right text-end opacity-0 duration-500", showScrollContainer && "opacity-100 h-50")}>
-                    <div>
-                        <button className="button button-light lg:-mr-25" onClick={() => window.scrollTo(0, 0)}><i className="bi bi-chevron-double-up duration-500" style={{ fontSize: "1.2rem" }}></i></button>
-                    </div>
+                <p>
+                    Pilot test the onset of a branded forward thinking interactive online workshop series that would help IAJES members share experiences and lessons learned in delivering quality Jesuit engineering education for the current and future society 
+                </p>
+                <div className="my-5 grid lg:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-x-5 gap-y-7">
+                    {webinars}
                 </div>
+                <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={webinarsData.length} itemsPerPage={6} pageRange={5} />
             </div>
-
             <Footer />
         </>
     );
