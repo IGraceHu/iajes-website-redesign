@@ -6,7 +6,7 @@ import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { updateRequired } from "../helpers/form";
-import { currentHasPermissions, checkCurrentAuth } from "../helpers/permissions";
+import { checkCurrentAuth } from "../helpers/permissions";
 import "../styles/video-resources.css";
 
 export function meta() {
