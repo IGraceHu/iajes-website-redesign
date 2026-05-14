@@ -41,12 +41,14 @@ export function checkCurrentAuth(setIsAdmin, targetRoles = [], superAllowed = tr
  * Returns true if the user has one of the target roles, false if not or if the user is not found
  */
 export async function currentHasPermissions(userId, targetRoles = [], superAllowed = true) {
-    const userRoles = await getUserRoles(userId);
-    if (!Array.isArray(targetRoles)) { 
-        targetRoles = [targetRoles];
-     }
-    if (userRoles) {
-        return hasPermissions(userRoles, targetRoles, superAllowed);
+    if (userId) {
+        const userRoles = await getUserRoles(userId);
+        if (!Array.isArray(targetRoles)) { 
+            targetRoles = [targetRoles];
+        }
+        if (userRoles) {
+            return hasPermissions(userRoles, targetRoles, superAllowed);
+        }
     }
     return false;
 }
