@@ -8,7 +8,7 @@ import { supabase } from "../supabase";
  *     superAllowed = true - Optional. Determines if admin-super gets permissions
  * Returns authentication subscription thing
  */
-export function checkCurrentAuth(setIsAdmin, targetRoles, superAllowed = true) {
+export function checkCurrentAuth(setIsAdmin, targetRoles = [], superAllowed = true) {
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
         if (session?.user.id) {
@@ -40,9 +40,11 @@ export function checkCurrentAuth(setIsAdmin, targetRoles, superAllowed = true) {
  *     superAllowed = true - Optional. Determines if admin-super gets permissions
  * Returns true if the user has one of the target roles, false if not or if the user is not found
  */
-export async function currentHasPermissions(userId, targetRoles, superAllowed = true) {
+export async function currentHasPermissions(userId, targetRoles = [], superAllowed = true) {
     const userRoles = await getUserRoles(userId);
-    if (!Array.isArray(targetRoles)) { targetRoles = [targetRoles] }
+    if (!Array.isArray(targetRoles)) { 
+        targetRoles = [targetRoles];
+     }
     if (userRoles) {
         return hasPermissions(userRoles, targetRoles, superAllowed);
     }
@@ -81,15 +83,14 @@ export async function getUserRoles(userId) {
  *     superAllowed = true - Optional. Determines if admin-super gets permissions
  * Returns true if the user has one of the target roles, false if not
  */
-function hasPermissions(userRoles, targetRoles, superAllowed = true) {
+function hasPermissions(userRoles, targetRoles = [], superAllowed = true) {
+    if (superAllowed && userRoles.includes("admin-super")) {
+        return true;
+    }
     if (userRoles.length > 0 && targetRoles.length > 0) {
-        if (superAllowed && userRoles.includes("admin-super")) {
-            return true;
-        } else {
-            for (let targetRole of targetRoles) {
-                if (userRoles.includes(targetRole)) {
-                    return true;
-                }
+        for (let targetRole of targetRoles) {
+            if (userRoles.includes(targetRole)) {
+                return true;
             }
         }
     }

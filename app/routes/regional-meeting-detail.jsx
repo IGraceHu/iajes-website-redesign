@@ -6,6 +6,7 @@ import { Footer } from "../components/footer";
 import { Banner } from "../components/graphics";
 import { Popup, PopupForm } from "../components/popup";
 import { Break } from "../components/graphics";
+import { checkCurrentAuth } from "../helpers/permissions";
 import "../styles/regional-meetings.css";
 import "../styles/video-resources.css";
 
@@ -435,41 +436,13 @@ export default function RegionalMeetingDetail() {
             setLoading(false);
         }
 
-        async function getIsAdmin(userId) {
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('role')
-                    .eq("id", userId);
-                if (data[0]) {
-                    setIsAdmin(data[0].role == "admin");
-                }
-            } catch (error) {
-                console.log("error");
-            }
-        }
-
-        // Listen for auth state changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user.id) {
-                getIsAdmin(session?.user.id);
-            }
-        });
-
-        // Check current session on mount
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session?.user.id) {
-                getIsAdmin(session?.user.id);
-            }
-        });
-
         if (meetingDate && regionName) {
             loadMeeting();
         } else {
             setLoading(false);
         }
 
-        return () => subscription.unsubscribe();
+        return checkCurrentAuth(setIsAdmin, "admin-region-" + regionName.toLowerCase())
     }, [meetingDate, regionName]);
 
     const handleSaveEditMeeting = async (formData) => {

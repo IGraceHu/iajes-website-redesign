@@ -5,6 +5,7 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Banner } from "../components/graphics";
 import { PopupForm } from "../components/popup";
+import { checkCurrentAuth } from "../helpers/permissions";
 import "../styles/regional-meetings.css";
 
 export function meta() {
@@ -164,34 +165,7 @@ export default function RegionalMeetings() {
 
     useEffect(() => {
         loadThumbnails();
-
-        async function getIsAdmin(userId) {
-            try {
-                const { data } = await supabase
-                    .from("users")
-                    .select("role")
-                    .eq("id", userId);
-                if (data && data[0]) {
-                    setIsAdmin(data[0].role == "admin");
-                }
-            } catch (error) {
-                console.log("error");
-            }
-        }
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user.id) {
-                getIsAdmin(session.user.id);
-            }
-        });
-
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session?.user.id) {
-                getIsAdmin(session.user.id);
-            }
-        });
-
-        return () => subscription.unsubscribe();
+        return checkCurrentAuth(setIsAdmin)
     }, []);
 
     function openEditPopup() {
