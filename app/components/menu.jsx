@@ -300,7 +300,7 @@ export function Menu({ currentEndUrl }) {
                   <div className="mr-4">
                     <div className="rounded-full bg-primary-dark size-15 border-2 border-primary-dark overflow-hidden flex items-center justify-center">
                       {(userInfo?.image_url != null && userInfo?.image_url != "") ?
-                        <img className="min-w-full min-h-full" src={userInfo.image_url} />
+                        <img className="min-w-full min-h-full object-cover" src={userInfo.image_url} />
                         :
                         <i className="bi bi-person-fill text-[2rem] text-white"></i>}
                     </div>
