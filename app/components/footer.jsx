@@ -57,7 +57,7 @@ export function Footer() {
               <h5 className="!mb-0 !text-primary-light">
                 International Association of
                 <br />
-                Jesuit Engineering and Science Schools
+                Jesuit Engineering and Sciences Schools
               </h5>
             </div>
           </div>

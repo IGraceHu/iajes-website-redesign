@@ -126,7 +126,9 @@ export function Menu({ currentEndUrl }) {
     // Check current session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUser(session?.user ?? null);
-      user(session.user.id);
+      if (session?.user.id) {
+        user(session.user.id);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -219,7 +221,7 @@ export function Menu({ currentEndUrl }) {
           </button>
           <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">
             <img className="h-[2.5rem]" src="/assets/logo.svg" />
-            <p id="logo-title" className="ml-2 text-secondary-light text-xs w-38" style={{fontWeight: 400}}>International Association of Jesuit Engineering Schools</p>
+            <p id="logo-title" className="ml-2 text-secondary-light text-xs w-47" style={{fontWeight: 400}}>International Association of Jesuit Engineering and Sciences Schools</p>
             {/* <img className="h-[1.5rem] ml-4 md:hidden block" src="/assets/logo-iajes-text.svg" /> */}
           </NavLink>
 
@@ -281,7 +283,7 @@ export function Menu({ currentEndUrl }) {
           </div>
 
           {!loggedIn ?
-            <NavLink to="/signin" end className="block button m-1.5">
+            <NavLink to="/signin" end className="block button m-1.5 shrink-0">
               Sign In
             </NavLink>
             :
