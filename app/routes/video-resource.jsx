@@ -6,6 +6,7 @@ import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { updateRequired } from "../helpers/form";
+import { checkCurrentAuth } from "../helpers/permissions";
 import "../styles/video-resources.css";
 
 export function meta() {
@@ -171,6 +172,10 @@ export default function VideoResource({ loaderData }) {
     const [showDeletePopup, setShowDeletePopup] = useState(false);
     const [isAdmin, setIsAdmin] = useState(false);
 
+    useEffect(() => {
+        return checkCurrentAuth(setIsAdmin, "admin-resources")
+    }, []);
+
     // EDIT LOGIC ADDITION
     const [showEditPopup, setShowEditPopup] = useState(false);
     const [showResolvePopup, setShowResolvePopup] = useState(false);
@@ -230,41 +235,6 @@ export default function VideoResource({ loaderData }) {
         setShowEditPopup(false);
         navigate(0);
     }
-
-    useEffect(() => {
-        const getIsAdmin = async (userId) => {
-            try {
-                const { data, error } = await supabase
-                    .from('users')
-                    .select('role')
-                    .eq("id", userId);
-                if (data[0]) {
-                    setIsAdmin(data[0].role == "admin");
-                }
-                else { console.log("error"); }
-
-            } catch (error) {
-                console.log("error");
-            }
-        }
-
-        // Listen for auth state changes
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (session?.user.id) {
-                getIsAdmin(session?.user.id);
-            }
-        });
-
-        // Check current session on mount
-        supabase.auth.getSession().then(({ data: { session } }) => {
-            if (session?.user.id) {
-                getIsAdmin(session?.user.id);
-            }
-        });
-
-
-        return () => subscription.unsubscribe();
-    }, []);
 
     async function handleDelete() {
         try {

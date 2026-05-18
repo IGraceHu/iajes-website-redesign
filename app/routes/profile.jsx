@@ -5,6 +5,7 @@ import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
+import { currentHasPermissions } from "../helpers/permissions";
 import "../styles/profile.css";
 
 export function meta({ loaderData }) {
@@ -435,36 +436,21 @@ export default function ProfileRoute({ loaderData }) {
 
 
   useEffect(() => {
-    const getIsAdmin = async (userId) => {
-        try {
-            const { data, error } = await supabase
-            .from('users')
-            .select('role')
-            .eq("id", userId);
-            if (data[0]) {
-                setIsAdmin(data[0].role == "admin");
-            }
-            else { console.log("error"); }
-            
-        } catch (error) {
-            console.log("error");
-        }
-    }
 
     // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUserId(session?.user.id ?? null);
-      if (session?.user.id) {
-        getIsAdmin(session?.user.id);
-      }
+      currentHasPermissions(session?.user.id).then(
+          function (hasPermissions) { setIsAdmin(hasPermissions); }
+      );
     });
 
     // Check current session on mount
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user.id ?? null);
-      if (session?.user.id) {
-        getIsAdmin(session?.user.id);
-      }
+      currentHasPermissions(session?.user.id).then(
+          function (hasPermissions) { setIsAdmin(hasPermissions); }
+      );
       if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
       setShowPopup(true);
     }
