@@ -118,6 +118,25 @@ a h6:hover {
   color: var(--color-primary-light);
 }
 
+.hover-card h1,
+.hover-card h2,
+.hover-card h3,
+.hover-card h4,
+.hover-card h5,
+.hover-card h6 {
+  color: var(--color-secondary-light);
+}
+
+.hover-card:hover h1,
+.hover-card:hover h2,
+.hover-card:hover h3,
+.hover-card:hover h4,
+.hover-card:hover h5,
+.hover-card:hover h6 {
+  color: var(--color-primary-light);
+}
+
+
 p {
   margin-bottom: calc(var(--spacing) * 2);
   white-space: pre-line;
