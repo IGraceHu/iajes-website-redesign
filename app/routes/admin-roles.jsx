@@ -6,7 +6,6 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { checkCurrentAuth } from "../helpers/permissions";
-import "../styles/profile.css";
 
 export function meta({ }) {
   return [
@@ -35,6 +34,9 @@ const roleNames = new Map([
   ["admin-newsletter", "Newsletter Admin"],
   ["admin-resources", "Resources Admin"]
 ]);
+
+const regionRoles = ["admin-region-jheasa", "admin-region-ajcu-na", "admin-region-ausjal", "admin-region-kircher", "admin-region-ajcu-ap", "admin-region-ajcu-am"]
+const tfRoles = ["admin-tf-rac", "admin-tf-wis", "admin-tf-hea", "admin-tf-aih", "admin-tf-esj", "admin-tf-htfi", "admin-tf-infr", "admin-tf-ene"]
 
 async function getPeople() {
   const { data, error } = await supabase
@@ -72,6 +74,7 @@ function MemberCard({ memberInfo }) {
 export default function AdminOptions({ loaderData }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [focusMember, setFocusMember] = useState(null);
+    const [filters, setFilters] = useState([])
 
     useEffect(() => {
         return checkCurrentAuth(setIsAdmin, [])
@@ -82,29 +85,104 @@ export default function AdminOptions({ loaderData }) {
         return member.roles.length > 1;
     })
 
+    const filterSet = new Set(filters);
+    const adminMemberFilteredList = filterSet.size > 0 ? adminMemberList.filter((member) => {
+        const roleSet = new Set(member.roles)
+        return filterSet.intersection(roleSet).size > 0;
+    }) : adminMemberList;
+    console.log(filterSet);
+
+    const toggleSelection = (value) => {
+        setFilters((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
+    };
+
     return (<>
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
+                
             { isAdmin ? 
                 <div>
                     <h1>Manage Roles and Permissions</h1>
-                    <div className="flex">
-                        <div className="relative h-100 border-2 border-gray-light w-100 rounded-l-md">
-                            <div>
-                                <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Admins</div>
+                    <div className="h-100 flex border-2 border-gray-light rounded-md">
+                        <div className="w-130 border-r-2 border-gray-light grid grid-rows-[2.75rem_auto]">
+                            <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Filter</div>
+                            <div className="p-2 overflow-y-auto">
+                                <div className="flex flex-col gap-2">
+                                    <label className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={filters.includes("admin-super")}
+                                            onChange={() => toggleSelection("admin-super")}
+                                        />
+                                        <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
+                                    </label>
+
+                                    <label className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={filters.includes("admin-resources")}
+                                            onChange={() => toggleSelection("admin-resources")}
+                                        />
+                                        <p className="text-gray-dark/80">{roleNames.get("admin-resources")}</p>
+                                    </label>
+
+                                    <label className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={filters.includes("admin-newsletter")}
+                                            onChange={() => toggleSelection("admin-newsletter")}
+                                        />
+                                        <p className="text-gray-dark/80">{roleNames.get("admin-newsletter")}</p>
+                                    </label>
+                                </div>
+
+                                <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
+                                <div className="flex flex-col gap-2">
+                                    {tfRoles.map((role) => (
+                                        <label key={role} className="checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.includes(role)}
+                                                onChange={() => toggleSelection(role)}
+                                            />
+                                            <p className="text-gray-dark/80">{roleNames.get(role)}</p>
+                                        </label>
+                                    ))}
+                                </div>
+
+                                <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
+                                <div className="flex flex-col gap-2">
+                                    {regionRoles.map((role) => (
+                                        <label key={role} className="checkbox">
+                                            <input
+                                                type="checkbox"
+                                                checked={filters.includes(role)}
+                                                onChange={() => toggleSelection(role)}
+                                            />
+                                            <p className="text-gray-dark/80">{roleNames.get(role)}</p>
+                                        </label>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="relative overflow-y-scroll h-auto">
-                                {adminMemberList.map((member, idx) =>
-                                    <button key={"admin-card-" + idx} 
+                        </div>
+
+                        <div className="relative w-100 border-r-2 border-gray-light grid grid-rows-[2.75rem_auto]">
+                            <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Admins</div>
+
+                            <div className="relative overflow-y-auto">
+                                { adminMemberFilteredList.map((member, idx) =>
+                                    <button key={"admin-option-" + idx} 
                                             className={"block w-full text-left border-b-2 border-gray-light py-1 px-2 hover:text-primary-dark hover:cursor-pointer duration-200 " + (member.id == focusMember?.id && "text-primary-dark")}
                                             onClick={() => setFocusMember(member)}
                                         >
                                         {member.fname} {member.lname}
                                     </button>
                                 )}
+                                { adminMemberFilteredList.length == 0 && <div className="p-2 text-sm text-disabled-light italic">No admins found.</div>}
                             </div>
                         </div>
-                        <div className="w-full h-100 border-2 border-l-0 border-gray-light rounded-r-md py-2 pl-3 pr-2">
+
+                        <div className="w-full h-100 py-2 pl-3 pr-2">
                             { focusMember ? 
                                 <div>
                                     <button
