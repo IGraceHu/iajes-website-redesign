@@ -1,10 +1,6 @@
-import { useState, useEffect, useRef, useActionState } from "react";
-import { useNavigate, useSearchParams } from "react-router";
-import { supabase } from "../supabase";
-import { Link } from "react-router";
+import { useState, useEffect } from "react";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
-import { Popup, PopupForm } from "../components/popup";
 import { checkCurrentAuth } from "../helpers/permissions";
 import "../styles/profile.css";
 
@@ -28,7 +24,7 @@ export default function AdminOptions({ }) {
             { isAdmin ? 
                 <div>
                     <h1>Administrator Options</h1>
-                    <a className="hover-card block my-5 px-10 py-5 border-2 border-gray-light rounded-md hover:shadow-md hover:cursor-pointer duration-200">
+                    <a href="/admin-options/roles" className="hover-card block my-5 px-10 py-5 border-2 border-gray-light rounded-md hover:shadow-md hover:cursor-pointer duration-200">
                         <h4>Roles and Permissions</h4>
                         <p className="text-s text-disabled-light">Edit users' admin roles and permissions to edit site content.</p>
                     </a>
