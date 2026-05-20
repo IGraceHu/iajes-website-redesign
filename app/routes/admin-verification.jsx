@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { Popup } from "../components/popup";
 import { checkCurrentAuth } from "../helpers/permissions";
 
 export function meta({ }) {
@@ -25,12 +27,36 @@ async function getUnverifiedUsers() {
   return error;
 }
 
+async function verifyUsers(userIdList) {
+    const { data, error } = await supabase
+        .from('users')
+        .update({ verified: 'TRUE' })
+        .in('id', userIdList)
+        .select();
+
+    if (!data || data.length === 0) {
+        const rlsError = new Error("No rows updated. You may be missing an UPDATE policy in Supabase.");
+        console.error(rlsError.message);
+        return rlsError;
+    }
+
+    return null;
+}
+
 export async function loader({ params }) {
     return getUnverifiedUsers();
 }
 
 export default function AdminVerification({ loaderData }) {
+    const navigate = useNavigate();
+
     const [isAdmin, setIsAdmin] = useState(false);
+    const [showPopup, setShowPopup] = useState(false);
+    const [checkedIds, setCheckedIds] = useState([])
+
+    const popupButtons = [
+        { text: "Verify Users", onclick: handleVerify }
+    ]
 
     useEffect(() => {
         return checkCurrentAuth(setIsAdmin, [])
@@ -39,13 +65,60 @@ export default function AdminVerification({ loaderData }) {
     const unverifiedUsers = loaderData;
     // console.log(unverifiedUsers);
 
+    function handleSubmit(e) {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        const newCheckedIds = Array.from(formData.keys());
+
+        setCheckedIds(newCheckedIds);
+        if (newCheckedIds.length > 0) {
+            setShowPopup(true);
+        }
+        
+        // console.log(formData);
+    }
+
+    function clearSelected(e) {
+        e.preventDefault();
+        const checkboxEls = document.getElementsByClassName("checkbox");
+        for (let checkboxEl of checkboxEls) {
+            checkboxEl.children[0].checked = false;
+        }
+    }
+
+    async function handleVerify() {
+        const verify = await verifyUsers(checkedIds);
+        if (verify == null) {
+            setShowPopup(false);
+            navigate(0);
+        }
+    }
+
+    function getUserById(id) {
+        for (let user of unverifiedUsers) {
+            if (id == user.id) {
+                return user;
+            }
+        }
+        return null;
+    }
+
     return (<>
+            <Popup show={showPopup} setShow={setShowPopup} buttons={popupButtons}>
+                <h6>Verify the following users?</h6>
+                <div className="mt-2">
+                    { checkedIds.map((userid) => {
+                        const user = getUserById(userid);
+                        return <div key={userid}>{user.fname} {user.lname} <span className="ml-3 text-disabled-light italic">{user.email}</span></div>
+                    })}
+                </div>
+            </Popup>
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
             { isAdmin ? 
                 <div>
                     <h2>Manage User Verification</h2>
-                    <div className="flex">
+                    <form className="flex md:flex-row flex-col-reverse" onSubmit={handleSubmit}>
                         <div className="border-2 border-gray-light rounded-md w-full">
                             <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Unverified Users</div>
 
@@ -57,18 +130,18 @@ export default function AdminVerification({ loaderData }) {
                                             <span className="ml-3 text-disabled-light italic">{user.email}</span>
                                         </a>
                                         <label className="checkbox" style={{marginRight: 0}}>
-                                            <input type="checkbox" /><p></p>
+                                            <input name={user.id} type="checkbox" /><p></p>
                                         </label>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        <div className="flex flex-col align-center ml-5 shrink-0">
-                            <button className="button block mb-4">Verify selected users</button>
-                            <button className="button button-light block">Clear selected</button>
+                        <div className="flex md:flex-col align-center md:ml-5 mb-4 shrink-0">
+                            <input type="submit" value="Verify selected users" className="button block md:mb-4 md:mr-0 mr-4" />
+                            <button type="button" className="button button-light block" onClick={clearSelected}>Clear selected</button>
                         </div>
-                    </div>
+                    </form>
                     
                 </div>
             :
