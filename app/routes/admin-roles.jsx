@@ -1,11 +1,9 @@
-import { useState, useEffect, useRef, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router";
+import { useState, useEffect, useMemo } from "react";
 import { supabase } from "../supabase";
-import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Pagination } from "../components/pagination";
-import { Popup, PopupForm } from "../components/popup";
+import { Popup } from "../components/popup";
 import { checkCurrentAuth } from "../helpers/permissions";
 
 export function meta({ }) {
