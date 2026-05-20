@@ -49,6 +49,16 @@ async function getPeople() {
   return data || error;
 }
 
+async function updateMemberRoles(userId, newRoles) {
+  const { error } = await supabase
+    .from('users')
+    .update({
+      roles: newRoles
+    })
+    .eq('id', userId)
+  return error;
+}
+
 export async function loader({ params }) {
     return getPeople();
 }
@@ -67,7 +77,9 @@ function RoleCheckbox({roleName, isSuper, checkedRoles, updateChecked}) {
     )
 }
 
-function RolesEdit({ show, setShow, member }) {
+function RolesEdit({ show, setShow, member, reload }) {
+    const [showRemove, setShowRemove] = useState(false);
+
     const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super"));
     const [checkedRoles, setCheckedRoles] = useState({
         "admin-resources": member?.roles.includes("admin-resources"),
@@ -141,52 +153,116 @@ function RolesEdit({ show, setShow, member }) {
         });
     }
 
+    async function updateRoles() {
+        const memberNewRoles = ["member"];
+
+        if (isSuper) {
+            memberNewRoles.push("admin-super");
+        } else {
+            for (let role in checkedRoles) {
+                if (checkedRoles[role]) {
+                    memberNewRoles.push(role);
+                }
+            }
+        }
+
+        if (memberNewRoles.length == 1) {
+            setShowRemove(true);
+            return;
+        }
+
+        // console.log(memberNewRoles);
+
+        const update = await updateMemberRoles(member.id, memberNewRoles);
+        if (update === null) {
+            setShow(false);
+            reload(member);
+        }
+        return;
+    }
+
+    async function removeAdmin() {
+        const update = await updateMemberRoles(member.id, ["member"]);
+        if (update === null) {
+            setShow(false);
+            setShowRemove(false);
+            reload();
+        }
+        return;
+    }
+
+    const editButtons = [
+        {
+            text: "Save Roles",
+            onclick: updateRoles
+        },
+        {
+            text: "Remove Admin",
+            onclick: () => {setShowRemove(true)},
+            className: "button-red"
+        }
+    ]
+
+    const removeButton = [
+        {
+            text: "Remove Admin",
+            onclick: removeAdmin,
+            className: "button-red"
+        }
+    ]
+
     if (member) {
         return (
-            <Popup show={show} setShow={setShow} >
-                <h4>{member.fname} {member.lname}'s roles</h4>
+            <>
+                <Popup id="edit-roles" show={show} setShow={setShow} buttons={editButtons} >
+                    <h4>{member.fname} {member.lname}'s roles</h4>
 
-                <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
+                    <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
 
-                    <label className="checkbox">
-                        <input
-                            type="checkbox"
-                            checked={isSuper}
-                            onChange={((e) => setIsSuper(!isSuper))}
-                        />
-                        <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
-                    </label>
+                        <label className="checkbox">
+                            <input
+                                type="checkbox"
+                                checked={isSuper}
+                                onChange={((e) => setIsSuper(!isSuper))}
+                            />
+                            <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
+                        </label>
 
-                <div className="mt-2">
-                    <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+                    <div className="mt-2">
+                        <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
 
-                    <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-5">
-
-                    <div>
-                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
-                        <div className="flex flex-col gap-2">
-                            {regionRoles.map((role) => (
-                               <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-                            ))}
-                        </div>
+                        <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
                     </div>
 
-                    <div>
-                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
-                        <div className="flex flex-col gap-2">
-                            {tfRoles.map((role) => (
+                    <div className="grid md:grid-cols-2 gap-5">
+
+                        <div>
+                            <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
+                            <div className="flex flex-col gap-2">
+                                {regionRoles.map((role) => (
                                 <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    
-                </div>
-            </Popup>
+                        <div>
+                            <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
+                            <div className="flex flex-col gap-2">
+                                {tfRoles.map((role) => (
+                                    <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+
+                                ))}
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </Popup>
+
+                <Popup id="remove-confirm" show={showRemove} setShow={setShowRemove} buttons={removeButton} nested>
+                    <div className="w-full text-center mt-5">Remove {member.fname} {member.lname}'s admin permissions?</div>
+                </Popup>
+            </>
         )
     }
 }
@@ -205,13 +281,26 @@ export default function AdminOptions({ loaderData }) {
         return checkCurrentAuth(setIsAdmin, [])
     }, []);
 
-    const userList = loaderData;
-    const adminMemberList = userList.filter((member) => {
+    const [adminMemberList, setAdminMemberList] = useState(loaderData.filter((member) => {
         return member.roles.length > 1;
-    })
-    const memberList = userList.filter((member) => {
-        return member.roles.length == 1;
-    })
+    }));
+
+    async function reload(focusMember = {}) {
+        const userList = await getPeople();
+
+        setAdminMemberList(userList.filter((member) => {
+            return member.roles.length > 1;
+        }))
+
+        if (focusMember) {
+            setFocusMember(userList.filter((member) => {
+                return member.id == focusMember.id;
+            })[0]);
+        } else {
+            setFocusMember(focusMember);
+        }
+
+    }
 
     const filterSet = new Set(filters);
     const adminMemberFilteredList = filterSet.size > 0 ? adminMemberList.filter((member) => {
@@ -237,7 +326,7 @@ export default function AdminOptions({ loaderData }) {
 
     const searchMembers = useMemo(() => {
         const q = query.trim().toLowerCase();
-        return memberList.filter((member) => {
+        return loaderData.filter((member) => {
     
           const matchesQuery =
             !q ||
@@ -261,7 +350,7 @@ export default function AdminOptions({ loaderData }) {
     }, [page, totalPages]);
 
     return (<>
-            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} />
+            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} reload={reload} />
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 
@@ -271,8 +360,8 @@ export default function AdminOptions({ loaderData }) {
                         <i className="bi bi-caret-left-fill"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
-                    <h1>Manage Roles and Permissions</h1>
-                    <div className="md:h-[65dvh] md:flex grid grid-rows-[200px_auto] grid-cols-[200px_auto] border-2 border-gray-light rounded-md">
+                    <h2>Manage Roles and Permissions</h2>
+                    <div className="mt-5 md:h-[65dvh] md:flex grid grid-rows-[200px_auto] grid-cols-[200px_auto] border-2 border-gray-light rounded-md">
                 
                         <div id="filter-container" className="md:w-130 md:border-r-2 md:border-b-0 border-b-2 border-gray-light grid grid-rows-[2.75rem_auto] col-span-2">
                             <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Filter</div>
@@ -382,7 +471,7 @@ export default function AdminOptions({ loaderData }) {
                     </div>
 
                     <div className="mt-10">
-                        <h4>Add Admins</h4>
+                        <h4>Manage Member Roles</h4>
                         <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
                             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
                             <input
@@ -407,9 +496,11 @@ export default function AdminOptions({ loaderData }) {
                                     <>
                                     <div className="grid md:grid-cols-2 gap-2 gap-x-10">
                                         {pageMembers.map((member) => (
-                                            <button className="block p-2 text-left flex justify-between border-2 border-transparent hover:border-primary-light hover:text-primary-dark hover:cursor-pointer duration-200 rounded-md">
+                                            <button className="block p-2 text-left flex justify-between border-2 border-transparent hover:border-primary-light hover:text-primary-dark hover:cursor-pointer duration-200 rounded-md"
+                                                onClick={() => {setFocusMember(member); setShowEditPopup(true)}}
+                                            >
                                                 <span>{member.fname} {member.lname}</span>
-                                                <i className="bi bi-plus-lg px-2" />
+                                                <i className="bi bi-pencil px-2" />
                                             </button>
                                         ))}
                                     </div>

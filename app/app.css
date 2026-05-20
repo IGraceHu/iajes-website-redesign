@@ -414,17 +414,28 @@ button:disabled.button.button-light {
 }
 
 .button.button-red {
-  color: var(--color-error);
+  color: var(--color-white);
+  background-color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
+.button.button-light.button-red {
+  color: var(--color-error);
+  background-color: var(--color-white);
+}
+
 .button.button-red:hover {
-  color: #71000f;
+  /* color: #71000f; */
+  background-color: #71000f;
   border-color: #71000f;
   cursor: pointer;
 }
 
+.button.button-light.button-red:hover {
+  color: #71000f;
+  background-color: var(--color-white);
+}
 
 /* INTERNATIONAL MEETINGS *****************************************************/
 
