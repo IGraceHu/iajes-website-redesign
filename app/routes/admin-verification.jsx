@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
@@ -52,7 +52,9 @@ export default function AdminVerification({ loaderData }) {
 
     const [isAdmin, setIsAdmin] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [checkedIds, setCheckedIds] = useState([])
+    const [checkedIds, setCheckedIds] = useState([]);
+
+    const [query, setQuery] = useState("");
 
     const popupButtons = [
         { text: "Verify Users", onclick: handleVerify }
@@ -74,8 +76,6 @@ export default function AdminVerification({ loaderData }) {
         if (newCheckedIds.length > 0) {
             setShowPopup(true);
         }
-        
-        // console.log(formData);
     }
 
     function clearSelected(e) {
@@ -103,6 +103,26 @@ export default function AdminVerification({ loaderData }) {
         return null;
     }
 
+    const handleQueryChange = (event) => {
+        const value = event.currentTarget.value;
+        if (value !== query) {
+        setQuery(value);
+        }
+    };
+
+    const searchUsers = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        return unverifiedUsers.filter((user) => {
+    
+            const matchesQuery =
+            !q ||
+            user?.fname?.toLowerCase().includes(q) ||
+            user?.lname?.toLowerCase().includes(q);
+    
+            return matchesQuery;
+        });
+    }, [query]);
+
     return (<>
             <Popup show={showPopup} setShow={setShowPopup} buttons={popupButtons}>
                 <h6>Verify the following users?</h6>
@@ -120,10 +140,28 @@ export default function AdminVerification({ loaderData }) {
                     <h2>Manage User Verification</h2>
                     <form className="flex md:flex-row flex-col-reverse" onSubmit={handleSubmit}>
                         <div className="border-2 border-gray-light rounded-md w-full">
-                            <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Unverified Users</div>
+                            <div className="p-2 border-b-2 border-gray-light">
+                                <div className="text-xl font-semibold text-secondary-dark mb-2">Unverified Users</div>
 
-                            <div className="h-[65vh] overflow-y-auto">
-                                { unverifiedUsers.map((user, idx) => (
+                                <div className="flex w-full items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
+                                    <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
+                                    <input
+                                    id="search-input"
+                                    value={query}
+                                    onChange={handleQueryChange}
+                                    onInput={handleQueryChange}
+                                    placeholder="Search Users"
+                                    className="w-full bg-transparent text-sm text-gray-dark outline-none"
+                                    />
+                                    <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
+                                            onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
+                                    <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="h-[50vh] overflow-y-auto">
+                                { searchUsers.map((user, idx) => (
                                     <div key={idx} className="p-1 px-2 border-b-2 last:border-b-0 border-gray-light flex justify-between">
                                         <a href={`/profile/${user.id}`} className="hover:text-primary-light hover:cursor-pointer duration-200">
                                             {user.fname} {user.lname}
