@@ -53,29 +53,88 @@ export async function loader({ params }) {
     return getPeople();
 }
 
-function MemberCard({ memberInfo }) {
-    if (memberInfo) {
+function RolesEdit({ show, setShow, member }) {
+    function validate() {
+
+    }
+
+    if (member) {
         return (
-            <div className="hover-card block my-5 px-5 py-3 border-2 border-gray-light rounded-md hover:shadow-md duration-200">
-                <div className="text-xl font-semibold text-secondary-dark">{memberInfo.fname} {memberInfo.lname}</div>
-                <div className="text-sm text-gray-dark/70">{memberInfo.email}</div>
-                <div className="my-2">
-                    {memberInfo.roles.map((role) => {
-                        if (role != "member") {
-                            return <div className="text-sm float-left me-2 mb-2 px-2 py-1 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
-                        }
-                    })}
+            <PopupForm show={show} setShow={setShow} validate={validate}>
+                <h4>{member.fname} {member.lname}'s roles</h4>
+
+                
+                    <label className="checkbox">
+                        <input
+                            type="checkbox"
+                            defaultChecked={member.roles.includes("admin-super")}
+                        />
+                        <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
+                    </label>
+
+                <div className="mt-2">
+                    <label className="checkbox">
+                        <input
+                            type="checkbox"
+                            defaultChecked={member.roles.includes("admin-resources")}
+                        />
+                        <p className="text-gray-dark/80">{roleNames.get("admin-resources")}</p>
+                    </label>
+
+                    <label className="checkbox">
+                        <input
+                            type="checkbox"
+                            defaultChecked={member.roles.includes("admin-newsletter")}
+                        />
+                        <p className="text-gray-dark/80">{roleNames.get("admin-newsletter")}</p>
+                    </label>
                 </div>
-            </div>
+
+                <div className="grid grid-cols-2 gap-5">
+
+                    <div>
+                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
+                        <div className="flex flex-col gap-2">
+                            {regionRoles.map((role) => (
+                                <label key={role} className="checkbox">
+                                    <input
+                                        type="checkbox"
+                                        defaultChecked={member.roles.includes(role)}
+                                    />
+                                    <p className="text-gray-dark/80">{roleNames.get(role)}</p>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
+                        <div className="flex flex-col gap-2">
+                            {tfRoles.map((role) => (
+                                <label key={role} className="checkbox">
+                                    <input
+                                        type="checkbox"
+                                        defaultChecked={member.roles.includes(role)}
+                                    />
+                                    <p className="text-gray-dark/80">{roleNames.get(role)}</p>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </PopupForm>
         )
     }
-    
 }
 
 export default function AdminOptions({ loaderData }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [focusMember, setFocusMember] = useState(null);
     const [filters, setFilters] = useState([]);
+
+    const [showEditPopup, setShowEditPopup] = useState(false);
 
     const [query, setQuery] = useState("");
     const [page, setPage] = useState(0);
@@ -140,6 +199,7 @@ export default function AdminOptions({ loaderData }) {
     }, [page, totalPages]);
 
     return (<>
+            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} />
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 
@@ -238,6 +298,7 @@ export default function AdminOptions({ loaderData }) {
                                     <button
                                         type="button"
                                         className={"button button-light flex float-right ml-2"}
+                                        onClick={() => {setShowEditPopup(true)}}
                                         >
                                         <p className="text-base mr-3 md:block hidden">Edit Roles</p>
                                         <i className={`bi bi-pencil`} />
