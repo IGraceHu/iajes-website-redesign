@@ -102,9 +102,14 @@ export default function AdminOptions({ loaderData }) {
                 
             { isAdmin ? 
                 <div>
+                    <a href="/admin-options" className="banner-breadcrumb on-white">
+                        <i className="bi bi-caret-left-fill"></i>
+                        <strong>ADMIN OPTIONS</strong>
+                    </a>
                     <h1>Manage Roles and Permissions</h1>
-                    <div className="h-100 flex border-2 border-gray-light rounded-md">
-                        <div className="w-130 border-r-2 border-gray-light grid grid-rows-[2.75rem_auto]">
+                    <div className="md:h-[65dvh] md:flex grid grid-rows-[200px_auto] grid-cols-[200px_auto] border-2 border-gray-light rounded-md">
+                
+                        <div id="filter-container" className="md:w-130 md:border-r-2 md:border-b-0 border-b-2 border-gray-light grid grid-rows-[2.75rem_auto] col-span-2">
                             <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Filter</div>
                             <div className="p-2 overflow-y-auto">
                                 <div className="flex flex-col gap-2">
@@ -166,7 +171,7 @@ export default function AdminOptions({ loaderData }) {
                             </div>
                         </div>
 
-                        <div className="relative w-100 border-r-2 border-gray-light grid grid-rows-[2.75rem_auto]">
+                        <div className="relative md:w-100 w-full border-r-2 border-gray-light grid grid-rows-[2.75rem_auto]">
                             <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Admins</div>
 
                             <div className="relative overflow-y-auto">
@@ -187,9 +192,9 @@ export default function AdminOptions({ loaderData }) {
                                 <div>
                                     <button
                                         type="button"
-                                        className={"button button-light flex float-right"}
+                                        className={"button button-light flex float-right ml-2"}
                                         >
-                                        <p className="text-base mr-3">Edit Roles</p>
+                                        <p className="text-base mr-3 md:block hidden">Edit Roles</p>
                                         <i className={`bi bi-pencil`} />
                                     </button>
                                     <a href={`/profile/${focusMember.id}`} className="text-xl font-semibold text-secondary-dark hover:text-primary-dark hover:cursor-pointer duration-200">{focusMember.fname} {focusMember.lname}</a>
@@ -203,7 +208,7 @@ export default function AdminOptions({ loaderData }) {
                                     </div>
                                 </div>
                             :
-                                <div>Wah</div>
+                                <div className="w-full text-center p-2 py-10 text-sm text-disabled-light italic">No admin selected.</div>
                             }
                         </div>
                     </div>

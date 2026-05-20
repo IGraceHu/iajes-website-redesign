@@ -837,6 +837,10 @@ input[type="file"].input-required~.input-error {
   color: white;
 }
 
+.banner-breadcrumb.on-white {
+  color: var(--color-secondary-light);
+}
+
 .banner-breadcrumb>strong {
   border-bottom: 2px solid #ffffff00;
   transition: 0.2s;
