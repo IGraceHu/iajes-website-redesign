@@ -249,7 +249,7 @@ export default function VideoResource({ loaderData }) {
     return (
         <>
             <Popup id="delete-vidr" show={showDeletePopup} setShow={setShowDeletePopup}
-                buttons={[{ text: "Delete", onclick: handleDelete }]}>
+                buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
                 <div className="text-center mt-6">Delete this video resource?</div>
             </Popup>
 
