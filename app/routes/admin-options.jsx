@@ -28,7 +28,7 @@ export default function AdminOptions({ }) {
                         <h4>Roles and Permissions</h4>
                         <p className="text-s text-disabled-light">Edit users' admin roles and permissions to edit site content.</p>
                     </a>
-                    <a className="hover-card block my-5 px-10 py-5 border-2 border-gray-light rounded-md hover:shadow-md hover:cursor-pointer duration-200">
+                    <a href="/admin-options/verification" className="hover-card block my-5 px-10 py-5 border-2 border-gray-light rounded-md hover:shadow-md hover:cursor-pointer duration-200">
                         <h4>Account Validation</h4>
                         <p className="text-s text-disabled-light">Validate user accounts.</p>
                     </a>
