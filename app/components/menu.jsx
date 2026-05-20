@@ -3,6 +3,7 @@ import { NavLink, useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Popup } from "../components/popup";
 
+
 const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "es", label: "Español" },
@@ -103,7 +104,7 @@ export function Menu({ currentEndUrl }) {
       try {
         const { data, error } = await supabase
           .from('users')
-          .select('fname, lname, email, image_url')
+          .select('fname, lname, email, image_url, roles')
           .eq("id", userId);
         if (data[0]) {
           setUserInfo(data[0]);
@@ -315,7 +316,14 @@ export function Menu({ currentEndUrl }) {
                 <NavLink to={"/profile/" + currentUser?.id} end className="link py-3 px-4 pr-10">
                   Profile
                 </NavLink>
-                <div className="px-4 pt-2 pb-3">
+                { userInfo?.roles.includes("admin-super") ?
+                  <NavLink to={"/admin-options"} end className="link py-3 px-4 pr-10">
+                    Administrator Options
+                  </NavLink>
+                  :
+                  <></>
+                }
+                <div className="px-4 pt-3 pb-3">
                   <button onClick={handleSignOut} className="block button w-full">
                     Sign Out
                   </button>
