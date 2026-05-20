@@ -53,56 +53,123 @@ export async function loader({ params }) {
     return getPeople();
 }
 
-function RolesEdit({ show, setShow, member }) {
-    function validate() {
+function RoleCheckbox({roleName, isSuper, checkedRoles, updateChecked}) {
+    return (
+        <label className="checkbox">
+            <input
+                type="checkbox"
+                checked={isSuper || checkedRoles[roleName]}
+                onChange={() => updateChecked(roleName)}
+                disabled={isSuper}
+            />
+            <p className="text-gray-dark/80">{roleNames.get(roleName)}</p>
+        </label>
+    )
+}
 
+function RolesEdit({ show, setShow, member }) {
+    const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super"));
+    const [checkedRoles, setCheckedRoles] = useState({
+        "admin-resources": member?.roles.includes("admin-resources"),
+        "admin-newsletter": member?.roles.includes("admin-newsletter"),
+        "admin-region-jheasa": member?.roles.includes("admin-region-jheasa"),
+        "admin-region-ajcu-na": member?.roles.includes("admin-region-ajcu-na"),
+        "admin-region-ausjal": member?.roles.includes("admin-region-ausjal"),
+        "admin-region-kircher": member?.roles.includes("admin-region-kircher"),
+        "admin-region-ajcu-ap": member?.roles.includes("admin-region-ajcu-ap"),
+        "admin-region-ajcu-am": member?.roles.includes("admin-region-ajcu-am"),
+        "admin-tf-rac": member?.roles.includes("admin-tf-rac"),
+        "admin-tf-wis": member?.roles.includes("admin-tf-wis"),
+        "admin-tf-hea": member?.roles.includes("admin-tf-hea"),
+        "admin-tf-aih": member?.roles.includes("admin-tf-aih"),
+        "admin-tf-esj": member?.roles.includes("admin-tf-esj"),
+        "admin-tf-htfi": member?.roles.includes("admin-tf-htfi"),
+        "admin-tf-infr": member?.roles.includes("admin-tf-infr"),
+        "admin-tf-ene": member?.roles.includes("admin-tf-ene")
+    })
+
+    useEffect(() => {
+        setIsSuper(member?.roles.includes("admin-super"));
+        setCheckedRoles({
+            "admin-resources": member?.roles.includes("admin-resources"),
+            "admin-newsletter": member?.roles.includes("admin-newsletter"),
+            "admin-region-jheasa": member?.roles.includes("admin-region-jheasa"),
+            "admin-region-ajcu-na": member?.roles.includes("admin-region-ajcu-na"),
+            "admin-region-ausjal": member?.roles.includes("admin-region-ausjal"),
+            "admin-region-kircher": member?.roles.includes("admin-region-kircher"),
+            "admin-region-ajcu-ap": member?.roles.includes("admin-region-ajcu-ap"),
+            "admin-region-ajcu-am": member?.roles.includes("admin-region-ajcu-am"),
+            "admin-tf-rac": member?.roles.includes("admin-tf-rac"),
+            "admin-tf-wis": member?.roles.includes("admin-tf-wis"),
+            "admin-tf-hea": member?.roles.includes("admin-tf-hea"),
+            "admin-tf-aih": member?.roles.includes("admin-tf-aih"),
+            "admin-tf-esj": member?.roles.includes("admin-tf-esj"),
+            "admin-tf-htfi": member?.roles.includes("admin-tf-htfi"),
+            "admin-tf-infr": member?.roles.includes("admin-tf-infr"),
+            "admin-tf-ene": member?.roles.includes("admin-tf-ene")
+        });
+    }, [show])
+
+    // console.log(checkedRoles);
+
+    function updateChecked(role) {
+        setCheckedRoles({
+            ...checkedRoles,
+            [role]: !checkedRoles[role]
+        })
+    }
+
+    function clearChecked() {
+        setIsSuper(false);
+        setCheckedRoles({
+            "admin-resources": false,
+            "admin-newsletter": false,
+            "admin-region-jheasa": false,
+            "admin-region-ajcu-na": false,
+            "admin-region-ausjal": false,
+            "admin-region-kircher": false,
+            "admin-region-ajcu-ap": false,
+            "admin-region-ajcu-am": false,
+            "admin-tf-rac": false,
+            "admin-tf-wis": false,
+            "admin-tf-hea": false,
+            "admin-tf-aih": false,
+            "admin-tf-esj": false,
+            "admin-tf-htfi": false,
+            "admin-tf-infr": false,
+            "admin-tf-ene": false
+        });
     }
 
     if (member) {
         return (
-            <PopupForm show={show} setShow={setShow} validate={validate}>
+            <Popup show={show} setShow={setShow} >
                 <h4>{member.fname} {member.lname}'s roles</h4>
 
-                
+                <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
+
                     <label className="checkbox">
                         <input
                             type="checkbox"
-                            defaultChecked={member.roles.includes("admin-super")}
+                            checked={isSuper}
+                            onChange={((e) => setIsSuper(!isSuper))}
                         />
                         <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
                     </label>
 
                 <div className="mt-2">
-                    <label className="checkbox">
-                        <input
-                            type="checkbox"
-                            defaultChecked={member.roles.includes("admin-resources")}
-                        />
-                        <p className="text-gray-dark/80">{roleNames.get("admin-resources")}</p>
-                    </label>
+                    <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
 
-                    <label className="checkbox">
-                        <input
-                            type="checkbox"
-                            defaultChecked={member.roles.includes("admin-newsletter")}
-                        />
-                        <p className="text-gray-dark/80">{roleNames.get("admin-newsletter")}</p>
-                    </label>
+                    <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
                 </div>
 
-                <div className="grid grid-cols-2 gap-5">
+                <div className="grid md:grid-cols-2 gap-5">
 
                     <div>
                         <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
                         <div className="flex flex-col gap-2">
                             {regionRoles.map((role) => (
-                                <label key={role} className="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked={member.roles.includes(role)}
-                                    />
-                                    <p className="text-gray-dark/80">{roleNames.get(role)}</p>
-                                </label>
+                               <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
                             ))}
                         </div>
                     </div>
@@ -111,20 +178,15 @@ function RolesEdit({ show, setShow, member }) {
                         <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
                         <div className="flex flex-col gap-2">
                             {tfRoles.map((role) => (
-                                <label key={role} className="checkbox">
-                                    <input
-                                        type="checkbox"
-                                        defaultChecked={member.roles.includes(role)}
-                                    />
-                                    <p className="text-gray-dark/80">{roleNames.get(role)}</p>
-                                </label>
+                                <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+
                             ))}
                         </div>
                     </div>
 
                     
                 </div>
-            </PopupForm>
+            </Popup>
         )
     }
 }
