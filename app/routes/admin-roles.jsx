@@ -304,7 +304,7 @@ export default function AdminOptions({ loaderData }) {
 
     const filterSet = new Set(filters);
     const adminMemberFilteredList = filterSet.size > 0 ? adminMemberList.filter((member) => {
-        const roleSet = new Set(member.roles)
+        const roleSet = new Set(member.roles);
         return filterSet.intersection(roleSet).size > 0;
     }) : adminMemberList;
 
