@@ -86,6 +86,7 @@ export default function SearchRoute({ loaderData }) {
       const matchesQuery =
         !q ||
         person?.fname?.toLowerCase().includes(q) ||
+        person?.lname?.toLowerCase().includes(q) ||
         person?.institution?.toLowerCase().includes(q) ||
         person?.major?.toLowerCase().includes(q) ||
         person?.languages?.toLowerCase().includes(q) ||

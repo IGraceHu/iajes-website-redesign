@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef, useActionState } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { Pagination } from "../components/pagination";
 import { Popup, PopupForm } from "../components/popup";
 import { checkCurrentAuth } from "../helpers/permissions";
 
@@ -74,15 +75,21 @@ function MemberCard({ memberInfo }) {
 export default function AdminOptions({ loaderData }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [focusMember, setFocusMember] = useState(null);
-    const [filters, setFilters] = useState([])
+    const [filters, setFilters] = useState([]);
+
+    const [query, setQuery] = useState("");
+    const [page, setPage] = useState(0);
 
     useEffect(() => {
         return checkCurrentAuth(setIsAdmin, [])
     }, []);
 
-    const memberList = loaderData;
-    const adminMemberList = memberList.filter((member) => {
+    const userList = loaderData;
+    const adminMemberList = userList.filter((member) => {
         return member.roles.length > 1;
+    })
+    const memberList = userList.filter((member) => {
+        return member.roles.length == 1;
     })
 
     const filterSet = new Set(filters);
@@ -90,11 +97,47 @@ export default function AdminOptions({ loaderData }) {
         const roleSet = new Set(member.roles)
         return filterSet.intersection(roleSet).size > 0;
     }) : adminMemberList;
-    console.log(filterSet);
 
     const toggleSelection = (value) => {
         setFilters((prev) => (prev.includes(value) ? prev.filter((item) => item !== value) : [...prev, value]));
     };
+
+    const handleQueryChange = (event) => {
+        const value = event.currentTarget.value;
+        if (value !== query) {
+        setQuery(value);
+        }
+    };
+
+    // Reset to page 1 whenever query or filters change
+    useEffect(() => {
+        setPage(0);
+    }, [query]);
+
+    const searchMembers = useMemo(() => {
+        const q = query.trim().toLowerCase();
+        return memberList.filter((member) => {
+    
+          const matchesQuery =
+            !q ||
+            member?.fname?.toLowerCase().includes(q) ||
+            member?.lname?.toLowerCase().includes(q);
+    
+          return matchesQuery;
+        });
+    }, [query]);
+
+    const PAGE_SIZE = 10;
+
+    const totalPages = Math.ceil(searchMembers.length / PAGE_SIZE);
+    const startIdx = page * PAGE_SIZE;
+    const pageMembers = searchMembers.slice(startIdx, startIdx + PAGE_SIZE);
+    
+    // If results shrink and current page becomes invalid
+    useEffect(() => {
+        const lastPageIndex = Math.max(0, totalPages - 1);
+        if (page > lastPageIndex) setPage(0);
+    }, [page, totalPages]);
 
     return (<>
             <Menu />
@@ -172,7 +215,9 @@ export default function AdminOptions({ loaderData }) {
                         </div>
 
                         <div className="relative md:w-100 w-full border-r-2 border-gray-light grid grid-rows-[2.75rem_auto]">
-                            <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">Admins</div>
+                            <div className="p-2 text-xl font-semibold text-secondary-dark border-b-2 border-gray-light">
+                                <span>Admins</span>
+                            </div>
 
                             <div className="relative overflow-y-auto">
                                 { adminMemberFilteredList.map((member, idx) =>
@@ -210,6 +255,53 @@ export default function AdminOptions({ loaderData }) {
                             :
                                 <div className="w-full text-center p-2 py-10 text-sm text-disabled-light italic">No admin selected.</div>
                             }
+                        </div>
+                    </div>
+
+                    <div className="mt-10">
+                        <h4>Add Admins</h4>
+                        <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
+                            <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
+                            <input
+                            id="search-input"
+                            value={query}
+                            onChange={handleQueryChange}
+                            onInput={handleQueryChange}
+                            placeholder="Search IAJES Members"
+                            className="w-full bg-transparent text-sm text-gray-dark outline-none"
+                            />
+                            <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
+                                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
+                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                            </button>
+                        </div>
+                        <div className="my-2">
+                            { searchMembers.length === 0 ? (
+                                <div className="rounded-md border-2 border-gray-light bg-white px-6 py-8 text-sm text-gray-dark/70">
+                                    No members found.
+                                </div>
+                                ) : (
+                                    <>
+                                    <div className="grid md:grid-cols-2 gap-2 gap-x-10">
+                                        {pageMembers.map((member) => (
+                                            <button className="block p-2 text-left flex justify-between border-2 border-transparent hover:border-primary-light hover:text-primary-dark hover:cursor-pointer duration-200 rounded-md">
+                                                <span>{member.fname} {member.lname}</span>
+                                                <i className="bi bi-plus-lg px-2" />
+                                            </button>
+                                        ))}
+                                    </div>
+
+                    
+                                    {totalPages > 1 ? (
+                                    <Pagination
+                                        currentPage={page}
+                                        setCurrentPage={setPage}
+                                        totalItems={searchMembers.length}
+                                        itemsPerPage={PAGE_SIZE}
+                                    />
+                                    ) : null}
+                                </>
+                                )}
                         </div>
                     </div>
                 </div>
