@@ -5,7 +5,7 @@ import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
-import { currentHasPermissions } from "../helpers/permissions";
+import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import "../styles/profile.css";
 
 export function meta({ loaderData }) {
@@ -416,6 +416,7 @@ export default function ProfileRoute({ loaderData }) {
   const fileInputRef = useRef(null);
 
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
 
   const userTaskForceUrl = loaderData.taskForceList.find((val, index, array) => {
     return val.name == basePerson.task_force;
@@ -443,6 +444,11 @@ export default function ProfileRoute({ loaderData }) {
       currentHasPermissions(session?.user.id).then(
           function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
+      if (session?.user.id) {
+        getUserVerified(session?.user.id).then(
+          function (verified) {setIsVerified(verified)}
+        )
+      }
     });
 
     // Check current session on mount
@@ -451,6 +457,11 @@ export default function ProfileRoute({ loaderData }) {
       currentHasPermissions(session?.user.id).then(
           function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
+      if (session?.user.id) {
+        getUserVerified(session?.user.id).then(
+          function (verified) {setIsVerified(verified)}
+        )
+      }
       if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
       setShowPopup(true);
     }
@@ -677,7 +688,7 @@ export default function ProfileRoute({ loaderData }) {
                   </a>
                 }
 
-                { (profile?.allow_contact || (currentUserId != null)) &&
+                { (profile?.allow_contact || ((currentUserId != null) && (isVerified))) &&
                   <button
                     type="button"
                     className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"

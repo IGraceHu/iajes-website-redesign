@@ -76,6 +76,29 @@ export async function getUserRoles(userId) {
     }
 }
 
+/* getUserVerified
+ * Gets if user is verified.
+ * Parameters:
+ *     userId - user's ID
+ * Returns true if user is verified, false if not.
+ */
+export async function getUserVerified(userId) {
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .select('verified')
+            .eq("id", userId);
+        if (data[0]) {
+            return data[0].verified;
+        }
+        return false;
+
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
+}
+
 
 /* hasPermissions
  * Check the given user's role for the correct permissions
