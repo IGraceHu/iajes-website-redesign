@@ -160,6 +160,10 @@ export default function AdminVerification({ loaderData }) {
             <div className="py-20 px-10 lg:px-40 duration-200">
             { isAdmin ? 
                 <div>
+                    <a href="/admin-options" className="banner-breadcrumb on-white">
+                        <i className="bi bi-caret-left-fill"></i>
+                        <strong>ADMIN OPTIONS</strong>
+                    </a>
                     <h2>Manage User Verification</h2>
                     <form className="flex md:flex-row flex-col-reverse" onSubmit={handleSubmit}>
                         <div className="border-2 border-gray-light rounded-md w-full">
@@ -186,10 +190,12 @@ export default function AdminVerification({ loaderData }) {
                             <div className="h-[50vh] overflow-y-auto">
                                 { searchUsers.map((user, idx) => (
                                     <div key={idx} className={"p-1 px-2 border-b-2 last:border-b-0 border-gray-light flex justify-between " + (checkedIds[user.id] && "bg-teal-50")}>
-                                        <a href={`/profile/${user.id}`} className="hover:text-primary-light hover:cursor-pointer duration-200">
-                                            {user.fname} {user.lname}
+                                        <span>
+                                            <a href={`/profile/${user.id}`} className="hover:text-primary-light hover:cursor-pointer duration-200">
+                                                {user.fname} {user.lname}
+                                            </a>
                                             <span className="ml-3 text-disabled-light italic">{user.email}</span>
-                                        </a>
+                                        </span>
                                         <label className="checkbox" style={{marginRight: 0}}
                                         >
                                             <input name={user.id} type="checkbox" checked={checkedIds[user.id]}
