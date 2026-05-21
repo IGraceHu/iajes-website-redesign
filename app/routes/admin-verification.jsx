@@ -52,7 +52,15 @@ export default function AdminVerification({ loaderData }) {
 
     const [isAdmin, setIsAdmin] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
-    const [checkedIds, setCheckedIds] = useState([]);
+
+    const unverifiedUsers = loaderData;
+    
+    const starter = {};
+    for (let user of unverifiedUsers) {
+        starter[user.id] = false;
+    }
+
+    const [checkedIds, setCheckedIds] = useState(starter);
 
     const [query, setQuery] = useState("");
 
@@ -64,30 +72,43 @@ export default function AdminVerification({ loaderData }) {
         return checkCurrentAuth(setIsAdmin, [])
     }, []);
 
-    const unverifiedUsers = loaderData;
-    // console.log(unverifiedUsers);
+
+    function handleCheck(userid) {
+        if (checkedIds[userid]) {
+            setCheckedIds({
+                ...checkedIds,
+                [userid]: false
+            })
+        } else {
+            setCheckedIds({
+                ...checkedIds,
+                [userid]: true
+            })
+        }
+    }
 
     function handleSubmit(e) {
         e.preventDefault();
-        const formData = new FormData(e.target);
-        const newCheckedIds = Array.from(formData.keys());
 
-        setCheckedIds(newCheckedIds);
-        if (newCheckedIds.length > 0) {
+        const filteredCheckedIds = Object.keys(checkedIds).filter((id) => {
+            return checkedIds[id];
+        });
+
+        if (filteredCheckedIds.length > 0) {
             setShowPopup(true);
         }
     }
 
     function clearSelected(e) {
         e.preventDefault();
-        const checkboxEls = document.getElementsByClassName("checkbox");
-        for (let checkboxEl of checkboxEls) {
-            checkboxEl.children[0].checked = false;
-        }
+        setCheckedIds(starter);
     }
 
     async function handleVerify() {
-        const verify = await verifyUsers(checkedIds);
+        const filteredCheckedIds = Object.keys(checkedIds).filter((id) => {
+            return checkedIds[id];
+        });
+        const verify = await verifyUsers(filteredCheckedIds);
         if (verify == null) {
             setShowPopup(false);
             navigate(0);
@@ -119,7 +140,7 @@ export default function AdminVerification({ loaderData }) {
             user?.fname?.toLowerCase().includes(q) ||
             user?.lname?.toLowerCase().includes(q);
     
-            return matchesQuery;
+            return matchesQuery || checkedIds[user.id];
         });
     }, [query]);
 
@@ -127,9 +148,11 @@ export default function AdminVerification({ loaderData }) {
             <Popup show={showPopup} setShow={setShowPopup} buttons={popupButtons}>
                 <h6>Verify the following users?</h6>
                 <div className="mt-2">
-                    { checkedIds.map((userid) => {
-                        const user = getUserById(userid);
-                        return <div key={userid}>{user.fname} {user.lname} <span className="ml-3 text-disabled-light italic">{user.email}</span></div>
+                    { Object.keys(checkedIds).map((userid, idx) => {
+                        if (checkedIds[userid]){
+                            const user = getUserById(userid);
+                            return <div key={userid}>{user.fname} {user.lname} <span className="ml-3 text-disabled-light italic">{user.email}</span></div>
+                        }
                     })}
                 </div>
             </Popup>
@@ -162,13 +185,16 @@ export default function AdminVerification({ loaderData }) {
 
                             <div className="h-[50vh] overflow-y-auto">
                                 { searchUsers.map((user, idx) => (
-                                    <div key={idx} className="p-1 px-2 border-b-2 last:border-b-0 border-gray-light flex justify-between">
+                                    <div key={idx} className={"p-1 px-2 border-b-2 last:border-b-0 border-gray-light flex justify-between " + (checkedIds[user.id] && "bg-teal-50")}>
                                         <a href={`/profile/${user.id}`} className="hover:text-primary-light hover:cursor-pointer duration-200">
                                             {user.fname} {user.lname}
                                             <span className="ml-3 text-disabled-light italic">{user.email}</span>
                                         </a>
-                                        <label className="checkbox" style={{marginRight: 0}}>
-                                            <input name={user.id} type="checkbox" /><p></p>
+                                        <label className="checkbox" style={{marginRight: 0}}
+                                        >
+                                            <input name={user.id} type="checkbox" checked={checkedIds[user.id]}
+                                                onChange={() => {handleCheck(user.id)}}
+                                            /><p></p>
                                         </label>
                                     </div>
                                 ))}
