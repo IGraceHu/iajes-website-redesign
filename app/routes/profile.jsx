@@ -9,10 +9,17 @@ import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import "../styles/profile.css";
 
 export function meta({ loaderData }) {
+  if (loaderData?.person?.fname) {
+    return [
+      { title: loaderData.person.fname + " " + loaderData.person.lname },
+      { name: "", content: "" },
+    ];
+  }
   return [
-    { title: loaderData.person.fname + " " + loaderData.person.lname },
-    { name: "", content: "" },
-  ];
+      { title: "Profile" },
+      { name: "", content: "" },
+    ];
+  
 }
 
 async function getTaskForces() {
@@ -94,6 +101,9 @@ async function updateProfileImage(userId, imageUrl) {
 
 export async function loader({ params }) {
   const person = await getProfile(params.id);
+  if (!person) {
+        throw new Response("Profile not found", { status: 404 });
+    }
   const taskForceList = await getTaskForces();
   return { person: person, taskForceList: taskForceList };
 }
@@ -404,7 +414,7 @@ export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const basePerson = loaderData.person;
+  const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
   const [showPhotoPopup, setShowPhotoPopup] = useState(false);
