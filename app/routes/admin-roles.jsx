@@ -41,6 +41,7 @@ async function getPeople() {
   const { data, error } = await supabase
     .from('users')
     .select('id, fname, lname, email, roles')
+    .eq('verified', true);
   if (data) {
     data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
   }
@@ -515,11 +516,12 @@ export default function AdminOptions({ loaderData }) {
                                 </>
                                 )}
                         </div>
+                        <div className="w-full p-2 text-sm text-disabled-light italic">Only verified members can be admins.</div>
                     </div>
                 </div>
             :
                 <div>
-                    <p>This page is not available.</p>
+                    {/* <p>This page is not available.</p> */}
                 </div>
             }
             </div>
