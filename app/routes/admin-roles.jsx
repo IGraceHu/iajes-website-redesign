@@ -77,9 +77,17 @@ function RoleCheckbox({roleName, isSuper, checkedRoles, updateChecked}) {
 }
 
 function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
+    if (!member) {
+        member = {};
+    }
+    member.id = member?.id || "";
+    member.fname = member?.fname || "";
+    member.lname = member?.lname || "";
+    member.roles = member?.roles || ["member"];
+
     const [showRemove, setShowRemove] = useState(false);
 
-    const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super") || null);
+    const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super") || false);
     const [checkedRoles, setCheckedRoles] = useState({
         "admin-resources": member?.roles.includes("admin-resources") || false,
         "admin-newsletter": member?.roles.includes("admin-newsletter") || false,
@@ -99,8 +107,10 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
         "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false
     })
 
+    
+
     useEffect(() => {
-        setIsSuper(member?.roles.includes("admin-super") || null);
+        setIsSuper(member?.roles.includes("admin-super") || false);
         setCheckedRoles({
             "admin-resources": member?.roles.includes("admin-resources") || false,
             "admin-newsletter": member?.roles.includes("admin-newsletter") || false,
@@ -181,6 +191,7 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
     }
 
     async function removeAdmin() {
+        console.log(member.id);
         const update = await updateMemberRoles(member.id, ["member"]);
         if (update === null) {
             setShow(false);
@@ -214,59 +225,66 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
         if (member?.roles.length < 2) {
             loseMemberFocus();
         }
-        console.log("custom close popup");
         setShow(false);
     }
 
     return (
         <>
             <Popup id="edit-roles" show={show} setShow={setShow} buttons={editButtons} closePopup={handleClosePopup} >
-                <h4>{member?.fname || null} {member?.lname || null}'s roles</h4>
+                { member && 
+                <>
+                    <h4>{member?.fname || null} {member?.lname || null}'s roles</h4>
 
-                <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
+                    <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
 
-                    <label className="checkbox">
-                        <input
-                            type="checkbox"
-                            checked={isSuper}
-                            onChange={((e) => setIsSuper(!isSuper))}
-                        />
-                        <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
-                    </label>
+                        <label className="checkbox">
+                            <input
+                                type="checkbox"
+                                checked={isSuper}
+                                onChange={((e) => setIsSuper(!isSuper))}
+                            />
+                            <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
+                        </label>
 
-                <div className="mt-2">
-                    <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+                    <div className="mt-2">
+                        <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
 
-                    <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-5">
-
-                    <div>
-                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
-                        <div className="flex flex-col gap-2">
-                            {regionRoles.map((role) => (
-                            <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-                            ))}
-                        </div>
+                        <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
                     </div>
 
-                    <div>
-                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
-                        <div className="flex flex-col gap-2">
-                            {tfRoles.map((role) => (
+                    <div className="grid md:grid-cols-2 gap-5">
+
+                        <div>
+                            <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
+                            <div className="flex flex-col gap-2">
+                                {regionRoles.map((role) => (
                                 <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-
-                            ))}
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    
-                </div>
+                        <div>
+                            <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
+                            <div className="flex flex-col gap-2">
+                                {tfRoles.map((role) => (
+                                    <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+
+                                ))}
+                            </div>
+                        </div>
+
+                        
+                    </div>
+                </>
+                }
             </Popup>
 
             <Popup id="remove-confirm" show={showRemove} setShow={setShowRemove} buttons={removeButton} nested>
-                <div className="w-full text-center mt-5">Remove {member?.fname} {member?.lname}'s admin permissions?</div>
+                { member && 
+                <>
+                    <div className="w-full text-center mt-5">Remove {member?.fname} {member?.lname}'s admin permissions?</div>
+                </>
+                }
             </Popup>
         </>
     )
@@ -274,7 +292,7 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
 
 export default function AdminOptions({ loaderData }) {
     const [isAdmin, setIsAdmin] = useState(false);
-    const [focusMember, setFocusMember] = useState(null);
+    const [focusMember, setFocusMember] = useState({});
     const [filters, setFilters] = useState([]);
 
     const [showEditPopup, setShowEditPopup] = useState(false);
@@ -356,7 +374,7 @@ export default function AdminOptions({ loaderData }) {
 
 
     function loseMemberFocus() {
-        setFocusMember(null)
+        setFocusMember({});
     }
 
     return (<>
@@ -446,7 +464,7 @@ export default function AdminOptions({ loaderData }) {
                                             className={"block w-full text-left border-b-2 border-gray-light py-1 px-2 hover:text-primary-dark hover:cursor-pointer duration-200 " + (member.id == focusMember?.id && "text-primary-dark")}
                                             onClick={() => setFocusMember(member)}
                                         >
-                                        {member.fname} {member.lname}
+                                        {member?.fname} {member?.lname}
                                     </button>
                                 )}
                                 { adminMemberFilteredList.length == 0 && <div className="p-2 text-sm text-disabled-light italic">No admins found.</div>}
@@ -454,7 +472,7 @@ export default function AdminOptions({ loaderData }) {
                         </div>
 
                         <div className="w-full h-100 py-2 pl-3 pr-2">
-                            { focusMember ? 
+                            { focusMember && focusMember.id ? 
                                 <div>
                                     <button
                                         type="button"
@@ -464,12 +482,12 @@ export default function AdminOptions({ loaderData }) {
                                         <p className="text-base mr-3 md:block hidden">Edit Roles</p>
                                         <i className={`bi bi-pencil`} />
                                     </button>
-                                    <a href={`/profile/${focusMember.id}`} className="text-xl font-semibold text-secondary-dark hover:text-primary-dark hover:cursor-pointer duration-200">{focusMember.fname} {focusMember.lname}</a>
+                                    <a href={`/profile/${focusMember.id}`} className="text-xl font-semibold text-secondary-dark hover:text-primary-dark hover:cursor-pointer duration-200">{focusMember?.fname} {focusMember?.lname}</a>
                                     <div className="text-sm text-gray-dark/70">{focusMember.email}</div>
                                     <div className="my-2">
-                                        {focusMember.roles.map((role) => {
+                                        {focusMember.roles.map((role, idx) => {
                                             if (role != "member") {
-                                                return <div className="text-sm float-left me-2 mb-2 px-2 py-1 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
+                                                return <div key={"role-" + idx} className="text-sm float-left me-2 mb-2 px-2 py-1 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
                                             }
                                         })}
                                     </div>
@@ -507,12 +525,13 @@ export default function AdminOptions({ loaderData }) {
                                     <>
                                     <div className="grid md:grid-cols-2 gap-2 gap-x-10">
                                         {pageMembers.map((member) => (
-                                            <button className="block p-2 text-left flex justify-between border-2 border-transparent hover:border-primary-light hover:text-primary-dark hover:cursor-pointer duration-200 rounded-md"
-                                                onClick={() => {setFocusMember(member); setShowEditPopup(true)}}
-                                            >
-                                                <span>{member.fname} {member.lname}</span>
-                                                <i className="bi bi-pencil px-2" />
-                                            </button>
+                                            <div key={member?.fname} className="flex p-2 items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
+                                                <button className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" onClick={() => {setFocusMember(member); setShowEditPopup(true)}}>
+                                                <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
+                                                <i className="bi bi-pencil"></i>
+                                                </button>
+                                                <a className="button-icon" href={`/profile/${member.id}`}><i className="bi bi-box-arrow-up-right"></i></a>
+                                            </div>
                                         ))}
                                     </div>
 
