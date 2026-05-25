@@ -1,10 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Pagination } from "../components/pagination";
 import { Popup } from "../components/popup";
-import { checkCurrentAuth } from "../helpers/permissions";
+import { checkCurrentAuthAndId } from "../helpers/permissions";
 
 export function meta({ }) {
   return [
@@ -76,7 +77,8 @@ function RoleCheckbox({roleName, isSuper, checkedRoles, updateChecked}) {
     )
 }
 
-function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
+function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFocus }) {
+    const navigate = useNavigate();
     if (!member) {
         member = {};
     }
@@ -86,6 +88,7 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
     member.roles = member?.roles || ["member"];
 
     const [showRemove, setShowRemove] = useState(false);
+    const [warningMessage, setWarningMessage] = useState(" ");
 
     const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super") || false);
     const [checkedRoles, setCheckedRoles] = useState({
@@ -185,7 +188,12 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
         const update = await updateMemberRoles(member.id, memberNewRoles);
         if (update === null) {
             setShow(false);
-            reload(member);
+            // If user edits themselves to no longer be a superadmin
+            if ((member.id == currentUserId) && !isSuper) {
+                navigate("/");
+            } else {
+                reload(member);
+            }
         }
         return;
     }
@@ -196,7 +204,11 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
         if (update === null) {
             setShow(false);
             setShowRemove(false);
-            reload();
+            if (member.id == currentUserId) {
+                navigate("/");
+            } else {
+                reload();
+            }
         }
         return;
     }
@@ -228,6 +240,18 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
         setShow(false);
     }
 
+    function handleToggleSuper() {
+        const newSuper = !isSuper;
+        setIsSuper(!isSuper);
+        if (member.id == currentUserId) {
+            if (!newSuper) {
+                setWarningMessage("This will remove your permissions to edit roles and validate users.")
+            } else {
+                setWarningMessage(" ");
+            }
+        }
+    }
+
     return (
         <>
             <Popup id="edit-roles" show={show} setShow={setShow} buttons={editButtons} closePopup={handleClosePopup} >
@@ -241,7 +265,7 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
                             <input
                                 type="checkbox"
                                 checked={isSuper}
-                                onChange={((e) => setIsSuper(!isSuper))}
+                                onChange={handleToggleSuper}
                             />
                             <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
                         </label>
@@ -273,8 +297,10 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
                             </div>
                         </div>
 
-                        
                     </div>
+                    <p className="text-center text-error mt-2">
+                        {warningMessage}
+                    </p>
                 </>
                 }
             </Popup>
@@ -292,6 +318,7 @@ function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
 
 export default function AdminOptions({ loaderData }) {
     const [isAdmin, setIsAdmin] = useState(false);
+    const [currentUserId, setCurrentUserId] = useState(null)
     const [focusMember, setFocusMember] = useState({});
     const [filters, setFilters] = useState([]);
 
@@ -301,7 +328,7 @@ export default function AdminOptions({ loaderData }) {
     const [page, setPage] = useState(0);
 
     useEffect(() => {
-        return checkCurrentAuth(setIsAdmin, [])
+        return checkCurrentAuthAndId(setIsAdmin, setCurrentUserId, [])
     }, []);
 
     const [adminMemberList, setAdminMemberList] = useState(loaderData.filter((member) => {
@@ -378,7 +405,7 @@ export default function AdminOptions({ loaderData }) {
     }
 
     return (<>
-            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} reload={reload} loseMemberFocus={loseMemberFocus} />
+            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} reload={reload} currentUserId={currentUserId} loseMemberFocus={loseMemberFocus} />
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 

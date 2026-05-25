@@ -31,6 +31,43 @@ export function checkCurrentAuth(setIsAdmin, targetRoles = [], superAllowed = tr
     return () => subscription.unsubscribe();
 }
 
+/* checkCurrentAuthAndId
+ * Checks current user for admin permissions
+ * Parameters:
+ *     setIsAdmin - A useState setter that reflects if current user is admin or not
+ *     setUserId - A useState setter that reflects the current userId
+ *     targetRoles - an array the roles that are allowed (aside from admin-super)
+ *     superAllowed = true - Optional. Determines if admin-super gets permissions
+ * Returns authentication subscription thing
+ */
+export function checkCurrentAuthAndId(setIsAdmin, setUserId, targetRoles = [], superAllowed = true) {
+    // Listen for auth state changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (session?.user.id) {
+            setUserId(session?.user.id);
+            currentHasPermissions(session?.user.id, targetRoles, superAllowed).then(
+                function (hasPermissions) { setIsAdmin(hasPermissions); }
+            );
+        } else {
+            setUserId(null);
+        }
+    });
+
+    // Check current session on mount
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user.id) {
+            setUserId(session?.user.id);
+            currentHasPermissions(session?.user.id, targetRoles, superAllowed).then(
+                function (hasPermissions) { setIsAdmin(hasPermissions); }
+            );
+        } else {
+            setUserId(null);
+        }
+    });
+
+
+    return () => subscription.unsubscribe();
+}
 
 /* currentHasPermissions
  * Fetches and checks the given user's role for the correct permissions
