@@ -208,8 +208,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
                   <input id="allow-contact" name="allow-contact" type="checkbox" 
                          className={""} defaultChecked={draft.allow_contact}
                          disabled={currentUserId != userId}
-                          /><p>Allow site visitors to contact you?</p>
+                          /><p>Allow site visitors without an account to contact you?</p>
               </label>
+              <div className="w-full p-2 text-sm text-disabled-light italic">All logged in IAJES members will be able to contact you.</div>
             </div>
             <div className="">
               <label htmlFor="languages">Languages</label>
