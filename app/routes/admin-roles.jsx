@@ -76,48 +76,48 @@ function RoleCheckbox({roleName, isSuper, checkedRoles, updateChecked}) {
     )
 }
 
-function RolesEdit({ show, setShow, member, reload }) {
+function RolesEdit({ show, setShow, member, reload, loseMemberFocus }) {
     const [showRemove, setShowRemove] = useState(false);
 
-    const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super"));
+    const [isSuper, setIsSuper] = useState(member?.roles.includes("admin-super") || null);
     const [checkedRoles, setCheckedRoles] = useState({
-        "admin-resources": member?.roles.includes("admin-resources"),
-        "admin-newsletter": member?.roles.includes("admin-newsletter"),
-        "admin-region-jheasa": member?.roles.includes("admin-region-jheasa"),
-        "admin-region-ajcu-na": member?.roles.includes("admin-region-ajcu-na"),
-        "admin-region-ausjal": member?.roles.includes("admin-region-ausjal"),
-        "admin-region-kircher": member?.roles.includes("admin-region-kircher"),
-        "admin-region-ajcu-ap": member?.roles.includes("admin-region-ajcu-ap"),
-        "admin-region-ajcu-am": member?.roles.includes("admin-region-ajcu-am"),
-        "admin-tf-rac": member?.roles.includes("admin-tf-rac"),
-        "admin-tf-wis": member?.roles.includes("admin-tf-wis"),
-        "admin-tf-hea": member?.roles.includes("admin-tf-hea"),
-        "admin-tf-aih": member?.roles.includes("admin-tf-aih"),
-        "admin-tf-esj": member?.roles.includes("admin-tf-esj"),
-        "admin-tf-htfi": member?.roles.includes("admin-tf-htfi"),
-        "admin-tf-infr": member?.roles.includes("admin-tf-infr"),
-        "admin-tf-ene": member?.roles.includes("admin-tf-ene")
+        "admin-resources": member?.roles.includes("admin-resources") || false,
+        "admin-newsletter": member?.roles.includes("admin-newsletter") || false,
+        "admin-region-jheasa": member?.roles.includes("admin-region-jheasa") || false,
+        "admin-region-ajcu-na": member?.roles.includes("admin-region-ajcu-na") || false,
+        "admin-region-ausjal": member?.roles.includes("admin-region-ausjal") || false,
+        "admin-region-kircher": member?.roles.includes("admin-region-kircher") || false,
+        "admin-region-ajcu-ap": member?.roles.includes("admin-region-ajcu-ap") || false,
+        "admin-region-ajcu-am": member?.roles.includes("admin-region-ajcu-am") || false,
+        "admin-tf-rac": member?.roles.includes("admin-tf-rac") || false,
+        "admin-tf-wis": member?.roles.includes("admin-tf-wis") || false,
+        "admin-tf-hea": member?.roles.includes("admin-tf-hea") || false,
+        "admin-tf-aih": member?.roles.includes("admin-tf-aih") || false,
+        "admin-tf-esj": member?.roles.includes("admin-tf-esj") || false,
+        "admin-tf-htfi": member?.roles.includes("admin-tf-htfi") || false,
+        "admin-tf-infr": member?.roles.includes("admin-tf-infr") || false,
+        "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false
     })
 
     useEffect(() => {
-        setIsSuper(member?.roles.includes("admin-super"));
+        setIsSuper(member?.roles.includes("admin-super") || null);
         setCheckedRoles({
-            "admin-resources": member?.roles.includes("admin-resources"),
-            "admin-newsletter": member?.roles.includes("admin-newsletter"),
-            "admin-region-jheasa": member?.roles.includes("admin-region-jheasa"),
-            "admin-region-ajcu-na": member?.roles.includes("admin-region-ajcu-na"),
-            "admin-region-ausjal": member?.roles.includes("admin-region-ausjal"),
-            "admin-region-kircher": member?.roles.includes("admin-region-kircher"),
-            "admin-region-ajcu-ap": member?.roles.includes("admin-region-ajcu-ap"),
-            "admin-region-ajcu-am": member?.roles.includes("admin-region-ajcu-am"),
-            "admin-tf-rac": member?.roles.includes("admin-tf-rac"),
-            "admin-tf-wis": member?.roles.includes("admin-tf-wis"),
-            "admin-tf-hea": member?.roles.includes("admin-tf-hea"),
-            "admin-tf-aih": member?.roles.includes("admin-tf-aih"),
-            "admin-tf-esj": member?.roles.includes("admin-tf-esj"),
-            "admin-tf-htfi": member?.roles.includes("admin-tf-htfi"),
-            "admin-tf-infr": member?.roles.includes("admin-tf-infr"),
-            "admin-tf-ene": member?.roles.includes("admin-tf-ene")
+            "admin-resources": member?.roles.includes("admin-resources") || false,
+            "admin-newsletter": member?.roles.includes("admin-newsletter") || false,
+            "admin-region-jheasa": member?.roles.includes("admin-region-jheasa") || false,
+            "admin-region-ajcu-na": member?.roles.includes("admin-region-ajcu-na") || false,
+            "admin-region-ausjal": member?.roles.includes("admin-region-ausjal") || false,
+            "admin-region-kircher": member?.roles.includes("admin-region-kircher") || false,
+            "admin-region-ajcu-ap": member?.roles.includes("admin-region-ajcu-ap") || false,
+            "admin-region-ajcu-am": member?.roles.includes("admin-region-ajcu-am") || false,
+            "admin-tf-rac": member?.roles.includes("admin-tf-rac") || false,
+            "admin-tf-wis": member?.roles.includes("admin-tf-wis") || false,
+            "admin-tf-hea": member?.roles.includes("admin-tf-hea") || false,
+            "admin-tf-aih": member?.roles.includes("admin-tf-aih") || false,
+            "admin-tf-esj": member?.roles.includes("admin-tf-esj") || false,
+            "admin-tf-htfi": member?.roles.includes("admin-tf-htfi") || false,
+            "admin-tf-infr": member?.roles.includes("admin-tf-infr") || false,
+            "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false
         });
     }, [show])
 
@@ -210,60 +210,66 @@ function RolesEdit({ show, setShow, member, reload }) {
         }
     ]
 
-    if (member) {
-        return (
-            <>
-                <Popup id="edit-roles" show={show} setShow={setShow} buttons={editButtons} >
-                    <h4>{member.fname} {member.lname}'s roles</h4>
-
-                    <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
-
-                        <label className="checkbox">
-                            <input
-                                type="checkbox"
-                                checked={isSuper}
-                                onChange={((e) => setIsSuper(!isSuper))}
-                            />
-                            <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
-                        </label>
-
-                    <div className="mt-2">
-                        <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-
-                        <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-                    </div>
-
-                    <div className="grid md:grid-cols-2 gap-5">
-
-                        <div>
-                            <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
-                            <div className="flex flex-col gap-2">
-                                {regionRoles.map((role) => (
-                                <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-                                ))}
-                            </div>
-                        </div>
-
-                        <div>
-                            <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
-                            <div className="flex flex-col gap-2">
-                                {tfRoles.map((role) => (
-                                    <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
-
-                                ))}
-                            </div>
-                        </div>
-
-                        
-                    </div>
-                </Popup>
-
-                <Popup id="remove-confirm" show={showRemove} setShow={setShowRemove} buttons={removeButton} nested>
-                    <div className="w-full text-center mt-5">Remove {member.fname} {member.lname}'s admin permissions?</div>
-                </Popup>
-            </>
-        )
+    function handleClosePopup() {
+        if (member?.roles.length < 2) {
+            loseMemberFocus();
+        }
+        console.log("custom close popup");
+        setShow(false);
     }
+
+    return (
+        <>
+            <Popup id="edit-roles" show={show} setShow={setShow} buttons={editButtons} closePopup={handleClosePopup} >
+                <h4>{member?.fname || null} {member?.lname || null}'s roles</h4>
+
+                <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
+
+                    <label className="checkbox">
+                        <input
+                            type="checkbox"
+                            checked={isSuper}
+                            onChange={((e) => setIsSuper(!isSuper))}
+                        />
+                        <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
+                    </label>
+
+                <div className="mt-2">
+                    <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+
+                    <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-5">
+
+                    <div>
+                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Region Roles</div>
+                        <div className="flex flex-col gap-2">
+                            {regionRoles.map((role) => (
+                            <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <div className="mt-3 mb-2 font-semibold text-secondary-dark">Task Force Roles</div>
+                        <div className="flex flex-col gap-2">
+                            {tfRoles.map((role) => (
+                                <RoleCheckbox key={role} roleName={role} isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+
+                            ))}
+                        </div>
+                    </div>
+
+                    
+                </div>
+            </Popup>
+
+            <Popup id="remove-confirm" show={showRemove} setShow={setShowRemove} buttons={removeButton} nested>
+                <div className="w-full text-center mt-5">Remove {member?.fname} {member?.lname}'s admin permissions?</div>
+            </Popup>
+        </>
+    )
 }
 
 export default function AdminOptions({ loaderData }) {
@@ -348,8 +354,13 @@ export default function AdminOptions({ loaderData }) {
         if (page > lastPageIndex) setPage(0);
     }, [page, totalPages]);
 
+
+    function loseMemberFocus() {
+        setFocusMember(null)
+    }
+
     return (<>
-            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} reload={reload} />
+            <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} reload={reload} loseMemberFocus={loseMemberFocus} />
             <Menu />
             <div className="py-20 px-10 lg:px-40 duration-200">
                 
@@ -468,6 +479,7 @@ export default function AdminOptions({ loaderData }) {
                             }
                         </div>
                     </div>
+                        <div className="p-2 text-sm text-disabled-light italic">If an admin is not found, they may be unverified. Please contact the database manager for support.</div>
 
                     <div className="mt-10">
                         <h4>Manage Member Roles</h4>

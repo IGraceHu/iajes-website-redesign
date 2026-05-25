@@ -35,7 +35,7 @@ export default function AdminOptions({ }) {
                 </div>
             :
                 <div>
-                    <p>This page is not available.</p>
+                    {/* <p>This page is not available.</p> */}
                 </div>
             }
             </div>
