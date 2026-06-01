@@ -12,6 +12,7 @@ import { useEffect } from 'react';
 // buttons - Optional. An array of objects with properties 'text' and 'onclick'
 //     text - Required. A string with the button text
 //     onclick - Required. A function that clicking the button will execute
+//     className - Optional
 //
 // closePopup - Optional. A function that runs when the close button is clicked.
 //     Note: This does not apply to closeOnBlur. If the user clicks outside of the popup, it will just close normally
@@ -65,7 +66,7 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
     if (buttons) {
         buttons.map((button) => {
             let btnId = "popup-" + id + "-button-" + i;
-            buttonsEl.push(<button key={btnId} id={btnId} className="button mx-2" onClick={button.onclick}>{button.text}</button>);
+            buttonsEl.push(<button key={btnId} id={btnId} className={"button mx-2 " + button?.className} onClick={button.onclick}>{button.text}</button>);
             i++;
         })
     }

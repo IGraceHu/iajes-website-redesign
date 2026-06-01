@@ -5,14 +5,21 @@ import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
-import { currentHasPermissions } from "../helpers/permissions";
+import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import "../styles/profile.css";
 
 export function meta({ loaderData }) {
+  if (loaderData?.person?.fname) {
+    return [
+      { title: loaderData.person.fname + " " + loaderData.person.lname },
+      { name: "", content: "" },
+    ];
+  }
   return [
-    { title: loaderData.person.fname + " " + loaderData.person.lname },
-    { name: "", content: "" },
-  ];
+      { title: "Profile" },
+      { name: "", content: "" },
+    ];
+  
 }
 
 async function getTaskForces() {
@@ -94,6 +101,9 @@ async function updateProfileImage(userId, imageUrl) {
 
 export async function loader({ params }) {
   const person = await getProfile(params.id);
+  if (!person) {
+        throw new Response("Profile not found", { status: 404 });
+    }
   const taskForceList = await getTaskForces();
   return { person: person, taskForceList: taskForceList };
 }
@@ -198,8 +208,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
                   <input id="allow-contact" name="allow-contact" type="checkbox" 
                          className={""} defaultChecked={draft.allow_contact}
                          disabled={currentUserId != userId}
-                          /><p>Allow site visitors to contact you?</p>
+                          /><p>Allow site visitors without an account and unverified IAJES members to contact you?</p>
               </label>
+              <div className="w-full p-2 text-sm text-disabled-light italic">All IAJES members with verified accounts will be able to contact you.</div>
             </div>
             <div className="">
               <label htmlFor="languages">Languages</label>
@@ -404,7 +415,7 @@ export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const basePerson = loaderData.person;
+  const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);
   const [showPhotoPopup, setShowPhotoPopup] = useState(false);
@@ -416,6 +427,7 @@ export default function ProfileRoute({ loaderData }) {
   const fileInputRef = useRef(null);
 
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [isVerified, setIsVerified] = useState(false);
 
   const userTaskForceUrl = loaderData.taskForceList.find((val, index, array) => {
     return val.name == basePerson.task_force;
@@ -443,6 +455,11 @@ export default function ProfileRoute({ loaderData }) {
       currentHasPermissions(session?.user.id).then(
           function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
+      if (session?.user.id) {
+        getUserVerified(session?.user.id).then(
+          function (verified) {setIsVerified(verified)}
+        )
+      }
     });
 
     // Check current session on mount
@@ -451,6 +468,11 @@ export default function ProfileRoute({ loaderData }) {
       currentHasPermissions(session?.user.id).then(
           function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
+      if (session?.user.id) {
+        getUserVerified(session?.user.id).then(
+          function (verified) {setIsVerified(verified)}
+        )
+      }
       if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
       setShowPopup(true);
     }
@@ -677,7 +699,7 @@ export default function ProfileRoute({ loaderData }) {
                   </a>
                 }
 
-                { (profile?.allow_contact || (currentUserId != null)) &&
+                { (profile?.allow_contact || ((currentUserId != null) && (isVerified))) &&
                   <button
                     type="button"
                     className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"

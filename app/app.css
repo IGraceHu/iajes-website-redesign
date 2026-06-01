@@ -118,6 +118,25 @@ a h6:hover {
   color: var(--color-primary-light);
 }
 
+.hover-card h1,
+.hover-card h2,
+.hover-card h3,
+.hover-card h4,
+.hover-card h5,
+.hover-card h6 {
+  color: var(--color-secondary-light);
+}
+
+.hover-card:hover h1,
+.hover-card:hover h2,
+.hover-card:hover h3,
+.hover-card:hover h4,
+.hover-card:hover h5,
+.hover-card:hover h6 {
+  color: var(--color-primary-light);
+}
+
+
 p {
   margin-bottom: calc(var(--spacing) * 2);
   white-space: pre-line;
@@ -395,17 +414,28 @@ button:disabled.button.button-light {
 }
 
 .button.button-red {
-  color: var(--color-error);
+  color: var(--color-white);
+  background-color: var(--color-error);
   border-color: var(--color-error);
   transition: 0.2s;
 }
 
+.button.button-light.button-red {
+  color: var(--color-error);
+  background-color: var(--color-white);
+}
+
 .button.button-red:hover {
-  color: #71000f;
+  /* color: #71000f; */
+  background-color: #71000f;
   border-color: #71000f;
   cursor: pointer;
 }
 
+.button.button-light.button-red:hover {
+  color: #71000f;
+  background-color: var(--color-white);
+}
 
 /* INTERNATIONAL MEETINGS *****************************************************/
 
@@ -816,6 +846,10 @@ input[type="file"].input-required~.input-error {
   margin-left: -15px;
   transition: 0.2s;
   color: white;
+}
+
+.banner-breadcrumb.on-white {
+  color: var(--color-secondary-light);
 }
 
 .banner-breadcrumb>strong {

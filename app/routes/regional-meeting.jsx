@@ -1232,7 +1232,7 @@ export default function RegionalMeeting() {
                 </div>
             </PopupForm>
 
-            <Popup id="delete-meeting" show={showDeleteMeetingPopup} setShow={setShowDeleteMeetingPopup} stayOnBlur={true} nested buttons={[{ text: "Delete", onclick: handleDeleteMeeting }]}>
+            <Popup id="delete-meeting" show={showDeleteMeetingPopup} setShow={setShowDeleteMeetingPopup} stayOnBlur={true} nested buttons={[{ text: "Delete", onclick: handleDeleteMeeting, className: "button-red" }]}>
                 <div className="text-center py-4">
                     <p>Are you sure you want to delete this meeting?</p>
                     <p className="mt-2">This action cannot be undone.</p>

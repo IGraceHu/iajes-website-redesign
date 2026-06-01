@@ -17,6 +17,18 @@ export function meta() {
 */
 async function signUp(data) {
   try {
+    const emailDomain = data.email.slice(data.email.indexOf("@"));
+    const { data: verifiedEmailDomain, error: domainError } = await supabase
+    .from('verified email domains')
+    .select()
+    .eq('domain', emailDomain);
+    if (domainError) {
+      return domainError;
+    }
+
+    // If the returned data is an array, that means there are values, which means its a valid email domain
+    const isVerified = verifiedEmailDomain ? verifiedEmailDomain.length > 0 : false;
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: data.email,
       password: data.pwd,
@@ -57,6 +69,7 @@ async function signUp(data) {
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
           email: data.email,
           role: "member",
+          verified: isVerified,
           subscribed: data.subscribe
         }]);
 
@@ -180,6 +193,7 @@ export default function SignUp() {
           </div>
 
           <label htmlFor="email">Email:</label><br />
+          <div className="text-sm text-disabled-light italic">Please use your institution email.</div>
           <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />

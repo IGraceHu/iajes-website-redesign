@@ -25,4 +25,8 @@ export default [
     route("webinars/archive", "routes/webinars-archive.jsx"),
     route("international-meetings", "routes/international-meetings.jsx"),
     route("supabasetest", "routes/supabasetest.jsx"),
+    route("admin-options", "routes/admin-options.jsx"),
+    route("admin-options/roles", "routes/admin-roles.jsx"),
+    route("admin-options/verification", "routes/admin-verification.jsx"),
+
 ];

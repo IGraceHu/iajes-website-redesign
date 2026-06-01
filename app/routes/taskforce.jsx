@@ -536,7 +536,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
       </Popup>
 
       <Popup id="tf-delete-member" show={showDeletePopup} setShow={setShowDeletePopup} nested
-             buttons={[{text:"Remove", onclick:handleRemove}]}>
+             buttons={[{text:"Remove", onclick:handleRemove, className: "button-red"}]}>
           <div className="text-center mt-6">Remove {focusMember?.name}?</div>
       </Popup>
 
@@ -727,7 +727,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
       </Popup>
 
       <Popup id="tf-delete-project" show={showDeletePopup} setShow={setShowDeletePopup} nested
-             buttons={[{text:"Remove", onclick:handleRemove}]}>
+             buttons={[{text:"Remove", onclick:handleRemove, className: "button-red"}]}>
           <div className="text-center mt-6">Remove {focusProject?.name}?</div>
       </Popup>
 

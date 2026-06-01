@@ -980,7 +980,7 @@ export default function RegionalMeetingDetail() {
             }} validate={handleSaveEditMeeting}>
                 {editPopupContent}
             </PopupForm>
-            <Popup id="delete-meeting-detail" show={showDeletePopup} setShow={setShowDeletePopup} stayOnBlur={true} buttons={[{ text: "Delete", onclick: handleConfirmDeleteMeeting }]}>
+            <Popup id="delete-meeting-detail" show={showDeletePopup} setShow={setShowDeletePopup} stayOnBlur={true} buttons={[{ text: "Delete", onclick: handleConfirmDeleteMeeting, className: "button-red" }]}>
                 {deletePopupContent}
             </Popup>
             <Menu currentEndUrl="/regional-meetings" />
