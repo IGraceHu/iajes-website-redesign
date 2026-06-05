@@ -108,10 +108,10 @@ function ResourceCard({ resourceInfo }) {
             <a href={"video-resource/" + resourceInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
                     {resourceInfo.video_thumbnail ?
-                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} />
+                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} alt={`${resourceInfo.title} thumbnail`} />
                         :
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" alt="" aria-hidden="true" />
                             <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{resourceInfo.title}</h5>
                             <p style={{ color: "var(--color-white)" }}>{resourceInfo.date.replace(/-/g, '\/')}</p>
                         </div>
@@ -138,7 +138,7 @@ export default function VideoResources({ loaderData }) {
     const videoResourcesData = loaderData.videoResources.sort(function (a, b) { return new Date(b.date) - new Date(a.date) });
 
     const videoResources = [];
-    for (let i = (currentPage * 6); i < currentPage + 6; i++) {
+    for (let i = (currentPage * 6); i < (currentPage * 6) + 6; i++) {
         if (i < videoResourcesData.length) {
             videoResources.push(<ResourceCard key={videoResourcesData[i].id} resourceInfo={videoResourcesData[i]} />)
         } else {
@@ -223,7 +223,7 @@ export default function VideoResources({ loaderData }) {
         <>
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm id="video-resource" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                    <PopupForm id="video-resource" label="Create new video resource" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
                         <h4>Create new video resource</h4>
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
@@ -282,19 +282,19 @@ export default function VideoResources({ loaderData }) {
                             </label>
                             <br /><br />
                             <label htmlFor="vid-resource-speaker-desc">Description:</label><br />
-                            <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker descrption..."></textarea>
+                            <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker description..."></textarea>
                         </fieldset>
                     </PopupForm>
-                    <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
+                    <Popup id="resolve" label="Video resource created" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
                         <br /><p className="m-2">New video resource created!</p>
                     </Popup>
                 </div>
             }
             <Menu currentEndUrl="/video-resources" />
-            <div className="py-20 px-10 lg:px-40 duration-200">
+            <main id="main-content" className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
                     <h1>Video Resources</h1>
-                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new video resource</button>}
+                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3" aria-hidden="true"></i>Create new video resource</button>}
                 </div>
                 <p>
                     Here you will find some videos provided by members of our network that you can use for your own training and also share with your students.
@@ -303,7 +303,7 @@ export default function VideoResources({ loaderData }) {
                     {videoResources}
                 </div>
                 <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={videoResourcesData.length} itemsPerPage={6} pageRange={5} />
-            </div>
+            </main>
             <Footer />
         </>
     );

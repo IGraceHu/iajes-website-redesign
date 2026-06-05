@@ -95,8 +95,8 @@ export default function NewsletterDrafts() {
                 <button className={`button ${mode === 'admin' ? 'button' : 'button-light'}`} onClick={() => setMode('admin')}>Admin</button>
             </div>
 
-            <main className="py-20 container mx-auto min-h-[60vh]">
-                <h2 className="text-2xl font-semibold mb-4">Newsletter Drafts {/*mode === 'admin' ? 'Admin' : mode === 'manager' ? 'Manager' : 'Member'*/}</h2>
+            <main id="main-content" className="py-20 container mx-auto min-h-[60vh]">
+                <h1 className="text-2xl font-semibold mb-4" style={{ textTransform: "none" }}>Newsletter Drafts {/*mode === 'admin' ? 'Admin' : mode === 'manager' ? 'Manager' : 'Member'*/}</h1>
 
                 <div className="space-y-6">
                     {paged.map((d) => (
@@ -104,8 +104,10 @@ export default function NewsletterDrafts() {
                             <div className="flex justify-between items-center mb-3">
                                 <div>
                                     <div className="text-sm text-gray-500">
-                                        <input className="input input-text mr-3" value={d.title} onChange={(e) => updateDraftField(d.id, 'title', e.target.value)} placeholder="Title" />
-                                        <input className="input input-text" value={d.deadline} onChange={(e) => updateDraftField(d.id, 'deadline', e.target.value)} placeholder="Deadline (MM/DD/YY)" />
+                                        <label htmlFor={`draft-title-${d.id}`} className="sr-only">Draft title</label>
+                                        <input id={`draft-title-${d.id}`} className="input input-text mr-3" value={d.title} onChange={(e) => updateDraftField(d.id, 'title', e.target.value)} placeholder="Title" />
+                                        <label htmlFor={`draft-deadline-${d.id}`} className="sr-only">Draft deadline</label>
+                                        <input id={`draft-deadline-${d.id}`} className="input input-text" value={d.deadline} onChange={(e) => updateDraftField(d.id, 'deadline', e.target.value)} placeholder="Deadline (MM/DD/YY)" />
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-2">
@@ -126,7 +128,7 @@ export default function NewsletterDrafts() {
                                             </div>
 
                                             <div className="flex gap-3">
-                                                <button><NavLink to={`/newsletter/drafts/${d.id}/edit/${a.id}`} className="text-primary-dark">Edit</NavLink></button>
+                                                <NavLink to={`/newsletter/drafts/${d.id}/edit/${a.id}`} className="text-primary-dark">Edit</NavLink>
                                                 <button onClick={() => deleteArticle(d.id, a.id)} className="text-red-600 cursor-pointer">Delete</button>
                                                 <div className="flex flex-col">
                                                     <button onClick={() => moveArticle(d.id, idx, -1)} className="text-gray-dark cursor-pointer" title="Move up">▲</button>
@@ -142,15 +144,15 @@ export default function NewsletterDrafts() {
                 </div>
 
                 <div className="mt-5 grid grid-cols-2 gap-5">
-                    <button onClick={addNewsletter} className="button button-light w-full">Create Newsletter <i className="bi bi-plus-lg"></i></button>
-                    <button className="button button-light w-full flex justify-center gap-2">Start from Upload <i className="bi bi-upload"></i></button>
+                    <button onClick={addNewsletter} className="button button-light w-full">Create Newsletter <i className="bi bi-plus-lg" aria-hidden="true"></i></button>
+                    <button className="button button-light w-full flex justify-center gap-2">Start from Upload <i className="bi bi-upload" aria-hidden="true"></i></button>
                 </div>
                 <div className="mt-5 flex justify-center space-x-2">
-                    <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button"><i className="bi bi-arrow-left-short"></i> Prev</button>
+                    <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button" aria-label="Previous draft page"><i className="bi bi-arrow-left-short" aria-hidden="true"></i> Prev</button>
                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                        <button key={p} onClick={() => setPage(p)} className={`button ${p === page ? 'font-semibold' : 'button-light'}`}>{p}</button>
+                        <button key={p} onClick={() => setPage(p)} className={`button ${p === page ? 'font-semibold' : 'button-light'}`} aria-current={p === page ? "page" : undefined} aria-label={`Draft page ${p}`}>{p}</button>
                     ))}
-                    <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button">Next <i className="bi bi-arrow-right-short"></i></button>
+                    <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button" aria-label="Next draft page">Next <i className="bi bi-arrow-right-short" aria-hidden="true"></i></button>
                 </div>
             </main>
 

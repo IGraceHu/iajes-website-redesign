@@ -55,7 +55,7 @@ function InfographicSection() {
                 </div>
 
                 {/* Connecting arrows */}
-                <svg className="org-arrows" width="100%" height="100%" viewBox="0 0 600 500" preserveAspectRatio="none">
+                <svg className="org-arrows" width="100%" height="100%" viewBox="0 0 600 500" preserveAspectRatio="none" aria-hidden="true" focusable="false">
                     {/* Top to Bottom Left */}
                     <defs>
                         <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
@@ -84,7 +84,7 @@ function MemberCard({ name, university, location, email, region, taskForce, posi
         <div className="member-card">
             <div className="member-image-container flex justify-start">
                 <div className="member-image rounded-md">
-                    <img src={imageURL} alt={name} />
+                    <img src={imageURL} alt={`${name} headshot`} />
                 </div>
             </div>
             <div className="member-info">
@@ -156,7 +156,7 @@ function MembersSection() {
         { name: "Bryan Ranger", university: "Boston College", location: "US", email: "rangerb@bc.edu", taskForce: "Health Care", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(2).jpeg" },
         { name: "Gail Baura", university: "Loyola University Chicago", location: "US", email: "gbaura@luc.edu", taskForce: "Engineering and Social Justice", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(3).jpeg" },
         { name: "Allan Báez", university: "Santa Clara University", location: "US", email: "abaezmorales@scu.edu", taskForce: "Humanitarian Engineering & Frugal Innovation", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(4).jpeg" },
-        { name: "Nicolás Rincon", university: "Pontificia Universidad Javeriana", location: "Columbia", email: "nicolas.rincon@javeriana.edu.co", taskForce: "Infrastructure", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(5).jpeg" },
+        { name: "Nicolás Rincon", university: "Pontificia Universidad Javeriana", location: "Colombia", email: "nicolas.rincon@javeriana.edu.co", taskForce: "Infrastructure", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(5).jpeg" },
         { name: "Pablo Frías", university: "ICAI", location: "Spain", email: "pablof@comillas.edu", taskForce: "Energy", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(6).jpeg" },
         { name: "Luis Martínez", university: "Universidad Centroamericana José Simeón Cañas", location: "El Salvador", email: "lamartinez", taskForce: "Research & Academic Cooperation", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(7).jpeg" },
         { name: "Andrés García", university: "IQS", location: "Spain", email: "andres.garcia@iqs.url.edu", taskForce: "Student Challenge", position: "Task Force Leader", imageURL: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/organizational-structure/OperationalCommittee%20(8).jpeg" },
@@ -385,7 +385,7 @@ function RolesSection() {
             title: "Remarks:",
             description: (
                 <ul>
-                    <li className="role-line">The Governing Board proposed a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="blank"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This roadmap must have the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, and a close relationship with IAJU.</li>
+                    <li className="role-line">The Governing Board proposed a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="_blank" rel="noopener noreferrer"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right" aria-hidden="true"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This roadmap must have the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, and a close relationship with IAJU.</li>
                     <li className="role-line">Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.</li>
                     <li className="role-line">This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Regional Committee Chair, Operational Committee Chair, Secretary, Past President, Regional Leader, Task Force and Project Leader, University Representative.</li>
                     <li className="role-line">It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network.</li>
@@ -399,13 +399,13 @@ function RolesSection() {
         <div className="bg-secondary-dark py-20 px-0 lg:px-0 relative overflow-hidden">
             {/* Decorative discs */}
             <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
-                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="/assets/landing-disc-2a.svg" />
-                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="/assets/landing-disc-4b.svg" />
+                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="/assets/landing-disc-2a.svg" alt="" aria-hidden="true" />
+                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="/assets/landing-disc-4b.svg" alt="" aria-hidden="true" />
             </div>
 
             <div className="text-center mb-12 px-10 lg:px-40 relative z-10">
                 <h2 className="text-white mb-4">Roles</h2>
-                <p className="text-white text-sm">These roles were established at the Bhubaneshwar Summit in July 2024.</p>
+                <p className="text-white text-sm">These roles were established at the Bhubaneswar Summit in July 2024.</p>
             </div>
 
             <div className="roles-grid px-10 relative z-10">
@@ -452,12 +452,12 @@ export default function OrganizationalStructure() {
     return (
         <>
             <Menu currentEndUrl="/organizational-structure" />
-            <div className="w-full duration-200">
+            <main id="main-content" className="w-full duration-200">
                 <InfographicSection />
                 <MembersSection />
                 <RolesSection />
                 <LogoSection />
-            </div>
+            </main>
             <Footer />
         </>
     );

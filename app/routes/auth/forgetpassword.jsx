@@ -81,7 +81,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
 
       <form action={formAction} className="md:w-sm w-full duration-200">
         <label htmlFor="email">Email:</label><br />
-        <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Enter your email address"
+        <input id="email" name="email" type="email" defaultValue={state?.email} placeholder="Enter your email address" autoComplete="email"
           className={"input-text w-full " + (emailRequired && "input-required")}
           onChange={(e) => checkEmpty(e.target.value)} />
         <div className="input-error">Please enter a valid email address.</div>
@@ -105,21 +105,21 @@ export default function ForgetPassword() {
 
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Popup id="forget-password" show={showPopup} setShow={setShowPopup} >
-        <div className="w-full h-30 text-center flex justify-center items-center">{popupMessage}</div>
+      <Popup id="forget-password" label="Password reset error" show={showPopup} setShow={setShowPopup} >
+        <div className="w-full h-30 text-center flex justify-center items-center" role="alert">{popupMessage}</div>
       </Popup>
 
       <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES logo" />
         </NavLink>
       </div>
 
-      <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
-        <h4>Reset your password</h4>
+      <main id="main-content" className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
+        <h1 style={{ fontSize: "1.7rem", textTransform: "none", color: "var(--color-secondary-light)" }}>Reset your password</h1>
         {!formSuccess && <ResetForm setShowPopup={setShowPopup} setPopupMessage={setPopupMessage} setFormSuccess={setFormSuccess} />}
         {formSuccess && <p className="pb-5 text-center w-sm">A password reset link has been sent to your email. Please click on the link in the email to reset your password.</p>}
-      </div>
+      </main>
       <div className="bg-primary-dark h-20 w-full"></div>
     </div>
   );

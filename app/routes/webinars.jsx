@@ -145,10 +145,10 @@ function WebinarCard({ webinarInfo }) {
             <a href={"webinars/" + webinarInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
                     {webinarInfo.thumbnail_url ?
-                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.thumbnail_url} />
+                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.thumbnail_url} alt={`${webinarInfo.title} webinar thumbnail`} />
                         :
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" alt="" aria-hidden="true" />
                             <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{webinarInfo.title}</h5>
                             <p style={{ color: "var(--color-white)" }}>{webinarInfo?.date.replace(/-/g, '\/')}</p>
                         </div>
@@ -208,7 +208,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -269,7 +269,7 @@ export default function Webinars({ loaderData }) {
     const webinarsData = loaderData.webinars.sort(function (a, b) { return new Date(b.date) - new Date(a.date) });
 
     const webinars = [];
-    for (let i = (currentPage * 6); i < currentPage + 6; i++) {
+    for (let i = (currentPage * 6); i < (currentPage * 6) + 6; i++) {
         if (i < webinarsData.length) {
             webinars.push(<WebinarCard key={webinarsData[i].id} webinarInfo={webinarsData[i]} />)
         } else {
@@ -362,7 +362,7 @@ export default function Webinars({ loaderData }) {
         <>
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm id="webinar" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                    <PopupForm id="webinar" label="Create new webinar" show={showCreatePopup} setShow={setShowCreatePopup} validate={validate} hasError={hasError} encType="multipart/form-data">
                         <h4>Create new webinar</h4>
                         <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
                             <div>
@@ -411,20 +411,20 @@ export default function Webinars({ loaderData }) {
                             <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
-                    <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
+                    <Popup id="resolve" label="Webinar created" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
                         <br /><p className="m-2">New video resource created!</p>
                     </Popup>
                 </div>
             }
             <Menu currentEndUrl="/webinars" />
-            <div className="py-20 px-10 lg:px-40 duration-200">
+            <main id="main-content" className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
                     
                     <h1>Webinars</h1>
                         
                     <div className="flex items-center">
                         <a href="/webinars/archive" className="button button-light block">Archive</a>
-                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new webinar</button>}
+                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3" aria-hidden="true"></i>Create new webinar</button>}
                     </div>
                 </div>
                 <p>
@@ -434,7 +434,7 @@ export default function Webinars({ loaderData }) {
                     {webinars}
                 </div>
                 <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalItems={webinarsData.length} itemsPerPage={6} pageRange={5} />
-            </div>
+            </main>
             <Footer />
         </>
     );

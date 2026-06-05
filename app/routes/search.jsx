@@ -138,11 +138,11 @@ export default function SearchRoute({ loaderData }) {
     <div className="min-h-screen bg-white">
       <Menu />
 
-      <div className="mx-auto max-w-[1100px] px-6 pb-20 pt-10">
+      <main id="main-content" className="mx-auto max-w-[1100px] px-6 pb-20 pt-10">
         <div className="text-center">
-          <h2 className="mb-2 normal-case text-primary-dark">
+          <h1 className="mb-2 normal-case text-primary-dark">
             Search People
-          </h2>
+          </h1>
           <p
             className={`text-sm text-gray-dark/70 transition-opacity duration-200 ${
               showHeader ? "opacity-100" : "opacity-0"
@@ -157,6 +157,7 @@ export default function SearchRoute({ loaderData }) {
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
+            <label htmlFor="search-input" className="sr-only">Search people</label>
             <input
               id="search-input"
               value={query}
@@ -166,8 +167,9 @@ export default function SearchRoute({ loaderData }) {
               className="w-full bg-transparent text-sm text-gray-dark outline-none"
             />
             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
-                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-              <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}
+                    aria-label="Clear search">
+              <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-hidden="true" />
             </button>
           </div>
 
@@ -240,7 +242,7 @@ export default function SearchRoute({ loaderData }) {
             </>
           )}
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );
@@ -272,15 +274,7 @@ function PersonResultCard({ person }) {
   return (
     <a
       href={`/profile/${person.id}`}
-      role="link"
-      tabIndex={0}
-      aria-label={`View profile for ${person.fname}`}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          handleNavigate();
-        }
-      }}
+      aria-label={`View profile for ${person.fname} ${person.lname}`}
       className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-3"
     >
       <div className="flex items-center gap-4">

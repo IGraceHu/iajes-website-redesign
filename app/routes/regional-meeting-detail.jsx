@@ -644,42 +644,42 @@ export default function RegionalMeetingDetail() {
                 <h4>Edit Meeting</h4>
                 <div className="grid gap-4">
                     <div>
-                        <label>Region:</label>
+                        <p className="font-semibold mb-1">Region:</p>
                         <p className="inline-block pl-1">{meetingData.region}</p>
                     </div>
                     <div>
-                        <label>Title:</label>
-                        <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" placeholder="Title" value={editForm?.title || ''} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
+                        <p className="font-semibold mb-1">Title:</p>
+                        <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" placeholder="Title" aria-label="Meeting title" value={editForm?.title || ''} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
                         <div className="input-error">This field is required.</div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
-                            <label>Date:</label>
-                            <input name="date" className={"input input-text w-full " + (formRequired?.editDate && "input-required")} type="date" value={toInputDateFormat(editForm?.date)} onChange={e => { setEditForm({ ...editForm, date: fromInputDateFormat(e.target.value) }); checkEmpty(e.target.value, "editDate"); }} />
+                            <p className="font-semibold mb-1">Date:</p>
+                            <input name="date" className={"input input-text w-full " + (formRequired?.editDate && "input-required")} type="date" aria-label="Meeting date" value={toInputDateFormat(editForm?.date)} onChange={e => { setEditForm({ ...editForm, date: fromInputDateFormat(e.target.value) }); checkEmpty(e.target.value, "editDate"); }} />
                             <div className="input-error">This field is required.</div>
                         </div>
                         <div>
-                            <label>Location:</label>
-                            <input name="location" className="input input-text w-full" type="text" placeholder="Location" value={editForm?.location || ''} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
+                            <p className="font-semibold mb-1">Location:</p>
+                            <input name="location" className="input input-text w-full" type="text" placeholder="Location" aria-label="Meeting location" value={editForm?.location || ''} onChange={e => setEditForm({ ...editForm, location: e.target.value })} />
                         </div>
                     </div>
                 </div>
-                <label>Description:</label>
-                <textarea name="description" className="input input-text w-full" placeholder="Description" value={editForm?.description || ''} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="12" />
+                <p className="font-semibold mb-1">Description:</p>
+                <textarea name="description" className="input input-text w-full" placeholder="Description" aria-label="Meeting description" value={editForm?.description || ''} onChange={e => setEditForm({ ...editForm, description: e.target.value })} rows="12" />
             </div>
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label>Agenda Link:</label>
-                    <input name="agendaLink" className="input input-text w-full" type="text" placeholder="https://drive.google.com/file/d/.../preview" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
+                    <p className="font-semibold mb-1">Agenda Link:</p>
+                    <input name="agendaLink" className="input input-text w-full" type="text" placeholder="https://drive.google.com/file/d/.../preview" aria-label="Agenda link" value={editForm?.agendaLink || ''} onChange={e => setEditForm({ ...editForm, agendaLink: e.target.value })} />
                 </div>
                 <div>
-                    <label>Meeting Report Link:</label>
-                    <input name="reportLink" className="input input-text w-full" type="text" placeholder="https://drive.google.com/file/d/.../preview" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
+                    <p className="font-semibold mb-1">Meeting Report Link:</p>
+                    <input name="reportLink" className="input input-text w-full" type="text" placeholder="https://drive.google.com/file/d/.../preview" aria-label="Meeting report link" value={editForm?.reportLink || ''} onChange={e => setEditForm({ ...editForm, reportLink: e.target.value })} />
                 </div>
             </div>
             <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                    <label>Agenda PDF:</label>
+                    <p className="font-semibold mb-1">Agenda PDF:</p>
                     {editForm?.existingAgendaPdfUrl && !editForm?.deleteAgendaPdf && !editForm?.agendaPdf ? (
                         <div className="flex items-center gap-2 mt-1">
                             <span className="text-sm text-gray-dark truncate flex-1 input input-text w-full py-1">
@@ -689,9 +689,10 @@ export default function RegionalMeetingDetail() {
                                 type="button"
                                 className="text-red-600 cursor-pointer shrink-0"
                                 title="Remove PDF"
+                                aria-label="Remove agenda PDF"
                                 onClick={() => setEditForm({ ...editForm, deleteAgendaPdf: true })}
                             >
-                                <i className="bi bi-trash"></i>
+                                <i className="bi bi-trash" aria-hidden="true"></i>
                             </button>
                         </div>
                     ) : editForm?.deleteAgendaPdf ? (
@@ -702,15 +703,15 @@ export default function RegionalMeetingDetail() {
                     ) : null}
                     {(!editForm?.existingAgendaPdfUrl || editForm?.deleteAgendaPdf || editForm?.agendaPdf) && (
                         <div className="flex items-center gap-2 mt-1">
-                            <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0], deleteAgendaPdf: false })} />
+                            <input name="agendaPdf" className="w-full" type="file" accept=".pdf" aria-label="Upload agenda PDF" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0], deleteAgendaPdf: false })} />
                             {editForm?.agendaPdf && (
-                                <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, agendaPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label="Cancel selected agenda PDF" onClick={() => setEditForm({ ...editForm, agendaPdf: null })}><i className="bi bi-x-lg" aria-hidden="true"></i></button>
                             )}
                         </div>
                     )}
                 </div>
                 <div>
-                    <label>Meeting Report PDF:</label>
+                    <p className="font-semibold mb-1">Meeting Report PDF:</p>
                     {editForm?.existingReportPdfUrl && !editForm?.deleteReportPdf && !editForm?.reportPdf ? (
                         <div className="flex items-center gap-2 mt-1">
                             <span className="text-sm text-gray-dark truncate flex-1 input input-text w-full py-1">
@@ -720,9 +721,10 @@ export default function RegionalMeetingDetail() {
                                 type="button"
                                 className="text-red-600 cursor-pointer shrink-0"
                                 title="Remove PDF"
+                                aria-label="Remove meeting report PDF"
                                 onClick={() => setEditForm({ ...editForm, deleteReportPdf: true })}
                             >
-                                <i className="bi bi-trash"></i>
+                                <i className="bi bi-trash" aria-hidden="true"></i>
                             </button>
                         </div>
                     ) : editForm?.deleteReportPdf ? (
@@ -733,17 +735,17 @@ export default function RegionalMeetingDetail() {
                     ) : null}
                     {(!editForm?.existingReportPdfUrl || editForm?.deleteReportPdf || editForm?.reportPdf) && (
                         <div className="flex items-center gap-2 mt-1">
-                            <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0], deleteReportPdf: false })} />
+                            <input name="reportPdf" className="w-full" type="file" accept=".pdf" aria-label="Upload meeting report PDF" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0], deleteReportPdf: false })} />
                             {editForm?.reportPdf && (
-                                <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, reportPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label="Cancel selected meeting report PDF" onClick={() => setEditForm({ ...editForm, reportPdf: null })}><i className="bi bi-x-lg" aria-hidden="true"></i></button>
                             )}
                         </div>
                     )}
                 </div>
             </div>
             <div>
-                <label>Photos:</label>
-                <input className="w-full" type="file" multiple accept="image/*" onChange={e => {
+                <p className="font-semibold mb-1">Photos:</p>
+                <input className="w-full" type="file" multiple accept="image/*" aria-label="Upload meeting photos" onChange={e => {
                     const files = Array.from(e.target.files);
                     const newImages = files.map(f => ({ file: f, url: URL.createObjectURL(f), isNew: true }));
                     setEditForm({ ...editForm, allImages: [...(editForm?.allImages || []), ...newImages] });
@@ -755,11 +757,12 @@ export default function RegionalMeetingDetail() {
                         <div className="flex flex-wrap gap-2 mt-1">
                             {editForm.allImages.map((img, idx) => img.toDelete ? null : (
                                 <div key={img.id || `new-${idx}`} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
-                                    <img src={img.resource_url || img.url} className="w-24 h-24 object-contain" />
+                                    <img src={img.resource_url || img.url} alt={`Meeting image ${idx + 1}`} className="w-24 h-24 object-contain" />
                                     <div className="absolute top-1 left-1 flex gap-1">
                                         <button
                                             type="button"
                                             className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
+                                            aria-label={`Move photo ${idx + 1} earlier`}
                                             onClick={() => {
                                                 if (idx === 0) return;
                                                 const updated = [...editForm.allImages];
@@ -768,11 +771,12 @@ export default function RegionalMeetingDetail() {
                                             }}
                                             disabled={idx === 0}
                                         >
-                                            <i className="bi bi-arrow-left"></i>
+                                            <i className="bi bi-arrow-left" aria-hidden="true"></i>
                                         </button>
                                         <button
                                             type="button"
                                             className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
+                                            aria-label={`Move photo ${idx + 1} later`}
                                             onClick={() => {
                                                 if (idx === editForm.allImages.length - 1) return;
                                                 const updated = [...editForm.allImages];
@@ -781,12 +785,13 @@ export default function RegionalMeetingDetail() {
                                             }}
                                             disabled={idx === editForm.allImages.length - 1}
                                         >
-                                            <i className="bi bi-arrow-right"></i>
+                                            <i className="bi bi-arrow-right" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                     <button
                                         type="button"
                                         className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
+                                        aria-label={`Remove photo ${idx + 1}`}
                                         onClick={() => {
                                             if (img.isNew) {
                                                 setEditForm({ ...editForm, allImages: editForm.allImages.filter((_, i) => i !== idx) });
@@ -798,7 +803,7 @@ export default function RegionalMeetingDetail() {
                                             }
                                         }}
                                     >
-                                        <i className="bi bi-trash"></i>
+                                        <i className="bi bi-trash" aria-hidden="true"></i>
                                     </button>
                                     <span className="absolute bottom-1 left-1 bg-black/50 rounded-md text-white text-xs p-1">{idx + 1}</span>
                                 </div>
@@ -808,8 +813,8 @@ export default function RegionalMeetingDetail() {
                 )}
             </div>
             <div>
-                <label>Videos:</label>
-                <input className="w-full" type="file" multiple accept="video/*" onChange={e => {
+                <p className="font-semibold mb-1">Videos:</p>
+                <input className="w-full" type="file" multiple accept="video/*" aria-label="Upload meeting videos" onChange={e => {
                     const files = Array.from(e.target.files);
                     const newVideos = files.map(f => ({ file: f, url: URL.createObjectURL(f), isNew: true }));
                     setEditForm({ ...editForm, allVideos: [...(editForm?.allVideos || []), ...newVideos] });
@@ -826,6 +831,7 @@ export default function RegionalMeetingDetail() {
                                         <button
                                             type="button"
                                             className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
+                                            aria-label={`Move video ${idx + 1} earlier`}
                                             onClick={() => {
                                                 if (idx === 0) return;
                                                 const updated = [...editForm.allVideos];
@@ -834,11 +840,12 @@ export default function RegionalMeetingDetail() {
                                             }}
                                             disabled={idx === 0}
                                         >
-                                            <i className="bi bi-arrow-left"></i>
+                                            <i className="bi bi-arrow-left" aria-hidden="true"></i>
                                         </button>
                                         <button
                                             type="button"
                                             className="text-xs bg-white rounded-full p-1 cursor-pointer hover:bg-gray-200"
+                                            aria-label={`Move video ${idx + 1} later`}
                                             onClick={() => {
                                                 if (idx === editForm.allVideos.length - 1) return;
                                                 const updated = [...editForm.allVideos];
@@ -847,12 +854,13 @@ export default function RegionalMeetingDetail() {
                                             }}
                                             disabled={idx === editForm.allVideos.length - 1}
                                         >
-                                            <i className="bi bi-arrow-right"></i>
+                                            <i className="bi bi-arrow-right" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                     <button
                                         type="button"
                                         className="absolute top-1 right-1 text-red-600 bg-white rounded-full p-1 cursor-pointer"
+                                        aria-label={`Remove video ${idx + 1}`}
                                         onClick={() => {
                                             if (vid.isNew) {
                                                 setEditForm({ ...editForm, allVideos: editForm.allVideos.filter((_, i) => i !== idx) });
@@ -864,7 +872,7 @@ export default function RegionalMeetingDetail() {
                                             }
                                         }}
                                     >
-                                        <i className="bi bi-trash"></i>
+                                        <i className="bi bi-trash" aria-hidden="true"></i>
                                     </button>
                                     <span className="absolute bottom-1 left-1 bg-black/50 rounded-md text-white text-xs p-1">{idx + 1}</span>
                                 </div>
@@ -942,12 +950,14 @@ export default function RegionalMeetingDetail() {
                         onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-zinc-50)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(-3px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-zinc-400)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(0)'; }}
                         onClick={() => go('prev')}
+                        aria-label="Show previous meeting photo"
                     >
-                        <i className="bi bi-chevron-left"></i>
+                        <i className="bi bi-chevron-left" aria-hidden="true"></i>
                     </button>
                     <img
                         key={current}
                         src={images[current].resource_url}
+                        alt={images[current].caption || `Meeting photo ${current + 1} of ${images.length}`}
                         className={`w-full h-full object-contain ${animating ? (direction === 'next' ? 'carousel-exit-left' : 'carousel-exit-right') : (direction ? (direction === 'next' ? 'carousel-enter-right' : 'carousel-enter-left') : '')}`}
                     />
                     <div className="absolute bottom-4 left-4 text-white text-xs p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
@@ -959,8 +969,9 @@ export default function RegionalMeetingDetail() {
                         onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-zinc-50)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(3px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-zinc-400)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(0)'; }}
                         onClick={() => go('next')}
+                        aria-label="Show next meeting photo"
                     >
-                        <i className="bi bi-chevron-right"></i>
+                        <i className="bi bi-chevron-right" aria-hidden="true"></i>
                     </button>
                 </div>
                 {images[current].caption && (
@@ -972,7 +983,7 @@ export default function RegionalMeetingDetail() {
 
     return (
         <>
-            <PopupForm id="edit-meeting-detail" className="md:w-[70vw] relative" show={showEditPopup} setShow={(v) => {
+            <PopupForm id="edit-meeting-detail" label="Edit meeting detail" className="md:w-[70vw] relative" show={showEditPopup} setShow={(v) => {
                 if (!v) {
                     setFormRequired({ editTitle: "", editDate: "" });
                 }
@@ -980,28 +991,29 @@ export default function RegionalMeetingDetail() {
             }} validate={handleSaveEditMeeting}>
                 {editPopupContent}
             </PopupForm>
-            <Popup id="delete-meeting-detail" show={showDeletePopup} setShow={setShowDeletePopup} stayOnBlur={true} buttons={[{ text: "Delete", onclick: handleConfirmDeleteMeeting, className: "button-red" }]}>
+            <Popup id="delete-meeting-detail" label="Delete meeting" show={showDeletePopup} setShow={setShowDeletePopup} stayOnBlur={true} buttons={[{ text: "Delete", onclick: handleConfirmDeleteMeeting, className: "button-red" }]}>
                 {deletePopupContent}
             </Popup>
             <Menu currentEndUrl="/regional-meetings" />
-            <Banner>
-                <a href="/regional-meetings" className="banner-breadcrumb">
-                    <i className="bi bi-caret-left-fill"></i>
-                    <strong>REGIONAL MEETINGS</strong>
-                </a>
-                <br />
-                <a href={`/regional-meetings/${regionName}`} className="banner-breadcrumb">
-                    <i className="bi bi-caret-left-fill"></i>
-                    <strong>{regionName}</strong>
-                </a>
-                <h1 style={{ color: "white" }}>{meetingData.name}</h1>
-                <p>{meetingData.date} - {meetingData.location}</p>
-            </Banner>
+            <main id="main-content">
+                <Banner>
+                    <a href="/regional-meetings" className="banner-breadcrumb">
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
+                        <strong>REGIONAL MEETINGS</strong>
+                    </a>
+                    <br />
+                    <a href={`/regional-meetings/${regionName}`} className="banner-breadcrumb">
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
+                        <strong>{regionName}</strong>
+                    </a>
+                    <h1 style={{ color: "white" }}>{meetingData.name}</h1>
+                    <p>{meetingData.date} - {meetingData.location}</p>
+                </Banner>
 
-            <div className="py-20 px-10 lg:px-40">
+                <div className="py-20 px-10 lg:px-40">
                 <div className="flex justify-end mb-4">
-                    {canEdit && <button className="button button-light" onClick={openEditPopup}>Edit Meeting <i className="bi bi-pencil ml-1"></i></button>}
-                    {canEdit && <button className="button button-light button-delete ml-4" onClick={() => setShowDeletePopup(true)}>Delete Meeting <i className="bi bi-trash ml-1"></i></button>}
+                    {canEdit && <button className="button button-light" onClick={openEditPopup}>Edit Meeting <i className="bi bi-pencil ml-1" aria-hidden="true"></i></button>}
+                    {canEdit && <button className="button button-light button-delete ml-4" onClick={() => setShowDeletePopup(true)}>Delete Meeting <i className="bi bi-trash ml-1" aria-hidden="true"></i></button>}
                 </div>
                 {sections === 0 && (
                     <div className="flex items-center justify-center h-96 text-gray-400 text-xl text-center">
@@ -1022,7 +1034,7 @@ export default function RegionalMeetingDetail() {
                                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                                     {meetingData.meeting_report_url && (
                                         <a href={meetingData.meeting_report_url} className="button button-light">
-                                            Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                            Meeting Report <i className="bi bi-box-arrow-up-right ml-2" aria-hidden="true"></i>
                                         </a>
                                     )}
                                     {meetingData.meeting_report_pdf_url && (
@@ -1030,7 +1042,7 @@ export default function RegionalMeetingDetail() {
                                             className={`button ${previewingPdf === "report" ? "button" : "button-light"}`}
                                             onClick={() => setPreviewingPdf(previewingPdf === "report" ? null : "report")}
                                         >
-                                            <i className={`bi ${previewingPdf === "report" ? "bi-eye-slash" : "bi-eye"} mr-2`}></i>
+                                            <i className={`bi ${previewingPdf === "report" ? "bi-eye-slash" : "bi-eye"} mr-2`} aria-hidden="true"></i>
                                             {previewingPdf === "report" ? "Hide" : "Preview"}
                                         </button>
                                     )}
@@ -1054,7 +1066,7 @@ export default function RegionalMeetingDetail() {
                                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                                     {meetingData.agenda_url && (
                                         <a href={meetingData.agenda_url} className="button button-light">
-                                            Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                            Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2" aria-hidden="true"></i>
                                         </a>
                                     )}
                                     {meetingData.agenda_pdf_url && (
@@ -1062,7 +1074,7 @@ export default function RegionalMeetingDetail() {
                                             className={`button ${previewingPdf === "agenda" ? "button" : "button-light"}`}
                                             onClick={() => setPreviewingPdf(previewingPdf === "agenda" ? null : "agenda")}
                                         >
-                                            <i className={`bi ${previewingPdf === "agenda" ? "bi-eye-slash" : "bi-eye"} mr-2`}></i>
+                                            <i className={`bi ${previewingPdf === "agenda" ? "bi-eye-slash" : "bi-eye"} mr-2`} aria-hidden="true"></i>
                                             {previewingPdf === "agenda" ? "Hide" : "Preview"}
                                         </button>
                                     )}
@@ -1088,7 +1100,7 @@ export default function RegionalMeetingDetail() {
                         {/* {(meetingData.meeting_report_url || meetingData.meeting_report_pdf_url || meetingData.agenda_url || meetingData.agenda_pdf_url) && <Break />} */}
                         {(images.length > 0 || videos.length > 0) && (
                             <div className="mt-5">
-                                <h1 className="text-center">Gallery</h1>
+                                <h2 className="text-center">Gallery</h2>
                                 {images.length > 0 && (
                                     <div className="mt-6">
                                         <Carousel images={images} />
@@ -1097,7 +1109,7 @@ export default function RegionalMeetingDetail() {
                                 {videos.length > 0 && (
                                     <div className="mt-6 flex flex-wrap gap-4">
                                         {videos.map((vid, idx) => (
-                                            <video key={idx} src={vid.resource_url} controls controlsList="nodownload" className="w-full md:w-[calc(50%-8px)] h-64 object-cover" />
+                                            <video key={idx} src={vid.resource_url} controls controlsList="nodownload" className="w-full md:w-[calc(50%-8px)] h-64 object-cover" aria-label={`Meeting video ${idx + 1}`} />
                                         ))}
                                     </div>
                                 )}
@@ -1105,7 +1117,8 @@ export default function RegionalMeetingDetail() {
                         )}
                     </>
                 )}
-            </div>
+                </div>
+            </main>
             <Footer />
         </>
     );

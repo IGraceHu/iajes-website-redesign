@@ -100,13 +100,13 @@ export default function StyleGuide() {
 
     return (
         <>
-            <Popup id="style1" show={showPopup1} setShow={setShowPopup1} >
+            <Popup id="style1" label="Default popup example" show={showPopup1} setShow={setShowPopup1} >
                 <p>This is the default popup</p>
             </Popup>
-            <Popup id="style2" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
+            <Popup id="style2" label="Action popup example" show={showPopup2} setShow={setShowPopup2} buttons={buttons} stayOnBlur>
                 <p>This is a popup that has a custom action button and will not exit when clicked off of.</p>
             </Popup>
-            <PopupForm id="styleform" className="w-200 relative" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
+            <PopupForm id="styleform" label="Popup form example" className="w-200 relative" show={showPopupForm} setShow={setShowPopupForm} validate={validatePopupForm}>
                 <p>This is a popup form. Popup forms only have two buttons, 'Save' and 'Cancel'. Popup forms also do not close upon blur.</p>
                 <p>PopupForms include a form, any elements within the PopupForm goes into the form. You cannot nest PopupForms.</p>
                 <p>PopupForm requires a validate function that takes a parameter 'formData'. When 'Save' is clicked, the form is submitted and the contents of the form can be accessed in the validate function through 'formData'. Please remember that only input fields with 'name' attributes will be recognized.</p>
@@ -117,10 +117,10 @@ export default function StyleGuide() {
                 <br />
                 <p>{popupFormResults}</p>
                 <br />
-                <label for="popupText">Text Input:</label><br />
+                <label htmlFor="popupText">Text Input:</label><br />
                 <input id="popupText" name="popupText" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
                 <br /><br />
-                <label for="popupRequired">Required Text Input:</label><br />
+                <label htmlFor="popupRequired">Required Text Input:</label><br />
                 <input id="popupRequired" name="popupRequired" type="text" 
                        className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} 
                        placeholder="Enter text here..."
@@ -130,7 +130,7 @@ export default function StyleGuide() {
             </PopupForm>
 
             <Menu />
-            <div className="lg:px-40 px-10 py-20 duration-200">
+            <main id="main-content" className="lg:px-40 px-10 py-20 duration-200">
                 <h1>Style Guide</h1>
                 <p>Note that we are using TailwindCSS, so unless needed, sizing and layout will be done with TailwindCSS variables and presets.</p>
                 <div className="mt-10">
@@ -457,7 +457,7 @@ export default function StyleGuide() {
                     <H2Left stretch>Heading 2 Left</H2Left>
                 </div>
 
-            </div>
+            </main>
             <div className="my-10">
                 <div className="lg:px-40 px-10 duration-200">
                     <h2>Banners</h2>

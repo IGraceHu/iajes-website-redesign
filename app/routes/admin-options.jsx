@@ -20,7 +20,7 @@ export default function AdminOptions({ }) {
 
     return (<>
             <Menu />
-            <div className="py-20 px-10 lg:px-40 duration-200">
+            <main id="main-content" className="py-20 px-10 lg:px-40 duration-200">
             { isAdmin ? 
                 <div>
                     <h1>Administrator Options</h1>
@@ -38,7 +38,7 @@ export default function AdminOptions({ }) {
                     {/* <p>This page is not available.</p> */}
                 </div>
             }
-            </div>
+            </main>
             <Footer />
         </>
     )

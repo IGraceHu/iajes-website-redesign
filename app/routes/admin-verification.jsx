@@ -145,7 +145,7 @@ export default function AdminVerification({ loaderData }) {
     }, [query]);
 
     return (<>
-            <Popup show={showPopup} setShow={setShowPopup} buttons={popupButtons}>
+            <Popup id="verify-users" label="Verify selected users" show={showPopup} setShow={setShowPopup} buttons={popupButtons}>
                 <h6>Verify the following users?</h6>
                 <div className="mt-2">
                     { Object.keys(checkedIds).map((userid, idx) => {
@@ -157,14 +157,14 @@ export default function AdminVerification({ loaderData }) {
                 </div>
             </Popup>
             <Menu />
-            <div className="py-20 px-10 lg:px-40 duration-200">
+            <main id="main-content" className="py-20 px-10 lg:px-40 duration-200">
             { isAdmin ? 
                 <div>
                     <a href="/admin-options" className="banner-breadcrumb on-white">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
-                    <h2>Manage User Verification</h2>
+                    <h1>Manage User Verification</h1>
                     <form className="flex md:flex-row flex-col-reverse" onSubmit={handleSubmit}>
                         <div className="border-2 border-gray-light rounded-md w-full">
                             <div className="p-2 border-b-2 border-gray-light">
@@ -172,8 +172,9 @@ export default function AdminVerification({ loaderData }) {
 
                                 <div className="flex w-full items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
                                     <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
+                                    <label htmlFor="admin-verification-search-input" className="sr-only">Search users</label>
                                     <input
-                                    id="search-input"
+                                    id="admin-verification-search-input"
                                     value={query}
                                     onChange={handleQueryChange}
                                     onInput={handleQueryChange}
@@ -181,8 +182,9 @@ export default function AdminVerification({ loaderData }) {
                                     className="w-full bg-transparent text-sm text-gray-dark outline-none"
                                     />
                                     <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
-                                            onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-                                    <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                                            onClick={() => {document.getElementById("admin-verification-search-input").value = ""; setQuery("");}}
+                                            aria-label="Clear user search">
+                                    <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-hidden="true" />
                                     </button>
                                 </div>
                             </div>
@@ -219,7 +221,7 @@ export default function AdminVerification({ loaderData }) {
                     <p>This page is not available.</p>
                 </div>
             }
-            </div>
+            </main>
             <Footer />
         </>
     )

@@ -96,21 +96,21 @@ export default function SignIn() {
 
   return (
     <div className="h-screen flex flex-col justify-between">
-      <Popup id="sign-in" show={showPopup} setShow={setShowPopup} >
-        <div className="w-full h-30 text-center flex justify-center items-center">{popupErrorMessage}</div>
+      <Popup id="sign-in" label="Sign-in error" show={showPopup} setShow={setShowPopup} >
+        <div className="w-full h-30 text-center flex justify-center items-center" role="alert">{popupErrorMessage}</div>
       </Popup>
 
       <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES logo" />
         </NavLink>
       </div>
 
-      <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
-        <h4>Sign in to <span className="text-primary-dark">IAJES</span></h4>
+      <main id="main-content" className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
+        <h1 style={{ fontSize: "1.7rem", textTransform: "none", color: "var(--color-secondary-light)" }}>Sign in to <span className="text-primary-dark">IAJES</span></h1>
         <form action={formAction} className="md:w-md w-full duration-200">
           <label htmlFor="email">Email:</label><br />
-          <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
+          <input id="email" name="email" type="email" defaultValue={state?.email} placeholder="Email" autoComplete="email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
           <div className="input-error">Please enter a valid email address.</div>
@@ -119,9 +119,9 @@ export default function SignIn() {
 
           <div className="w-full flex justify-between">
             <label htmlFor="pwd">Password:</label>
-            <p><a tabIndex="3" href="/forget-password">Forgot password?</a></p>
+            <p><a href="/forget-password">Forgot password?</a></p>
           </div>
-          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
+          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password" autoComplete="current-password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "pwd")} />
           <div className="input-error">Please enter your password.</div>
@@ -134,7 +134,7 @@ export default function SignIn() {
             <p>New here? <a href="/signup">Create an account.</a></p>
           </div>
         </form>
-      </div>
+      </main>
       <div className="bg-primary-dark h-20 w-full"></div>
     </div>
   );

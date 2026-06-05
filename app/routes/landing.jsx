@@ -78,8 +78,8 @@ function Carousel() {
     {
       caption: (
         <div className="carousel-caption">
-          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">2nd IAJES Conference</h1>
-          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Pontificia Universidad Javeriana Cali, Columbia, South America</p>
+          <p className="carousel-title text-shadow-lg/70 text-shadow-secondary-dark">2nd IAJES Conference</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Pontificia Universidad Javeriana Cali, Colombia, South America</p>
           <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2019</p>
         </div>
       ),
@@ -88,7 +88,7 @@ function Carousel() {
     {
       caption: (
         <div className="carousel-caption">
-          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">3rd IAJES Conference</h1>
+          <p className="carousel-title text-shadow-lg/70 text-shadow-secondary-dark">3rd IAJES Conference</p>
           <p className="text-shadow-lg/70 text-shadow-secondary-dark">Boston College, Boston, USA</p>
           <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2022</p>
         </div>
@@ -98,8 +98,8 @@ function Carousel() {
     {
       caption: (
         <div className="carousel-caption">
-          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</h1>
-          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubanewar, India</p>
+          <p className="carousel-title text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubaneswar, India</p>
           <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2024</p>
         </div>
       ),
@@ -108,34 +108,33 @@ function Carousel() {
     {
       caption: (
         <div className="carousel-caption">
-          <h1 className="text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</h1>
-          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubanewar, India</p>
+          <p className="carousel-title text-shadow-lg/70 text-shadow-secondary-dark">4th IAJES Conference</p>
+          <p className="text-shadow-lg/70 text-shadow-secondary-dark">Bhubaneswar, India</p>
           <p className="text-shadow-lg/70 text-shadow-secondary-dark">July 2024</p>
         </div>
       ),
       image_url: "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/landing/LandingCarousel4.jpeg"
     }
   ];
-  const carouselEl = [];
-  let i = 0;
-  carouselContent.map((content) => {
-    carouselEl.push(
-      <div key={i} className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
 
-        {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
-
-        <div className="relative z-1 size-full box-border mt-40 ml-40">
-          {/* <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p> */}
-          {content.caption}
-        </div>
-      </div>
-    )
-    i++;
-  })
-
-  const carouselCount = carouselEl.length - 1;
+  const carouselCount = carouselContent.length - 1;
   const [carouselCurrent, setCarouselCurrent] = useState(0);
   const [carouselStart, setCarouselStart] = useState(0);
+
+  const carouselEl = carouselContent.map((content, i) => (
+    <div
+      key={i}
+      className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden"
+      aria-hidden={i !== carouselCurrent}
+      {...(i !== carouselCurrent ? { inert: "" } : {})}
+    >
+      {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" alt="" aria-hidden="true" />}
+
+      <div className="relative z-1 size-full box-border mt-40 ml-40">
+        {content.caption}
+      </div>
+    </div>
+  ));
 
   function carouselNext() {
     setCarouselStart(carouselCurrent);
@@ -156,13 +155,13 @@ function Carousel() {
 
   return (
     <div className="relative h-120 flex justify-between text-white z-2">
-      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselPrev}>
-        <svg height="70" width="35" className="carousel-arrow-prev fill-none stroke-current stroke-5">
+      <button className="carousel-btn absolute h-full left-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselPrev} aria-label="Show previous carousel slide">
+        <svg height="70" width="35" className="carousel-arrow-prev fill-none stroke-current stroke-5" aria-hidden="true" focusable="false">
           <polyline points="35,0 5,35 35,70" />
         </svg>
       </button>
-      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselNext}>
-        <svg height="70" width="35" className="carousel-arrow-next fill-none stroke-current stroke-5">
+      <button className="carousel-btn absolute h-full right-0 w-30 z-10 flex justify-center text-white opacity-50 duration-200 hover:opacity-100 hover:cursor-pointer" onClick={carouselNext} aria-label="Show next carousel slide">
+        <svg height="70" width="35" className="carousel-arrow-next fill-none stroke-current stroke-5" aria-hidden="true" focusable="false">
           <polyline points="0,0 30,35 0,70" />
         </svg>
       </button>
@@ -221,7 +220,7 @@ function LinkCards() {
             <p className="text-white">{content.title}</p>
           </div>
 
-          {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 top-0 size-full object-cover" />}
+          {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 top-0 size-full object-cover" alt="" aria-hidden="true" />}
 
         </a>
         <div className="about-card-border z-4 absolute top-0"></div>
@@ -329,21 +328,21 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
 
   return (
     <>
-      <Popup id="edit-highlights" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
+      <Popup id="edit-highlights" label="Edit highlights" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Highlights</h4>
         <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
           {currentHighlights.map(highlight =>
             <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
               <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
-                <i className="bi bi-pencil-square"></i>
+                <i className="bi bi-pencil-square" aria-hidden="true"></i>
               </button>
             </div>
           )}
         </div>
       </Popup>
 
-      <PopupForm id="edit-highlight" className="md:w-200" show={showHighlightPopup} setShow={setShowHighlightPopup} validate={validate} hasError={hasError} nested>
+      <PopupForm id="edit-highlight" label="Edit highlight" className="md:w-200" show={showHighlightPopup} setShow={setShowHighlightPopup} validate={validate} hasError={hasError} nested>
         <h4>Edit Highlight</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
@@ -390,11 +389,11 @@ function HighlightContent({ content, side = false }) {
       <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
 
         {content?.image_url ?
-          <img src={content.image_url} className="size-full object-cover duration-200" />
+          <img src={content.image_url} className="size-full object-cover duration-200" alt="" aria-hidden="true" />
           :
           <>
-            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
-            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
+            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" alt="" aria-hidden="true" />
+            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" alt="" aria-hidden="true" />
           </>
         }
       </div>
@@ -439,7 +438,7 @@ export default function Landing({ loaderData }) {
       <Menu />
       <Carousel />
       <div className="flex height-fit">
-        <div id="content" className="items-center text-black lg:px-40 px-10 py-20 w-full h-fit duration-200 z-1">
+        <main id="main-content" className="items-center text-black lg:px-40 px-10 py-20 w-full h-fit duration-200 z-1">
 
           <div id="about" className="flex pb-30">
             <div className="mr-10 mb-10">
@@ -449,7 +448,7 @@ export default function Landing({ loaderData }) {
                 <br /><br />
                 Rooted in the Jesuit educational tradition and aligned with the Universal Apostolic Preferences, IAJES fosters international cooperation to form engineers and scientists committed to addressing complex global challenges, promoting human dignity, and contributing to a more just, equitable, and sustainable world through technology and knowledge.
               </p>
-              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]"></i></a>
+              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more about IAJES</span> <i className="bi bi-arrow-right ml-2 pt-[2px]" aria-hidden="true"></i></a>
             </div>
             <div className="text-white flex justify-center">
               <LinkCards />
@@ -473,7 +472,8 @@ export default function Landing({ loaderData }) {
           <div className="h-100 my-20 flex flex-col justify-center items-center text-center">
             <h4 className="text-glow">Subscribe to our Newsletter</h4>
             <form className="flex flex-col justify-center items-center">
-              <input name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." />
+              <label htmlFor="homepage-subscribe-email" className="sr-only">Email address</label>
+              <input id="homepage-subscribe-email" name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." autoComplete="email" />
               <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
             </form>
           </div>
@@ -481,15 +481,15 @@ export default function Landing({ loaderData }) {
 
 
           {/* <div className="h-100"></div> */}
-        </div>
+        </main>
         <div id="effects" className="w-full shrink-0 -ml-[100%] z-0">
           {/* Discs */}
           <div id="landing-discs" className="absolute w-full z-0 lg:opacity-60 opacity-30 duration-200">
-            <img id="landing-disc-1" src="assets/landing-disc-2a.svg" />
-            <img id="landing-disc-2" src="assets/landing-disc-2b.svg" />
-            <img id="landing-disc-3" src="assets/landing-disc-3.svg" />
-            <img id="landing-disc-4" src="assets/landing-disc-4b.svg" />
-            <img id="landing-disc-5" src="assets/landing-disc-4a.svg" />
+            <img id="landing-disc-1" src="assets/landing-disc-2a.svg" alt="" aria-hidden="true" />
+            <img id="landing-disc-2" src="assets/landing-disc-2b.svg" alt="" aria-hidden="true" />
+            <img id="landing-disc-3" src="assets/landing-disc-3.svg" alt="" aria-hidden="true" />
+            <img id="landing-disc-4" src="assets/landing-disc-4b.svg" alt="" aria-hidden="true" />
+            <img id="landing-disc-5" src="assets/landing-disc-4a.svg" alt="" aria-hidden="true" />
           </div>
 
           {/* Background Lines */}

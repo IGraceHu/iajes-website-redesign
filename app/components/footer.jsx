@@ -68,12 +68,12 @@ export function Footer() {
                 key={pillar.label}
                 className="flex min-h-24 flex-col items-center justify-center rounded-md border-2 border-primary-light px-3 py-3 text-center lg:rounded-none lg:border-y-0 lg:border-r-0"
               >
-                <i className={`bi ${pillar.icon} text-3xl text-white`} />
+                <i className={`bi ${pillar.icon} text-3xl text-white`} aria-hidden="true" />
                 {pillar.label === "Engineering & Science" ? (
-                  <i className="bi bi-flask text-lg text-primary-light -mt-3 ml-8" />
+                  <i className="bi bi-flask text-lg text-primary-light -mt-3 ml-8" aria-hidden="true" />
                 ) : null}
                 {pillar.label === "Driving Social Innovation" ? (
-                  <i className="bi bi-leaf text-lg text-primary-light -mt-3 ml-8" />
+                  <i className="bi bi-leaf text-lg text-primary-light -mt-3 ml-8" aria-hidden="true" />
                 ) : null}
                 <h6 className="!mb-0 !text-white mt-2 !text-base">
                   {pillar.lines.map((line) => (
@@ -137,7 +137,7 @@ export function Footer() {
                     aria-label={social.label}
                     className="!text-white duration-200 hover:!text-primary-light"
                   >
-                    <i className={`bi ${social.icon}`}></i>
+                    <i className={`bi ${social.icon}`} aria-hidden="true"></i>
                   </a>
                 ))}
               </div>
@@ -157,7 +157,7 @@ export function Footer() {
             </div>
           </div>
 
-          <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t-2 border-primary-light pt-4 text-center text-sm">
+          <nav className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t-2 border-primary-light pt-4 text-center text-sm" aria-label="Footer navigation">
             {navigationLinks.map((item) => (
               <a
                 key={item.href}
@@ -167,7 +167,7 @@ export function Footer() {
                 {item.label}
               </a>
             ))}
-          </div>
+          </nav>
 
           <div className="mt-4 flex flex-col gap-3 border-t-2 border-primary-light pt-4 text-sm lg:flex-row lg:items-center lg:justify-between">
             <p className="!mb-0 text-white">

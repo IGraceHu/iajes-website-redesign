@@ -254,7 +254,7 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
 
     return (
         <>
-            <Popup id="edit-roles" show={show} setShow={setShow} buttons={editButtons} closePopup={handleClosePopup} >
+            <Popup id="edit-roles" label="Edit admin roles" show={show} setShow={setShow} buttons={editButtons} closePopup={handleClosePopup} >
                 { member && 
                 <>
                     <h4>{member?.fname || null} {member?.lname || null}'s roles</h4>
@@ -305,7 +305,7 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
                 }
             </Popup>
 
-            <Popup id="remove-confirm" show={showRemove} setShow={setShowRemove} buttons={removeButton} nested>
+            <Popup id="remove-confirm" label="Remove admin permissions" show={showRemove} setShow={setShowRemove} buttons={removeButton} nested>
                 { member && 
                 <>
                     <div className="w-full text-center mt-5">Remove {member?.fname} {member?.lname}'s admin permissions?</div>
@@ -407,15 +407,15 @@ export default function AdminOptions({ loaderData }) {
     return (<>
             <RolesEdit show={showEditPopup} setShow={setShowEditPopup} member={focusMember} reload={reload} currentUserId={currentUserId} loseMemberFocus={loseMemberFocus} />
             <Menu />
-            <div className="py-20 px-10 lg:px-40 duration-200">
+            <main id="main-content" className="py-20 px-10 lg:px-40 duration-200">
                 
             { isAdmin ? 
                 <div>
                     <a href="/admin-options" className="banner-breadcrumb on-white">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
-                    <h2>Manage Roles and Permissions</h2>
+                    <h1>Manage Roles and Permissions</h1>
                     <div className="mt-5 md:h-[65dvh] md:flex grid grid-rows-[200px_auto] grid-cols-[200px_auto] border-2 border-gray-light rounded-md">
                 
                         <div id="filter-container" className="md:w-130 md:border-r-2 md:border-b-0 border-b-2 border-gray-light grid grid-rows-[2.75rem_auto] col-span-2">
@@ -507,7 +507,7 @@ export default function AdminOptions({ loaderData }) {
                                         onClick={() => {setShowEditPopup(true)}}
                                         >
                                         <p className="text-base mr-3 md:block hidden">Edit Roles</p>
-                                        <i className={`bi bi-pencil`} />
+                                        <i className={`bi bi-pencil`} aria-hidden="true" />
                                     </button>
                                     <a href={`/profile/${focusMember.id}`} className="text-xl font-semibold text-secondary-dark hover:text-primary-dark hover:cursor-pointer duration-200">{focusMember?.fname} {focusMember?.lname}</a>
                                     <div className="text-sm text-gray-dark/70">{focusMember.email}</div>
@@ -530,8 +530,9 @@ export default function AdminOptions({ loaderData }) {
                         <h4>Manage Member Roles</h4>
                         <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
                             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
+                            <label htmlFor="admin-member-search-input" className="sr-only">Search IAJES members</label>
                             <input
-                            id="search-input"
+                            id="admin-member-search-input"
                             value={query}
                             onChange={handleQueryChange}
                             onInput={handleQueryChange}
@@ -539,8 +540,9 @@ export default function AdminOptions({ loaderData }) {
                             className="w-full bg-transparent text-sm text-gray-dark outline-none"
                             />
                             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
-                                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                                    onClick={() => {document.getElementById("admin-member-search-input").value = ""; setQuery("");}}
+                                    aria-label="Clear member search">
+                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-hidden="true" />
                             </button>
                         </div>
                         <div className="my-2">
@@ -555,9 +557,9 @@ export default function AdminOptions({ loaderData }) {
                                             <div key={member?.fname} className="flex p-2 items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
                                                 <button className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" onClick={() => {setFocusMember(member); setShowEditPopup(true)}}>
                                                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
-                                                <i className="bi bi-pencil"></i>
+                                                <i className="bi bi-pencil" aria-hidden="true"></i>
                                                 </button>
-                                                <a className="button-icon" href={`/profile/${member.id}`}><i className="bi bi-box-arrow-up-right"></i></a>
+                                                <a className="button-icon" href={`/profile/${member.id}`} aria-label={`View profile for ${member?.fname} ${member?.lname}`}><i className="bi bi-box-arrow-up-right" aria-hidden="true"></i></a>
                                             </div>
                                         ))}
                                     </div>
@@ -582,7 +584,7 @@ export default function AdminOptions({ loaderData }) {
                     {/* <p>This page is not available.</p> */}
                 </div>
             }
-            </div>
+            </main>
             <Footer />
         </>
     )

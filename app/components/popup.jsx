@@ -1,4 +1,70 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
+
+const FOCUSABLE_SELECTOR = [
+    'a[href]',
+    'button:not([disabled])',
+    'textarea:not([disabled])',
+    'input:not([disabled])',
+    'select:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])',
+].join(',');
+
+function getFocusableElements(container) {
+    if (!container) return [];
+    return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR))
+        .filter((element) => !element.hasAttribute('disabled') && element.offsetParent !== null);
+}
+
+function useDialogFocus(show, dialogRef, onClose) {
+    useEffect(() => {
+        if (!show) return undefined;
+
+        const previouslyFocused = document.activeElement;
+        const focusDialog = () => {
+            const focusable = getFocusableElements(dialogRef.current);
+            (focusable[0] || dialogRef.current)?.focus();
+        };
+
+        window.setTimeout(focusDialog, 0);
+
+        const handleKeyDown = (event) => {
+            if (event.key === "Escape") {
+                event.preventDefault();
+                onClose();
+                return;
+            }
+
+            if (event.key !== "Tab") return;
+
+            const focusable = getFocusableElements(dialogRef.current);
+            if (focusable.length === 0) {
+                event.preventDefault();
+                dialogRef.current?.focus();
+                return;
+            }
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            document.removeEventListener("keydown", handleKeyDown);
+            if (previouslyFocused && typeof previouslyFocused.focus === "function") {
+                previouslyFocused.focus();
+            }
+        };
+    }, [show, dialogRef, onClose]);
+}
 
 // POPUP -----------------------------------------------------------------------
 // PARAMETERS
@@ -19,9 +85,19 @@ import { useEffect } from 'react';
 //
 // stayOnBlur - Optional. Defaults to false. Determines if clicking outside the popup will close the popup or not
 
-export function Popup({ id, className, show, setShow, buttons, closePopup = null, stayOnBlur = false, nested = false, children }) {
+export function Popup({ id, className, label, show, setShow, buttons, closePopup = null, stayOnBlur = false, nested = false, children }) {
 
     const popupId = "popup-" + id;
+    const dialogRef = useRef(null);
+
+    function defaultClosePopup() {
+        setShow(false);
+    }
+
+    const handleClosePopup = closePopup || defaultClosePopup;
+
+    useDialogFocus(show, dialogRef, handleClosePopup);
+
     useEffect(() => {
         if (show) {
             const popupContEl = document.getElementById(popupId);
@@ -49,16 +125,7 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
                 setTimeout(() => { document.body.style.overflow = "auto"; document.body.style.paddingRight = "0"; }, 200);
             }
         }
-    }, [show])
-
-    function defaultClosePopup() {
-        setShow(false);
-        show = false;
-    }
-
-    if (closePopup == null) {
-        closePopup = defaultClosePopup;
-    }
+    }, [show, nested, popupId])
 
 
     const buttonsEl = [];
@@ -72,20 +139,27 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
     }
 
     return (
-        <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
+        <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0" aria-hidden={!show}>
             <div className="z-1">
-                <div className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
+                <div
+                    ref={dialogRef}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={label || "Dialog"}
+                    tabIndex="-1"
+                    className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}
+                >
                     <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>
                     <div className="bottom-0 mt-4 flex justify-center shrink-0 grow-0">
                         {buttonsEl}
-                        <button type="button" className="button button-light mx-2" onClick={closePopup}>Close</button>
+                        <button type="button" className="button button-light mx-2" onClick={handleClosePopup}>Close</button>
                     </div>
                 </div>
             </div>
 
-            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => { if (!stayOnBlur) { defaultClosePopup() } }} ></div>
+            <div className="absolute size-full bg-black opacity-40 z-0" onClick={() => { if (!stayOnBlur) { defaultClosePopup() } }} aria-hidden="true"></div>
         </div>
     )
 }
@@ -103,10 +177,18 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
 // 
 // hasError - Optional. Default is false
 
-export function PopupForm({ id, className, show, setShow, validate, hasError, nested = false, children, encType }) {
+export function PopupForm({ id, className, label, show, setShow, validate, hasError, nested = false, children, encType }) {
     // const [state, formAction] = useActionState(saveForm, {});
 
     const popupId = "popup-" + id;
+    const formRef = useRef(null);
+
+    function closePopup() {
+        setShow(false);
+    }
+
+    useDialogFocus(show, formRef, closePopup);
+
     useEffect(() => {
         if (show) {
             const popupContEl = document.getElementById(popupId);
@@ -139,7 +221,7 @@ export function PopupForm({ id, className, show, setShow, validate, hasError, ne
                 setTimeout(() => { document.body.style.overflow = "auto"; document.body.style.paddingRight = "0"; }, 200);
             }
         }
-    }, [show])
+    }, [show, nested, popupId])
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -147,15 +229,20 @@ export function PopupForm({ id, className, show, setShow, validate, hasError, ne
         validate(formData)
     }
 
-    function closePopup() {
-        setShow(false);
-        show = false;
-    }
-
     return (
-        <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
+        <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0" aria-hidden={!show}>
             <div className="z-1">
-                <form id={popupId + "-form"} encType={encType} onSubmit={handleSubmit} className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
+                <form
+                    ref={formRef}
+                    id={popupId + "-form"}
+                    encType={encType}
+                    onSubmit={handleSubmit}
+                    role="dialog"
+                    aria-modal="true"
+                    aria-label={label || "Form dialog"}
+                    tabIndex="-1"
+                    className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}
+                >
                     <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>
@@ -171,7 +258,7 @@ export function PopupForm({ id, className, show, setShow, validate, hasError, ne
                 </form>
             </div>
 
-            <div className="absolute size-full bg-black opacity-40 z-0"></div>
+            <div className="absolute size-full bg-black opacity-40 z-0" aria-hidden="true"></div>
         </div>
     )
 }

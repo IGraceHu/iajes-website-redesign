@@ -9,6 +9,8 @@ import {
 
 import "./app.css";
 
+export const meta = () => [{ title: "IAJES" }];
+
 export const links = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {

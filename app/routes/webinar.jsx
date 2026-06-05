@@ -272,7 +272,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -410,15 +410,15 @@ export default function Webinar({ loaderData }) {
 
     return (
         <>
-            <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}
+            <Popup id="delete-webinar" label="Delete webinar" show={showDeletePopup} setShow={setShowDeletePopup}
                 buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
                 <div className="text-center mt-6">Delete this webinar?</div>
             </Popup>
 
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm id="edit-webinar" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
-                        <h4>Create new webinar</h4>
+                    <PopupForm id="edit-webinar" label="Edit webinar" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                        <h4>Edit webinar</h4>
                         <div className="md:grid grid-cols-2 flex flex-col gap-5 mb-5 relative">
                             <div>
                                 <label htmlFor="webinar-title">Title:</label><br />
@@ -469,27 +469,28 @@ export default function Webinar({ loaderData }) {
                             <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
-                    <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
+                    <Popup id="resolve" label="Webinar updated" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
                         <br /><p className="m-2">Webinar updated successfully!</p>
                     </Popup>
                 </div>
             }
 
             <Menu />
-            <Banner type="blue">
-                <div className="relative z-1">
-                    <a href="/webinars" className="banner-breadcrumb">
-                        <i className="bi bi-caret-left-fill"></i>
-                        <strong>WEBINARS</strong>
-                    </a>
-                    <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
-                    <p className="opacity-70">
-                        <i>{loaderData?.date.replace(/-/g, '\/')}</i>
-                    </p>
-                </div>
-            </Banner>
+            <main id="main-content">
+                <Banner type="blue">
+                    <div className="relative z-1">
+                        <a href="/webinars" className="banner-breadcrumb">
+                            <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
+                            <strong>WEBINARS</strong>
+                        </a>
+                        <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
+                        <p className="opacity-70">
+                            <i>{loaderData?.date.replace(/-/g, '\/')}</i>
+                        </p>
+                    </div>
+                </Banner>
 
-            <div className="py-20 px-10 lg:px-40 duration-200">
+                <div className="py-20 px-10 lg:px-40 duration-200">
                 {isAdmin ? (
                     <div className="text-right mb-4 flex justify-end gap-2">
                         <button className="button button-light" onClick={handleShowEditPopupForm}>Edit Webinar</button>
@@ -509,7 +510,7 @@ export default function Webinar({ loaderData }) {
                 <br />
                 { loaderData?.video_url &&
                     <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                        <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                        <iframe src={loaderData.video_url} width="100%" height="100%" title={`${loaderData.title} video`}></iframe>
                     </div>
                 }
 
@@ -518,7 +519,7 @@ export default function Webinar({ loaderData }) {
                 { loaderData.speakers.map((speaker, idx) => 
                     <div key={idx} className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col lg:flex-row place-items-center justify-between">
                         <div className="flex flex-row place-items-center lg:mb-0 mb-5 text-center">
-                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt="" />}
+                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt={`${speaker.name} headshot`} />}
                             
                             <div className="shrink-0 grow-0 m-3 lg:text-left text-center">
                                 <p className="font-semibold mr-2"><i>{speaker.name}</i></p>
@@ -532,14 +533,15 @@ export default function Webinar({ loaderData }) {
                                     src={speaker.slidesURL}
                                     className="w-sm"
                                     style={{ height: '200px' }}
-                                    title="Webinar Details PDF"
+                                    title={`${speaker.name} webinar slides`}
                                 />
                             }
                         </div>
                     </div>
                 )}
 
-            </div>
+                </div>
+            </main>
 
             <Footer />
         </>

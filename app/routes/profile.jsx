@@ -175,7 +175,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
   }
 
   return (
-    <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+    <PopupForm id="profile-edit" label="Edit profile" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
        <h4>Edit Profile</h4>
        <div className="flex flex-col gap-6">
         <fieldset>
@@ -607,6 +607,7 @@ export default function ProfileRoute({ loaderData }) {
       <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} currentUserId={currentUserId} />
       <Popup
         id="profile-photo"
+        label="Profile photo"
         show={showPhotoPopup}
         setShow={setShowPhotoPopup}
         closePopup={handlePhotoCancel}
@@ -636,12 +637,13 @@ export default function ProfileRoute({ loaderData }) {
         ref={fileInputRef}
         type="file"
         accept="image/*"
+        aria-label="Choose profile photo"
         className="hidden"
         onChange={handlePhotoSelection}
       />
       <Menu />
 
-      <div className="mx-auto max-w-[1200px] px-6 pb-20 pt-8">
+      <main id="main-content" className="mx-auto max-w-[1200px] px-6 pb-20 pt-8">
         <div className="mb-4 flex justify-start">
           <a href="/search" className="button button-light flex items-center gap-2">
             <i className="bi bi-arrow-left-short" aria-hidden="true" />
@@ -650,7 +652,7 @@ export default function ProfileRoute({ loaderData }) {
         </div>
         <div className={"relative h-[220px] rounded-md overflow-hidden bg" + bannerClass} aria-label="Profile banner placeholder">
           <div className={"relative w-full opacity-50"}>
-              <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
+              <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" alt="" aria-hidden="true" />
           </div>
           {(currentUserId == profile.id) || isAdmin ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
@@ -680,9 +682,9 @@ export default function ProfileRoute({ loaderData }) {
                   />
                 ) : null}
               </div>
-              <h4 className="mt-5">
+              <h1 className="mt-5" style={{ fontSize: "1.7rem", textTransform: "none", color: "var(--color-secondary-light)" }}>
                 {profile.fname} {profile.lname}
-              </h4>
+              </h1>
               <p className="mt-1 text-sm text-gray-dark/70">
                 {profile.job_position}{ profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
               </p>
@@ -735,7 +737,7 @@ export default function ProfileRoute({ loaderData }) {
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <Footer />
     </div>
   );

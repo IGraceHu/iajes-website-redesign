@@ -248,14 +248,14 @@ export default function VideoResource({ loaderData }) {
 
     return (
         <>
-            <Popup id="delete-vidr" show={showDeletePopup} setShow={setShowDeletePopup}
+            <Popup id="delete-vidr" label="Delete video resource" show={showDeletePopup} setShow={setShowDeletePopup}
                 buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
                 <div className="text-center mt-6">Delete this video resource?</div>
             </Popup>
 
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
-                    <PopupForm id="edit-video-resource" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
+                    <PopupForm id="edit-video-resource" label="Edit video resource" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
                         <h4>Edit video resource</h4>
                         <div className="grid md:grid-cols-2 grid-cols-1 gap-5 mb-5 relative">
                             <div>
@@ -321,27 +321,28 @@ export default function VideoResource({ loaderData }) {
                             <textarea id="vid-resource-speaker-desc" name="vid-resource-speaker-desc" className="input input-text w-full h-20" placeholder="Enter your speaker description..." defaultValue={loaderData.speaker_details}></textarea>
                         </fieldset>
                     </PopupForm>
-                    <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
+                    <Popup id="resolve" label="Video resource updated" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
                         <br /><p className="m-2">Video resource updated successfully!</p>
                     </Popup>
                 </div>
             }
 
             <Menu />
-            <Banner type="blue">
-                <div className="relative z-1">
-                    <a href="/video-resources" className="banner-breadcrumb">
-                        <i className="bi bi-caret-left-fill"></i>
-                        <strong>VIDEO RESOURCES</strong>
-                    </a>
-                    <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
-                    <p>
-                        <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date}</i></span>
-                    </p>
-                </div>
-            </Banner>
+            <main id="main-content">
+                <Banner type="blue">
+                    <div className="relative z-1">
+                        <a href="/video-resources" className="banner-breadcrumb">
+                            <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
+                            <strong>VIDEO RESOURCES</strong>
+                        </a>
+                        <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
+                        <p>
+                            <span className="text-lg">By {loaderData.speaker}</span> <span className="ml-5 opacity-70"><i>{loaderData.date}</i></span>
+                        </p>
+                    </div>
+                </Banner>
 
-            <div className="py-20 px-10 lg:px-40 duration-200">
+                <div className="py-20 px-10 lg:px-40 duration-200">
                 {isAdmin ? (
                     <div className="text-right mb-4 flex justify-end gap-2">
                         <button className="button button-light" onClick={handleShowEditPopupForm}>Edit Video Resource</button>
@@ -349,12 +350,12 @@ export default function VideoResource({ loaderData }) {
                     </div>
                 ) : <></>}
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                    <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                    <iframe src={loaderData.video_url} width="100%" height="100%" title={`${loaderData.title} video`}></iframe>
                 </div>
                 <p>{loaderData.video_description}</p>
 
                 <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
-                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" />}
+                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt={`${loaderData.speaker} headshot`} />}
                     <div className="w-full md:w-70 shrink-0 grow-0 m-3">
                         <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
                         <p className="text-disabled-light">{loaderData.speaker_university}</p>
@@ -362,7 +363,8 @@ export default function VideoResource({ loaderData }) {
                     <p>{loaderData.speaker_details}</p>
                 </div>
 
-            </div>
+                </div>
+            </main>
 
             <Footer />
         </>

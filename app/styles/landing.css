@@ -61,8 +61,17 @@
     z-index: 1;
 }
 
-.carousel-item h1 {
+.carousel-item h1,
+.carousel-title {
     color: var(--color-white);
+}
+
+.carousel-title {
+    font-family: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+    font-size: 2.5rem;
+    font-weight: 500;
+    margin-bottom: calc(var(--spacing) * 2);
+    text-transform: uppercase;
 }
 
 .carousel-btn>svg {

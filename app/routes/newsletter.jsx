@@ -78,14 +78,14 @@ export function NewsletterViewer({ latestDate }) {
                             <p>Newsletter PDF Viewer</p>
                         </div>
                         <div className="w-auto flex flex-col justify-start items-start space-y-5 ml-5">
-                            <button className="button w-full aspect-square">
-                                <i className="bi bi-download"></i>
+                            <button className="button w-full aspect-square" aria-label="Download newsletter">
+                                <i className="bi bi-download" aria-hidden="true"></i>
                             </button>
-                            <button className="button w-full aspect-square">
-                                <i className="bi bi-link-45deg text-2xl"></i>
+                            <button className="button w-full aspect-square" aria-label="Copy newsletter link">
+                                <i className="bi bi-link-45deg text-2xl" aria-hidden="true"></i>
                             </button>
-                            <button className="button w-full aspect-square">
-                                <i className="bi bi-share-fill"></i>
+                            <button className="button w-full aspect-square" aria-label="Share newsletter">
+                                <i className="bi bi-share-fill" aria-hidden="true"></i>
                             </button>
                         </div>
                     </div>
@@ -139,13 +139,16 @@ export function NewsletterArchive({ onSelect = () => { } }) {
                     <h2>Newsletter Archive</h2>
 
                     <div className="flex items-center space-x-4">
-                        <select value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }} className="input input-text">
+                        <label htmlFor="newsletter-month-filter" className="sr-only">Filter newsletters by month</label>
+                        <select id="newsletter-month-filter" value={filterMonth} onChange={(e) => { setFilterMonth(e.target.value); setPage(1); }} className="input input-text">
                             {months.map((m) => (
                                 <option key={m} value={m}>{m}</option>
                             ))}
                         </select>
 
+                        <label htmlFor="newsletter-search" className="sr-only">Search newsletter archive</label>
                         <input
+                            id="newsletter-search"
                             value={searchQuery}
                             onChange={(e) => { setSearchQuery(e.target.value); setPage(1); }}
                             className="input input-text w-md"
@@ -166,11 +169,11 @@ export function NewsletterArchive({ onSelect = () => { } }) {
                     </div>
 
                     <div className="flex justify-center space-x-2">
-                        <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button"><i className="bi bi-arrow-left-short"></i> Prev</button>
+                        <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button" aria-label="Previous archive page"><i className="bi bi-arrow-left-short" aria-hidden="true"></i> Prev</button>
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                            <button key={p} onClick={() => setPage(p)} className={`button ${p === page ? 'font-semibold' : 'button-light'}`}>{p}</button>
+                            <button key={p} onClick={() => setPage(p)} className={`button ${p === page ? 'font-semibold' : 'button-light'}`} aria-current={p === page ? "page" : undefined} aria-label={`Archive page ${p}`}>{p}</button>
                         ))}
-                        <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button">Next <i className="bi bi-arrow-right-short"></i></button>
+                        <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button" aria-label="Next archive page">Next <i className="bi bi-arrow-right-short" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </div>
@@ -198,9 +201,11 @@ export default function Newsletter() {
                 <button className={`button ${mode === 'admin' ? 'button' : 'button-light'}`} onClick={() => setMode('admin')}>Admin</button>
             </div>
 
-            <NewsletterViewer latestDate={latestDate} />
-            <Subscribe />
-            <NewsletterArchive />
+            <main id="main-content">
+                <NewsletterViewer latestDate={latestDate} />
+                <Subscribe />
+                <NewsletterArchive />
+            </main>
             <Footer />
         </div>
     );

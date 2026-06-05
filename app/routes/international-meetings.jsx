@@ -924,48 +924,49 @@ function MeetingSidebarButton({ meeting, active = false, first = false, last = f
   const roundingClasses = `${first ? "rounded-t-md" : ""} ${last ? "rounded-b-md border-b-2" : ""}`;
 
   return (
-    <a href="#conference-details" className="block">
-      <button
-        type="button"
-        className={`w-full cursor-pointer border-x-2 border-t-2 p-3 text-left duration-200 ${stateClasses} ${roundingClasses}`}
-        onClick={onClick}
-        aria-pressed={active}
-      >
-        <div className="flex items-center gap-3">
-          <div
-            className={`h-14 w-20 shrink-0 overflow-hidden rounded-md border-2 ${
-              active ? "border-white/70" : "border-gray-light"
-            } bg-white`}
-          >
-            <img
-              src={meeting.heroImage}
-              alt={meeting.label}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </div>
-
-          <div className="min-w-0 flex-1">
-            <p className={`mb-0 font-semibold ${active ? "text-white" : "text-secondary-dark"}`}>
-              {meeting.label}
-            </p>
-            {meeting.date ? (
-              <p className={`mb-0 ${active ? "text-white/80" : "text-disabled-light"}`}>
-                <i>{meeting.date}</i>
-              </p>
-            ) : null}
-          </div>
-
-          <i
-            className={`bi bi-chevron-double-right shrink-0 ${
-              active ? "text-white" : "text-primary-dark"
-            }`}
-            style={{ fontSize: "1.2rem" }}
-            aria-hidden="true"
+    <button
+      type="button"
+      className={`block w-full cursor-pointer border-x-2 border-t-2 p-3 text-left duration-200 ${stateClasses} ${roundingClasses}`}
+      onClick={() => {
+        onClick();
+        document.getElementById("conference-details")?.scrollIntoView({ behavior: "smooth" });
+      }}
+      aria-pressed={active}
+    >
+      <div className="flex items-center gap-3">
+        <div
+          className={`h-14 w-20 shrink-0 overflow-hidden rounded-md border-2 ${
+            active ? "border-white/70" : "border-gray-light"
+          } bg-white`}
+        >
+          <img
+            src={meeting.heroImage}
+            alt={meeting.label}
+            className="h-full w-full object-cover"
+            loading="lazy"
           />
         </div>
-      </button>
-    </a>
+
+        <div className="min-w-0 flex-1">
+          <p className={`mb-0 font-semibold ${active ? "text-white" : "text-secondary-dark"}`}>
+            {meeting.label}
+          </p>
+          {meeting.date ? (
+            <p className={`mb-0 ${active ? "text-white/80" : "text-disabled-light"}`}>
+              <i>{meeting.date}</i>
+            </p>
+          ) : null}
+        </div>
+
+        <i
+          className={`bi bi-chevron-double-right shrink-0 ${
+            active ? "text-white" : "text-primary-dark"
+          }`}
+          style={{ fontSize: "1.2rem" }}
+          aria-hidden="true"
+        />
+      </div>
+    </button>
   );
 }
 
@@ -1417,7 +1418,7 @@ function MeetingSection({ meeting }) {
                         onClick={() => handleImageStep(-1)}
                         aria-label="Previous photo"
                       >
-                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
+                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }} aria-hidden="true" focusable="false">
                           <polyline points="14,1 2,12 14,23" />
                         </svg>
                         <span className="font-semibold">Previous</span>
@@ -1429,7 +1430,7 @@ function MeetingSection({ meeting }) {
                         aria-label="Next photo"
                       >
                         <span className="font-semibold">Next</span>
-                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
+                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }} aria-hidden="true" focusable="false">
                           <polyline points="2,1 14,12 2,23" />
                         </svg>
                       </button>
@@ -1481,8 +1482,8 @@ export default function InternationalMeetings() {
 
   return (
     <div className="min-h-screen bg-white">
-      <Menu currentEndUrl="/regional-meetings" />
-      <div className="lg:px-40 px-10 py-20 duration-200">
+      <Menu currentEndUrl="/international-meetings" />
+      <main id="main-content" className="lg:px-40 px-10 py-20 duration-200">
         <h1>International meetings</h1>
 
         <p className="mt-3 text-gray-dark/70">
@@ -1492,6 +1493,7 @@ export default function InternationalMeetings() {
         <section className="mt-8 grid gap-8 lg:grid-cols-[280px_1fr]">
           <aside className="h-fit lg:sticky lg:top-32">
             <div className="mt-3 lg:hidden">
+              <label htmlFor="meeting-select" className="sr-only">Select international meeting</label>
               <select
                 id="meeting-select"
                 className="input input-text w-full"
@@ -1524,7 +1526,7 @@ export default function InternationalMeetings() {
           </div>
         </section>
 
-      </div>
+      </main>
       <Footer />
     </div>
   );

@@ -60,9 +60,9 @@ export default function ArticleEdit() {
     return (
         <div className="bg-white items-center text-black">
             <Menu />
-            <main className="pt-8 p-4 container mx-auto min-h-[60vh]">
+            <main id="main-content" className="pt-8 p-4 container mx-auto min-h-[60vh]">
                 <div className="flex justify-between gap-2 mb-4">
-                    <h2 className="text-2xl font-semibold m-0!">Edit Article</h2>
+                    <h1 className="text-2xl font-semibold m-0!" style={{ textTransform: "none" }}>Edit Article</h1>
                     <div className="flex gap-4">
                         <button onClick={save} className="button">Save</button>
                         <button onClick={() => window.history.back()} className="button button-light">Cancel</button>
@@ -70,12 +70,12 @@ export default function ArticleEdit() {
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium">Title</label>
-                        <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Article Title" className="input-text w-full" />
+                        <label htmlFor="article-title" className="block text-sm font-medium">Title</label>
+                        <input id="article-title" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Article Title" className="input-text w-full" />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">Authors</label>
+                        <div className="block text-sm font-medium">Authors</div>
                         <div className="flex gap-2 flex-wrap">
                             {authors.map((a) => (
                                 <div key={a.id} className="flex items-center gap-2 border-2 border-gray-light rounded-md p-2">
@@ -85,13 +85,14 @@ export default function ArticleEdit() {
                             ))}
                         </div>
                         <div className="mt-2 flex gap-2">
+                            <label htmlFor="author-search" className="sr-only">Add author</label>
                             <input id="author-search" placeholder="Add author (mock)" className="input-text m-0!" />
                             <button onClick={() => addAuthor(document.getElementById("author-search").value)} className="button">Add</button>
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">Uploaded media</label>
+                        <div className="block text-sm font-medium">Uploaded media</div>
                         <div className="flex gap-2 flex-wrap">
                             {media.map((m) => (
                                 <div key={m.id} className="border-2 border-gray-light rounded p-2 flex items-center gap-2">
@@ -105,12 +106,12 @@ export default function ArticleEdit() {
                             ))}
                         </div>
                         <div className="mt-2">
-                            <input type="file" onChange={(e) => { const f = e.target.files[0]; if (f) { const url = URL.createObjectURL(f); setMedia((s) => [...s, { id: `m${Math.random().toString(36).slice(2, 6)}`, name: f.name, url }]); } }} />
+                            <input type="file" aria-label="Upload article media" onChange={(e) => { const f = e.target.files[0]; if (f) { const url = URL.createObjectURL(f); setMedia((s) => [...s, { id: `m${Math.random().toString(36).slice(2, 6)}`, name: f.name, url }]); } }} />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium">Article content</label>
+                        <div className="block text-sm font-medium">Article content</div>
                         <div className="space-y-2">
                             {blocks.map((b, idx) => (
                                 <div key={b.id} className="border-2 border-gray-light rounded p-2">
@@ -126,7 +127,7 @@ export default function ArticleEdit() {
                                 </div>
                             ))}
                             <div>
-                                <button onClick={addBlock} className="button button-light w-full">Add block <i className="bi bi-plus"></i></button>
+                                <button onClick={addBlock} className="button button-light w-full">Add block <i className="bi bi-plus" aria-hidden="true"></i></button>
                             </div>
                         </div>
                     </div>

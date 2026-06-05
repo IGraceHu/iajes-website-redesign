@@ -270,7 +270,7 @@ function MemberCard({ memberData }) {
     <div className="text-center w-full flex flex-col justify-end">
       { memberData?.image_url &&
         <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
-          <img className="min-w-full min-h-full object-cover" src={memberData.image_url} />
+          <img className="min-w-full min-h-full object-cover" src={memberData.image_url} alt={`${memberData.name} headshot`} />
         </div>
       }
       { memberData.iajes_url ? 
@@ -299,7 +299,7 @@ function ProjectCard({ projectData }) {
         </p>
         { projectData.image_url &&
           <div className="rounded-md md:max-h-50 overflow-hidden">
-            <img className="rounded-md object-cover" src={projectData.image_url} />
+            <img className="rounded-md object-cover" src={projectData.image_url} alt={`${projectData.name} project`} />
           </div>
         }
       </div>
@@ -322,9 +322,10 @@ function EditShortDescPopup({showPopup, setShowPopup, content, taskForceUrl}) {
   }
 
   return (
-    <PopupForm id="tf-shortdesc" className="md:w-[60vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+    <PopupForm id="tf-shortdesc" label="Edit task force short description" className="md:w-[60vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit short description:</h4>
       <p>This is the short description appears in the main task force page.</p>
+      <label htmlFor="tf-desc-input" className="sr-only">Task force short description</label>
       <textarea id="tf-desc-input" name="tf-desc-input" placeholder="Task force short description..."
                 className="input-text w-full min-h-30 h-[30vh]"
                 defaultValue={content}>
@@ -348,8 +349,9 @@ function EditContentTopPopup({showPopup, setShowPopup, content, taskForceUrl}) {
   }
   
   return (
-    <PopupForm id="tf-contenttop" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+    <PopupForm id="tf-contenttop" label="Edit task force top content" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit area:</h4>
+      <label htmlFor="tf-contenttop-input" className="sr-only">Task force top content</label>
       <textarea id="tf-contenttop-input" name="tf-contenttop-input" placeholder="Task force area..."
                 className="input-text w-full min-h-50 h-[30vh]"
                 defaultValue={content}>
@@ -373,8 +375,9 @@ function EditContentBottomPopup({showPopup, setShowPopup, content, taskForceUrl}
   }
   
   return (
-    <PopupForm id="tf-contentbottom" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+    <PopupForm id="tf-contentbottom" label="Edit task force bottom content" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit area:</h4>
+      <label htmlFor="tf-contentbottom-input" className="sr-only">Task force bottom content</label>
       <textarea id="tf-contentbottom-input" name="tf-contentbottom-input" placeholder="Task force area..."
                 className="input-text w-full min-h-50 h-[30vh]"
                 defaultValue={content}>
@@ -521,35 +524,35 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
 
   return (
     <>
-      <Popup id="tf-team" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
+      <Popup id="tf-team" label="Edit task force team" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup}>
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
           {currentTeamMembers.map(member => <div key={member.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
             <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(member)}>
               <p className="pr-5 mr-auto" style={{ color: "black" }}>{member.name}</p>
-              <i className="bi bi-pencil-square"></i>
+              <i className="bi bi-pencil-square" aria-hidden="true"></i>
             </button>
-            <button className="button-icon button-red" onClick={() => handleDeleteMemberPopup(member)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+            <button className="button-icon button-red" onClick={() => handleDeleteMemberPopup(member)} aria-label={`Remove ${member.name} from task force team`}><i className="bi bi-x" style={{ fontSize: "2rem" }} aria-hidden="true"></i></button>
           </div>)}
         </div>
         <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup(null)}>Add a team member</button>
       </Popup>
 
-      <Popup id="tf-delete-member" show={showDeletePopup} setShow={setShowDeletePopup} nested
+      <Popup id="tf-delete-member" label="Remove team member" show={showDeletePopup} setShow={setShowDeletePopup} nested
              buttons={[{text:"Remove", onclick:handleRemove, className: "button-red"}]}>
           <div className="text-center mt-6">Remove {focusMember?.name}?</div>
       </Popup>
 
-      <PopupForm id="tf-team-member" show={showMemberPopup} setShow={setShowMemberPopup} validate={memberValidate} hasError={memberHasError} encType="multipart/form-data"  nested>
+      <PopupForm id="tf-team-member" label="Edit task force team member" show={showMemberPopup} setShow={setShowMemberPopup} validate={memberValidate} hasError={memberHasError} encType="multipart/form-data"  nested>
         <h4>Edit Team Member</h4>
-        <label htmlFor="edit-member-name">Name:</label><br />
+        <label htmlFor="edit-person-name">Name:</label><br />
         <input id="edit-person-name" name="name" type="text" className={"input input-text w-full " + (formRequired?.name && "input-required")}
                placeholder="Name" onChange={(e) => checkEmpty(e.target.value, "name")}
                defaultValue={focusMember?.name} />
         <div className="input-error">This field is required.</div>
         
         <br /><br />
-        <label htmlFor="edit-member-role">Task Force Role:</label><br />
+        <label htmlFor="edit-person-role">Task Force Role:</label><br />
         <input id="edit-person-role" name="role" type="text" className="input input-text w-full"
                placeholder="Task Force Role"
                defaultValue={focusMember?.role} />
@@ -712,26 +715,26 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
 
   return (
     <>
-      <Popup id="tf-projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup} hasError={projectHasError} encType="multipart/form-data">
+      <Popup id="tf-projects" label="Edit task force projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup} hasError={projectHasError} encType="multipart/form-data">
         <h4>Edit Task Force Projects</h4>
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
             {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
               <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{project.name}</p>
-                <i className="bi bi-pencil-square"></i>
+                <i className="bi bi-pencil-square" aria-hidden="true"></i>
               </button>
-              <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+              <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)} aria-label={`Remove ${project.name} project`}><i className="bi bi-x" style={{ fontSize: "2rem" }} aria-hidden="true"></i></button>
             </div>)}
           </div>
           <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup(null)}>Add a project</button>
       </Popup>
 
-      <Popup id="tf-delete-project" show={showDeletePopup} setShow={setShowDeletePopup} nested
+      <Popup id="tf-delete-project" label="Remove project" show={showDeletePopup} setShow={setShowDeletePopup} nested
              buttons={[{text:"Remove", onclick:handleRemove, className: "button-red"}]}>
           <div className="text-center mt-6">Remove {focusProject?.name}?</div>
       </Popup>
 
-      <PopupForm id="tf-project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} hasError={projectHasError} encType="multipart/form-data" nested>
+      <PopupForm id="tf-project" label="Edit task force project" className="md:w-200" show={showProjectPopup} setShow={setShowProjectPopup} validate={validate} hasError={projectHasError} encType="multipart/form-data" nested>
         <h4>Edit Project</h4>
         <div className="flex gap-5 w-full md:flex-row flex-col mb-5">
           <div>
@@ -819,15 +822,16 @@ export default function TaskForce({ loaderData }) {
       />
       
       <Menu />
-      <Banner>
-        <a href="/task-forces" className="banner-breadcrumb">
-            <i className="bi bi-caret-left-fill"></i>
-            <strong>TASK FORCES</strong>
-        </a>
-        <h1 style={{ color: "white" }}>{taskForceData.name}</h1>
-      </Banner>
+      <main id="main-content">
+        <Banner>
+          <a href="/task-forces" className="banner-breadcrumb">
+              <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
+              <strong>TASK FORCES</strong>
+          </a>
+          <h1 style={{ color: "white" }}>{taskForceData.name}</h1>
+        </Banner>
 
-      <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
+        <div className="w-full lg:px-40 px-10 py-15 duration-200 text-center">
         <div className="w-full text-left duration-200 mb-5">
           <p>{taskForceData.short_desc}</p>
           {isAdmin &&
@@ -882,7 +886,8 @@ export default function TaskForce({ loaderData }) {
           </div>
         }
 
-      </div>
+        </div>
+      </main>
       <Footer />
     </>
   );

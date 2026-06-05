@@ -12,7 +12,7 @@ export function meta() {
 async function getTaskForces() {
     const { data, error } = await supabase
         .from('task forces')
-        .select("id, name, url, short_desc");
+        .select("id, name, url, short_desc, image_url");
 
     if (data) {
         data.sort((a, b) => { return a.id - b.id })
@@ -34,7 +34,7 @@ function TaskForceSection({taskForceInfo}) {
                 <p>{taskForceInfo.short_desc}</p>
             </div>
             { taskForceInfo?.image_url && 
-            <img className="w-100 h-full min-h-50 max-h-75" src={taskForceInfo.image_url} />}
+            <img className="w-100 h-full min-h-50 max-h-75" src={taskForceInfo.image_url} alt={`${taskForceInfo.name} task force`} />}
         </div>
     )
 }
@@ -50,14 +50,14 @@ export default function TaskForces({ loaderData }) {
     return (
         <>
             <Menu />
-            <div className="w-full duration-200">
+            <main id="main-content" className="w-full duration-200">
                 <Banner type="blue">
                     <h1 className="w-full text-center" style={{color: "var(--color-primary-extralight)"}}>Task Forces</h1>
                 </Banner>
                 <div id="task-forces" className="grid lg:grid-cols-2 grid-cols-1">
                     {taskForces}
                 </div>
-            </div>
+            </main>
             <Footer />
         </>
     );

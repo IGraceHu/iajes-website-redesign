@@ -162,18 +162,18 @@ export default function SignUp() {
 
   return (
     <div className="flex flex-col justify-between">
-      <Popup id="sign-up" show={showPopup} setShow={setShowPopup}>
-        <div className="w-full h-30 text-center flex justify-center items-center">{errorMessage || "An unexpected error occurred."}</div>
+      <Popup id="sign-up" label="Sign-up error" show={showPopup} setShow={setShowPopup}>
+        <div className="w-full h-30 text-center flex justify-center items-center" role="alert">{errorMessage || "An unexpected error occurred."}</div>
       </Popup>
 
       <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES logo" />
         </NavLink>
       </div>
 
-      <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
-        <h4>Create an <span className="text-primary-dark">IAJES</span> account</h4>
+      <main id="main-content" className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
+        <h1 style={{ fontSize: "1.7rem", textTransform: "none", color: "var(--color-secondary-light)" }}>Create an <span className="text-primary-dark">IAJES</span> account</h1>
         <form action={formAction} className="lg:w-md w-full duration-200">
           <div className="w-full mb-5 grid md:grid-cols-2 grid-cols-1 gap-5">
             <div>
@@ -194,7 +194,7 @@ export default function SignUp() {
 
           <label htmlFor="email">Email:</label><br />
           <div className="text-sm text-disabled-light italic">Please use your institution email.</div>
-          <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
+          <input id="email" name="email" type="email" defaultValue={state?.email} placeholder="Email" autoComplete="email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
           <div className="input-error">Please enter a valid email address.</div>
@@ -202,7 +202,7 @@ export default function SignUp() {
           <br /><br />
 
           <label htmlFor="pwd">Create Password:</label><br />
-          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
+          <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password" autoComplete="new-password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => { checkPassword(); checkEmpty(e.target.value, "pwd"); }} />
           <div className="input-error">Please enter a password.</div>
@@ -210,7 +210,7 @@ export default function SignUp() {
           <br /><br />
 
           <label htmlFor="re-pwd">Re-enter Password:</label><br />
-          <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd} placeholder="Re-enter Password"
+          <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd} placeholder="Re-enter Password" autoComplete="new-password"
             className={"input-text w-full " + (formRequired?.rePwd && "input-required")}
             onChange={checkPassword} />
           <div className="input-error">Passwords must match.</div>
@@ -229,7 +229,7 @@ export default function SignUp() {
           </div>
         </form>
 
-      </div>
+      </main>
       <div className="bg-primary-dark h-20 w-full"></div>
     </div>
   );

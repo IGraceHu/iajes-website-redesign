@@ -27,7 +27,7 @@ function TitleSection() {
                 <div className="md:flex hidden items-stretch">
                     <img
                         src="/assets/logo-iajes.svg"
-                        alt="IAJES"
+                        alt="IAJES logo"
                         className="w-[80%] h-[70vh] object-contain rounded-md"
                         style={{ minHeight: 160 }}
                     />
@@ -116,7 +116,7 @@ function ThreeColumnSection() {
             <div className="grid lg:grid-cols-8 md:grid-cols-1 gap-10">
                 <div className="lg:col-span-3">
                     <h3>Our Mission</h3>
-                    <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-OurMission.jpeg" alt="Mission" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-OurMission.jpeg" alt="IAJES members collaborating at a meeting" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         To join the engineering schools in Jesuit Universities worldwide, in order to promote the development and growth of our society through academic activities, research and social action.
                         <br /><br />
@@ -136,7 +136,7 @@ function ThreeColumnSection() {
 
                 <div className="lg:col-span-2">
                     <h3>Our Vision</h3>
-                    <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-OurVision.jpeg" alt="Vision" className="w-full h-48 object-cover rounded-md my-6" />
+                    <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-OurVision.jpeg" alt="IAJES meeting participants seated in a conference room" className="w-full h-48 object-cover rounded-md my-6" />
                     <p>
                         Make IAJES a worldwide leader and reference organization in the promotion of a new generation of engineers, scientists, and researchers deeply rooted and trained in the spirit of the Jesuit mission and Universal Apostolic Preferences.
                     </p>
@@ -159,7 +159,7 @@ function QuoteAndMapSection() {
             {/* Google MyMaps Embed */}
             <div className="rounded-lg overflow-hidden">
                 <div className="w-full">
-                    <iframe src="https://www.google.com/maps/d/embed?mid=10WMSaIkegY3WEWSkuEVXd8kfRII&ehbc=2E312F" width="100%" height="480" style={{ border: "none", minHeight: 300, }}></iframe>
+                    <iframe title="Map of Jesuit universities with engineering or science faculties" src="https://www.google.com/maps/d/embed?mid=10WMSaIkegY3WEWSkuEVXd8kfRII&ehbc=2E312F" width="100%" height="480" style={{ border: "none", minHeight: 300, }}></iframe>
                 </div>
             </div>
         </div>
@@ -190,15 +190,11 @@ function SpeakerHighlightSection() {
                         “The International Association of Jesuit Universities finds its purpose and gives meaning to what it does by living and promoting collaboration and solidarity within and from the university institutions that make it up. It is a matter of making the best possible use of the enormous potential for collaboration and solidarity that exists in the universities that make up this network. Little by little we have been embarking on this path. As we move forward we recognize the advantages of collaboration and solidarity. We are learning better ways to take advantage of the resources we have, which are always scarce for the magnitude of the task...”
                     </blockquote>
                     <div className="flex gap-4 flex-row">
-                        <a href="https://drive.google.com/file/d/1ViiIfKjNLUwg05wkEASFJuoK5OKpIh0E/view?usp=sharing" target="blank" className="w-1/2 flex align-middle">
-                            <button className="button w-full mt-2">
-                                View Fr. Sosa's Full Speech
-                            </button>
+                        <a href="https://drive.google.com/file/d/1ViiIfKjNLUwg05wkEASFJuoK5OKpIh0E/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="button w-1/2 flex align-middle justify-center mt-2">
+                            View Fr. Sosa's Full Speech
                         </a>
-                        <a href="https://drive.google.com/file/d/1FOSxR-BrZIzmQss7Nm6iR3pDgmPjd4pU/view?usp=sharing" target="blank" className="w-1/2 flex align-middle">
-                            <button className="button w-full mt-2">
-                                Lea el discurso completo del Padre Sosa
-                            </button>
+                        <a href="https://drive.google.com/file/d/1FOSxR-BrZIzmQss7Nm6iR3pDgmPjd4pU/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="button w-1/2 flex align-middle justify-center mt-2">
+                            Lea el discurso completo del Padre Sosa
                         </a>
                     </div>
                 </div>
@@ -215,12 +211,10 @@ function OriginTimelineSection() {
                 <p className="text-gray-dark mb-6">
                     As agreed, the Governing Board, elected at the Bhubaneswar Summit in July 2024, wrote a roadmap for the development of IAJES. This road map had to find the right balance to allow the development of the association, the realization of the actions, the right rhythm of the events, the necessary involvement of the members, and the close relationship with IAJU. It had been validated with the Governing Board on December, 2024.
                 </p>
-                <a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="blank">
-                    <button className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
-                        <span className="mx-auto">
-                            <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right"></i></span>
-                        </span>
-                    </button>
+                <a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
+                    <span className="mx-auto">
+                        <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right" aria-hidden="true"></i></span>
+                    </span>
                 </a>
             </div>
 
@@ -232,7 +226,7 @@ function OriginTimelineSection() {
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2015</div>
-                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-MichaelGaranziniSJ.jpg" alt="2015" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-MichaelGaranziniSJ.jpg" alt="Fr. Michael Garanzini speaking at a Jesuit university event" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">Our initiative is both a response to a call from Pope Franciscus and Society of Jesus, especially through his secretary for higher education, Fr. Michael Garanzini and the expression of a strong shared desire to foster fruitful links of communion and cooperation among our Jesuit engineering schools.
                             <br /><br />
                             The concept was launched in July 2015 in Melbourne during the Assembly of Presidents and Rectors of Jesuit universities.</p>
@@ -240,13 +234,13 @@ function OriginTimelineSection() {
                 </div>
 
                 <div className="flex items-center justify-center text-primary-dark">
-                    <svg className="transform lg:rotate-0 rotate-90" width="40" height="40" viewBox="0 0 40 40" fill="none"><path d="M8 20L32 20M25 13L32 20L25 27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    <svg className="transform lg:rotate-0 rotate-90" width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true" focusable="false"><path d="M8 20L32 20M25 13L32 20L25 27" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
                 </div>
 
                 <div className="flex-1 bg-white rounded-lg p-6 flex flex-col justify-between shadow-sm">
                     <div>
                         <div className="text-primary-dark font-bold mb-4">2017 / 2018</div>
-                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-Bilbao1.jpg" alt="2017/2018" className="w-full h-60 object-cover rounded-md mb-4" />
+                        <img src="https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/about/AboutInfo-Bilbao1.jpg" alt="IAJES founding conference attendees in Bilbao" className="w-full h-60 object-cover rounded-md mb-4" />
                         <p className="text-gray-dark">A brief prospection in the fall 2017 led to the constitution of the first task force with worldwide representatives. Its main task was to prepare and promote a first founding conference for the IAJES International Association of Jesuit Engineering Schools.
                             <br /><br />
                             Foreseen in <strong>DEUSTO BILBAO in July 2018</strong>, this event would find a meaningful place just before the Assembly of Presidents and Rectors of Jesuit Universities where the IAJU (International Association of Jesuit Universities) would solemnly be founded.</p>
@@ -261,14 +255,14 @@ export default function About() {
     return (
         <>
             <Menu currentEndUrl="/about" />
-            <div className="w-full duration-200">
+            <main id="main-content" className="w-full duration-200">
                 <TitleSection />
                 <WhatWeDoSection />
                 <ThreeColumnSection />
                 <QuoteAndMapSection />
                 <SpeakerHighlightSection />
                 <OriginTimelineSection />
-            </div>
+            </main>
             <Footer />
         </>
     );

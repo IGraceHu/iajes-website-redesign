@@ -44,6 +44,40 @@ function loadGoogleTranslate() {
   addScript();
 }
 
+function DesktopDropdown({ label, active, className = "", children }) {
+  return (
+    <details
+      className="menu-dropdown-container"
+      onMouseEnter={(event) => {
+        event.currentTarget.open = true;
+      }}
+      onMouseLeave={(event) => {
+        event.currentTarget.open = false;
+      }}
+    >
+      <summary className={"menu-dropdown-button link p-4 list-none" + (active ? " active" : "")}>
+        {label}
+      </summary>
+      <div className={"menu-dropdown py-1 " + className}>
+        {children}
+      </div>
+    </details>
+  );
+}
+
+function SideDropdown({ label, active, children }) {
+  return (
+    <details className="side-menu-dropdown-container py-3 px-7">
+      <summary className={"side-menu-dropdown-button link pb-3 list-none" + (active ? " active" : "")}>
+        {label}
+      </summary>
+      <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">
+        {children}
+      </div>
+    </details>
+  );
+}
+
 export function Menu({ currentEndUrl }) {
   const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState(null);
@@ -156,40 +190,13 @@ export function Menu({ currentEndUrl }) {
     window.location.reload();
   };
 
-  useEffect(() => {
-
-    const menuDropdownEls = document.getElementsByClassName("menu-dropdown-container");
-
-    for (let menuDropdown of menuDropdownEls) {
-      menuDropdown.addEventListener("mouseout", function () { menuDropdown.classList.remove("active-popup"); });
-      menuDropdown.addEventListener("mouseover", function () { menuDropdown.classList.add("active-popup"); });
-    }
-
-    const sideMenuDropdownEls = document.getElementsByClassName("side-menu-dropdown-container");
-    for (let sideMenuDropdown of sideMenuDropdownEls) {
-      sideMenuDropdown.addEventListener("mouseout", function () { sideMenuDropdown.classList.remove("active-popup"); })
-      sideMenuDropdown.addEventListener("mouseover", function () { sideMenuDropdown.classList.add("active-popup"); })
-    }
-
-    if (sideMenuActive) {
-      const sideMenuContEl = document.getElementById("side-menu-container");
-      sideMenuContEl.children[1].classList.add("left-0");
-      sideMenuContEl.children[0].classList.remove("hidden");
-    } else {
-      const sideMenuContEl = document.getElementById("side-menu-container");
-      sideMenuContEl.children[1].classList.remove("left-0");
-      sideMenuContEl.children[0].classList.add("hidden");
-    }
-
-  }, [sideMenuActive, currentUser])
-
-
   return (
     <>
-      <Popup id="signout" show={signOutPopup} setShow={setSignOutPopup} closePopup={() => { setSignOutPopup(false); navigate("/"); }} stayOnBlur={true}>
+      <Popup id="signout" label="Sign-out confirmation" show={signOutPopup} setShow={setSignOutPopup} closePopup={() => { setSignOutPopup(false); navigate("/"); }} stayOnBlur={true}>
         <p className="text-center mt-6">You have been signed out.</p>
       </Popup>
-      <div id="menu" className="sticky top-0 bg-white z-100">
+      <header id="menu" className="sticky top-0 bg-white z-100">
+        <a className="skip-link" href="#main-content">Skip to main content</a>
         <div className="border-b border-b-gray-light h-6 relative z-999 flex flex-row justify-end">
           {/* Secondary Header */}
           {/* Linkedin Social Media Link */}
@@ -200,12 +207,13 @@ export function Menu({ currentEndUrl }) {
             className="mr-3 flex items-center text-zinc-400 hover:text-[#0A66C2] transition-colors"
             aria-label="LinkedIn"
           >
-            <i className="bi bi-linkedin text-[0.9rem]"></i>
+            <i className="bi bi-linkedin text-[0.9rem]" aria-hidden="true"></i>
           </a>
           {/* Google Translate Dropdown */}
           <select
             value={language}
             onChange={changeLanguage}
+            aria-label="Select page language"
             className="link mr-3 text-[0.75rem]! z-100 notranslate text-zinc-400!"
           >
             {LANGUAGES.map((l) => (
@@ -217,93 +225,85 @@ export function Menu({ currentEndUrl }) {
         </div>
 
         <div className="relative flex items-center content-center md:justify-start justify-between shadow-sm z-1 duration-200">
-          <button onClick={() => setSideMenuActive(!sideMenuActive)} className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1">
-            <i className="bi bi-list text-[1.7rem]"></i>
+          <button
+            type="button"
+            onClick={() => setSideMenuActive(!sideMenuActive)}
+            className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1"
+            aria-label={sideMenuActive ? "Close navigation menu" : "Open navigation menu"}
+            aria-controls="side-menu"
+            aria-expanded={sideMenuActive}
+          >
+            <i className="bi bi-list text-[1.7rem]" aria-hidden="true"></i>
           </button>
-          <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">
-            <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0" aria-label="IAJES home">
+            <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES logo" />
             <p id="logo-title" className="ml-2 text-secondary-light text-xs w-47" style={{fontWeight: 400}}>International Association of Jesuit Engineering and Sciences Schools</p>
             {/* <img className="h-[1.5rem] ml-4 md:hidden block" src="/assets/logo-iajes-text.svg" /> */}
           </NavLink>
 
 
-          <div className="relative flex items-center justify-end hidden md:flex shrink-0">
-            <div className="menu-dropdown-container">
-              <div className={"menu-dropdown-button link p-4" + (isGroupActive.whatWeDo ? " active" : "")}>
-                What We Do
-              </div>
-              <div className="menu-dropdown -mt-[240px] py-1">
-                <NavLink to="/about" end className="link py-3 px-4 pr-10">
-                  About IAJES
-                </NavLink>
-                <NavLink to="/organizational-structure" end className="link py-3 px-4 pr-10">
-                  Organizational Structure
-                </NavLink>
-                <NavLink to="/newsletter" className="link py-3 px-4 pr-10">
-                  Newsletter
-                </NavLink>
-              </div>
-            </div>
+          <nav className="relative flex items-center justify-end hidden md:flex shrink-0" aria-label="Primary navigation">
+            <DesktopDropdown label="What We Do" active={isGroupActive.whatWeDo}>
+              <NavLink to="/about" end className="link py-3 px-4 pr-10">
+                About IAJES
+              </NavLink>
+              <NavLink to="/organizational-structure" end className="link py-3 px-4 pr-10">
+                Organizational Structure
+              </NavLink>
+              <NavLink to="/newsletter" className="link py-3 px-4 pr-10">
+                Newsletter
+              </NavLink>
+            </DesktopDropdown>
 
             <NavLink to="/task-forces" className="link p-4">
               Task Forces
             </NavLink>
 
-            <div className="menu-dropdown-container">
-              <div className={"menu-dropdown-button link p-4" + (isGroupActive.resources ? " active" : "")}>
-                Resources
-              </div>
-              <div className="menu-dropdown -mt-[220px] py-1">
-                <NavLink to="/video-resources" end className="link py-3 px-4 pr-10">
-                  Video Resources
-                </NavLink>
-                <NavLink to="/webinars" end className="link py-3 px-4 pr-10">
-                  Webinars
-                </NavLink>
-              </div>
-            </div>
+            <DesktopDropdown label="Resources" active={isGroupActive.resources}>
+              <NavLink to="/video-resources" end className="link py-3 px-4 pr-10">
+                Video Resources
+              </NavLink>
+              <NavLink to="/webinars" end className="link py-3 px-4 pr-10">
+                Webinars
+              </NavLink>
+            </DesktopDropdown>
 
-            <div className="menu-dropdown-container">
-              <div className={"menu-dropdown-button link p-4" + (isGroupActive.meetings ? " active" : "")}>
-                Meetings
-              </div>
-              <div className="menu-dropdown w-45 -mt-[220px] py-1">
-                <NavLink to="/regional-meetings" end className="link py-3 px-4">
-                  Regional Meetings
-                </NavLink>
-                <NavLink to="/international-meetings" end className="link py-3 px-4">
-                  International Meetings
-                </NavLink>
-              </div>
-            </div>
+            <DesktopDropdown label="Meetings" active={isGroupActive.meetings} className="w-45">
+              <NavLink to="/regional-meetings" end className="link py-3 px-4">
+                Regional Meetings
+              </NavLink>
+              <NavLink to="/international-meetings" end className="link py-3 px-4">
+                International Meetings
+              </NavLink>
+            </DesktopDropdown>
 
             <NavLink to="/search" end className="link p-4">
               People
             </NavLink>
 
-          </div>
+          </nav>
 
           {!loggedIn ?
             <NavLink to="/signin" end className="block button m-1.5 shrink-0">
               Sign In
             </NavLink>
             :
-            <div className="menu-dropdown-container">
-              <div className="menu-dropdown-button rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark size-11 my-1.5 ml-2 mr-4 flex items-center justify-center text-white hover:text-primary-light hover:border-secondary-light hover:bg-secondary-light duration-200 cursor-pointer">
+            <details className="menu-dropdown-container">
+              <summary className="menu-dropdown-button list-none rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark size-11 my-1.5 ml-2 mr-4 flex items-center justify-center text-white hover:text-primary-light hover:border-secondary-light hover:bg-secondary-light duration-200 cursor-pointer" aria-label="Open account menu">
                 {(userInfo?.image_url != null && userInfo?.image_url != "") ?
-                  <img className="hover:opacity-90 duration-200 min-w-full min-h-full object-cover" src={userInfo.image_url} />
+                  <img className="hover:opacity-90 duration-200 min-w-full min-h-full object-cover" src={userInfo.image_url} alt={`${userInfo?.fname || "User"} ${userInfo?.lname || ""} profile photo`.trim()} />
                   :
-                  <i className="bi bi-person-fill text-[1.5rem]"></i>}
-              </div>
+                  <i className="bi bi-person-fill text-[1.5rem]" aria-hidden="true"></i>}
+              </summary>
               <div className="menu-dropdown right-3 py-1 -mt-[220px]">
                 <div className="text-sm py-3 px-3 mx-2 mb-2 border-b-2 border-primary-light flex items-center">
 
                   <div className="mr-4">
                     <div className="rounded-full bg-primary-dark size-15 border-2 border-primary-dark overflow-hidden flex items-center justify-center">
                       {(userInfo?.image_url != null && userInfo?.image_url != "") ?
-                        <img className="min-w-full min-h-full object-cover" src={userInfo.image_url} />
+                        <img className="min-w-full min-h-full object-cover" src={userInfo.image_url} alt="" aria-hidden="true" />
                         :
-                        <i className="bi bi-person-fill text-[2rem] text-white"></i>}
+                        <i className="bi bi-person-fill text-[2rem] text-white" aria-hidden="true"></i>}
                     </div>
                   </div>
                   <div className="pr-6">
@@ -329,71 +329,68 @@ export function Menu({ currentEndUrl }) {
                   </button>
                 </div>
               </div>
-            </div>
+            </details>
           }
 
         </div>
 
         <div id="side-menu-container" className="absolute w-full z-0">
-          <div id="side-menu-bg" className="absolute w-full h-svh top-0 left-0 z-0 bg-white opacity-10 hidden" onClick={() => setSideMenuActive(false)}></div>
-          <div id="side-menu" className="absolute bg-white flex flex-col w-70 h-dvh duration-400 ease-in-out shadow-md z-1 -left-70" >
+          <div id="side-menu-bg" className={"absolute w-full h-svh top-0 left-0 z-0 bg-black opacity-30 " + (sideMenuActive ? "" : "hidden")} onClick={() => setSideMenuActive(false)} aria-hidden="true"></div>
+          <nav
+            id="side-menu"
+            className={"absolute bg-white flex flex-col w-70 h-dvh duration-400 ease-in-out shadow-md z-1 " + (sideMenuActive ? "left-0" : "-left-70")}
+            aria-label="Mobile navigation"
+            aria-hidden={!sideMenuActive}
+            {...(!sideMenuActive ? { inert: "" } : {})}
+          >
 
-            <div className="side-menu-dropdown-container mt-7 pb-3 px-7">
-              <div className={"side-menu-dropdown-button link py-3" + (isGroupActive.whatWeDo ? " active" : "")}>
-                What We Do
-              </div>
-              <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">
-                <NavLink to="/about" end className="link py-2 px-4">
-                  About IAJES
-                </NavLink>
-                <NavLink to="/organizational-structure" end className="link py-2 px-4">
-                  Organizational Structure
-                </NavLink>
-                <NavLink to="/newsletter" end className="link py-2 px-4">
-                  Newsletter
-                </NavLink>
-              </div>
+            <div className="mt-4 px-7">
+              <button type="button" className="button button-light w-full" onClick={() => setSideMenuActive(false)}>
+                Close menu
+              </button>
             </div>
 
-            <NavLink to="/task-forces" end className="link py-3 pb-6 px-7">
+            <SideDropdown label="What We Do" active={isGroupActive.whatWeDo}>
+              <NavLink to="/about" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                About IAJES
+              </NavLink>
+              <NavLink to="/organizational-structure" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                Organizational Structure
+              </NavLink>
+              <NavLink to="/newsletter" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                Newsletter
+              </NavLink>
+            </SideDropdown>
+
+            <NavLink to="/task-forces" end className="link py-3 pb-6 px-7" onClick={() => setSideMenuActive(false)}>
               Task Forces
             </NavLink>
 
-            <div className="side-menu-dropdown-container py-3 px-7">
-              <div className={"side-menu-dropdown-button link pb-3" + (isGroupActive.resources ? " active" : "")}>
-                Resources
-              </div>
-              <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">
-                <NavLink to="/video-resources" end className="link py-2 px-4">
-                  Video Resources
-                </NavLink>
-                <NavLink to="/webinars" end className="link py-2 px-4">
-                  Webinars
-                </NavLink>
-              </div>
-            </div>
+            <SideDropdown label="Resources" active={isGroupActive.resources}>
+              <NavLink to="/video-resources" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                Video Resources
+              </NavLink>
+              <NavLink to="/webinars" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                Webinars
+              </NavLink>
+            </SideDropdown>
 
-            <div className="side-menu-dropdown-container py-3 px-7">
-              <div className={"side-menu-dropdown-button link pb-3" + (isGroupActive.meetings ? " active" : "")}>
-                Meetings
-              </div>
-              <div className="side-menu-dropdown flex flex-col border-l-2 border-primary-light">
-                <NavLink to="/regional-meetings" end className="link py-2 px-4">
-                  Regional Meetings
-                </NavLink>
-                <NavLink to="/international-meetings" end className="link py-2 px-4">
-                  International Meetings
-                </NavLink>
-              </div>
-            </div>
+            <SideDropdown label="Meetings" active={isGroupActive.meetings}>
+              <NavLink to="/regional-meetings" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                Regional Meetings
+              </NavLink>
+              <NavLink to="/international-meetings" end className="link py-2 px-4" onClick={() => setSideMenuActive(false)}>
+                International Meetings
+              </NavLink>
+            </SideDropdown>
 
-            <NavLink to="/search" end className="link py-3 px-7">
+            <NavLink to="/search" end className="link py-3 px-7" onClick={() => setSideMenuActive(false)}>
               People
             </NavLink>
-          </div>
+          </nav>
         </div>
 
-      </div>
+      </header>
     </>
   );
 }

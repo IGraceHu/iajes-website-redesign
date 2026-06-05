@@ -22,31 +22,31 @@ export function Pagination({currentPage, setCurrentPage, totalItems, itemsPerPag
     const pagination = [];
     for (let i = pagesStart; i <= pagesEnd; i++) {
         if (i == currentPage) {
-            pagination.push(<div key={i} className="bg-secondary-light w-10 flex items-center justify-center text-white rounded-md button-pg">{i + 1}</div>)
+            pagination.push(<div key={i} className="bg-secondary-light w-10 flex items-center justify-center text-white rounded-md button-pg" aria-current="page">{i + 1}</div>)
         } else {
-            pagination.push(<button key={i} className="button button-pg button-light" onClick={() => setCurrentPage(i)}>{i + 1}</button>)
+            pagination.push(<button key={i} className="button button-pg button-light" onClick={() => setCurrentPage(i)} aria-label={`Go to page ${i + 1}`}>{i + 1}</button>)
         }
     }
     
     return (
-        <div className="flex justify-center space-x-2 p-4">
+        <nav className="flex justify-center space-x-2 p-4" aria-label="Pagination">
             { (currentPage == 0) && 
-                <button className="button button-pg-arrow" disabled>
-                    <i className="bi bi-arrow-left-short"></i>
+                <button className="button button-pg-arrow" disabled aria-label="Previous page">
+                    <i className="bi bi-arrow-left-short" aria-hidden="true"></i>
                 </button> }
             { (currentPage != 0) && 
-                <button className="button button-pg-arrow" onClick={() => setCurrentPage(currentPage - 1)}>
-                    <i className="bi bi-arrow-left-short"></i>
+                <button className="button button-pg-arrow" onClick={() => setCurrentPage(currentPage - 1)} aria-label="Previous page">
+                    <i className="bi bi-arrow-left-short" aria-hidden="true"></i>
                 </button> }
             {pagination}
             { (currentPage == totalPages - 1) && 
-                <button className="button button-pg-arrow" disabled>
-                    <i className="bi bi-arrow-right-short"></i>
+                <button className="button button-pg-arrow" disabled aria-label="Next page">
+                    <i className="bi bi-arrow-right-short" aria-hidden="true"></i>
                 </button> }
             { (currentPage != totalPages - 1) && 
-                <button className="button button-pg-arrow" onClick={() => setCurrentPage(currentPage + 1)}>
-                    <i className="bi bi-arrow-right-short"></i>
+                <button className="button button-pg-arrow" onClick={() => setCurrentPage(currentPage + 1)} aria-label="Next page">
+                    <i className="bi bi-arrow-right-short" aria-hidden="true"></i>
                 </button> }
-        </div>
+        </nav>
     )
 }

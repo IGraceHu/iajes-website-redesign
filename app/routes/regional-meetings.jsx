@@ -128,7 +128,7 @@ function RegionalCard({ region, imageUrl }) {
                         <img className="min-w-full h-full object-cover grow-0 shrink-0" src={imageUrl} alt={region.name} />
                     ) : (
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" alt="" aria-hidden="true" />
                         </div>
                     )}
                 </div>
@@ -246,6 +246,7 @@ export default function RegionalMeetings() {
             <PopupForm
                 id="edit-region-thumbnails"
                 className="md:w-[70vw] relative"
+                label="Edit region thumbnails"
                 show={showEditPopup}
                 setShow={setShowEditPopup}
                 validate={handleSave}
@@ -282,13 +283,13 @@ export default function RegionalMeetings() {
                                             onChange={e => handleFileSelect(region.url, e.target.files[0])}
                                         />
                                         {pending.file && (
-                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" title="Cancel selection" onClick={() => handleClearPending(region.url)}>
-                                                <i className="bi bi-x-lg"></i>
+                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label={`Cancel selected thumbnail for ${region.name}`} title="Cancel selection" onClick={() => handleClearPending(region.url)}>
+                                                <i className="bi bi-x-lg" aria-hidden="true"></i>
                                             </button>
                                         )}
                                         {!pending.file && existingUrl && !pending.toDelete && (
-                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" title="Remove thumbnail" onClick={() => handleMarkDelete(region.url)}>
-                                                <i className="bi bi-trash"></i>
+                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label={`Remove thumbnail for ${region.name}`} title="Remove thumbnail" onClick={() => handleMarkDelete(region.url)}>
+                                                <i className="bi bi-trash" aria-hidden="true"></i>
                                             </button>
                                         )}
                                         {pending.toDelete && (
@@ -305,7 +306,7 @@ export default function RegionalMeetings() {
             </PopupForm>
 
             <Menu currentEndUrl="/regional-meetings" />
-            <div className="w-full duration-200">
+            <main id="main-content" className="w-full duration-200">
                 <Banner type="blue">
                     <h1 className="w-full text-center" style={{ color: "white" }}>Regional Meetings</h1>
                 </Banner>
@@ -319,7 +320,7 @@ export default function RegionalMeetings() {
                         {canEdit && (
                             <div className="flex justify-end mb-4">
                                 <button className="button button-light" onClick={openEditPopup}>
-                                    Edit Thumbnails <i className="bi bi-pencil ml-1"></i>
+                                    Edit Thumbnails <i className="bi bi-pencil ml-1" aria-hidden="true"></i>
                                 </button>
                             </div>
                         )}
@@ -327,7 +328,7 @@ export default function RegionalMeetings() {
                         <div className="regional-cards-grid">{cards}</div>
                     </div>
                 </div>
-            </div>
+            </main>
             <Footer />
         </>
     );
