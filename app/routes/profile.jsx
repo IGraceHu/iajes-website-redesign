@@ -87,6 +87,7 @@ async function updateProfile(userId, formData) {
       job_position: formData.get("job-position"),
       institution: formData.get("institution"),
       country: formData.get("country"),
+      region: formData.get("region"),
       major: formData.get("major"),
       task_force: formData.get("task-force"),
       task_force_role: formData.get("task-force-role"),
@@ -311,6 +312,16 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               />
             </div>
             <div>
+              <label htmlFor="major">Focus</label>
+              <input
+                id="major"
+                name="major"
+                type="text"
+                className="input-text w-full"
+                defaultValue={draft.major} placeholder="Focus"
+              />
+            </div>
+            <div className="md:col-span-2">
               <label htmlFor="institution">University</label>
               <input list="institution" name="institution" className="input-text w-full" placeholder="University" defaultValue={draft.institution} />
               <datalist
@@ -331,14 +342,16 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               />
             </div>
             <div>
-              <label htmlFor="major">Major</label>
-              <input
-                id="major"
-                name="major"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.major} placeholder="Major"
-              />
+              <label htmlFor="region">Region</label>
+              <select id="region" name="region" className="input input-text w-full" >
+                  <option value="">Select a region</option>
+                  <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
+                  <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
+                  <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
+                  <option value="KIRCHER" selected={"KIRCHER" == draft.region}>KIRCHER</option>
+                  <option value="AJCU-AP" selected={"AJCU-AP" == draft.region}>AJCU - AP</option>
+                  <option value="AJCU-AM" selected={"AJCU-AM" == draft.region}>AJCU - AM</option>
+              </select>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="research-interests">Research Interests</label>
@@ -721,8 +734,8 @@ export default function ProfileRoute({ loaderData }) {
               </h4>
               <div className="text-center">
                 {profile.roles.map((role, idx) => {
-                    if (role != "member") {
-                        return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
+                    if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
+                        return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 last:me-0 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
                     }
                 })}
               </div>
@@ -761,10 +774,11 @@ export default function ProfileRoute({ loaderData }) {
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
               <div className="grid gap-3 text-sm">
+                { profile.region && <InfoRow label="Region" value={profile.region} /> }
                 { profile.country && <InfoRow label="Country" value={profile.country} /> }
                 { profile.languages && <InfoRow label="Languages" value={profile.languages} /> }
                 { profile.institution && <InfoRow label="Institution" value={profile.institution} /> }
-                { profile.major && <InfoRow label="Major" value={profile.major} /> }
+                { profile.major && <InfoRow label="Focus" value={profile.major} /> }
                 { profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} /> }
               </div>
 

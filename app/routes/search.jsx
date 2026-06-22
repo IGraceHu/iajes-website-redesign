@@ -351,7 +351,7 @@ function PersonResultCard({ person }) {
         }
         { person?.major ?
           <div className="">
-            <span className="mr-1">Major</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
+            <span className="mr-1">Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
           </div>
           : <div></div>
         }
