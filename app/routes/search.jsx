@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { checkCurrentAuth } from "../helpers/permissions";
 import { Menu } from "../components/menu";
 import { Pagination } from "../components/pagination";
 import { Footer } from "../components/footer";
@@ -69,7 +70,16 @@ export async function loader({}) {
   return getPeople();
 }
 
+const allowedRoles = ["admin-university", "admin-region-jheasa", "admin-region-ajcu-na", "admin-region-ausjal", "admin-region-kircher", "admin-region-ajcu-ap", "admin-region-ajcu-am"]
+
 export default function SearchRoute({ loaderData }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+      return checkCurrentAuth(setIsAdmin, allowedRoles)
+  }, []);
+
+
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
@@ -194,6 +204,14 @@ export default function SearchRoute({ loaderData }) {
           </div>
 
           <div className="flex flex-wrap gap-3">
+            { isAdmin && 
+              <a
+                href="/admin-options/contact"
+                className="button"
+              >
+                Mass Contact
+              </a>
+            }
             <button
               type="button"
               className="button button-light flex items-center gap-2 text-sm font-semibold"
