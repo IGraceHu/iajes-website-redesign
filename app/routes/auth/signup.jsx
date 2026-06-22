@@ -11,6 +11,18 @@ export function meta() {
   ];
 }
 
+async function getUniversityDetailsByEmailDomain(emailDomain) {
+  const { data, error } = await supabase
+    .from('universities')
+    .select('university, country, region')
+    .eq('email domain', emailDomain);
+  if (data[0]) {
+    return data[0];
+  }
+  return error || false;
+}
+
+
 /*
   Returns { success: true } once user is authenticated
   Returns { success: false, message: "..." } if an error has occurred
@@ -57,6 +69,8 @@ async function signUp(data) {
       return { success: false, message: authError.message || "An unexpected error occurred during sign up." };
     }
 
+    const universityDetails = await getUniversityDetailsByEmailDomain(emailDomain.slice(1));
+
     // Sync to custom users table
     if (authData.user) {
       const { error: dbError } = await supabase
@@ -70,7 +84,10 @@ async function signUp(data) {
           email: data.email,
           role: "member",
           verified: isVerified,
-          subscribed: data.subscribe
+          subscribed: data.subscribe,
+          institution: universityDetails?.university,
+          country: universityDetails?.country,
+          region: universityDetails?.region,
         }]);
 
       if (dbError) {
@@ -218,7 +235,7 @@ export default function SignUp() {
           <br /><br />
 
           <label htmlFor="subscribe" className="checkbox">
-            <input id="subscribe" name="subscribe" type="checkbox" defaultChecked={state?.subscribe} /><p>Subscribe to IAJES Weekly</p>
+            <input id="subscribe" name="subscribe" type="checkbox" defaultChecked={state?.subscribe} /><p>Subscribe to IAJES News</p>
           </label>
 
           <br /><br />
