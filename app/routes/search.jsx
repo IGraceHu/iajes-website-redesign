@@ -37,7 +37,7 @@ const roleNames = new Map([
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select('id, fname, lname, email, image_url, roles, job_position, languages, country, institution, major, research_interests, task_force_role, task_force')
+    .select('id, fname, lname, email, image_url, roles, job_position, region, country, institution, major, research_interests, task_force_role, task_force')
   if (data) {
     data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
   }
@@ -330,46 +330,40 @@ function PersonResultCard({ person }) {
             })}
           </div>
           <div className="mb-1 italic text-secondary-light">
-            {person.job_position}{ person?.job_position && person?.institution && <span>, </span>}{person.institution}
+            {person.job_position}
+            <br />
+            {person.institution}
           </div>
-          <div className="text-sm text-gray-dark/70">{person.email}</div>
         </div>
       </div>
 
-      <div className="grid text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
-        { person?.country ?
-          <div className="">
-            <span className="mr-1">Country</span> <span className="font-semibold text-secondary-dark">{person.country}</span>
-          </div>
-          : <div></div>
-        }
-        { person?.languages ?
-          <div className="">
-            <span className="mr-1">Languages</span> <span className="font-semibold text-secondary-dark">{person.languages}</span>
-          </div>
-          : <div></div>
-        }
-        { person?.major ?
-          <div className="">
-            <span className="mr-1">Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
-          </div>
-          : <div></div>
-        }
-        { person?.research_interests ?
-          <div className="">
-            <span className="mr-1">Research Interests</span> <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
-          </div>
-          : <div></div>
+      <div className="flex flex-col text-sm text-gray-dark/80 gap-2">
+        <div className="font-semibold text-secondary-dark">
+          {person.region}
+          { person?.region && person?.country && <span> | </span>}
+          {person.country}
+        </div>
+        <div className="">
+          { person?.major && <>
+            <span className="mr-1 italic">Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
+          </>}
+        </div>
+
+        <div>
+        { person.task_force && <>
+          <span className="mr-1 italic">Task Force</span> <span className="font-semibold text-secondary-dark">{person.task_force}</span>
+          </>
         }
       </div>
-      <div>
-        { person.task_force && 
-        <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-          <div className="font-semibold text-secondary-dark">{person.task_force}</div>
-          <div className="mt-1 text-gray-dark/70">{person.task_force_role}</div>
-        </div> 
-        }
       </div>
+      
+      <div className="text-sm text-gray-dark/80 md:block hidden">
+        { person?.research_interests && <>
+          <span className="block italic">Research Interests</span> 
+          <p className="font-semibold text-secondary-dark">{person.research_interests}</p>
+        </>}
+      </div>
+      
       
     </a>
   );
