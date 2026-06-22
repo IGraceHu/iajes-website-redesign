@@ -22,6 +22,28 @@ export function meta({ loaderData }) {
   
 }
 
+const roleNames = new Map([
+  ["member", "Member"],
+  ["admin-super", "Superadmin"],
+  ["admin-region-jheasa", "Regional Representative (JHEASA)"],
+  ["admin-region-ajcu-na", "Regional Representative (AJCU-NA)"],
+  ["admin-region-ausjal", "Regional Representative (AUSJAL)"],
+  ["admin-region-kircher", "Regional Representative (KIRCHER)"],
+  ["admin-region-ajcu-ap", "Regional Representative (AJCU-AP)"],
+  ["admin-region-ajcu-am", "Regional Representative (AJCU-AM)"],
+  ["admin-tf-rac", "TF Admin (Research & Academic Cooperation)"],
+  ["admin-tf-wis", "TF Admin (Women in STEM)"],
+  ["admin-tf-hea", "TF Admin (Health)"],
+  ["admin-tf-aih", "TF Admin (Artificial Intelligence & Humanity)"],
+  ["admin-tf-esj", "TF Admin (Engineering & Social Justice)"],
+  ["admin-tf-htfi", "TF Admin (Humanitarian Tech & Frugal Innovation)"],
+  ["admin-tf-infr", "TF Admin (Infrastructure)"],
+  ["admin-tf-ene", "TF Admin (Energy)"],
+  ["admin-newsletter", "Newsletter Admin"],
+  ["admin-resources", "Resources Admin"],
+  ["admin-university", "University Representative"]
+]);
+
 async function getTaskForces() {
   const { data, error } = await supabase
     .from('task forces')
@@ -683,6 +705,13 @@ export default function ProfileRoute({ loaderData }) {
               <h4 className="mt-5">
                 {profile.fname} {profile.lname}
               </h4>
+              <div className="text-center">
+                {profile.roles.map((role, idx) => {
+                    if (role != "member") {
+                        return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
+                    }
+                })}
+              </div>
               <p className="mt-1 text-sm text-gray-dark/70">
                 {profile.job_position}{ profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
               </p>

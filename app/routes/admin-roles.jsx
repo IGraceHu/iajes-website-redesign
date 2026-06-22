@@ -17,12 +17,12 @@ export function meta({ }) {
 const roleNames = new Map([
   ["member", "Member"],
   ["admin-super", "Superadmin"],
-  ["admin-region-jheasa", "Regional Admin (JHEASA)"],
-  ["admin-region-ajcu-na", "Regional Admin (AJCU-NA)"],
-  ["admin-region-ausjal", "Regional Admin (AUSJAL)"],
-  ["admin-region-kircher", "Regional Admin (KIRCHER)"],
-  ["admin-region-ajcu-ap", "Regional Admin (AJCU-AP)"],
-  ["admin-region-ajcu-am", "Regional Admin (AJCU-AM)"],
+  ["admin-region-jheasa", "Regional Representative/Admin (JHEASA)"],
+  ["admin-region-ajcu-na", "Regional Representative/Admin (AJCU-NA)"],
+  ["admin-region-ausjal", "Regional Representative/Admin (AUSJAL)"],
+  ["admin-region-kircher", "Regional Representative/Admin (KIRCHER)"],
+  ["admin-region-ajcu-ap", "Regional Representative/Admin (AJCU-AP)"],
+  ["admin-region-ajcu-am", "Regional Representative/Admin (AJCU-AM)"],
   ["admin-tf-rac", "TF Admin (Research & Academic Cooperation)"],
   ["admin-tf-wis", "TF Admin (Women in STEM)"],
   ["admin-tf-hea", "TF Admin (Health)"],
@@ -32,7 +32,8 @@ const roleNames = new Map([
   ["admin-tf-infr", "TF Admin (Infrastructure)"],
   ["admin-tf-ene", "TF Admin (Energy)"],
   ["admin-newsletter", "Newsletter Admin"],
-  ["admin-resources", "Resources Admin"]
+  ["admin-resources", "Resources Admin"],
+  ["admin-university", "University Representative/Admin"]
 ]);
 
 const regionRoles = ["admin-region-jheasa", "admin-region-ajcu-na", "admin-region-ausjal", "admin-region-kircher", "admin-region-ajcu-ap", "admin-region-ajcu-am"]
@@ -107,7 +108,8 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
         "admin-tf-esj": member?.roles.includes("admin-tf-esj") || false,
         "admin-tf-htfi": member?.roles.includes("admin-tf-htfi") || false,
         "admin-tf-infr": member?.roles.includes("admin-tf-infr") || false,
-        "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false
+        "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false,
+        "admin-university": member?.roles.includes("admin-university") || false
     })
 
     
@@ -130,8 +132,10 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
             "admin-tf-esj": member?.roles.includes("admin-tf-esj") || false,
             "admin-tf-htfi": member?.roles.includes("admin-tf-htfi") || false,
             "admin-tf-infr": member?.roles.includes("admin-tf-infr") || false,
-            "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false
+            "admin-tf-ene": member?.roles.includes("admin-tf-ene") || false,
+            "admin-university": member?.roles.includes("admin-university") || false
         });
+        setWarningMessage(" ");
     }, [show])
 
     // console.log(checkedRoles);
@@ -161,8 +165,10 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
             "admin-tf-esj": false,
             "admin-tf-htfi": false,
             "admin-tf-infr": false,
-            "admin-tf-ene": false
+            "admin-tf-ene": false,
+            "admin-university": false
         });
+        setWarningMessage(" ");
     }
 
     async function updateRoles() {
@@ -271,6 +277,8 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
                         </label>
 
                     <div className="mt-2">
+                        <RoleCheckbox roleName="admin-university" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
+
                         <RoleCheckbox roleName="admin-resources" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
 
                         <RoleCheckbox roleName="admin-newsletter" isSuper={isSuper} checkedRoles={checkedRoles} updateChecked={updateChecked} />
@@ -429,6 +437,15 @@ export default function AdminOptions({ loaderData }) {
                                             onChange={() => toggleSelection("admin-super")}
                                         />
                                         <p className="text-gray-dark/80">{roleNames.get("admin-super")}</p>
+                                    </label>
+
+                                    <label className="checkbox">
+                                        <input
+                                            type="checkbox"
+                                            checked={filters.includes("admin-university")}
+                                            onChange={() => toggleSelection("admin-university")}
+                                        />
+                                        <p className="text-gray-dark/80">{roleNames.get("admin-university")}</p>
                                     </label>
 
                                     <label className="checkbox">
