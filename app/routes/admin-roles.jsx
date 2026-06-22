@@ -324,7 +324,7 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
     )
 }
 
-export default function AdminOptions({ loaderData }) {
+export default function AdminRoles({ loaderData }) {
     const [isAdmin, setIsAdmin] = useState(false);
     const [currentUserId, setCurrentUserId] = useState(null)
     const [focusMember, setFocusMember] = useState({});

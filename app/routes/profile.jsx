@@ -60,7 +60,7 @@ async function getUniversities() {
     .from('universities')
     .select('university')
   if (data) {
-    data.sort((a, b) => { return a.university > a.university ? 1 : -1 });
+    data.sort((a, b) => { return a.university > b.university ? 1 : -1 });
     return data;
   }
   return error;

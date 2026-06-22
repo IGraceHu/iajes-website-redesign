@@ -32,6 +32,10 @@ export default function AdminOptions({ }) {
                         <h4>Account Validation</h4>
                         <p className="text-s text-disabled-light">Validate user accounts.</p>
                     </a>
+                    <a href="/admin-options/contact" className="hover-card block my-5 px-10 py-5 border-2 border-gray-light rounded-md hover:shadow-md hover:cursor-pointer duration-200">
+                        <h4>Mass Contact</h4>
+                        <p className="text-s text-disabled-light">Fetch all member emails from a region or university.</p>
+                    </a>
                 </div>
             :
                 <div>

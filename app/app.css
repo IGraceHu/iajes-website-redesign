@@ -207,13 +207,13 @@ ol {
 }
 
 #menu .menu-dropdown-button {
-  z-index: 1;
+  z-index: 10;
   /* padding: calc(var(--spacing) * 4); */
   position: relative;
 }
 
 #menu .menu-dropdown {
-  z-index: 0;
+  z-index: 1;
   position: absolute;
   display: flex;
   flex-direction: column;
@@ -225,6 +225,10 @@ ol {
   opacity: 0;
   transition: margin-top 0.5s ease-in, opacity 0.2s 0s;
   /* When disappear */
+}
+
+#menu .menu-dropdown#profile-dropdown {
+  z-index:0;
 }
 
 #menu .menu-dropdown-container.active-popup .menu-dropdown-button {
