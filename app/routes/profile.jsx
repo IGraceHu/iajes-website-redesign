@@ -55,6 +55,17 @@ async function getTaskForces() {
   return error;
 }
 
+async function getUniversities() {
+  const { data, error } = await supabase
+    .from('universities')
+    .select('university')
+  if (data) {
+    data.sort((a, b) => { return a.university > a.university ? 1 : -1 });
+    return data;
+  }
+  return error;
+}
+
 async function getProfile(userId) {
   const { data, error } = await supabase
     .from('users')
@@ -127,10 +138,12 @@ export async function loader({ params }) {
         throw new Response("Profile not found", { status: 404 });
     }
   const taskForceList = await getTaskForces();
-  return { person: person, taskForceList: taskForceList };
+  const universityList = await getUniversities();
+  universityList.push("Other");
+  return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
 
-function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUserId }) {
+function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
@@ -298,14 +311,14 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
               />
             </div>
             <div>
-              <label htmlFor="institution">Institution</label>
-              <input
+              <label htmlFor="institution">University</label>
+              <input list="institution" name="institution" className="input-text w-full" placeholder="University" defaultValue={draft.institution} />
+              <datalist
                 id="institution"
-                name="institution"
-                type="text"
                 className="input-text w-full"
-                defaultValue={draft.institution} placeholder="Institution"
-              />
+              >
+                { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.institution}>{universityObj.university}</option>) : <></>}
+              </datalist>
             </div>
             <div>
               <label htmlFor="country">Country</label>
@@ -436,6 +449,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
 export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
+
 
   const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
@@ -626,7 +640,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} currentUserId={currentUserId} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
       <Popup
         id="profile-photo"
         show={showPhotoPopup}
