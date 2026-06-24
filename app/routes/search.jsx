@@ -1,6 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { checkCurrentAuth } from "../helpers/permissions";
 import { Menu } from "../components/menu";
 import { Pagination } from "../components/pagination";
 import { Footer } from "../components/footer";
@@ -12,10 +13,32 @@ export function meta() {
   ];
 }
 
+const roleNames = new Map([
+  ["member", "Member"],
+  ["admin-super", "Superadmin"],
+  ["admin-region-jheasa", "Regional Representative (JHEASA)"],
+  ["admin-region-ajcu-na", "Regional Representative (AJCU-NA)"],
+  ["admin-region-ausjal", "Regional Representative (AUSJAL)"],
+  ["admin-region-kircher", "Regional Representative (KIRCHER)"],
+  ["admin-region-ajcu-ap", "Regional Representative (AJCU-AP)"],
+  ["admin-region-ajcu-am", "Regional Representative (AJCU-AM)"],
+  ["admin-tf-rac", "TF Admin (Research & Academic Cooperation)"],
+  ["admin-tf-wis", "TF Admin (Women in STEM)"],
+  ["admin-tf-hea", "TF Admin (Health)"],
+  ["admin-tf-aih", "TF Admin (Artificial Intelligence & Humanity)"],
+  ["admin-tf-esj", "TF Admin (Engineering & Social Justice)"],
+  ["admin-tf-htfi", "TF Admin (Humanitarian Tech & Frugal Innovation)"],
+  ["admin-tf-infr", "TF Admin (Infrastructure)"],
+  ["admin-tf-ene", "TF Admin (Energy)"],
+  ["admin-newsletter", "Newsletter Admin"],
+  ["admin-resources", "Resources Admin"],
+  ["admin-university", "University Representative"]
+]);
+
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select('id, fname, lname, email, image_url, job_position, languages, country, institution, major, research_interests, task_force_role, task_force')
+    .select('id, fname, lname, email, image_url, roles, job_position, region, country, institution, major, research_interests, task_force_role, task_force')
   if (data) {
     data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
   }
@@ -47,7 +70,16 @@ export async function loader({}) {
   return getPeople();
 }
 
+const allowedRoles = ["admin-university", "admin-region-jheasa", "admin-region-ajcu-na", "admin-region-ausjal", "admin-region-kircher", "admin-region-ajcu-ap", "admin-region-ajcu-am"]
+
 export default function SearchRoute({ loaderData }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  
+  useEffect(() => {
+      return checkCurrentAuth(setIsAdmin, allowedRoles)
+  }, []);
+
+
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
@@ -172,6 +204,14 @@ export default function SearchRoute({ loaderData }) {
           </div>
 
           <div className="flex flex-wrap gap-3">
+            { isAdmin && 
+              <a
+                href="/admin-options/contact"
+                className="button"
+              >
+                Mass Contact
+              </a>
+            }
             <button
               type="button"
               className="button button-light flex items-center gap-2 text-sm font-semibold"
@@ -209,7 +249,7 @@ export default function SearchRoute({ loaderData }) {
                 onToggle={(value) => toggleSelection(setSelectedCountries, value)}
               />
               <FilterGroup
-                title="Major"
+                title="Academic Focus"
                 options={majorOptions}
                 selected={selectedMajors}
                 onToggle={(value) => toggleSelection(setSelectedMajors, value)}
@@ -300,47 +340,48 @@ function PersonResultCard({ person }) {
         </div>
         <div>
           <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
-          <div className="my-1 italic text-secondary-light">
-            {person.job_position}{ person?.job_position && person?.institution && <span>, </span>}{person.institution}
+          <div className="mt-2">
+            {person.roles.map((role, idx) => {
+                if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
+                    return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
+                }
+            })}
           </div>
-          <div className="text-sm text-gray-dark/70">{person.email}</div>
+          <div className="mb-1 italic text-secondary-light">
+            {person.job_position}
+            <br />
+            {person.institution}
+          </div>
         </div>
       </div>
 
-      <div className="grid text-sm text-gray-dark/80 grid-cols-2 gap-2 italic">
-        { person?.country ?
-          <div className="">
-            <span className="mr-1">Country</span> <span className="font-semibold text-secondary-dark">{person.country}</span>
-          </div>
-          : <div></div>
-        }
-        { person?.languages ?
-          <div className="">
-            <span className="mr-1">Languages</span> <span className="font-semibold text-secondary-dark">{person.languages}</span>
-          </div>
-          : <div></div>
-        }
-        { person?.major ?
-          <div className="">
-            <span className="mr-1">Major</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
-          </div>
-          : <div></div>
-        }
-        { person?.research_interests ?
-          <div className="">
-            <span className="mr-1">Research Interests</span> <span className="font-semibold text-secondary-dark">{person.research_interests}</span>
-          </div>
-          : <div></div>
+      <div className="flex flex-col text-sm text-gray-dark/80 gap-2">
+        <div className="font-semibold text-secondary-dark">
+          {person.region}
+          { person?.region && person?.country && <span> | </span>}
+          {person.country}
+        </div>
+        <div className="">
+          { person?.major && <>
+            <span className="mr-1 italic">Academic Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
+          </>}
+        </div>
+
+        <div>
+        { person.task_force && <>
+          <span className="mr-1 italic">Task Force</span> <span className="font-semibold text-secondary-dark">{person.task_force}</span>
+          </>
         }
       </div>
-      <div>
-        { person.task_force && 
-        <div className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-xs">
-          <div className="font-semibold text-secondary-dark">{person.task_force}</div>
-          <div className="mt-1 text-gray-dark/70">{person.task_force_role}</div>
-        </div> 
-        }
       </div>
+      
+      <div className="text-sm text-gray-dark/80 md:block hidden">
+        { person?.research_interests && <>
+          <span className="block italic">Research Interests</span> 
+          <p className="font-semibold text-secondary-dark">{person.research_interests}</p>
+        </>}
+      </div>
+      
       
     </a>
   );

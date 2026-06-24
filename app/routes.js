@@ -28,5 +28,6 @@ export default [
     route("admin-options", "routes/admin-options.jsx"),
     route("admin-options/roles", "routes/admin-roles.jsx"),
     route("admin-options/verification", "routes/admin-verification.jsx"),
+    route("admin-options/contact", "routes/admin-contact.jsx"),
 
 ];

@@ -295,7 +295,7 @@ export function Menu({ currentEndUrl }) {
                   :
                   <i className="bi bi-person-fill text-[1.5rem]"></i>}
               </div>
-              <div className="menu-dropdown right-3 py-1 -mt-[220px]">
+              <div id="profile-dropdown" className="menu-dropdown right-3 py-1 -mt-[220px]">
                 <div className="text-sm py-3 px-3 mx-2 mb-2 border-b-2 border-primary-light flex items-center">
 
                   <div className="mr-4">

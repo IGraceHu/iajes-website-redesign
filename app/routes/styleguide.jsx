@@ -117,10 +117,10 @@ export default function StyleGuide() {
                 <br />
                 <p>{popupFormResults}</p>
                 <br />
-                <label for="popupText">Text Input:</label><br />
+                <label htmlFor="popupText">Text Input:</label><br />
                 <input id="popupText" name="popupText" type="text" className={"input input-text w-full"} placeholder="Enter text here..." defaultValue="Default Value" />
                 <br /><br />
-                <label for="popupRequired">Required Text Input:</label><br />
+                <label htmlFor="popupRequired">Required Text Input:</label><br />
                 <input id="popupRequired" name="popupRequired" type="text" 
                        className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} 
                        placeholder="Enter text here..."

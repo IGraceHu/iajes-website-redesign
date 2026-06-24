@@ -22,12 +22,45 @@ export function meta({ loaderData }) {
   
 }
 
+const roleNames = new Map([
+  ["member", "Member"],
+  ["admin-super", "Superadmin"],
+  ["admin-region-jheasa", "Regional Representative (JHEASA)"],
+  ["admin-region-ajcu-na", "Regional Representative (AJCU-NA)"],
+  ["admin-region-ausjal", "Regional Representative (AUSJAL)"],
+  ["admin-region-kircher", "Regional Representative (KIRCHER)"],
+  ["admin-region-ajcu-ap", "Regional Representative (AJCU-AP)"],
+  ["admin-region-ajcu-am", "Regional Representative (AJCU-AM)"],
+  ["admin-tf-rac", "TF Admin (Research & Academic Cooperation)"],
+  ["admin-tf-wis", "TF Admin (Women in STEM)"],
+  ["admin-tf-hea", "TF Admin (Health)"],
+  ["admin-tf-aih", "TF Admin (Artificial Intelligence & Humanity)"],
+  ["admin-tf-esj", "TF Admin (Engineering & Social Justice)"],
+  ["admin-tf-htfi", "TF Admin (Humanitarian Tech & Frugal Innovation)"],
+  ["admin-tf-infr", "TF Admin (Infrastructure)"],
+  ["admin-tf-ene", "TF Admin (Energy)"],
+  ["admin-newsletter", "Newsletter Admin"],
+  ["admin-resources", "Resources Admin"],
+  ["admin-university", "University Representative"]
+]);
+
 async function getTaskForces() {
   const { data, error } = await supabase
     .from('task forces')
     .select('name, url')
   if (data) {
     // const list = data.map((item) => item.name);
+    return data;
+  }
+  return error;
+}
+
+async function getUniversities() {
+  const { data, error } = await supabase
+    .from('universities')
+    .select('university')
+  if (data) {
+    data.sort((a, b) => { return a.university > b.university ? 1 : -1 });
     return data;
   }
   return error;
@@ -54,6 +87,7 @@ async function updateProfile(userId, formData) {
       job_position: formData.get("job-position"),
       institution: formData.get("institution"),
       country: formData.get("country"),
+      region: formData.get("region"),
       major: formData.get("major"),
       task_force: formData.get("task-force"),
       task_force_role: formData.get("task-force-role"),
@@ -105,10 +139,12 @@ export async function loader({ params }) {
         throw new Response("Profile not found", { status: 404 });
     }
   const taskForceList = await getTaskForces();
-  return { person: person, taskForceList: taskForceList };
+  const universityList = await getUniversities();
+  universityList.push("Other");
+  return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
 
-function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUserId }) {
+function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
@@ -276,14 +312,24 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
               />
             </div>
             <div>
-              <label htmlFor="institution">Institution</label>
+              <label htmlFor="major">Academic Focus</label>
               <input
-                id="institution"
-                name="institution"
+                id="major"
+                name="major"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.institution} placeholder="Institution"
+                defaultValue={draft.major} placeholder="Academic Focus"
               />
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="institution">University</label>
+              <input list="institution" name="institution" className="input-text w-full" placeholder="University" defaultValue={draft.institution} />
+              <datalist
+                id="institution"
+                className="input-text w-full"
+              >
+                { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.institution}>{universityObj.university}</option>) : <></>}
+              </datalist>
             </div>
             <div>
               <label htmlFor="country">Country</label>
@@ -296,14 +342,16 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
               />
             </div>
             <div>
-              <label htmlFor="major">Major</label>
-              <input
-                id="major"
-                name="major"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.major} placeholder="Major"
-              />
+              <label htmlFor="region">Region</label>
+              <select id="region" name="region" className="input input-text w-full" >
+                  <option value="">Select a region</option>
+                  <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
+                  <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
+                  <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
+                  <option value="KIRCHER" selected={"KIRCHER" == draft.region}>KIRCHER</option>
+                  <option value="AJCU-AP" selected={"AJCU-AP" == draft.region}>AJCU - AP</option>
+                  <option value="AJCU-AM" selected={"AJCU-AM" == draft.region}>AJCU - AM</option>
+              </select>
             </div>
             <div className="md:col-span-2">
               <label htmlFor="research-interests">Research Interests</label>
@@ -414,6 +462,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, currentUser
 export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
+
 
   const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
@@ -604,7 +653,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} currentUserId={currentUserId} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
       <Popup
         id="profile-photo"
         show={showPhotoPopup}
@@ -683,6 +732,13 @@ export default function ProfileRoute({ loaderData }) {
               <h4 className="mt-5">
                 {profile.fname} {profile.lname}
               </h4>
+              <div className="text-center">
+                {profile.roles.map((role, idx) => {
+                    if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
+                        return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 last:me-0 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
+                    }
+                })}
+              </div>
               <p className="mt-1 text-sm text-gray-dark/70">
                 {profile.job_position}{ profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
               </p>
@@ -718,10 +774,11 @@ export default function ProfileRoute({ loaderData }) {
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
               <div className="grid gap-3 text-sm">
+                { profile.region && <InfoRow label="Region" value={profile.region} /> }
                 { profile.country && <InfoRow label="Country" value={profile.country} /> }
                 { profile.languages && <InfoRow label="Languages" value={profile.languages} /> }
                 { profile.institution && <InfoRow label="Institution" value={profile.institution} /> }
-                { profile.major && <InfoRow label="Major" value={profile.major} /> }
+                { profile.major && <InfoRow label="Academic Focus" value={profile.major} /> }
                 { profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} /> }
               </div>
 
