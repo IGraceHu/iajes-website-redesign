@@ -249,7 +249,7 @@ export default function SearchRoute({ loaderData }) {
                 onToggle={(value) => toggleSelection(setSelectedCountries, value)}
               />
               <FilterGroup
-                title="Major"
+                title="Academic Focus"
                 options={majorOptions}
                 selected={selectedMajors}
                 onToggle={(value) => toggleSelection(setSelectedMajors, value)}
@@ -363,7 +363,7 @@ function PersonResultCard({ person }) {
         </div>
         <div className="">
           { person?.major && <>
-            <span className="mr-1 italic">Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
+            <span className="mr-1 italic">Academic Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
           </>}
         </div>
 

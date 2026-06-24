@@ -361,10 +361,6 @@ button:disabled.button.button-light {
   align-items: center;
 }
 
-.button.button-pg.button-light {
-  transition: 0s;
-}
-
 .button.button-pg-arrow {
   width: calc(var(--spacing) * 14);
   padding: 0;

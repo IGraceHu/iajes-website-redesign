@@ -33,7 +33,7 @@ const roleNames = new Map([
   ["admin-tf-ene", "TF Admin (Energy)"],
   ["admin-newsletter", "Newsletter Admin"],
   ["admin-resources", "Resources Admin"],
-  ["admin-university", "University Representative/Admin"]
+  ["admin-university", "University Representative"]
 ]);
 
 const regionRoles = ["admin-region-jheasa", "admin-region-ajcu-na", "admin-region-ausjal", "admin-region-kircher", "admin-region-ajcu-ap", "admin-region-ajcu-am"]

@@ -312,13 +312,13 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               />
             </div>
             <div>
-              <label htmlFor="major">Focus</label>
+              <label htmlFor="major">Academic Focus</label>
               <input
                 id="major"
                 name="major"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.major} placeholder="Focus"
+                defaultValue={draft.major} placeholder="Academic Focus"
               />
             </div>
             <div className="md:col-span-2">
@@ -778,7 +778,7 @@ export default function ProfileRoute({ loaderData }) {
                 { profile.country && <InfoRow label="Country" value={profile.country} /> }
                 { profile.languages && <InfoRow label="Languages" value={profile.languages} /> }
                 { profile.institution && <InfoRow label="Institution" value={profile.institution} /> }
-                { profile.major && <InfoRow label="Focus" value={profile.major} /> }
+                { profile.major && <InfoRow label="Academic Focus" value={profile.major} /> }
                 { profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} /> }
               </div>
 
