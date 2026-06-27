@@ -105,7 +105,12 @@ Markdown textboxes are located in the component mdtext.jsx. These textboxes are 
 MDText props:
 - **name**: Optional, default is null. This defines the name of the textarea element the MDText uses, if needed for form handling.
 - **defaultValue**: Optional, default is null. This defines the default value of the textarea element the MDText uses.
-- **preview**: Optional, default is false. This defines whether the MDText will have the toggle options for previewing the parsed Markdown content or not. Even when false, the 'Help' button will be visible.`;
+- **preview**: Optional, default is false. This defines whether the MDText will have the toggle options for previewing the parsed Markdown content or not. Even when false, the 'Help' button will be visible.
+
+Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, content created from raw Markdown should be saved as Markdown rather than HTML.** Markdown can be parsed into HTML using the marked.parse() function.
+
+[Marked]: https://github.com/markedjs/marked/
+[Markdown]: http://daringfireball.net/projects/markdown/`;
 
     return (
         <>
