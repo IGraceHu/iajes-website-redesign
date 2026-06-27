@@ -912,6 +912,10 @@ table, th, td {
   padding: calc(var(--spacing) * 2);
 }
 
+td {
+  vertical-align: top;
+}
+
 .markdown-example td:nth-child(2) {
   font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }

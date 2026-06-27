@@ -98,6 +98,14 @@ export default function StyleGuide() {
         }
     }
 
+    const markdownContent = `#### Markdown
+
+Markdown textboxes are located in the component mdtext.jsx. These textboxes are built to accept raw Markdown content that can be parsed into HTML.
+
+MDText props:
+- **name**: Optional, default is null. This defines the name of the textarea element the MDText uses, if needed for form handling.
+- **defaultValue**: Optional, default is null. This defines the default value of the textarea element the MDText uses.
+- **preview**: Optional, default is false. This defines whether the MDText will have the toggle options for previewing the parsed Markdown content or not. Even when false, the 'Help' button will be visible.`;
 
     return (
         <>
@@ -134,8 +142,6 @@ export default function StyleGuide() {
             <div className="lg:px-40 px-10 py-20 duration-200">
                 <h1>Style Guide</h1>
                 <p>Note that we are using TailwindCSS, so unless needed, sizing and layout will be done with TailwindCSS variables and presets.</p>
-
-                <MDText preview />
 
                 <div className="mt-10">
                     <h2>Fonts</h2>
@@ -427,6 +433,11 @@ export default function StyleGuide() {
                     <br />
                     <p>Disabled inputs use the <span className="text-primary-dark">disabled</span> attribute or <span className="text-primary-dark">.input-disabled</span>. Inputs still need the <span className="text-primary-dark">disabled</span> attribute to be functionally disabled.</p>
                     <p>Required inputs use <span className="text-primary-dark">.input-required</span>, though the class should only be added if the error is active.</p>
+                </div>
+
+                <div className="mt-10">
+                    <h2>Markdown Textboxes</h2>
+                    <MDText defaultValue={markdownContent} preview/>
                 </div>
 
                 <div className="mt-10">

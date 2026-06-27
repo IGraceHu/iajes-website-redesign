@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { mdParseCustom } from '../helpers/markdown';
+import { marked } from 'marked';
 
 export function MDText({name = null, defaultValue = null, preview = false}) {
     const contentRef = useRef(null);
@@ -11,7 +11,11 @@ export function MDText({name = null, defaultValue = null, preview = false}) {
         setCurrentView(e.target.value)
 
         const markdownContent = contentRef.current.value;
-        setMarkdownResult(mdParseCustom(markdownContent));
+        setMarkdownResult(marked.parse(markdownContent));
+    }
+
+    function toggleHelp() {
+        currentView != 2 ? setCurrentView(2) : setCurrentView(0);
     }
 
     return (
@@ -28,7 +32,7 @@ export function MDText({name = null, defaultValue = null, preview = false}) {
                     </div>
                 }
                 <div className="mt-1 ml-auto">
-                    <button className={"button " + (currentView != 2 && "button-light")} onClick={() => setCurrentView(2)}>Help</button>
+                    <button className={"button " + (currentView != 2 && "button-light")} onClick={toggleHelp}>Help</button>
                 </div>
             </div>
 
@@ -57,14 +61,14 @@ export function MDText({name = null, defaultValue = null, preview = false}) {
                             <td>This is a paragraph.<br/>Double-space lines for a paragraph break.</td>
                         </tr>
                         <tr>
-                            <td>Heading 1</td>
-                            <td>Heading 1<br/>---------</td>
-                            <td><h4>Heading 1</h4></td>
-                        </tr>
-                        <tr>
-                            <td>Heading 2</td>
-                            <td>Heading 2<br/>=========</td>
-                            <td><h5>Heading 2</h5></td>
+                            <td>Headings</td>
+                            <td># Heading 1<br/>## Heading 2<br/>### Heading 3<br/>#### Heading 4<br/>##### Heading 5<br/>###### Heading 6<br/></td>
+                            <td><h1>Heading 1</h1>
+                                <h2>Heading 2</h2>
+                                <h3>Heading 3</h3>
+                                <h4>Heading 4</h4>
+                                <h5>Heading 5</h5>
+                                <h6>Heading 6</h6></td>
                         </tr>
                         <tr>
                             <td>Ordered List</td>
