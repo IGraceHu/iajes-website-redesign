@@ -5,6 +5,7 @@ import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
+import { MDText } from '../components/mdtext';
 import { updateRequired } from "../helpers/form";
 
 export function meta() {
@@ -133,6 +134,9 @@ export default function StyleGuide() {
             <div className="lg:px-40 px-10 py-20 duration-200">
                 <h1>Style Guide</h1>
                 <p>Note that we are using TailwindCSS, so unless needed, sizing and layout will be done with TailwindCSS variables and presets.</p>
+
+                <MDText preview />
+
                 <div className="mt-10">
                     <h2>Fonts</h2>
                     <h1>Heading 1</h1>

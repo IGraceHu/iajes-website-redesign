@@ -520,6 +520,10 @@ button:disabled.button.button-light {
   outline: none;
 }
 
+.input-text.markdown {
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
 input:disabled.input-text,
 textarea:disabled.input-text,
 select:disabled.input-text,
