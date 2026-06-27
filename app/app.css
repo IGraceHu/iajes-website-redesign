@@ -69,8 +69,18 @@ h5,
 h6 {
   font-family: "Quicksand", ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
+  margin-top: calc(var(--spacing) * 2);
   margin-bottom: calc(var(--spacing) * 2);
   transition: 0.2s;
+}
+
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child {
+  margin-top: 0;
 }
 
 h1 {
@@ -180,6 +190,12 @@ ol {
   list-style-type: decimal;
   margin-left: 1rem;
   margin-bottom: calc(var(--spacing) * 2);
+}
+
+blockquote {
+  margin-left: calc(var(--spacing) * 2);
+  border-left: 2px solid var(--color-primary-light);
+  padding-left: calc(var(--spacing) * 2);
 }
 
 /* MENU ********************************************************************/
