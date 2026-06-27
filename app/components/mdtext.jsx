@@ -3,12 +3,12 @@ import { mdParseCustom } from '../helpers/markdown';
 
 export function MDText({name = null, defaultValue = null, preview = false}) {
     const contentRef = useRef(null);
-    const [currentView, setcurrentView] = useState(0);
+    const [currentView, setCurrentView] = useState(0);
 
     const [markdownResult, setMarkdownResult] = useState("");
     
     function parseMarkdown(e) {
-        setcurrentView(e.target.value)
+        setCurrentView(e.target.value)
 
         const markdownContent = contentRef.current.value;
         setMarkdownResult(mdParseCustom(markdownContent));
@@ -20,15 +20,15 @@ export function MDText({name = null, defaultValue = null, preview = false}) {
                 { preview && 
                     <div className="mt-1">
                         <label htmlFor="view-raw" className="radio-button">
-                            <input id="view-raw" type="radio" name="view" value="0" defaultChecked onChange={(e) => setcurrentView(e.target.value)} /><p>Raw</p>
+                            <input id="view-raw" type="radio" name="view" value="0" checked={currentView == 0} onChange={(e) => setCurrentView(e.target.value)} /><p>Raw</p>
                         </label>
                         <label htmlFor="view-parse" className="radio-button">
-                            <input id="view-parse" type="radio" name="view" value="1" onChange={parseMarkdown}/><p>Parsed</p>
+                            <input id="view-parse" type="radio" name="view" value="1" checked={currentView == 1} onChange={parseMarkdown}/><p>Parsed</p>
                         </label>
                     </div>
                 }
                 <div className="mt-1 ml-auto">
-                    <button className="button button-light">Help</button>
+                    <button className={"button " + (currentView != 2 && "button-light")} onClick={() => setCurrentView(2)}>Help</button>
                 </div>
             </div>
 
@@ -39,6 +39,77 @@ export function MDText({name = null, defaultValue = null, preview = false}) {
             <div className={"my-1 py-4 border-y-2 border-primary-dark "+ (currentView != 1 && "hidden")}
                 dangerouslySetInnerHTML={{__html: markdownResult}}></div>
             }
+
+            <div className={"my-1 py-4 border-y-2 border-primary-dark "+ (currentView != 2 && "hidden")}>
+                <h4>Markdown Help</h4>
+                <table className="w-full" >
+                    <thead>
+                        <tr>
+                            <th>Element</th>
+                            <th>Raw</th>
+                            <th>Parsed</th>
+                        </tr>
+                    </thead>
+                    <tbody className="markdown-example">
+                        <tr>
+                            <td>Paragraph</td>
+                            <td>This is a paragraph.<br/><br/>Double-space lines for a paragraph break.</td>
+                            <td>This is a paragraph.<br/>Double-space lines for a paragraph break.</td>
+                        </tr>
+                        <tr>
+                            <td>Heading 1</td>
+                            <td>Heading 1<br/>---------</td>
+                            <td><h4>Heading 1</h4></td>
+                        </tr>
+                        <tr>
+                            <td>Heading 2</td>
+                            <td>Heading 2<br/>=========</td>
+                            <td><h5>Heading 2</h5></td>
+                        </tr>
+                        <tr>
+                            <td>Ordered List</td>
+                            <td>1. Item 1<br/>2. Item 2<br/>3. Item 3</td>
+                            <td><ol>
+                                <li>Item 1</li>
+                                <li>Item 2</li>
+                                <li>Item 3</li>
+                            </ol></td>
+                        </tr>
+                        <tr>
+                            <td>Unordered List</td>
+                            <td>- Item 1<br/>- Item 2<br/>- Item 3</td>
+                            <td><ul>
+                                <li>Item 1</li>
+                                <li>Item 2</li>
+                                <li>Item 3</li>
+                            </ul></td>
+                        </tr>
+                        <tr>
+                            <td>Blockquote</td>
+                            <td>{">"} This text is in a blockquote.</td>
+                            <td><blockquote>This text is in a blockquote.</blockquote></td>
+                        </tr>
+                        <tr>
+                            <td>Italics</td>
+                            <td>This word is *italic*.</td>
+                            <td>This word is <i>italic</i>.</td>
+                        </tr>
+                        <tr>
+                            <td>Bold</td>
+                            <td>This word is **bold**.</td>
+                            <td>This word is <strong>bold</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td>Link</td>
+                            <td>[Markdown] links should be defined at the bottom of raw markdown content.
+                                <br />
+                                <br />[Markdown]: http://daringfireball.net/projects/markdown/
+                            </td>
+                            <td><p><a href="http://daringfireball.net/projects/markdown/">Markdown</a> links should be defined at the bottom of raw markdown content.</p></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             
             
 
