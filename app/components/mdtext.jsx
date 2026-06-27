@@ -32,7 +32,7 @@ export function MDText({name = null, defaultValue = null, preview = false}) {
                     </div>
                 }
                 <div className="mt-1 ml-auto">
-                    <button className={"button " + (currentView != 2 && "button-light")} onClick={toggleHelp}>Help</button>
+                    <button className={"button " + (currentView != 2 && "button-light")} onClick={toggleHelp}>Help<i className="bi bi-question-circle ml-1.5"></i></button>
                 </div>
             </div>
 
