@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
+import { MDText } from '../components/mdtext';
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
@@ -128,7 +129,6 @@ function ResourceCard({ resourceInfo }) {
 export default function VideoResources({ loaderData }) {
     const navigate = useNavigate();
     const [isAdmin, setIsAdmin] = useState(false);
-    const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
@@ -148,6 +148,7 @@ export default function VideoResources({ loaderData }) {
 
 
     // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [showResolvePopup, setShowResolvePopup] = useState(false);
 
     const [formRequired, setFormRequired] = useState({
@@ -219,6 +220,12 @@ export default function VideoResources({ loaderData }) {
         navigate(0);
     }
 
+    const [mdCurrentView, setMdCurrentView] = useState(0);
+
+    useEffect(() => {
+        setMdCurrentView(0);
+    }, [showCreatePopup]);
+
     return (
         <>
             {isAdmin &&
@@ -254,8 +261,8 @@ export default function VideoResources({ loaderData }) {
                             <div className="input-error">This field is required.</div>
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
-                            <textarea id="vid-resource-desc" name="vid-resource-desc" className="input input-text w-full h-30" placeholder="Enter your video description..."></textarea>
-                            <br /> <br />
+                            <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+                                name="vid-resource-desc" placeholder="Enter your video description..." defaultValue={loaderData.video_description} preview />                            <br /> <br />
                         </div>
 
                         <fieldset className="border-t-2 border-gray-light pt-4 relative">

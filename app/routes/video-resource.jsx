@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { marked } from 'marked';
 import { Menu } from "../components/menu";
+import { MDText } from '../components/mdtext';
 import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
@@ -246,13 +248,14 @@ export default function VideoResource({ loaderData }) {
         }
     }
 
+    const [mdCurrentView, setMdCurrentView] = useState(0);
+
+    useEffect(() => {
+        setMdCurrentView(0);
+    }, [showEditPopup]);
+
     return (
         <>
-            <Popup id="delete-vidr" show={showDeletePopup} setShow={setShowDeletePopup}
-                buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
-                <div className="text-center mt-6">Delete this video resource?</div>
-            </Popup>
-
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
                     <PopupForm id="edit-video-resource" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
@@ -289,7 +292,8 @@ export default function VideoResource({ loaderData }) {
                             <div className="input-error">This field is required.</div>
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
-                            <textarea id="vid-resource-desc" name="vid-resource-desc" className="input input-text w-full h-30" placeholder="Enter your video description..." defaultValue={loaderData.video_description}></textarea>
+                            <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+                                name="vid-resource-desc" placeholder="Enter your video description..." defaultValue={loaderData.video_description} preview />
                             <br /> <br />
                         </div>
 
@@ -324,6 +328,11 @@ export default function VideoResource({ loaderData }) {
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
                         <br /><p className="m-2">Video resource updated successfully!</p>
                     </Popup>
+
+                    <Popup id="delete-vidr" show={showDeletePopup} setShow={setShowDeletePopup}
+                        buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
+                        <div className="text-center mt-6">Delete this video resource?</div>
+                    </Popup>
                 </div>
             }
 
@@ -351,7 +360,7 @@ export default function VideoResource({ loaderData }) {
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
                     <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
                 </div>
-                <p>{loaderData.video_description}</p>
+                <div dangerouslySetInnerHTML={{__html: marked.parse(loaderData.video_description)}}></div>
 
                 <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
                     {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" />}
