@@ -103,9 +103,11 @@ export default function StyleGuide() {
 Markdown textboxes are located in the component mdtext.jsx. These textboxes are built to accept raw Markdown content that can be parsed into HTML.
 
 MDText props:
-- **name**: Optional, default is null. This defines the name of the textarea element the MDText uses, if needed for form handling.
+- **name: This defines the name of the textarea element the MDText uses. Used for formhandling and uniquely defining the radio button options for switching views if there are multiple MDTexts present on a page.**
 - **defaultValue**: Optional, default is null. This defines the default value of the textarea element the MDText uses.
+- **placeholder**: Optional, default is "". This defines the placeholder of the textarea element the MDText uses.
 - **preview**: Optional, default is false. This defines whether the MDText will have the toggle options for previewing the parsed Markdown content or not. Even when false, the 'Help' button will be visible.
+- **parentDefinedCurrentView** and **setParentDefinedCurrentView**: Optional. These props should be tied to a useState state variable pair if the view needs to be controlled by the parent. This is useful in resetting the view when a popup containing MDText is opened.
 
 Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, content created from raw Markdown should be saved as Markdown rather than HTML.** Markdown can be parsed into HTML using the marked.parse() function.
 
@@ -442,7 +444,7 @@ Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, co
 
                 <div className="mt-10">
                     <h2>Markdown Textboxes</h2>
-                    <MDText defaultValue={markdownContent} preview/>
+                    <MDText name="style" defaultValue={markdownContent} preview/>
                 </div>
 
                 <div className="mt-10">

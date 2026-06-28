@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { marked } from 'marked';
 import { Menu } from "../components/menu";
+import { MDText } from '../components/mdtext';
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Banner, Break } from "../components/graphics";
@@ -346,14 +348,18 @@ function EditContentTopPopup({showPopup, setShowPopup, content, taskForceUrl}) {
       setHasError(true);
     }
   }
+
+  const [mdCurrentView, setMdCurrentView] = useState(0);
+
+  useEffect(() => {
+      setMdCurrentView(0);
+  }, [showPopup]);
   
   return (
     <PopupForm id="tf-contenttop" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit area:</h4>
-      <textarea id="tf-contenttop-input" name="tf-contenttop-input" placeholder="Task force area..."
-                className="input-text w-full min-h-50 h-[30vh]"
-                defaultValue={content}>
-      </textarea>
+      <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+        name="tf-contenttop-input" defaultValue={content} placeholder="Task force area..." preview />
     </PopupForm>
   )
 }
@@ -371,14 +377,18 @@ function EditContentBottomPopup({showPopup, setShowPopup, content, taskForceUrl}
       setHasError(true);
     }
   }
+
+  const [mdCurrentView, setMdCurrentView] = useState(0);
+
+  useEffect(() => {
+      setMdCurrentView(0);
+  }, [showPopup]);
   
   return (
     <PopupForm id="tf-contentbottom" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit area:</h4>
-      <textarea id="tf-contentbottom-input" name="tf-contentbottom-input" placeholder="Task force area..."
-                className="input-text w-full min-h-50 h-[30vh]"
-                defaultValue={content}>
-      </textarea>
+      <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+        name="tf-contentbottom-input" defaultValue={content} placeholder="Task force area..." preview />
     </PopupForm>
   )
 }
@@ -841,9 +851,10 @@ export default function TaskForce({ loaderData }) {
 
         <Break />
 
-        { (isAdmin || taskForceData?.content_top.length > 0) &&
+        { (isAdmin || taskForceData?.content_top.length > 7) &&
           <div className="w-full text-left duration-200 mb-10">
-            <p>{taskForceData.content_top}</p>
+            <div dangerouslySetInnerHTML={{__html: marked.parse(taskForceData.content_top)}}>
+            </div>
             {isAdmin &&
               <div className="w-full mt-5 text-right">
                 <button className="button button-light" onClick={() => { setShowContentTopPopup(true) }}>
@@ -862,9 +873,10 @@ export default function TaskForce({ loaderData }) {
             </div>
           </div>
         }
-        { (isAdmin || taskForceData?.content_bottom.length > 0) &&
+        { (isAdmin || taskForceData?.content_bottom.length > 7) &&
           <div className="w-full text-left duration-200 mb-10">
-            <p>{taskForceData?.content_bottom}</p>
+            <div dangerouslySetInnerHTML={{__html: marked.parse(taskForceData.content_bottom)}}>
+            </div>
             {isAdmin &&
               <div className="w-full mt-5 text-right">
                 <button className="button button-light" onClick={() => { setShowContentBottomPopup(true) }}>
