@@ -104,7 +104,9 @@ Markdown textboxes are located in the component mdtext.jsx. These textboxes are 
 
 MDText props:
 - **name: This defines the name of the textarea element the MDText uses. Used for formhandling and uniquely defining the radio button options for switching views if there are multiple MDTexts present on a page.**
-- **defaultValue**: Optional, default is null. This defines the default value of the textarea element the MDText uses.
+- **rows**: Optional, default is 8. The number of rows of the textarea MDText element uses.
+- **defaultValue**: Optional, default is undefined. This defines the value of the textarea element the MDText uses.
+- **defaultValue**: Optional, default is undefined. This defines the default value of the textarea element the MDText uses.
 - **placeholder**: Optional, default is "". This defines the placeholder of the textarea element the MDText uses.
 - **preview**: Optional, default is false. This defines whether the MDText will have the toggle options for previewing the parsed Markdown content or not. Even when false, the 'Help' button will be visible.
 - **parentDefinedCurrentView** and **setParentDefinedCurrentView**: Optional. These props should be tied to a useState state variable pair if the view needs to be controlled by the parent. This is useful in resetting the view when a popup containing MDText is opened.
