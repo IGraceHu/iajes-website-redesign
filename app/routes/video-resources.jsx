@@ -262,7 +262,8 @@ export default function VideoResources({ loaderData }) {
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
                             <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
-                                name="vid-resource-desc" placeholder="Enter your video description..." defaultValue={loaderData.video_description} preview />                            <br /> <br />
+                                name="vid-resource-desc" placeholder="Enter your video description..." defaultValue={loaderData.video_description} preview />
+                            <br /> <br />
                         </div>
 
                         <fieldset className="border-t-2 border-gray-light pt-4 relative">

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { marked } from 'marked';
 import { Menu } from "../components/menu";
+import { MDText } from '../components/mdtext';
 import { Banner } from "../components/graphics"
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
@@ -14,28 +16,6 @@ export function meta({ loaderData }) {
         { title: "Webinar: " + loaderData.title },
         // { name: "description", content: "Welcome to React Router!" },
     ];
-}
-
-const tempData = {
-    title: "Webinar Title",
-    date: "2025-04-02",
-    pdf_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview",
-    video_url: "https://drive.google.com/file/d/1gd2J8PqdCEGIMtpfd-eJ-ju70iUReXoQ/preview",
-    description: "Description",
-    speakers: [
-        {
-            name: "Name 1",
-            university: "University",
-            position: "position",
-            slides_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview"
-        },
-        {
-            name: "Name 2",
-            university: "University",
-            position: "position",
-            slides_url: "https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview"
-        }
-    ]
 }
 
 async function getWebinar(webinarId) {
@@ -408,13 +388,14 @@ export default function Webinar({ loaderData }) {
         }
     }
 
+    const [mdCurrentView, setMdCurrentView] = useState(0);
+
+    useEffect(() => {
+        setMdCurrentView(0);
+    }, [showEditPopup]);
+
     return (
         <>
-            <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}
-                buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
-                <div className="text-center mt-6">Delete this webinar?</div>
-            </Popup>
-
             {isAdmin &&
                 <div className="z-1000 absolute top-0 left-0">
                     <PopupForm id="edit-webinar" show={showEditPopup} setShow={setShowEditPopup} validate={validate} hasError={hasError} encType="multipart/form-data">
@@ -457,7 +438,8 @@ export default function Webinar({ loaderData }) {
                                 onChange={(e) => {}} />
                             <br /><br />
                             <label htmlFor="webinar-desc">Description:</label><br />
-                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter description..." defaultValue={loaderData.description}></textarea>
+                            <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+                                name="webinar-desc" placeholder="Enter description..." defaultValue={loaderData.description} preview />
                             <br /> <br />
                         </div>
 
@@ -471,6 +453,11 @@ export default function Webinar({ loaderData }) {
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
                         <br /><p className="m-2">Webinar updated successfully!</p>
+                    </Popup>
+
+                    <Popup id="delete-webinar" show={showDeletePopup} setShow={setShowDeletePopup}
+                        buttons={[{ text: "Delete", onclick: handleDelete, className: "button-red" }]}>
+                        <div className="text-center mt-6">Delete this webinar?</div>
                     </Popup>
                 </div>
             }
@@ -513,7 +500,8 @@ export default function Webinar({ loaderData }) {
                     </div>
                 }
 
-                <p>{loaderData.description}</p>
+                <div dangerouslySetInnerHTML={{__html: marked.parse(loaderData.description)}}></div>
+
 
                 { loaderData.speakers.map((speaker, idx) => 
                     <div key={idx} className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col lg:flex-row place-items-center justify-between">
