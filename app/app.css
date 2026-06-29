@@ -441,6 +441,11 @@ button:disabled.button.button-light {
   background-color: var(--color-white);
 }
 
+.button-icon.button-red {
+  color: var(--color-error);
+  transition: 0.2s;
+}
+
 .button.button-red:hover {
   /* color: #71000f; */
   background-color: #71000f;
@@ -451,6 +456,11 @@ button:disabled.button.button-light {
 .button.button-light.button-red:hover {
   color: #71000f;
   background-color: var(--color-white);
+}
+
+.button-icon.button-red:hover {
+  color: #71000f;
+  cursor: pointer;
 }
 
 /* INTERNATIONAL MEETINGS *****************************************************/
