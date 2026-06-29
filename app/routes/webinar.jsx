@@ -201,6 +201,14 @@ export async function loader({ params }) {
     if (!webinar) {
         throw new Response("Webinar not found", { status: 404 });
     }
+    
+    webinar.title = webinar.title || "";
+    webinar.date = (webinar.date || "").replace(/-/g, '\/') || "";
+    webinar.description = webinar.description || "";
+    webinar.speakers = webinar.speakers || [];
+    webinar.pdf_url = webinar.pdf_url || null;
+    webinar.video_url = webinar.video_url || null;
+    webinar.thumbnail_url = (webinar.thumbnail_url == "{}") ? null : webinar.thumbnail_url;
     return webinar;
 }
 
