@@ -2,7 +2,13 @@ import { useState, useEffect, useRef } from 'react';
 import { marked } from 'marked';
 
 export function MDText({ parentDefinedCurrentView = 0, setParentDefinedCurrentView = null, 
-    name, defaultValue = null, placeholder = "", preview = false
+    id,
+    name,
+    rows = 8,
+    value=null,
+    defaultValue = null,
+    placeholder = "",
+    preview = false
 }) {
 
     const contentRef = useRef(null);
@@ -56,17 +62,17 @@ export function MDText({ parentDefinedCurrentView = 0, setParentDefinedCurrentVi
                 </div>
             </div>
 
-            <textarea ref={contentRef} name={name} defaultValue={defaultValue} placeholder={placeholder}
-                className={"input input-text markdown w-full h-100 " + (currentView() != 0 && "hidden")} ></textarea> 
+            <textarea ref={contentRef} name={name} value={value} defaultValue={defaultValue} placeholder={placeholder} rows={rows}
+                className={"block input input-text markdown w-full " + (currentView() != 0 && "hidden")} ></textarea> 
             
             { preview && 
             <div className={"my-1 py-4 border-y-2 border-primary-dark "+ (currentView() != 1 && "hidden")}
                 dangerouslySetInnerHTML={{__html: markdownResult}}></div>
             }
 
-            <div className={"my-1 py-4 border-y-2 border-primary-dark "+ (currentView() != 2 && "hidden")}>
+            <div className={"relative my-1 py-4 border-y-2 border-primary-dark "+ (currentView() != 2 && "hidden")}>
                 <h4>Markdown Help</h4>
-                <table className="w-full" >
+                <table >
                     <thead>
                         <tr>
                             <th>Element</th>
