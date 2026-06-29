@@ -293,12 +293,10 @@ function ProjectCard({ projectData }) {
       { projectData.projectURL ? 
           <a href={projectData.projectURL} className="hover:text-primary-dark duration-200"><h4>{projectData.name}</h4></a> 
           :
-          <h4>{projectData.name}</h4> 
+          <h3>{projectData.name}</h3> 
         }
       <div className="grid md:grid-cols-[auto_300px] grid-cols-1 gap-4">
-        <p className="text-left">
-          {projectData.details}
-        </p>
+        <div dangerouslySetInnerHTML={{__html: marked.parse(projectData.details)}}></div>
         { projectData.image_url &&
           <div className="rounded-md md:max-h-50 overflow-hidden">
             <img className="rounded-md object-cover" src={projectData.image_url} />
@@ -720,6 +718,12 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
     setFocusProject(null);
   }
 
+  const [mdCurrentView, setMdCurrentView] = useState(0);
+
+  useEffect(() => {
+      setMdCurrentView(0);
+  }, [showProjectPopup]);
+
   return (
     <>
       <Popup id="tf-projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup} hasError={projectHasError} encType="multipart/form-data">
@@ -727,7 +731,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
             {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
               <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
-                <p className="pr-5 mr-auto" style={{ color: "black" }}>{project.name}</p>
+                <p className="pr-5 mr-auto text-left" style={{ color: "black" }}>{project.name}</p>
                 <i className="bi bi-pencil-square"></i>
               </button>
               <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
@@ -770,9 +774,8 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
         </div>
         <div className="">
           <label htmlFor="edit-project-desc">Project details:</label><br />
-          <textarea id="edit-project-desc" name="details" className="input input-text w-full h-60" 
-                 placeholder="Project details..."
-                 defaultValue={focusProject?.details} ></textarea>
+          <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+            id="edit-project-desc" name="details" defaultValue={focusProject?.details} placeholder="Project details..." preview />
         </div>
       </PopupForm>
     </>

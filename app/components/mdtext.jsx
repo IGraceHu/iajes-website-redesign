@@ -5,8 +5,8 @@ export function MDText({ parentDefinedCurrentView = 0, setParentDefinedCurrentVi
     id,
     name,
     rows = 8,
-    value=null,
-    defaultValue = null,
+    value = undefined,
+    defaultValue = undefined,
     placeholder = "",
     preview = false
 }) {

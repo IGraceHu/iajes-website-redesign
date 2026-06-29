@@ -96,9 +96,8 @@ h2 {
 }
 
 h3 {
-  font-size: 1.7rem;
-  color: var(--color-secondary-light);
-  text-transform: uppercase;
+  font-size: 1.9rem;
+  color: var(--color-primary-dark);
 }
 
 h4 {
@@ -113,15 +112,15 @@ h5 {
 
 h6 {
   font-size: 1.2rem;
-  color: var(--color-secondary-light);
+  color: var(--color-secondary-dark);
 }
 
 a h1:hover,
-a h2:hover {
+a h2:hover,
+a h3:hover {
   color: var(--color-secondary-light);
 }
 
-a h3:hover,
 a h4:hover,
 a h5:hover,
 a h6:hover {
