@@ -5,6 +5,7 @@ import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
+import { MDText } from '../components/mdtext';
 import { updateRequired } from "../helpers/form";
 
 export function meta() {
@@ -97,6 +98,23 @@ export default function StyleGuide() {
         }
     }
 
+    const markdownContent = `#### Markdown
+
+Markdown textboxes are located in the component mdtext.jsx. These textboxes are built to accept raw Markdown content that can be parsed into HTML.
+
+MDText props:
+- **name: This defines the name of the textarea element the MDText uses. Used for formhandling and uniquely defining the radio button options for switching views if there are multiple MDTexts present on a page.**
+- **rows**: Optional, default is 8. The number of rows of the textarea MDText element uses.
+- **value**: Optional, default is undefined. This defines the value of the textarea element the MDText uses.
+- **defaultValue**: Optional, default is undefined. This defines the default value of the textarea element the MDText uses.
+- **placeholder**: Optional, default is "". This defines the placeholder of the textarea element the MDText uses.
+- **preview**: Optional, default is false. This defines whether the MDText will have the toggle options for previewing the parsed Markdown content or not. Even when false, the 'Help' button will be visible.
+- **parentDefinedCurrentView** and **setParentDefinedCurrentView**: Optional. These props should be tied to a useState state variable pair if the view needs to be controlled by the parent. This is useful in resetting the view when a popup containing MDText is opened.
+
+Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, content created from raw Markdown should be saved as Markdown rather than HTML.** Markdown can be parsed into HTML using the marked.parse() function.
+
+[Marked]: https://github.com/markedjs/marked/
+[Markdown]: http://daringfireball.net/projects/markdown/`;
 
     return (
         <>
@@ -133,6 +151,7 @@ export default function StyleGuide() {
             <div className="lg:px-40 px-10 py-20 duration-200">
                 <h1>Style Guide</h1>
                 <p>Note that we are using TailwindCSS, so unless needed, sizing and layout will be done with TailwindCSS variables and presets.</p>
+
                 <div className="mt-10">
                     <h2>Fonts</h2>
                     <h1>Heading 1</h1>
@@ -423,6 +442,11 @@ export default function StyleGuide() {
                     <br />
                     <p>Disabled inputs use the <span className="text-primary-dark">disabled</span> attribute or <span className="text-primary-dark">.input-disabled</span>. Inputs still need the <span className="text-primary-dark">disabled</span> attribute to be functionally disabled.</p>
                     <p>Required inputs use <span className="text-primary-dark">.input-required</span>, though the class should only be added if the error is active.</p>
+                </div>
+
+                <div className="mt-10">
+                    <h2>Markdown Textboxes</h2>
+                    <MDText name="style" defaultValue={markdownContent} preview/>
                 </div>
 
                 <div className="mt-10">

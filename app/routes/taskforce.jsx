@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
+import { marked } from 'marked';
 import { Menu } from "../components/menu";
+import { MDText } from '../components/mdtext';
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Banner, Break } from "../components/graphics";
@@ -291,12 +293,10 @@ function ProjectCard({ projectData }) {
       { projectData.projectURL ? 
           <a href={projectData.projectURL} className="hover:text-primary-dark duration-200"><h4>{projectData.name}</h4></a> 
           :
-          <h4>{projectData.name}</h4> 
+          <h3>{projectData.name}</h3> 
         }
       <div className="grid md:grid-cols-[auto_300px] grid-cols-1 gap-4">
-        <p className="text-left">
-          {projectData.details}
-        </p>
+        <div dangerouslySetInnerHTML={{__html: marked.parse(projectData.details)}}></div>
         { projectData.image_url &&
           <div className="rounded-md md:max-h-50 overflow-hidden">
             <img className="rounded-md object-cover" src={projectData.image_url} />
@@ -346,14 +346,18 @@ function EditContentTopPopup({showPopup, setShowPopup, content, taskForceUrl}) {
       setHasError(true);
     }
   }
+
+  const [mdCurrentView, setMdCurrentView] = useState(0);
+
+  useEffect(() => {
+      setMdCurrentView(0);
+  }, [showPopup]);
   
   return (
     <PopupForm id="tf-contenttop" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit area:</h4>
-      <textarea id="tf-contenttop-input" name="tf-contenttop-input" placeholder="Task force area..."
-                className="input-text w-full min-h-50 h-[30vh]"
-                defaultValue={content}>
-      </textarea>
+      <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+        name="tf-contenttop-input" defaultValue={content} placeholder="Task force area..." preview />
     </PopupForm>
   )
 }
@@ -371,14 +375,18 @@ function EditContentBottomPopup({showPopup, setShowPopup, content, taskForceUrl}
       setHasError(true);
     }
   }
+
+  const [mdCurrentView, setMdCurrentView] = useState(0);
+
+  useEffect(() => {
+      setMdCurrentView(0);
+  }, [showPopup]);
   
   return (
     <PopupForm id="tf-contentbottom" className="md:w-[70vw] duration-200 mx-10 my-5" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
       <h4>Edit area:</h4>
-      <textarea id="tf-contentbottom-input" name="tf-contentbottom-input" placeholder="Task force area..."
-                className="input-text w-full min-h-50 h-[30vh]"
-                defaultValue={content}>
-      </textarea>
+      <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+        name="tf-contentbottom-input" defaultValue={content} placeholder="Task force area..." preview />
     </PopupForm>
   )
 }
@@ -710,6 +718,12 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
     setFocusProject(null);
   }
 
+  const [mdCurrentView, setMdCurrentView] = useState(0);
+
+  useEffect(() => {
+      setMdCurrentView(0);
+  }, [showProjectPopup]);
+
   return (
     <>
       <Popup id="tf-projects" show={showPopup} setShow={setShowPopup} closePopup={handleClosePopup} hasError={projectHasError} encType="multipart/form-data">
@@ -717,7 +731,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
             {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
               <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
-                <p className="pr-5 mr-auto" style={{ color: "black" }}>{project.name}</p>
+                <p className="pr-5 mr-auto text-left" style={{ color: "black" }}>{project.name}</p>
                 <i className="bi bi-pencil-square"></i>
               </button>
               <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
@@ -760,9 +774,8 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
         </div>
         <div className="">
           <label htmlFor="edit-project-desc">Project details:</label><br />
-          <textarea id="edit-project-desc" name="details" className="input input-text w-full h-60" 
-                 placeholder="Project details..."
-                 defaultValue={focusProject?.details} ></textarea>
+          <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+            id="edit-project-desc" name="details" defaultValue={focusProject?.details} placeholder="Project details..." preview />
         </div>
       </PopupForm>
     </>
@@ -841,9 +854,10 @@ export default function TaskForce({ loaderData }) {
 
         <Break />
 
-        { (isAdmin || taskForceData?.content_top.length > 0) &&
+        { (isAdmin || taskForceData?.content_top.length > 7) &&
           <div className="w-full text-left duration-200 mb-10">
-            <p>{taskForceData.content_top}</p>
+            <div dangerouslySetInnerHTML={{__html: marked.parse(taskForceData.content_top)}}>
+            </div>
             {isAdmin &&
               <div className="w-full mt-5 text-right">
                 <button className="button button-light" onClick={() => { setShowContentTopPopup(true) }}>
@@ -862,9 +876,10 @@ export default function TaskForce({ loaderData }) {
             </div>
           </div>
         }
-        { (isAdmin || taskForceData?.content_bottom.length > 0) &&
+        { (isAdmin || taskForceData?.content_bottom.length > 7) &&
           <div className="w-full text-left duration-200 mb-10">
-            <p>{taskForceData?.content_bottom}</p>
+            <div dangerouslySetInnerHTML={{__html: marked.parse(taskForceData.content_bottom)}}>
+            </div>
             {isAdmin &&
               <div className="w-full mt-5 text-right">
                 <button className="button button-light" onClick={() => { setShowContentBottomPopup(true) }}>

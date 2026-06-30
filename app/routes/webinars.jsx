@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { Menu } from "../components/menu";
+import { MDText } from '../components/mdtext';
 import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
@@ -259,7 +260,6 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
 export default function Webinars({ loaderData }) {
     const navigate = useNavigate();
     const [isAdmin, setIsAdmin] = useState(false);
-    const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [currentPage, setCurrentPage] = useState(0);
 
     useEffect(() => {
@@ -279,6 +279,7 @@ export default function Webinars({ loaderData }) {
 
 
     // EVERYTHING BELOW IS POPUP EDIT THINGS --------------------------------------------------------------------------------
+    const [showCreatePopup, setShowCreatePopup] = useState(false);
     const [showResolvePopup, setShowResolvePopup] = useState(false);
     const [speakers, setSpeakers] = useState([])
 
@@ -358,6 +359,12 @@ export default function Webinars({ loaderData }) {
         navigate(0);
     }
 
+    const [mdCurrentView, setMdCurrentView] = useState(0);
+
+    useEffect(() => {
+        setMdCurrentView(0);
+    }, [showCreatePopup]);
+
     return (
         <>
             {isAdmin &&
@@ -399,7 +406,8 @@ export default function Webinars({ loaderData }) {
                                 onChange={(e) => {}} />
                             <br /><br />
                             <label htmlFor="webinar-desc">Description:</label><br />
-                            <textarea id="webinar-desc" name="webinar-desc" className="input input-text w-full h-30" placeholder="Enter description..."></textarea>
+                            <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
+                                name="webinar-desc" placeholder="Enter description..." defaultValue={loaderData.description} preview />
                             <br /> <br />
                         </div>
 

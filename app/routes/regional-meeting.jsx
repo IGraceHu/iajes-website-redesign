@@ -820,7 +820,7 @@ export default function RegionalMeeting() {
                                         <button type="button" className="button-icon text-primary-dark" onClick={() => openEditMeeting(mtg)}>
                                             <i className="bi bi-pencil-square"></i>
                                         </button>
-                                        <button type="button" className="button-red" onClick={() => openDeleteMeeting(mtg)}>
+                                        <button type="button" className="button-icon button-red" onClick={() => openDeleteMeeting(mtg)}>
                                             <i className="bi bi-x" style={{ fontSize: "2rem" }}></i>
                                         </button>
                                     </div>
