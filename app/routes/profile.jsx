@@ -44,6 +44,35 @@ const roleNames = new Map([
   ["admin-university", "University Representative"]
 ]);
 
+
+const tempUserData = {
+  fname: "First",
+  lname: "Last",
+  roles: ['member'],
+  is_seen_by_visitors: true,
+  is_contact_by_visitors: true,
+  is_contact_by_members: true,
+  banner_type: 1,
+  biography: "",
+
+  engineering_type: [],
+  position_type: [],
+  title: "",
+  tech_interests: [],
+  general_interests: [],
+  is_get_interest_info: false,
+  
+  university: "",
+  country: "",
+  region: "",
+
+  tf_interests: [],
+
+  links: {},
+  resume_pdf_url: ""
+}
+
+
 async function getTaskForces() {
   const { data, error } = await supabase
     .from('task forces')
@@ -67,6 +96,7 @@ async function getUniversities() {
 }
 
 async function getProfile(userId) {
+  return tempUserData;
   const { data, error } = await supabase
     .from('users')
     .select()
@@ -133,7 +163,13 @@ async function updateProfileImage(userId, imageUrl) {
   return error;
 }
 
+
+
+
+
+
 export async function loader({ params }) {
+  return { person: tempUserData, taskForceList: [], universityList: [] };
   const person = await getProfile(params.id);
   if (!person) {
         throw new Response("Profile not found", { status: 404 });
@@ -239,27 +275,41 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               />
               <div className="input-error">This field is required.</div>
             </div>
+
             <div className="md:col-span-2">
-              <label htmlFor="allow-contact" className="checkbox">
-                  <input id="allow-contact" name="allow-contact" type="checkbox" 
-                         className={""} defaultChecked={draft.allow_contact}
+              <label htmlFor="biography">Biography</label>
+              <textarea
+                id="biography"
+                name="biography"
+                type="text"
+                className="input-text w-full h-40"
+                defaultValue={draft.biography} placeholder="Biography..."
+              />
+            </div>
+
+            <div className="">
+              <p>Site Visibility</p>
+              <label htmlFor="is-seen-by-visitors" className="checkbox mb-4">
+                  <input id="is-seen-by-visitors" name="is-seen-by-visitors" type="checkbox" 
+                         className={""} defaultChecked={draft.is_seen_by_visitors}
+                         disabled={currentUserId != userId}
+                          /><p>Allow site visitors without an account and unverified IAJES members to see your profile?</p>
+              </label>
+              <label htmlFor="is-contact-by-visitors" className="checkbox mb-4">
+                  <input id="is-contact-by-visitors" name="is-contact-by-visitors" type="checkbox" 
+                         className={""} defaultChecked={draft.is_contact_by_visitors}
                          disabled={currentUserId != userId}
                           /><p>Allow site visitors without an account and unverified IAJES members to contact you?</p>
               </label>
-              <div className="w-full p-2 text-sm text-disabled-light italic">All IAJES members with verified accounts will be able to contact you.</div>
-            </div>
-            <div className="">
-              <label htmlFor="languages">Languages</label>
-              <input
-                id="languages"
-                name="languages"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.languages} placeholder="Languages"
-              />
+              <label htmlFor="is-contact-by-members" className="checkbox mb-4">
+                  <input id="is-contact-by-members" name="is-contact-by-members" type="checkbox" 
+                         className={""} defaultChecked={draft.is_contact_by_members}
+                         disabled={currentUserId != userId}
+                          /><p>Allow verified IAJES members to contact you?</p>
+              </label>
             </div>
             <div>
-              <p>Banner Type:</p>
+              <p>Banner Type</p>
               <div className="mt-1">
                 <label htmlFor="banner-type-0" className="radio-button gray">
                       <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0}/><p>Gray</p>
@@ -275,76 +325,96 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 </label>
               </div>
             </div>
-            <div className="md:col-span-2">
-              <label htmlFor="tagline">Tagline</label>
+            
+
+            <div className="">
+              <label htmlFor="languages">Languages</label>
               <input
-                id="tagline"
-                name="tagline"
+                id="languages"
+                name="languages"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.tagline} placeholder="Tagline"
+                defaultValue={draft.languages} placeholder="Languages"
               />
             </div>
+            
+            
+          </div>
+        </fieldset>
+
+        <fieldset className="border-t-2 border-gray-light pt-4">
+          <div className="text-sm font-semibold text-secondary-dark">Professional Information</div>
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="engineering-type">Type of Engineering</label>
+              <select id="engineering-type" name="engineering-type" className="input input-text w-full" >
+                  <option selected={draft.engineering_type == []} disabled>--Select an engineering type--</option>
+                  <option value="temp" selected={draft.engineering_type?.includes("temp")}>Temp</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="position-type">Type of Position</label>
+              <select id="position-type" name="position-type" className="input input-text w-full" >
+                  <option selected={draft.position_type == []} disabled>--Select a position type--</option>
+                  <option value="temp" selected={draft.position_type?.includes("temp")}>Temp</option>
+              </select>
+            </div>
             <div className="md:col-span-2">
-              <label htmlFor="biography">Biography</label>
-              <textarea
-                id="biography"
-                name="biography"
+              <label htmlFor="title">Title</label>
+              <input
+                id="title"
+                name="title"
                 type="text"
-                className="input-text w-full h-40"
-                defaultValue={draft.biography} placeholder="Biography..."
+                className="input-text w-full"
+                defaultValue={draft.title} placeholder="Title"
               />
+            </div>
+            <div>
+              <label htmlFor="tech-interests">Technical Interests</label>
+              <select id="tech-interests" name="tech-interests" className="input input-text w-full" >
+                  
+              </select>
+            </div>
+            <div>
+              <label htmlFor="general-interests">General Interests</label>
+              <select id="general-interests" name="general-interests" className="input input-text w-full" >
+                  
+              </select>
+            </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="is-get-interest-info" className="checkbox">
+                <input id="is-get-interest-info" name="is-get-interest-info" type="checkbox" 
+                        className={""} defaultChecked={draft.is_get_interest_info}
+                        disabled={currentUserId != userId}
+                        /><p>Are you interested in receiving information about colleagues with similar areas of interest?</p>
+              </label>
+              <div className="w-full p-2 text-sm text-disabled-light italic">This is a beta functionality that will connect people with similar interests automatically and share professional information to facilitate collaborations among IAJES participants.</div>
             </div>
           </div>
         </fieldset>
 
         <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Academic Information</div>
+          <div className="text-sm font-semibold text-secondary-dark">Affliations</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
-            <div>
-              <label htmlFor="job-position">Job/Position</label>
-              <input
-                id="job-position"
-                name="job-position"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.job_position}  placeholder="Job/Position"
-              />
-            </div>
-            <div>
-              <label htmlFor="major">Academic Focus</label>
-              <input
-                id="major"
-                name="major"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.major} placeholder="Academic Focus"
-              />
-            </div>
             <div className="md:col-span-2">
-              <label htmlFor="institution">University</label>
-              <input list="institution" name="institution" className="input-text w-full" placeholder="University" defaultValue={draft.institution} />
-              <datalist
-                id="institution"
-                className="input-text w-full"
-              >
-                { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.institution}>{universityObj.university}</option>) : <></>}
-              </datalist>
+              <label htmlFor="university">University</label>
+              <select id="university" name="university" className="input-text w-full">
+                <option selected={draft.university == ""} disabled>-- Select your university --</option>
+                { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.university}>{universityObj.university}</option>) : <></>}
+              </select>
             </div>
             <div>
               <label htmlFor="country">Country</label>
-              <input
-                id="country"
-                name="country"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.country} placeholder="Country"
-              />
+              <select id="country" name="country" className="input-text w-full">
+                <option selected={draft.country == ""} disabled>-- Select your country --</option>
+                {/* { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.university}>{universityObj.university}</option>) : <></>} */}
+              </select>
             </div>
             <div>
               <label htmlFor="region">Region</label>
               <select id="region" name="region" className="input input-text w-full" >
-                  <option value="">Select a region</option>
+                  <option selected={draft.region == ""} disabled>-- Select your region --</option>
                   <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
                   <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
                   <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
@@ -354,105 +424,23 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               </select>
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="research-interests">Research Interests</label>
-              <textarea
-                id="research-interests"
-                name="research-interests"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.research_interests} placeholder="Research interests..."
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Task Force</div>
-          <div className="mt-3 grid gap-4 md:grid-cols-2">
-            <div>
-              <label htmlFor="task-force">Task Force</label>
-              <select id="task-force" name="task-force" className="input input-text w-full" >
-                <option value="">None</option>
-                { (taskForceList) ? taskForceList.map((taskForce) => <option key={taskForce.url} value={taskForce.name} selected={taskForce.name == draft.task_force}>{taskForce.name}</option>) : <></>}
+              <label htmlFor="tf-interests">Are there any Task Forces you would be interested in joining?</label>
+              <select id="tf_interests" name="tf-interests" className="input input-text w-full" >
+                  
               </select>
             </div>
-            <div>
-              <label htmlFor="task-force-role">Task Force Role</label>
-              <input
-                id="task-force-role"
-                name="task-force-role"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.task_force_role} placeholder="Task Force Role"
-              />
-            </div>
           </div>
         </fieldset>
 
         <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Social Links</div>
-          <div className="mt-3 grid gap-x-3 gap-y-5 md:grid-cols-2">
-            <div>
-              <label htmlFor="linkedin">LinkedIn</label>
-              <input
-                id="linkedin"
-                name="url-linkedin"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlLinkedin && "input-required")}
-                onChange={() => urlChange("urlLinkedin")}
-                defaultValue={draft.url_linkedin} placeholder="LinkedIn URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div>
-              <label htmlFor="instagram">Instagram</label>
-              <input
-                id="instagram"
-                name="url-instagram"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlInstagram && "input-required")}
-                onChange={() => urlChange("urlInstagram")}
-                defaultValue={draft.url_instagram} placeholder="Instagram URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div>
-              <label htmlFor="x">X (Twitter)</label>
-              <input
-                id="x"
-                name="url-twitter"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlTwitter && "input-required")}
-                onChange={() => urlChange("urlTwittern")}
-                defaultValue={draft.url_twitter} placeholder="X (Twitter) URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div>
-              <label htmlFor="facebook">Facebook</label>
-              <input
-                id="facebook"
-                name="url-facebook"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlFacebook && "input-required")}
-                onChange={() => urlChange("urlFacebook")}
-                defaultValue={draft.url_facebook} placeholder="Facebook URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div className="md:col-span-2">
-              <label htmlFor="website">Website</label>
-              <input
-                id="website"
-                name="url-website"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlWebsite && "input-required")}
-                onChange={() => urlChange("urlWebsite")}
-                defaultValue={draft.url_website} placeholder="Website URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-          </div>
+          <div className="text-sm font-semibold text-secondary-dark">Social</div>
+          <div className="mt-3 grid gap-4">
+            <label>
+              Resume
+              <br/>
+                <input id="resume-pdf" name="resume-pdf" type="file" />
+            </label>  
+          </div>        
         </fieldset>
       </div>
     </PopupForm>
