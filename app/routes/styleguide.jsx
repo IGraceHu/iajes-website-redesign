@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { redirect } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { MultiSelect } from '../components/multi-select';
 import { Popup, PopupForm } from "../components/popup";
 import { Pagination } from "../components/pagination";
 import { Break, H1Middle, H1Left, H2Middle, H2Left, Banner } from "../components/graphics";
@@ -387,6 +388,15 @@ Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, co
                                 <option value="4">4</option>
                             </select>
                             <div className="input-error">They are set to position: absolute to avoid changing page layout.</div>
+                            <br />
+                            <br />
+                            <label htmlFor="form-multiselect">Multi-Select:</label><br />
+                            <MultiSelect id="form-multiselect" className={"input input-text w-full " + formMode}>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                                <option value="4">4</option>
+                            </MultiSelect>
                         </div>
 
                         <div>

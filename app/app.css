@@ -842,6 +842,35 @@ input[type="file"].input-required~.input-error {
   display: block;
 }
 
+.multi-select > option {
+  margin: calc(var(--spacing) * 1) 0;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  transition: 0.2s;
+}
+
+.multi-select > option:checked {
+  background-color: var(--color-white);
+  border: 2px solid var(--color-primary-dark);
+}
+
+.multi-select > option:hover {
+  background-color: var(--color-primary-extralight);
+  border: 2px solid var(--color-primary-light);
+  cursor: pointer;
+}
+
+.multi-select > option:checked:hover {
+  border: 2px solid var(--color-primary-light);
+
+}
+
+.multi-select > option:active {
+  background-color: var(--color-primary-dark);
+
+}
+
 /* ICONS ***********************************************************************/
 
 .bi {
