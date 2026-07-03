@@ -78,6 +78,9 @@ const engineeringData = new Map([
   ['Transportation Engineering', ['Intelligent Transportation Systems', 'Traffic Engineering', 'Sustainable Mobility', 'Transportation Planning', 'Autonomous Transportation'] ]
 ]);
 
+const countryData = ['Afghanistan', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'The Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'British Virgin Islands', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde (Cape Verde)', 'Cambodia', 'Cameroon', 'Canada', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Democratic Republic of the Congo', 'Republic of the Congo', 'Cook Islands', 'Costa Rica', 'Côte d’Ivoire', 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor (Timor-Leste)', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini (Swaziland)', 'Ethiopia', 'Falkland Islands', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'Gabon', 'The Gambia', 'Gaza Strip', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'North Korea', 'South Korea', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar (Burma)', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'North Macedonia', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn Island', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Helena', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint-Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'Spain', 'Sri Lanka', 'South Sudan', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Turks and Caicos Islands', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Virgin Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Wallis and Futuna', 'West Bank', 'Western Sahara', 'Yemen', 'Zambia', 'Zimbabwe'];
+
+const languageData = ['Afrikaans', 'Albanian', 'Amharic', 'Arabic', 'Armenian (Eastern)', 'Armenian (Western)', 'Azerbaijani (Azeri)', 'Bassa', 'Belarusian', 'Bengali', 'Bosnian', 'Braille', 'Bulgarian', 'Burmese', 'Cambodian (Khmer)', 'Cape Verde Creole', 'Cebuano', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Chuukese', 'Croatian', 'Czech', 'Danish', 'Dari', 'Dutch', 'English', 'Estonian', 'Farsi (Persian)', 'Finnish', 'Flemmish', 'French (Canada)', 'French (France)', 'Fulani', 'Georgian', 'German', 'Greek', 'Gujarati', 'Haitian Creole', 'Hakha Chin', 'Hakka (Chinese)', 'Hebrew', 'Hindi', 'Hmong', 'Hungarian', 'Icelandic', 'Igbo/Ibo', 'Ilocano', 'Ilonggo (Hiligaynon)', 'Indonesian', 'Italian', 'Japanese', 'Javanese', 'Kannada', 'Karen', 'Kazakh', 'Kinyarwanda', 'Kirundi', 'Korean', 'Kurdish (Kurmanji dialect)', 'Kurdish (Sorani dialect)', 'Kyrgyz/Kirgiz', 'Lao (Laotian)', 'Latvian', 'Lithuanian', 'Macedonian', 'Malay (Malaysian)', 'Mandinka', 'Marathi', 'Marshallese', 'Mien', 'Mongolian', 'Montenegrin', 'Navajo', 'Nepali', 'Norwegian', 'Oromo', 'Pashto', 'Polish', 'Portuguese (Brazil)', 'Portuguese (Portugal)', 'Punjabi', 'Rohingya', 'Romanian (Moldavan)', 'Russian', 'Serbian', 'Slovak', 'Slovenian', 'Somali', 'Spanish (Castilian)', 'Spanish (Latin American)', 'Spanish (other varieties)', 'Swahili', 'Swedish', 'Tagalog', 'Tamil', 'Telugu', 'Thai', 'Tibetan', 'Tigrinya', 'Turkish', 'Ukrainian', 'Urdu', 'Uzbek', 'Vietnamese', 'Wolof', 'Yoruba'];
 
 const tempUserData = {
   fname: "First",
@@ -203,14 +206,16 @@ async function updateProfileImage(userId, imageUrl) {
 
 
 export async function loader({ params }) {
-  return { person: tempUserData, taskForceList: [], universityList: [] };
+  const taskForceList = await getTaskForces();
+  const universityList = await getUniversities();
+  universityList.push({university: "Other"});
+
+  return { person: tempUserData, taskForceList: taskForceList, universityList: universityList };
   const person = await getProfile(params.id);
   if (!person) {
         throw new Response("Profile not found", { status: 404 });
     }
-  const taskForceList = await getTaskForces();
-  const universityList = await getUniversities();
-  universityList.push("Other");
+  
   return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
 
@@ -219,6 +224,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
   const [draft, setDraft] = useState({});
+
+  console.log(taskForceList);
+  console.log(universityList);
 
   async function validate(formData) {
     console.log(formData);
@@ -361,8 +369,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
 
             <div className="md:col-span-2">
               <label htmlFor="languages">Languages</label>
-              <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="4" >
-
+              <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
+                { (languageData) ? languageData.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
+                <option value="Other">Other</option>
               </MultiSelect>
             </div>
             
@@ -379,6 +388,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                   {Array.from(engineeringData.keys()).map(engineeringType => {
                     return <option key={engineeringType} value={engineeringType}>{engineeringType}</option>
                   })}
+                  <option value="Other">Other</option>
               </MultiSelect>
             </div>
 
@@ -451,7 +461,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               <label htmlFor="country">Country</label>
               <select id="country" name="country" className="input-text w-full">
                 <option selected={draft.country == ""} disabled>-- Select your country --</option>
-                {/* { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.university}>{universityObj.university}</option>) : <></>} */}
+                { (countryData) ? countryData.map((country, idx) => <option key={"cou-" + idx} value={country} selected={country == draft.country}>{country}</option>) : <></>}
               </select>
             </div>
             <div>
@@ -469,7 +479,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
             <div className="md:col-span-2">
               <label htmlFor="tf-interests">Are there any Task Forces you would be interested in joining?</label>
               <MultiSelect id="tf-interests" name="tf-interests" value={draft?.tf_interests} className="w-full" size="4" >
-
+                  {taskForceList.map(tf => {
+                    return <option key={tf.url} value={tf.name}>{tf.name}</option>
+                  })}
               </MultiSelect>
             </div>
           </div>
