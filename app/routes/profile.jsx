@@ -4,6 +4,7 @@ import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { MultiSelect } from "../components/multi-select";
 import { Popup, PopupForm } from "../components/popup";
 import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import "../styles/profile.css";
@@ -42,6 +43,39 @@ const roleNames = new Map([
   ["admin-newsletter", "Newsletter Admin"],
   ["admin-resources", "Resources Admin"],
   ["admin-university", "University Representative"]
+]);
+
+const engineeringData = new Map([
+  ['Aerospace Engineering', ['Aerodynamics', 'Space Systems', 'Aircraft Structures', 'Propulsion Systems', 'Autonomous Flight'] ],
+  ['Artificial Intelligence Engineering', ['Machine Learning', 'Generative AI', 'Computer Vision', 'Natural Language Processing', 'Responsible AI'] ],
+  ['Automotive Engineering', ['Electric Vehicles', 'Autonomous Driving', 'Vehicle Dynamics', 'Powertrain Systems', 'Connected Mobility'] ],
+  ['Biomedical Engineering', ['Medical Devices', 'Biomedical Imaging', 'Biomaterials', 'Rehabilitation Engineering', 'Digital Health'] ],
+  ['Bioengineering', ['Synthetic Biology', 'Tissue Engineering', 'Bioprocess Engineering', 'Biosensors', 'Genetic Engineering'] ],
+  ['Chemical Engineering', ['Process Design', 'Catalysis', 'Reaction Engineering', 'Sustainable Manufacturing', 'Separation Processes'] ],
+  ['Civil Engineering', ['Smart Infrastructure', 'Geotechnical Engineering', 'Water Resources', 'Structural Design', 'Urban Development'] ],
+  ['Computer Engineering', ['Embedded Systems', 'Computer Architecture', 'IoT Systems', 'Edge Computing', 'Hardware-Software Co-Design'] ],
+  ['Computer Science & Engineering', ['Algorithms', 'Distributed Systems', 'Artificial Intelligence', 'Human-Computer Interaction', 'Cloud Computing'] ],
+  ['Construction Engineering', ['Construction Management', 'Building Information Modeling (BIM)', 'Sustainable Construction', 'Project Planning', 'Construction Automation'] ],
+  ['Cybersecurity Engineering', ['Network Security', 'Cryptography', 'Secure Software', 'Digital Forensics', 'Cyber-Physical Systems Security'] ],
+  ['Data Engineering', ['Big Data Systems', 'Data Pipelines', 'Data Governance', 'Data Warehousing', 'Real-Time Analytics'] ],
+  ['Electrical Engineering', ['Power Systems', 'Signal Processing', 'Renewable Energy Systems', 'Electronics', 'Smart Grids'] ],
+  ['Electronic Engineering', ['Analog & Digital Circuits', 'Microelectronics', 'Embedded Electronics', 'Semiconductor Devices', 'Sensor Systems'] ],
+  ['Energy Engineering', ['Renewable Energy', 'Energy Storage', 'Smart Grids', 'Hydrogen Technologies', 'Energy Efficiency'] ],
+  ['Environmental Engineering', ['Water Treatment', 'Air Quality', 'Climate Adaptation', 'Waste Management', 'Environmental Monitoring'] ],
+  ['Industrial Engineering', ['Operations Research', 'Supply Chain Management', 'Process Optimization', 'Human Factors', 'Quality Engineering'] ],
+  ['Information Engineering', ['Information Systems', 'Data Analytics', 'Knowledge Management', 'Decision Support Systems', 'Information Security'] ],
+  ['Information Technology', ['Cloud Computing', 'IT Infrastructure', 'Enterprise Systems', 'Network Administration', 'Digital Transformation'] ],
+  ['Materials Engineering', ['Advanced Materials', 'Nanomaterials', 'Polymers', 'Composite Materials', 'Materials Characterization'] ],
+  ['Mechanical Engineering', ['Advanced Manufacturing', 'Thermofluids', 'Robotics', 'Machine Design', 'Computational Mechanics'] ],
+  ['Mechatronics Engineering', ['Intelligent Automation', 'Control Systems', 'Embedded Systems', 'Robotics', 'Smart Manufacturing'] ],
+  ['Mining Engineering', ['Mineral Processing', 'Mine Automation', 'Rock Mechanics', 'Sustainable Mining', 'Resource Exploration'] ],
+  ['Petroleum Engineering', ['Reservoir Engineering', 'Drilling Technologies', 'Enhanced Oil Recovery', 'Carbon Storage', 'Energy Transition'] ],
+  ['Robotics Engineering', ['Autonomous Robots', 'Robot Perception', 'Human-Robot Interaction', 'Swarm Robotics', 'Robotic Manipulation'] ],
+  ['Software Engineering', ['Software Architecture', 'DevOps', 'Software Testing', 'Agile Development', 'Software Quality Assurance'] ],
+  ['Structural Engineering', ['Earthquake Engineering', 'Structural Health Monitoring', 'Advanced Materials', 'Bridge Engineering', 'Resilient Infrastructure'] ],
+  ['Systems Engineering', ['Systems Modeling', 'Complex Systems', 'Digital Twins', 'Systems Integration', 'Decision Analysis'] ],
+  ['Telecommunications Engineering', ['Wireless Communications', '5G/6G Networks', 'Optical Communications', 'Network Security', 'Internet of Things (IoT)'] ],
+  ['Transportation Engineering', ['Intelligent Transportation Systems', 'Traffic Engineering', 'Sustainable Mobility', 'Transportation Planning', 'Autonomous Transportation'] ]
 ]);
 
 
@@ -187,15 +221,13 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   const [draft, setDraft] = useState({});
 
   async function validate(formData) {
+    console.log(formData);
+    return false;
+
     let isValidated = true;
     const isRequired = {
       fname: formData.get('fname') === (null || ""),
       lname: formData.get('lname') === (null || ""),
-      urlLinkedin: (formData.get('url-linkedin') && !formData.get('url-linkedin').match(/https:\/\//)),
-      urlInstagram: (formData.get('url-instagram') && !formData.get('url-instagram').match(/https:\/\//)),
-      urlTwitter: (formData.get('url-twitter') && !formData.get('url-twitter').match(/https:\/\//)),
-      urlFacebook: (formData.get('url-facebook') && !formData.get('url-facebook').match(/https:\/\//)),
-      urlWebsite: (formData.get('url-website') && !formData.get('url-website').match(/https:\/\//))
     }
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -247,7 +279,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   }
 
   return (
-    <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+    <PopupForm id="profile-edit" className="w-[80vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
        <h4>Edit Profile</h4>
        <div className="flex flex-col gap-6">
         <fieldset>
@@ -282,7 +314,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 id="biography"
                 name="biography"
                 type="text"
-                className="input-text w-full h-40"
+                className="input-text w-full h-30"
                 defaultValue={draft.biography} placeholder="Biography..."
               />
             </div>
@@ -345,21 +377,16 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
         <fieldset className="border-t-2 border-gray-light pt-4">
           <div className="text-sm font-semibold text-secondary-dark">Professional Information</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
-            <div>
-              <label htmlFor="engineering-type">Type of Engineering</label>
-              <select id="engineering-type" name="engineering-type" className="input input-text w-full" >
-                  <option selected={draft.engineering_type == []} disabled>--Select an engineering type--</option>
-                  <option value="temp" selected={draft.engineering_type?.includes("temp")}>Temp</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="position-type">Type of Position</label>
-              <select id="position-type" name="position-type" className="input input-text w-full" >
-                  <option selected={draft.position_type == []} disabled>--Select a position type--</option>
-                  <option value="temp" selected={draft.position_type?.includes("temp")}>Temp</option>
-              </select>
-            </div>
             <div className="md:col-span-2">
+              <label htmlFor="engineering-type">Type of Engineering</label>
+              <MultiSelect id="engineering-type" name="engineering-type" value={draft?.engineering_type} className="w-full" size="5">
+                  {Array.from(engineeringData.keys()).map(engineeringType => {
+                    return <option key={engineeringType} value={engineeringType}>{engineeringType}</option>
+                  })}
+              </MultiSelect>
+            </div>
+
+            <div>
               <label htmlFor="title">Title</label>
               <input
                 id="title"
@@ -369,17 +396,37 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 defaultValue={draft.title} placeholder="Title"
               />
             </div>
+
             <div>
-              <label htmlFor="tech-interests">Technical Interests</label>
-              <select id="tech-interests" name="tech-interests" className="input input-text w-full" >
-                  
-              </select>
+              <label htmlFor="position-type">Type of Position</label>
+              <MultiSelect id="position-type" name="position-type" value={draft?.position_type} className="w-full" size="4" >
+                  <option value="Professor">Professor</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Researcher">Researcher</option>
+                  <option value="Student">Student</option>
+              </MultiSelect>
             </div>
-            <div>
-              <label htmlFor="general-interests">General Interests</label>
-              <select id="general-interests" name="general-interests" className="input input-text w-full" >
+
+            <div className="md:col-span-2">
+              <label htmlFor="tech-interests">Technical Interests</label>
+              <MultiSelect id="tech-interests" name="tech-interests" value={draft?.tech_interests} className="input input-text w-full" >
                   
-              </select>
+              </MultiSelect>
+            </div>
+            <div className="md:col-span-2">
+              <label htmlFor="general-interests">General Interests</label>
+              <MultiSelect id="general-interests" name="general-interests" value={draft?.general_interests}  className="w-full" size="4" >
+                  <option value="Education">Education</option>
+                  <option value="Health">Health</option>
+                  <option value="Entrepreneurship">Entrepreneurship</option>
+                  <option value="Industry Relations/Cooperations">Industry Relations/Cooperations</option>
+                  <option value="Environment">Environment</option>
+                  <option value="Internationalization">Internationalization</option>
+                  <option value="Policies">Policies</option>
+                  <option value="Education">University Management</option>
+                  <option value="Education">Social Impact</option>
+                  <option value="Education">Rankings and Acreditations</option>
+              </MultiSelect>
             </div>
 
             <div className="md:col-span-2">

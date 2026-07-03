@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Children } from "react";
 
 
 export function MultiSelect({
@@ -7,7 +8,7 @@ export function MultiSelect({
     value = [],
     autoComplete = null,
     autoFocus = false,
-    children,
+    children = [],
     disabled = false,
     form = null,
     name = "",
@@ -24,14 +25,8 @@ export function MultiSelect({
     const [isChanged, setIsChanged] = useState(false);
 
     const options = new Map();
-    children.map((child) => {
-        options.set(child.props.value, child.props.children);
-    })
+    Children.map(children, child => options.set(child.props.value, child.props.children))
 
-    // console.log(options);
-
-
-    // console.log(children);
     function onChangeSelf(e) {
         setIsChanged(true);
         e.preventDefault;
@@ -78,25 +73,17 @@ export function MultiSelect({
         }
     }
 
-    function onInputSelf(e) {
-        // console.log(e);
-    }
-
-    function onInvalidSelf(e) {
-        // console.log(e);
-    }
-
     return (
         <div>
             <div className="multi-select-chips">
                 {selected.map((optionValue) => {
-                    return <div className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }}></i></div>
+                    return <div key={optionValue} className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }}></i></div>
                 })}
             </div>
             <select
                 multiple
                 id = {id}
-                className = {"multi-select " + className}
+                className = {"multi-select input input-text " + className}
                 value = {selected}
                 autoComplete = {autoComplete}
                 autoFocus = {autoFocus}
@@ -105,8 +92,8 @@ export function MultiSelect({
                 name = {name}
                 onChange = {onChangeSelf}
                 onChangeCapture = {onChangeCapture}
-                onInput = {onInputSelf}
-                onInvalid = {onInvalidSelf}
+                onInput = {onInput}
+                onInvalid = {onInvalid}
                 onInvalidCapture = {onInvalidCapture}
                 required = {required}
                 size = {size}

@@ -843,26 +843,22 @@ input[type="file"].input-required~.input-error {
 }
 
 .multi-select > option {
-  margin: calc(var(--spacing) * 1) 0;
-  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+  margin: calc(var(--spacing) * 0.5) 0;
+  padding: calc(var(--spacing) * 2) calc(var(--spacing) * 2);
   border: 2px solid transparent;
   border-radius: var(--radius-md);
   transition: 0.2s;
 }
 
 .multi-select > option:checked {
-  background-color: var(--color-white);
+  background-color: var(--color-primary-extralight);
   border: 2px solid var(--color-primary-dark);
 }
 
 .multi-select > option:hover {
-  background-color: var(--color-primary-extralight);
+  background-color: var(--color-white);
   border: 2px solid var(--color-primary-light);
   cursor: pointer;
-}
-
-.multi-select-chips {
-  margin: calc(var(--spacing) * 3) 0;
 }
 
 .multi-select-chip {
