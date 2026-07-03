@@ -359,15 +359,11 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
             </div>
             
 
-            <div className="">
+            <div className="md:col-span-2">
               <label htmlFor="languages">Languages</label>
-              <input
-                id="languages"
-                name="languages"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.languages} placeholder="Languages"
-              />
+              <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="4" >
+
+              </MultiSelect>
             </div>
             
             
@@ -423,9 +419,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                   <option value="Environment">Environment</option>
                   <option value="Internationalization">Internationalization</option>
                   <option value="Policies">Policies</option>
-                  <option value="Education">University Management</option>
-                  <option value="Education">Social Impact</option>
-                  <option value="Education">Rankings and Acreditations</option>
+                  <option value="University Management">University Management</option>
+                  <option value="Social Impact">Social Impact</option>
+                  <option value="Rankings and Acreditations">Rankings and Acreditations</option>
               </MultiSelect>
             </div>
 
@@ -472,9 +468,9 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
             </div>
             <div className="md:col-span-2">
               <label htmlFor="tf-interests">Are there any Task Forces you would be interested in joining?</label>
-              <select id="tf_interests" name="tf-interests" className="input input-text w-full" >
-                  
-              </select>
+              <MultiSelect id="tf-interests" name="tf-interests" value={draft?.tf_interests} className="w-full" size="4" >
+
+              </MultiSelect>
             </div>
           </div>
         </fieldset>
