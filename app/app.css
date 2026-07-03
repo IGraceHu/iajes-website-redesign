@@ -861,13 +861,27 @@ input[type="file"].input-required~.input-error {
   cursor: pointer;
 }
 
-.multi-select > option:checked:hover {
-  border: 2px solid var(--color-primary-light);
-
+.multi-select-chips {
+  margin: calc(var(--spacing) * 3) 0;
 }
 
-.multi-select > option:active {
+.multi-select-chip {
+  display: inline-flex;
+  align-items: center;
+  margin: calc(var(--spacing) * 1);
+  padding: 0 calc(var(--spacing) * 3);
+  border-radius: calc(infinity * 1px);
+
+  color: var(--color-white);
   background-color: var(--color-primary-dark);
+
+  
+  transition: 0.2s;
+}
+
+.multi-select-chip:hover {
+  background-color: var(--color-secondary-light);
+  cursor: pointer;
 
 }
 

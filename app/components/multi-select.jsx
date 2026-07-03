@@ -4,8 +4,7 @@ import { useState } from "react";
 export function MultiSelect({
     id = "",
     className = "",
-    value = null,
-    defaultValue = null,
+    value = [],
     autoComplete = null,
     autoFocus = false,
     children,
@@ -20,14 +19,23 @@ export function MultiSelect({
     required = false,
     size = 8
 }) {
+
     const [selected, setSelected] = useState(value);
     const [isChanged, setIsChanged] = useState(false);
+
+    const options = new Map();
+    children.map((child) => {
+        options.set(child.props.value, child.props.children);
+    })
+
+    // console.log(options);
+
 
     // console.log(children);
     function onChangeSelf(e) {
         setIsChanged(true);
         e.preventDefault;
-        
+
         if (e.target.selectedOptions.length == 0) {
             setSelected([])
         } else {
@@ -35,12 +43,7 @@ export function MultiSelect({
             for (let option of e.target.selectedOptions) {
                 clickedOptions.add(option.value);
             }
-            // console.log(selected);
-            // console.log(clickedOptions);
-            const selectedOptions = clickedOptions.symmetricDifference(new Set(selected));
-            // console.log("symdiff");
-            // console.log(selectedOptions);
-
+            const selectedOptions = new Set(selected).symmetricDifference(clickedOptions);
 
             setSelected(Array.from(selectedOptions));
         }
@@ -67,25 +70,34 @@ export function MultiSelect({
         }
     }
 
+    function removeOption(optionValue) {
+        const optionIndex = selected.indexOf(optionValue.toString());
+        if (optionIndex > -1) {
+            const newSelected = selected.toSpliced(optionIndex, 1);
+            setSelected(newSelected);
+        }
+    }
+
     function onInputSelf(e) {
-        console.log(e);
+        // console.log(e);
     }
 
     function onInvalidSelf(e) {
-        console.log(e);
+        // console.log(e);
     }
 
     return (
         <div>
-            <div>
-
+            <div className="multi-select-chips">
+                {selected.map((optionValue) => {
+                    return <div className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }}></i></div>
+                })}
             </div>
             <select
                 multiple
                 id = {id}
                 className = {"multi-select " + className}
                 value = {selected}
-                defaultValue = {defaultValue}
                 autoComplete = {autoComplete}
                 autoFocus = {autoFocus}
                 disabled = {disabled}
