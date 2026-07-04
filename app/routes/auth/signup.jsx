@@ -23,6 +23,25 @@ async function getUniversityDetailsByEmailDomain(emailDomain) {
 }
 
 
+async function syncNewsletterSubscription(email, wantsSubscribe) {
+  if (!email || !email.includes("@")) {
+    return null;
+  }
+
+  const response = await fetch("/profile-subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ op: wantsSubscribe ? "subscribe" : "unsubscribe", email }),
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result.message || "Unable to update newsletter subscription.");
+  }
+
+  return result;
+}
+
 /*
   Returns { success: true } once user is authenticated
   Returns { success: false, message: "..." } if an error has occurred
@@ -31,9 +50,9 @@ async function signUp(data) {
   try {
     const emailDomain = data.email.slice(data.email.indexOf("@"));
     const { data: verifiedEmailDomain, error: domainError } = await supabase
-    .from('verified email domains')
-    .select()
-    .eq('domain', emailDomain);
+      .from('verified email domains')
+      .select()
+      .eq('domain', emailDomain);
     if (domainError) {
       return domainError;
     }
@@ -93,6 +112,15 @@ async function signUp(data) {
       if (dbError) {
         console.error("Error syncing to users table:", dbError);
         return { success: false, message: "Account was created but failed to save user profile. Please try signing in." };
+      }
+
+      // If user opted into newsletter during sign up, ensure newsletter subscribers contains a confirmed row
+      if (data.subscribe) {
+        try {
+          await syncNewsletterSubscription(data.email, true);
+        } catch (err) {
+          console.error('Error syncing newsletter subscription on signup', err);
+        }
       }
     }
 

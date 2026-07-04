@@ -1,8 +1,27 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu } from "../components/menu.jsx";
 import { Footer } from "../components/footer.jsx"
 import { NewsletterList, Profile } from "../components/newsletter-components.jsx";
-import { NavLink } from "react-router";
+import { Form, NavLink, useActionData } from "react-router";
+import { checkCurrentAuth } from "../helpers/permissions";
+import { publishNewsletter } from "../server/newsletter.server.js";
+
+export async function action({ request }) {
+    const formData = await request.formData();
+    const newsletterId = formData.get("newsletterId");
+
+    if (!newsletterId) {
+        return { success: false, message: "Missing newsletter selection." };
+    }
+
+    try {
+        await publishNewsletter(newsletterId);
+        return { success: true, message: "Test newsletter email sent to subscribed users." };
+    } catch (error) {
+        console.error(error);
+        return { success: false, message: "Unable to send the test newsletter email right now." };
+    }
+}
 
 export function meta() {
     return [{ title: "IAJES — Newsletter Drafts" }];
@@ -34,7 +53,13 @@ export default function NewsletterDrafts() {
 
     const [mode, setMode] = useState("member"); // member | manager | admin
     const [page, setPage] = useState(1);
+    const [isNewsletterAdmin, setIsNewsletterAdmin] = useState(false);
+    const actionData = useActionData();
     const perPage = 3;
+
+    useEffect(() => {
+        return checkCurrentAuth(setIsNewsletterAdmin, ["admin-newsletter"]);
+    }, []);
 
     function deleteNewsletter(id) {
         if (!window.confirm("Delete draft newsletter?")) return;
@@ -74,7 +99,7 @@ export default function NewsletterDrafts() {
     }
 
     function publishDraft(draftId) {
-        if (mode !== 'admin') {
+        if (!isNewsletterAdmin) {
             alert('You do not have permission to publish.');
             return;
         }
@@ -88,73 +113,89 @@ export default function NewsletterDrafts() {
     return (
         <div className="bg-white items-center text-black">
             <Menu />
-            <div className="py-4 container mx-auto flex items-center justify-end space-x-2 hidden">
-                <div className="text-sm text-gray-600">Debug mode:</div>
-                <button className={`button ${mode === 'member' ? 'button' : 'button-light'}`} onClick={() => setMode('member')}>Member</button>
-                <button className={`button ${mode === 'manager' ? 'button' : 'button-light'}`} onClick={() => setMode('manager')}>Task Force Admin / Website Manager</button>
-                <button className={`button ${mode === 'admin' ? 'button' : 'button-light'}`} onClick={() => setMode('admin')}>Admin</button>
-            </div>
+            {isNewsletterAdmin ? (
+                <>
+                    <div className="py-4 container mx-auto hidden items-center justify-end space-x-2">
+                        <div className="text-sm text-gray-600">Debug mode:</div>
+                        <button className={`button ${mode === 'member' ? 'button' : 'button-light'}`} onClick={() => setMode('member')}>Member</button>
+                        <button className={`button ${mode === 'manager' ? 'button' : 'button-light'}`} onClick={() => setMode('manager')}>Task Force Admin / Website Manager</button>
+                        <button className={`button ${mode === 'admin' ? 'button' : 'button-light'}`} onClick={() => setMode('admin')}>Admin</button>
+                    </div>
 
-            <main className="py-20 container mx-auto min-h-[60vh]">
-                <h2 className="text-2xl font-semibold mb-4">Newsletter Drafts {/*mode === 'admin' ? 'Admin' : mode === 'manager' ? 'Manager' : 'Member'*/}</h2>
+                    <main className="py-20 container mx-auto min-h-[60vh]">
+                        <h2 className="text-2xl font-semibold mb-4">Newsletter Drafts {/*mode === 'admin' ? 'Admin' : mode === 'manager' ? 'Manager' : 'Member'*/}</h2>
 
-                <div className="space-y-6">
-                    {paged.map((d) => (
-                        <section key={d.id} className="p-4 border-2 border-gray-light rounded-md">
-                            <div className="flex justify-between items-center mb-3">
-                                <div>
-                                    <div className="text-sm text-gray-500">
-                                        <input className="input input-text mr-3" value={d.title} onChange={(e) => updateDraftField(d.id, 'title', e.target.value)} placeholder="Title" />
-                                        <input className="input input-text" value={d.deadline} onChange={(e) => updateDraftField(d.id, 'deadline', e.target.value)} placeholder="Deadline (MM/DD/YY)" />
-                                    </div>
-                                </div>
-                                <div className="flex items-center space-x-2">
-                                    <button onClick={() => deleteNewsletter(d.id)} className="text-red-600 cursor-pointer">Delete Draft</button>
-                                    <button onClick={() => addArticle(d.id)} className="button">Add Article</button>
-                                    <button onClick={() => publishDraft(d.id)} disabled={mode !== 'admin'} className={`${mode !== 'admin' ? 'button button-light button-disabled' : 'button'}`}>Publish Newsletter</button>
-                                </div>
+                        {actionData?.message && (
+                            <div className={`mb-4 rounded-md border px-4 py-3 text-sm ${actionData.success ? "border-primary-dark/30 bg-primary-light/20 text-primary-dark" : "border-red-300 bg-red-50 text-red-700"}`}>
+                                {actionData.message}
                             </div>
+                        )}
 
-                            <div className="grid grid-cols-1 gap-4">
-                                {/* <h4 className="mb-2">Articles</h4> */}
-                                <div className="flex flex-col gap-2">
-                                    {d.articles.map((a, idx) => (
-                                        <div key={a.id} className="flex items-center justify-between p-2 border-2 border-gray-light rounded-md shadow-sm">
-                                            <div>
-                                                <div className="font-semibold">{a.title} {idx === 0 && (<span className="text-xs text-gray-500">· Featured</span>)}</div>
-                                                <div className="text-xs text-gray-500">Last edited: {a.lastEdited || '—'}</div>
-                                            </div>
-
-                                            <div className="flex gap-3">
-                                                <button><NavLink to={`/newsletter/drafts/${d.id}/edit/${a.id}`} className="text-primary-dark">Edit</NavLink></button>
-                                                <button onClick={() => deleteArticle(d.id, a.id)} className="text-red-600 cursor-pointer">Delete</button>
-                                                <div className="flex flex-col">
-                                                    <button onClick={() => moveArticle(d.id, idx, -1)} className="text-gray-dark cursor-pointer" title="Move up">▲</button>
-                                                    <button onClick={() => moveArticle(d.id, idx, 1)} className="text-gray-dark cursor-pointer" title="Move down">▼</button>
-                                                </div>
+                        <div className="space-y-6">
+                            {paged.map((d) => (
+                                <section key={d.id} className="p-4 border-2 border-gray-light rounded-md">
+                                    <div className="flex justify-between items-center mb-3">
+                                        <div>
+                                            <div className="text-sm text-gray-500">
+                                                <input className="input input-text mr-3" value={d.title} onChange={(e) => updateDraftField(d.id, 'title', e.target.value)} placeholder="Title" />
+                                                <input className="input input-text" value={d.deadline} onChange={(e) => updateDraftField(d.id, 'deadline', e.target.value)} placeholder="Deadline (MM/DD/YY)" />
                                             </div>
                                         </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </section>
-                    ))}
-                </div>
+                                        <div className="flex items-center space-x-2">
+                                            <button onClick={() => deleteNewsletter(d.id)} className="text-red-600 cursor-pointer">Delete Draft</button>
+                                            <button onClick={() => addArticle(d.id)} className="button">Add Article</button>
+                                            <Form method="post" className="inline-flex">
+                                                <input type="hidden" name="newsletterId" value={d.id} />
+                                                <button type="submit" disabled={!isNewsletterAdmin} className={`${!isNewsletterAdmin ? 'button button-light button-disabled' : 'button'}`}>
+                                                    Publish Test Newsletter
+                                                </button>
+                                            </Form>
+                                            <button onClick={() => publishDraft(d.id)} disabled={!isNewsletterAdmin} className={`${!isNewsletterAdmin ? 'button button-light button-disabled' : 'button'}`}>Publish Newsletter</button>
+                                        </div>
+                                    </div>
 
-                <div className="mt-5 grid grid-cols-2 gap-5">
-                    <button onClick={addNewsletter} className="button button-light w-full">Create Newsletter <i className="bi bi-plus-lg"></i></button>
-                    <button className="button button-light w-full flex justify-center gap-2">Start from Upload <i className="bi bi-upload"></i></button>
-                </div>
-                <div className="mt-5 flex justify-center space-x-2">
-                    <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button"><i className="bi bi-arrow-left-short"></i> Prev</button>
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                        <button key={p} onClick={() => setPage(p)} className={`button ${p === page ? 'font-semibold' : 'button-light'}`}>{p}</button>
-                    ))}
-                    <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button">Next <i className="bi bi-arrow-right-short"></i></button>
-                </div>
-            </main>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {/* <h4 className="mb-2">Articles</h4> */}
+                                        <div className="flex flex-col gap-2">
+                                            {d.articles.map((a, idx) => (
+                                                <div key={a.id} className="flex items-center justify-between p-2 border-2 border-gray-light rounded-md shadow-sm">
+                                                    <div>
+                                                        <div className="font-semibold">{a.title} {idx === 0 && (<span className="text-xs text-gray-500">· Featured</span>)}</div>
+                                                        <div className="text-xs text-gray-500">Last edited: {a.lastEdited || '—'}</div>
+                                                    </div>
 
-            <Footer />
+                                                    <div className="flex gap-3">
+                                                        <button><NavLink to={`/newsletter/drafts/${d.id}/edit/${a.id}`} className="text-primary-dark">Edit</NavLink></button>
+                                                        <button onClick={() => deleteArticle(d.id, a.id)} className="text-red-600 cursor-pointer">Delete</button>
+                                                        <div className="flex flex-col">
+                                                            <button onClick={() => moveArticle(d.id, idx, -1)} className="text-gray-dark cursor-pointer" title="Move up">▲</button>
+                                                            <button onClick={() => moveArticle(d.id, idx, 1)} className="text-gray-dark cursor-pointer" title="Move down">▼</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </section>
+                            ))}
+                        </div>
+
+                        <div className="mt-5 grid grid-cols-2 gap-5">
+                            <button onClick={addNewsletter} className="button button-light w-full">Create Newsletter <i className="bi bi-plus-lg"></i></button>
+                            <button className="button button-light w-full flex justify-center gap-2">Start from Upload <i className="bi bi-upload"></i></button>
+                        </div>
+                        <div className="mt-5 flex justify-center space-x-2">
+                            <button onClick={() => setPage((p) => Math.max(1, p - 1))} className="button"><i className="bi bi-arrow-left-short"></i> Prev</button>
+                            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                                <button key={p} onClick={() => setPage(p)} className={`button ${p === page ? 'font-semibold' : 'button-light'}`}>{p}</button>
+                            ))}
+                            <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} className="button">Next <i className="bi bi-arrow-right-short"></i></button>
+                        </div>
+                    </main>
+                </>
+            ) : (
+                <Footer />
+            )}
         </div>
     );
 }

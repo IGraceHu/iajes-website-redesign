@@ -7,6 +7,7 @@ import { Footer } from "../components/footer";
 import { Popup, PopupForm } from "../components/popup";
 import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import "../styles/profile.css";
+import { updateRequired } from "../helpers/form";
 
 export function meta({ loaderData }) {
   if (loaderData?.person?.fname) {
@@ -16,10 +17,10 @@ export function meta({ loaderData }) {
     ];
   }
   return [
-      { title: "Profile" },
-      { name: "", content: "" },
-    ];
-  
+    { title: "Profile" },
+    { name: "", content: "" },
+  ];
+
 }
 
 const roleNames = new Map([
@@ -136,12 +137,50 @@ async function updateProfileImage(userId, imageUrl) {
 export async function loader({ params }) {
   const person = await getProfile(params.id);
   if (!person) {
-        throw new Response("Profile not found", { status: 404 });
-    }
+    throw new Response("Profile not found", { status: 404 });
+  }
   const taskForceList = await getTaskForces();
   const universityList = await getUniversities();
   universityList.push("Other");
   return { person: person, taskForceList: taskForceList, universityList: universityList };
+}
+
+async function syncNewsletterSubscription(email, wantsSubscribe) {
+  if (!email || !email.includes("@")) {
+    return null;
+  }
+
+  const response = await fetch("/profile-subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ op: wantsSubscribe ? "subscribe" : "unsubscribe", email }),
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result.message || "Unable to update newsletter subscription.");
+  }
+
+  return result;
+}
+
+async function checkNewsletterSubscription(email) {
+  if (!email || !email.includes("@")) {
+    return false;
+  }
+
+  const response = await fetch("/profile-subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ op: "check", email }),
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(result.message || "Unable to check newsletter subscription.");
+  }
+
+  return !!result.confirmed_at;
 }
 
 function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityList, currentUserId }) {
@@ -149,6 +188,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
   const [draft, setDraft] = useState({});
+  const [subscribeChecked, setSubscribeChecked] = useState(false);
 
   async function validate(formData) {
     let isValidated = true;
@@ -173,6 +213,17 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
     }
 
     const update = await updateProfile(userId, formData);
+    try {
+      const wantsSubscribe = formData.get("subscribe-news") === "on";
+      const email = (draft?.email || "").trim().toLowerCase();
+      const result = await syncNewsletterSubscription(email, wantsSubscribe);
+      if (result?.success) {
+        alert(wantsSubscribe ? "Successfully subscribed to IAJES News." : "Successfully unsubscribed from IAJES News.");
+      }
+    } catch (err) {
+      console.error('Subscription update error', err);
+    }
+
     if (update === null) {
       setShowPopup(false);
       navigate("/profile/" + userId);
@@ -185,6 +236,15 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
     const profileInfo = await getProfile(userId);
     setDraft(profileInfo);
     setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
+    try {
+      const email = (profileInfo?.email || "").trim().toLowerCase();
+      if (email) {
+        const subscribed = await checkNewsletterSubscription(email);
+        setSubscribeChecked(subscribed);
+      }
+    } catch (err) {
+      console.error('Error checking subscription', err);
+    }
   }
 
   useEffect(() => {
@@ -196,10 +256,10 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   }, [showPopup])
 
   function checkEmpty(value, inputName) {
-      const updatedFormRequired = updateRequired(value, inputName, formRequired);
-      if (updatedFormRequired != formRequired) {
-        setFormRequired(updatedFormRequired);
-      }
+    const updatedFormRequired = updateRequired(value, inputName, formRequired);
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
   }
 
   function urlChange(inputName) {
@@ -212,8 +272,8 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
 
   return (
     <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
-       <h4>Edit Profile</h4>
-       <div className="flex flex-col gap-6">
+      <h4>Edit Profile</h4>
+      <div className="flex flex-col gap-6">
         <fieldset>
           <div className="text-sm font-semibold text-secondary-dark">Personal Information</div>
           <div className="mt-3 grid gap-5 md:grid-cols-2">
@@ -240,12 +300,21 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               <div className="input-error">This field is required.</div>
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="allow-contact" className="checkbox">
-                  <input id="allow-contact" name="allow-contact" type="checkbox" 
-                         className={""} defaultChecked={draft.allow_contact}
-                         disabled={currentUserId != userId}
-                          /><p>Allow site visitors without an account and unverified IAJES members to contact you?</p>
-              </label>
+              <div className="flex flex-col md:flex-row md:items-center md:gap-6">
+                <label htmlFor="allow-contact" className="checkbox">
+                  <input id="allow-contact" name="allow-contact" type="checkbox"
+                    className={""} defaultChecked={draft.allow_contact}
+                    disabled={currentUserId != userId}
+                  /><p>Allow site visitors without an account and unverified IAJES members to contact you?</p>
+                </label>
+
+                <label htmlFor="subscribe-news" className="checkbox">
+                  <input id="subscribe-news" name="subscribe-news" type="checkbox"
+                    className={""} checked={subscribeChecked} onChange={(e) => setSubscribeChecked(e.target.checked)}
+                    disabled={currentUserId != userId}
+                  /><p>Subscribe to IAJES News</p>
+                </label>
+              </div>
               <div className="w-full p-2 text-sm text-disabled-light italic">All IAJES members with verified accounts will be able to contact you.</div>
             </div>
             <div className="">
@@ -262,16 +331,16 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               <p>Banner Type:</p>
               <div className="mt-1">
                 <label htmlFor="banner-type-0" className="radio-button gray">
-                      <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0}/><p>Gray</p>
+                  <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0} /><p>Gray</p>
                 </label>
                 <label htmlFor="banner-type-1" className="radio-button green">
-                    <input id="banner-type-1" type="radio" name="banner-type" value="1" defaultChecked={draft.banner_type == 1}/><p>Green</p>
+                  <input id="banner-type-1" type="radio" name="banner-type" value="1" defaultChecked={draft.banner_type == 1} /><p>Green</p>
                 </label>
                 <label htmlFor="banner-type-2" className="radio-button blue">
-                    <input id="banner-type-2" type="radio" name="banner-type" value="2" defaultChecked={draft.banner_type == 2}/><p>Blue</p>
+                  <input id="banner-type-2" type="radio" name="banner-type" value="2" defaultChecked={draft.banner_type == 2} /><p>Blue</p>
                 </label>
                 <label htmlFor="banner-type-3" className="radio-button dark-blue">
-                    <input id="banner-type-3" type="radio" name="banner-type" value="3" defaultChecked={draft.banner_type == 3}/><p>Dark Blue</p>
+                  <input id="banner-type-3" type="radio" name="banner-type" value="3" defaultChecked={draft.banner_type == 3} /><p>Dark Blue</p>
                 </label>
               </div>
             </div>
@@ -308,7 +377,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 name="job-position"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.job_position}  placeholder="Job/Position"
+                defaultValue={draft.job_position} placeholder="Job/Position"
               />
             </div>
             <div>
@@ -328,7 +397,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 id="institution"
                 className="input-text w-full"
               >
-                { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.institution}>{universityObj.university}</option>) : <></>}
+                {(universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.institution}>{universityObj.university}</option>) : <></>}
               </datalist>
             </div>
             <div>
@@ -344,13 +413,13 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
             <div>
               <label htmlFor="region">Region</label>
               <select id="region" name="region" className="input input-text w-full" >
-                  <option value="">Select a region</option>
-                  <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
-                  <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
-                  <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
-                  <option value="KIRCHER" selected={"KIRCHER" == draft.region}>KIRCHER</option>
-                  <option value="AJCU-AP" selected={"AJCU-AP" == draft.region}>AJCU - AP</option>
-                  <option value="AJCU-AM" selected={"AJCU-AM" == draft.region}>AJCU - AM</option>
+                <option value="">Select a region</option>
+                <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
+                <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
+                <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
+                <option value="KIRCHER" selected={"KIRCHER" == draft.region}>KIRCHER</option>
+                <option value="AJCU-AP" selected={"AJCU-AP" == draft.region}>AJCU - AP</option>
+                <option value="AJCU-AM" selected={"AJCU-AM" == draft.region}>AJCU - AM</option>
               </select>
             </div>
             <div className="md:col-span-2">
@@ -373,7 +442,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               <label htmlFor="task-force">Task Force</label>
               <select id="task-force" name="task-force" className="input input-text w-full" >
                 <option value="">None</option>
-                { (taskForceList) ? taskForceList.map((taskForce) => <option key={taskForce.url} value={taskForce.name} selected={taskForce.name == draft.task_force}>{taskForce.name}</option>) : <></>}
+                {(taskForceList) ? taskForceList.map((taskForce) => <option key={taskForce.url} value={taskForce.name} selected={taskForce.name == draft.task_force}>{taskForce.name}</option>) : <></>}
               </select>
             </div>
             <div>
@@ -502,11 +571,11 @@ export default function ProfileRoute({ loaderData }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUserId(session?.user.id ?? null);
       currentHasPermissions(session?.user.id).then(
-          function (hasPermissions) { setIsAdmin(hasPermissions); }
+        function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
       if (session?.user.id) {
         getUserVerified(session?.user.id).then(
-          function (verified) {setIsVerified(verified)}
+          function (verified) { setIsVerified(verified) }
         )
       }
     });
@@ -515,16 +584,16 @@ export default function ProfileRoute({ loaderData }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user.id ?? null);
       currentHasPermissions(session?.user.id).then(
-          function (hasPermissions) { setIsAdmin(hasPermissions); }
+        function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
       if (session?.user.id) {
         getUserVerified(session?.user.id).then(
-          function (verified) {setIsVerified(verified)}
+          function (verified) { setIsVerified(verified) }
         )
       }
       if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
-      setShowPopup(true);
-    }
+        setShowPopup(true);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -699,7 +768,7 @@ export default function ProfileRoute({ loaderData }) {
         </div>
         <div className={"relative h-[220px] rounded-md overflow-hidden bg" + bannerClass} aria-label="Profile banner placeholder">
           <div className={"relative w-full opacity-50"}>
-              <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
+            <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
           </div>
           {(currentUserId == profile.id) || isAdmin ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
@@ -712,7 +781,7 @@ export default function ProfileRoute({ loaderData }) {
 
         {/* This makes the colors able to be used by border cuz Tailwind gets confused if it isnt explicitly written */}
         <span className="border-primary-dark border-secondary-light border-secondary-dark"></span>
-        
+
         <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-16 shadow-sm relative z-10 border" + bannerClass}>
           <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
             <div className="flex flex-col items-center text-center">
@@ -734,28 +803,28 @@ export default function ProfileRoute({ loaderData }) {
               </h4>
               <div className="text-center">
                 {profile.roles.map((role, idx) => {
-                    if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
-                        return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 last:me-0 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
-                    }
+                  if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
+                    return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 last:me-0 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
+                  }
                 })}
               </div>
               <p className="mt-1 text-sm text-gray-dark/70">
-                {profile.job_position}{ profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
+                {profile.job_position}{profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
               </p>
               <p className="text-sm italic text-gray-dark/60">{profile.tagline}</p>
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="flex flex-col w-full gap-4 sm:flex-row">
-                { profile?.task_force &&
+                {profile?.task_force &&
                   <a href={"/task-forces/" + userTaskForceUrl} className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-sm hover:border-secondary-light">
                     <p className="font-semibold text-secondary-dark">{profile.task_force}</p>
-                    { profile?.task_force_role &&
-                    <p className="mt-1 text-gray-dark/70">{profile.task_force_role}</p> }
+                    {profile?.task_force_role &&
+                      <p className="mt-1 text-gray-dark/70">{profile.task_force_role}</p>}
                   </a>
                 }
 
-                { (profile?.allow_contact || ((currentUserId != null) && (isVerified))) &&
+                {(profile?.allow_contact || ((currentUserId != null) && (isVerified))) &&
                   <button
                     type="button"
                     className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"
@@ -774,12 +843,12 @@ export default function ProfileRoute({ loaderData }) {
 
             <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
               <div className="grid gap-3 text-sm">
-                { profile.region && <InfoRow label="Region" value={profile.region} /> }
-                { profile.country && <InfoRow label="Country" value={profile.country} /> }
-                { profile.languages && <InfoRow label="Languages" value={profile.languages} /> }
-                { profile.institution && <InfoRow label="Institution" value={profile.institution} /> }
-                { profile.major && <InfoRow label="Academic Focus" value={profile.major} /> }
-                { profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} /> }
+                {profile.region && <InfoRow label="Region" value={profile.region} />}
+                {profile.country && <InfoRow label="Country" value={profile.country} />}
+                {profile.languages && <InfoRow label="Languages" value={profile.languages} />}
+                {profile.institution && <InfoRow label="Institution" value={profile.institution} />}
+                {profile.major && <InfoRow label="Academic Focus" value={profile.major} />}
+                {profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} />}
               </div>
 
               <div className="flex items-center gap-4 text-xl text-secondary-light">
@@ -809,7 +878,7 @@ function InfoRow({ label, value }) {
   }
 }
 
-function IconSquare({ className, title, icon, onClick, small=false, children }) {
+function IconSquare({ className, title, icon, onClick, small = false, children }) {
   const size = small ? "h-10 w-10 " : "h-12 min-w-12 ";
   return (
     <button
@@ -826,7 +895,7 @@ function IconSquare({ className, title, icon, onClick, small=false, children }) 
 
 function SocialIcon({ label, href, icon }) {
   if (href !== null && href !== "") {
-    
+
     return (
       <a
         href={href}

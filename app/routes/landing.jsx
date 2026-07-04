@@ -1,10 +1,11 @@
-import { useState, useEffect, useActionState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../supabase";
 import { Link, useNavigate } from "react-router";
 import { Menu } from "../components/menu";
 import { Popup, PopupForm } from "../components/popup";
 import { Footer } from "../components/footer";
 import { H1Middle, H1Left } from "../components/graphics";
+import { SubscribeLanding } from "../components/subscribe";
 import { updateRequired } from "../helpers/form";
 import { checkCurrentAuth } from "../helpers/permissions";
 import "../styles/landing.css";
@@ -429,8 +430,8 @@ export default function Landing({ loaderData }) {
   const highlightList = hasHighlights ? loaderData : [];
 
   useEffect(() => {
-        return checkCurrentAuth(setIsAdmin, "admin-resources")
-    }, []);
+    return checkCurrentAuth(setIsAdmin, "admin-resources")
+  }, []);
 
   return (
     <>
@@ -470,13 +471,7 @@ export default function Landing({ loaderData }) {
             </div>
           }
 
-          <div className="h-100 my-20 flex flex-col justify-center items-center text-center">
-            <h4 className="text-glow">Subscribe to our Newsletter</h4>
-            <form className="flex flex-col justify-center items-center">
-              <input name="subscribe-email" type="email" className="box-glow input input-text md:w-md w-sm" placeholder="Enter email here..." />
-              <input type="submit" className="box-glow button w-xs m-5" value="Subscribe" />
-            </form>
-          </div>
+          <SubscribeLanding />
 
 
 
