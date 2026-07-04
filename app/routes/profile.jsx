@@ -105,7 +105,7 @@ const tempUserData = {
 
   tf_interests: [],
 
-  links: {},
+  links: [],
   resume_pdf_url: ""
 }
 
@@ -219,17 +219,74 @@ export async function loader({ params }) {
   return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
 
+function LinksEdit({ id, links, setLinks }) {
+  const [linkRequired, setLinkRequired] = useState(false);
+
+    function removeLink(e) {
+        e.preventDefault();
+        setLinks(links.toSpliced(id, 1));
+    }
+
+    function handleTypeChange(e) {
+        setLinks(links.toSpliced(id, 1, {
+            ...links[id],
+            type: e.target.value
+        }));
+    }
+
+    function handleURLChange(e) {
+        setLinks(links.toSpliced(id, 1, {
+            ...links[id],
+            url: e.target.value
+        }));
+        setLinkRequired(e.target.value.length == 0);
+    }
+
+    return (
+        <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
+            <div className="text-sm mb-1 flex justify-between">
+                <div className="text-secondary-dark">Social Link</div>
+                <button className="text-error font-semibold hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeLink(e)}}><i className="bi bi-trash"></i> Remove Link</button>
+            </div>
+            <div className="md:grid grid-cols-[200px_auto] flex flex-col gap-x-5 gap-y-2 pb-2">
+              <div>
+                  <label htmlFor={"link-type-" + id}>Social Link Type:</label><br />
+                  <select id={"link-type-" + id} name={"link-type-" + id} type="text"
+                      className={"input input-text w-full"}
+                      placeholder="Link Type"
+                      selected={links[id].type || "personal"}
+                      onChange={(e) => {handleTypeChange(e)}}>
+                    <option value="personal">Personal Website</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="facebook">Facebook</option>
+                  </select>
+              </div>
+              <div>
+                  <label htmlFor={"link-url-" + id}>Social Link URL:</label><br />
+                  <input id={"link-url-" + id} name={"link-url-" + id} type="text"
+                      className={"input input-text w-full " + (linkRequired && "input-required")}
+                      placeholder="Link URL"
+                      value={links[id].url}
+                      onChange={(e) => {handleURLChange(e)}} />
+                  <div className="input-error">This field is required.</div>
+              </div>
+            </div>
+        </div>
+    )
+}
+
 function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
   const [hasError, setHasError] = useState(false);
   const [draft, setDraft] = useState({});
-
-  console.log(taskForceList);
-  console.log(universityList);
+  const [links, setLinks] = useState([])
 
   async function validate(formData) {
     console.log(formData);
+    console.log(links);
     return false;
 
     let isValidated = true;
@@ -260,6 +317,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   async function loadInfo() {
     const profileInfo = await getProfile(userId);
     setDraft(profileInfo);
+    setLinks(profileInfo.links);
     setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
   }
 
@@ -278,13 +336,10 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
       }
   }
 
-  function urlChange(inputName) {
-    const updatedFormRequired = structuredClone(formRequired);
-    updatedFormRequired[inputName] = false;
-    if (updatedFormRequired != formRequired) {
-      setFormRequired(updatedFormRequired);
+  function addLink(e) {
+        e.preventDefault();
+        setLinks([...links, {url: "", type: "personal"}]);
     }
-  }
 
   return (
     <PopupForm id="profile-edit" className="w-[80vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
@@ -490,6 +545,10 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
         <fieldset className="border-t-2 border-gray-light pt-4">
           <div className="text-sm font-semibold text-secondary-dark">Social</div>
           <div className="mt-3 grid gap-4">
+            <div>
+                { links.map((link, idx) => <LinksEdit key={idx} id={idx} links={links} setLinks={setLinks} />)}
+            </div>
+            <button className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
             <label>
               Resume
               <br/>
