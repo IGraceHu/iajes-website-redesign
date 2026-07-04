@@ -45,7 +45,7 @@ const roleNames = new Map([
   ["admin-university", "University Representative"]
 ]);
 
-const engineeringData = new Map([
+const ENGINEERINGDATA = new Map([
   ['Aerospace Engineering', ['Aerodynamics', 'Space Systems', 'Aircraft Structures', 'Propulsion Systems', 'Autonomous Flight'] ],
   ['Artificial Intelligence Engineering', ['Machine Learning', 'Generative AI', 'Computer Vision', 'Natural Language Processing', 'Responsible AI'] ],
   ['Automotive Engineering', ['Electric Vehicles', 'Autonomous Driving', 'Vehicle Dynamics', 'Powertrain Systems', 'Connected Mobility'] ],
@@ -79,9 +79,9 @@ const engineeringData = new Map([
   ['Other', [] ]
 ]);
 
-const countryData = ['Afghanistan', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'The Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'British Virgin Islands', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde (Cape Verde)', 'Cambodia', 'Cameroon', 'Canada', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Democratic Republic of the Congo', 'Republic of the Congo', 'Cook Islands', 'Costa Rica', 'Côte d’Ivoire', 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor (Timor-Leste)', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini (Swaziland)', 'Ethiopia', 'Falkland Islands', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'Gabon', 'The Gambia', 'Gaza Strip', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'North Korea', 'South Korea', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar (Burma)', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'North Macedonia', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn Island', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Helena', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint-Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'Spain', 'Sri Lanka', 'South Sudan', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Turks and Caicos Islands', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Virgin Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Wallis and Futuna', 'West Bank', 'Western Sahara', 'Yemen', 'Zambia', 'Zimbabwe'];
+const COUNTRYDATA = ['Afghanistan', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'The Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'British Virgin Islands', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde (Cape Verde)', 'Cambodia', 'Cameroon', 'Canada', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Democratic Republic of the Congo', 'Republic of the Congo', 'Cook Islands', 'Costa Rica', 'Côte d’Ivoire', 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor (Timor-Leste)', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini (Swaziland)', 'Ethiopia', 'Falkland Islands', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'Gabon', 'The Gambia', 'Gaza Strip', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'North Korea', 'South Korea', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar (Burma)', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'North Macedonia', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn Island', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Helena', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint-Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'Spain', 'Sri Lanka', 'South Sudan', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Turks and Caicos Islands', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Virgin Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Wallis and Futuna', 'West Bank', 'Western Sahara', 'Yemen', 'Zambia', 'Zimbabwe'];
 
-const languageData = ['Afrikaans', 'Albanian', 'Amharic', 'Arabic', 'Armenian (Eastern)', 'Armenian (Western)', 'Azerbaijani (Azeri)', 'Bassa', 'Belarusian', 'Bengali', 'Bosnian', 'Braille', 'Bulgarian', 'Burmese', 'Cambodian (Khmer)', 'Cape Verde Creole', 'Cebuano', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Chuukese', 'Croatian', 'Czech', 'Danish', 'Dari', 'Dutch', 'English', 'Estonian', 'Farsi (Persian)', 'Finnish', 'Flemmish', 'French (Canada)', 'French (France)', 'Fulani', 'Georgian', 'German', 'Greek', 'Gujarati', 'Haitian Creole', 'Hakha Chin', 'Hakka (Chinese)', 'Hebrew', 'Hindi', 'Hmong', 'Hungarian', 'Icelandic', 'Igbo/Ibo', 'Ilocano', 'Ilonggo (Hiligaynon)', 'Indonesian', 'Italian', 'Japanese', 'Javanese', 'Kannada', 'Karen', 'Kazakh', 'Kinyarwanda', 'Kirundi', 'Korean', 'Kurdish (Kurmanji dialect)', 'Kurdish (Sorani dialect)', 'Kyrgyz/Kirgiz', 'Lao (Laotian)', 'Latvian', 'Lithuanian', 'Macedonian', 'Malay (Malaysian)', 'Mandinka', 'Marathi', 'Marshallese', 'Mien', 'Mongolian', 'Montenegrin', 'Navajo', 'Nepali', 'Norwegian', 'Oromo', 'Pashto', 'Polish', 'Portuguese (Brazil)', 'Portuguese (Portugal)', 'Punjabi', 'Rohingya', 'Romanian (Moldavan)', 'Russian', 'Serbian', 'Slovak', 'Slovenian', 'Somali', 'Spanish (Castilian)', 'Spanish (Latin American)', 'Spanish (other varieties)', 'Swahili', 'Swedish', 'Tagalog', 'Tamil', 'Telugu', 'Thai', 'Tibetan', 'Tigrinya', 'Turkish', 'Ukrainian', 'Urdu', 'Uzbek', 'Vietnamese', 'Wolof', 'Yoruba'];
+const LANGUAGEDATA = ['Afrikaans', 'Albanian', 'Amharic', 'Arabic', 'Armenian (Eastern)', 'Armenian (Western)', 'Azerbaijani (Azeri)', 'Bassa', 'Belarusian', 'Bengali', 'Bosnian', 'Braille', 'Bulgarian', 'Burmese', 'Cambodian (Khmer)', 'Cape Verde Creole', 'Cebuano', 'Chinese (Simplified)', 'Chinese (Traditional)', 'Chuukese', 'Croatian', 'Czech', 'Danish', 'Dari', 'Dutch', 'English', 'Estonian', 'Farsi (Persian)', 'Finnish', 'Flemmish', 'French (Canada)', 'French (France)', 'Fulani', 'Georgian', 'German', 'Greek', 'Gujarati', 'Haitian Creole', 'Hakha Chin', 'Hakka (Chinese)', 'Hebrew', 'Hindi', 'Hmong', 'Hungarian', 'Icelandic', 'Igbo/Ibo', 'Ilocano', 'Ilonggo (Hiligaynon)', 'Indonesian', 'Italian', 'Japanese', 'Javanese', 'Kannada', 'Karen', 'Kazakh', 'Kinyarwanda', 'Kirundi', 'Korean', 'Kurdish (Kurmanji dialect)', 'Kurdish (Sorani dialect)', 'Kyrgyz/Kirgiz', 'Lao (Laotian)', 'Latvian', 'Lithuanian', 'Macedonian', 'Malay (Malaysian)', 'Mandinka', 'Marathi', 'Marshallese', 'Mien', 'Mongolian', 'Montenegrin', 'Navajo', 'Nepali', 'Norwegian', 'Oromo', 'Pashto', 'Polish', 'Portuguese (Brazil)', 'Portuguese (Portugal)', 'Punjabi', 'Rohingya', 'Romanian (Moldavan)', 'Russian', 'Serbian', 'Slovak', 'Slovenian', 'Somali', 'Spanish (Castilian)', 'Spanish (Latin American)', 'Spanish (other varieties)', 'Swahili', 'Swedish', 'Tagalog', 'Tamil', 'Telugu', 'Thai', 'Tibetan', 'Tigrinya', 'Turkish', 'Ukrainian', 'Urdu', 'Uzbek', 'Vietnamese', 'Wolof', 'Yoruba'];
 
 const tempUserData = {
   fname: "First",
@@ -134,12 +134,40 @@ async function getUniversities() {
 }
 
 async function getProfile(userId) {
-  return tempUserData;
   const { data, error } = await supabase
     .from('users')
     .select()
     .eq('id', userId);
-  return data[0] || error;
+  if (data[0]) {
+    const profile = data[0];
+    profile.fname = profile.fname || "";
+    profile.lname = profile.lname || "";
+    profile.roles = profile.roles || ["member"];
+    profile.is_seen_by_visitors = profile.is_seen_by_visitors || true;
+    profile.is_contact_by_visitors = profile.is_contact_by_visitors || true;
+    profile.is_contact_by_members = profile.is_contact_by_members || true;
+    profile.banner_type = profile.banner_type || 1; 
+    profile.biography = profile.biography || "";
+
+    profile.engineering_type = profile.engineering_type || [];
+    profile.position_type = profile.position_type || [];
+    profile.title = profile.title || ""
+    profile.tech_interests = profile.tech_interests || [];
+    profile.general_interests = profile.general_interests || [];
+    profile.is_get_interest_info = profile.is_get_interest_info || false;
+    
+    profile.university = profile.university || "";
+    profile.country = profile.country || "";
+    profile.region = profile.region || "";
+
+    profile.tf_interests = profile.tf_interests || [];
+
+    profile.links = profile.links || [];
+    profile.resume_pdf_url = profile.resume_pdf_url || "";
+
+    return data[0]
+  }
+  return error;
 }
 
 async function updateProfile(userId, formData) {
@@ -211,7 +239,6 @@ export async function loader({ params }) {
   const universityList = await getUniversities();
   universityList.push({university: "Other"});
 
-  return { person: tempUserData, taskForceList: taskForceList, universityList: universityList };
   const person = await getProfile(params.id);
   if (!person) {
         throw new Response("Profile not found", { status: 404 });
@@ -341,7 +368,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   function onEngineeringChange(selected) {
     const possibleOptions = [];
     for (let engType of selected) {
-      engineeringData.get(engType).map((interest) => {
+      ENGINEERINGDATA.get(engType).map((interest) => {
         possibleOptions.push(interest);
       })
     }
@@ -442,7 +469,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
             <div className="md:col-span-2">
               <label htmlFor="languages">Languages</label>
               <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
-                { (languageData) ? languageData.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
+                { (LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
                 <option value="Other">Other</option>
               </MultiSelect>
             </div>
@@ -459,7 +486,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               <MultiSelect id="engineering-type" name="engineering-type" 
                 value={draft?.engineering_type} onChange={onEngineeringChange}
                 className="w-full" size="5">
-                  {Array.from(engineeringData.keys()).map(engineeringType => {
+                  {Array.from(ENGINEERINGDATA.keys()).map(engineeringType => {
                     return <option key={engineeringType} value={engineeringType}>{engineeringType}</option>
                   })}
               </MultiSelect>
@@ -539,7 +566,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               <label htmlFor="country">Country</label>
               <select id="country" name="country" className="input-text w-full">
                 <option selected={draft.country == ""} disabled>-- Select your country --</option>
-                { (countryData) ? countryData.map((country, idx) => <option key={"cou-" + idx} value={country} selected={country == draft.country}>{country}</option>) : <></>}
+                { (COUNTRYDATA) ? COUNTRYDATA.map((country, idx) => <option key={"cou-" + idx} value={country} selected={country == draft.country}>{country}</option>) : <></>}
               </select>
             </div>
             <div>
