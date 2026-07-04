@@ -30,20 +30,22 @@ export function MultiSelect({
     function onChangeSelf(e) {
         setIsChanged(true);
         e.preventDefault;
+        let newSelected = [];
 
         if (e.target.selectedOptions.length == 0) {
-            setSelected([])
+            setSelected(newSelected)
         } else {
             const clickedOptions = new Set();
             for (let option of e.target.selectedOptions) {
                 clickedOptions.add(option.value);
             }
             const selectedOptions = new Set(selected).symmetricDifference(clickedOptions);
+            newSelected = Array.from(selectedOptions);
 
-            setSelected(Array.from(selectedOptions));
+            setSelected(newSelected);
         }
         
-        onChange(e);
+        onChange(newSelected);
         setTimeout(() => {
             setIsChanged(false);
         }, 0);
@@ -59,7 +61,8 @@ export function MultiSelect({
                 const clickedOption = e.target;
                 
                 if (selected.length === 1 && selected[0] === clickedOption.value) {
-                    setSelected([])
+                    setSelected([]);
+                    onChange([]);
                 }
             }
         }
@@ -70,6 +73,7 @@ export function MultiSelect({
         if (optionIndex > -1) {
             const newSelected = selected.toSpliced(optionIndex, 1);
             setSelected(newSelected);
+            onChange(newSelected);
         }
     }
 
@@ -77,7 +81,11 @@ export function MultiSelect({
         <div>
             <div className="multi-select-chips">
                 {selected.map((optionValue) => {
-                    return <div key={optionValue} className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }}></i></div>
+                    if (options.get(optionValue) == null) {
+                        removeOption(optionValue);
+                    } else {
+                        return <div key={optionValue} className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }}></i></div>
+                    }
                 })}
             </div>
             <select

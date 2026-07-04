@@ -75,7 +75,8 @@ const engineeringData = new Map([
   ['Structural Engineering', ['Earthquake Engineering', 'Structural Health Monitoring', 'Advanced Materials', 'Bridge Engineering', 'Resilient Infrastructure'] ],
   ['Systems Engineering', ['Systems Modeling', 'Complex Systems', 'Digital Twins', 'Systems Integration', 'Decision Analysis'] ],
   ['Telecommunications Engineering', ['Wireless Communications', '5G/6G Networks', 'Optical Communications', 'Network Security', 'Internet of Things (IoT)'] ],
-  ['Transportation Engineering', ['Intelligent Transportation Systems', 'Traffic Engineering', 'Sustainable Mobility', 'Transportation Planning', 'Autonomous Transportation'] ]
+  ['Transportation Engineering', ['Intelligent Transportation Systems', 'Traffic Engineering', 'Sustainable Mobility', 'Transportation Planning', 'Autonomous Transportation'] ],
+  ['Other', [] ]
 ]);
 
 const countryData = ['Afghanistan', 'Albania', 'Algeria', 'American Samoa', 'Andorra', 'Angola', 'Anguilla', 'Antigua and Barbuda', 'Argentina', 'Armenia', 'Aruba', 'Australia', 'Austria', 'Azerbaijan', 'The Bahamas', 'Bahrain', 'Bangladesh', 'Barbados', 'Belarus', 'Belgium', 'Belize', 'Benin', 'Bermuda', 'Bhutan', 'Bolivia', 'Bosnia and Herzegovina', 'Botswana', 'Brazil', 'British Virgin Islands', 'Brunei', 'Bulgaria', 'Burkina Faso', 'Burundi', 'Cabo Verde (Cape Verde)', 'Cambodia', 'Cameroon', 'Canada', 'Cayman Islands', 'Central African Republic', 'Chad', 'Chile', 'China', 'Cocos (Keeling) Islands', 'Colombia', 'Comoros', 'Democratic Republic of the Congo', 'Republic of the Congo', 'Cook Islands', 'Costa Rica', 'Côte d’Ivoire', 'Croatia', 'Cuba', 'Curaçao', 'Cyprus', 'Czech Republic', 'Denmark', 'Djibouti', 'Dominica', 'Dominican Republic', 'East Timor (Timor-Leste)', 'Ecuador', 'Egypt', 'El Salvador', 'Equatorial Guinea', 'Eritrea', 'Estonia', 'Eswatini (Swaziland)', 'Ethiopia', 'Falkland Islands', 'Faroe Islands', 'Fiji', 'Finland', 'France', 'French Guiana', 'French Polynesia', 'Gabon', 'The Gambia', 'Gaza Strip', 'Georgia', 'Germany', 'Ghana', 'Gibraltar', 'Greece', 'Greenland', 'Grenada', 'Guadeloupe', 'Guam', 'Guatemala', 'Guernsey', 'Guinea', 'Guinea-Bissau', 'Guyana', 'Haiti', 'Honduras', 'Hong Kong', 'Hungary', 'Iceland', 'India', 'Indonesia', 'Iran', 'Iraq', 'Ireland', 'Isle of Man', 'Israel', 'Italy', 'Jamaica', 'Japan', 'Jersey', 'Jordan', 'Kazakhstan', 'Kenya', 'Kiribati', 'North Korea', 'South Korea', 'Kosovo', 'Kuwait', 'Kyrgyzstan', 'Laos', 'Latvia', 'Lebanon', 'Lesotho', 'Liberia', 'Libya', 'Liechtenstein', 'Lithuania', 'Luxembourg', 'Macau', 'Madagascar', 'Malawi', 'Malaysia', 'Maldives', 'Mali', 'Malta', 'Marshall Islands', 'Martinique', 'Mauritania', 'Mauritius', 'Mayotte', 'Mexico', 'Micronesia', 'Moldova', 'Monaco', 'Mongolia', 'Montenegro', 'Montserrat', 'Morocco', 'Mozambique', 'Myanmar (Burma)', 'Namibia', 'Nauru', 'Nepal', 'Netherlands', 'New Caledonia', 'New Zealand', 'Nicaragua', 'Niger', 'Nigeria', 'Niue', 'North Macedonia', 'Northern Mariana Islands', 'Norway', 'Oman', 'Pakistan', 'Palau', 'Panama', 'Papua New Guinea', 'Paraguay', 'Peru', 'Philippines', 'Pitcairn Island', 'Poland', 'Portugal', 'Puerto Rico', 'Qatar', 'Réunion', 'Romania', 'Russia', 'Rwanda', 'Saint Helena', 'Saint Kitts and Nevis', 'Saint Lucia', 'Saint-Pierre and Miquelon', 'Saint Vincent and the Grenadines', 'Samoa', 'San Marino', 'Sao Tome and Principe', 'Saudi Arabia', 'Senegal', 'Serbia', 'Seychelles', 'Sierra Leone', 'Singapore', 'Sint Maarten', 'Slovakia', 'Slovenia', 'Solomon Islands', 'Somalia', 'South Africa', 'Spain', 'Sri Lanka', 'South Sudan', 'Sudan', 'Suriname', 'Sweden', 'Switzerland', 'Syria', 'Taiwan', 'Tajikistan', 'Tanzania', 'Thailand', 'Togo', 'Tokelau', 'Tonga', 'Trinidad and Tobago', 'Tunisia', 'Turkey', 'Turkmenistan', 'Tuvalu', 'Turks and Caicos Islands', 'Uganda', 'Ukraine', 'United Arab Emirates', 'United Kingdom', 'United States', 'United States Virgin Islands', 'Uruguay', 'Uzbekistan', 'Vanuatu', 'Vatican City', 'Venezuela', 'Vietnam', 'Wallis and Futuna', 'West Bank', 'Western Sahara', 'Yemen', 'Zambia', 'Zimbabwe'];
@@ -283,6 +284,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
   const [hasError, setHasError] = useState(false);
   const [draft, setDraft] = useState({});
   const [links, setLinks] = useState([])
+  const [interestOptions, setInterestOptions] = useState([]);
 
   async function validate(formData) {
     console.log(formData);
@@ -336,10 +338,25 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
       }
   }
 
+  function onEngineeringChange(selected) {
+    const possibleOptions = [];
+    for (let engType of selected) {
+      engineeringData.get(engType).map((interest) => {
+        possibleOptions.push(interest);
+      })
+    }
+    // console.log(possibleOptions);
+    setInterestOptions(possibleOptions);
+  }
+
+  function onTechInterestChange() {
+    console.log("tech");
+  }
+
   function addLink(e) {
         e.preventDefault();
         setLinks([...links, {url: "", type: "personal"}]);
-    }
+  }
 
   return (
     <PopupForm id="profile-edit" className="w-[80vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
@@ -439,11 +456,12 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
           <div className="mt-3 grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label htmlFor="engineering-type">Type of Engineering</label>
-              <MultiSelect id="engineering-type" name="engineering-type" value={draft?.engineering_type} className="w-full" size="5">
+              <MultiSelect id="engineering-type" name="engineering-type" 
+                value={draft?.engineering_type} onChange={onEngineeringChange}
+                className="w-full" size="5">
                   {Array.from(engineeringData.keys()).map(engineeringType => {
                     return <option key={engineeringType} value={engineeringType}>{engineeringType}</option>
                   })}
-                  <option value="Other">Other</option>
               </MultiSelect>
             </div>
 
@@ -470,8 +488,13 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
 
             <div className="md:col-span-2">
               <label htmlFor="tech-interests">Technical Interests</label>
-              <MultiSelect id="tech-interests" name="tech-interests" value={draft?.tech_interests} className="input input-text w-full" >
-                  
+              { (interestOptions.length == 0) && <div className="w-full p-2 text-sm text-disabled-light italic">Please select Type of Engineering options to see Technical Interest options.</div>}
+              <MultiSelect id="tech-interests" name="tech-interests"
+                value={draft?.tech_interests} onChange={onTechInterestChange}
+                className="input input-text w-full" >
+                  {interestOptions.map(interest => {
+                    return <option key={interest} value={interest}>{interest}</option>
+                  })}
               </MultiSelect>
             </div>
             <div className="md:col-span-2">
