@@ -124,8 +124,6 @@ async function getProfile(userId) {
 async function updateProfile(userId, formData, links) {
   const linksJSON = JSON.stringify(links);
 
-  console.log(formData);
-
   const { error } = await supabase
     .from('users')
     .update({

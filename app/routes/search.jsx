@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
 import { checkCurrentAuth, currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import { Menu } from "../components/menu";
+import { MultiSelect } from "../components/multi-select";
 import { Pagination } from "../components/pagination";
 import { Footer } from "../components/footer";
 
@@ -128,15 +129,52 @@ export default function SearchRoute({ loaderData }) {
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const [selectedCountries, setSelectedCountries] = useState([]);
-  const [selectedMajors, setSelectedMajors] = useState([]);
+  const [selectedUniversities, setSelectedUniversities] = useState([]);
+  const [selectedEngineering, setSelectedEngineering] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState([]);
 
-  const countryOptionsSet = new Set(loaderData.map((person) => { return (person.country != "") ? person.country : null }));
+
+  const countryOptionsSet = new Set();
+  const universityOptionsSet = new Set();
+  const engineeringOptionSet = new Set();
+
+  for (let person of loaderData) {
+    countryOptionsSet.add(person.country);
+    universityOptionsSet.add(person.university);
+    for (let engineering of person.engineering_type) {
+      engineeringOptionSet.add(engineering);
+    }
+  }
+
   countryOptionsSet.delete(null);
+  countryOptionsSet.delete("");
+  universityOptionsSet.delete(null);
+  universityOptionsSet.delete("");
+  engineeringOptionSet.delete(null);
+  engineeringOptionSet.delete("");
+
 
   const countryOptions = useMemo(
     () => Array.from(countryOptionsSet).sort(),
     []
   );
+  const universityOptions = useMemo(
+    () => Array.from(universityOptionsSet).sort(),
+    []
+  );
+  const engineeringOptions = useMemo(
+    () => Array.from(engineeringOptionSet).sort(),
+    []
+  );
+
+  function includesElements(baseArray, includeArray) {
+    for (let arrayItem of includeArray) {
+      if (baseArray.includes(arrayItem)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
 
   const results = useMemo(() => {
@@ -153,17 +191,23 @@ export default function SearchRoute({ loaderData }) {
         person?.languages?.toLowerCase().includes(q) ||
         person?.tech_interests?.toLowerCase().includes(q);
 
+      const matchesRegion =
+        selectedRegion.length === 0 || selectedRegion.includes(person.region);
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
+      const matchesUniversity =
+        selectedUniversities.length === 0 || selectedUniversities.includes(person.university);
+      const matchesEngineering =
+        selectedEngineering.length === 0 || includesElements(selectedEngineering, person.engineering_type);
 
-      return isSeen && matchesQuery && matchesCountry;
+      return isSeen && matchesQuery && matchesCountry && matchesUniversity && matchesEngineering && matchesRegion;
     });
-  }, [query, selectedCountries]);
+  }, [query, selectedCountries, selectedUniversities, selectedEngineering, selectedRegion]);
 
   // Reset to page 1 whenever query or filters change
   useEffect(() => {
     setPage(0);
-  }, [query, selectedCountries]);
+  }, [query, selectedCountries, selectedUniversities, selectedEngineering, selectedRegion]);
 
   const totalPages = Math.ceil(results.length / PAGE_SIZE);
   const startIdx = page * PAGE_SIZE;
@@ -176,7 +220,7 @@ export default function SearchRoute({ loaderData }) {
   }, [page, totalPages]);
 
   const hasQuery = query.trim().length > 0;
-  const hasActiveFilters = selectedCountries.length > 0;
+  const hasActiveFilters = (selectedCountries.length > 0) || (selectedUniversities.length > 0) || (selectedEngineering.length > 0);
   const showHeader = hasQuery || hasActiveFilters;
   const isEmptyState = !showHeader;
 
@@ -190,6 +234,18 @@ export default function SearchRoute({ loaderData }) {
       setQuery(value);
     }
   };
+
+  function onCountryChange(countrySelected) {
+    setSelectedCountries(countrySelected);
+  }
+
+  function onUniversityChange(universitySelected) {
+    setSelectedUniversities(universitySelected);
+  }
+
+  function onEngineeringChange(engineeringSelected) {
+    setSelectedEngineering(engineeringSelected);
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -253,20 +309,87 @@ export default function SearchRoute({ loaderData }) {
         <div
           id="search-filters"
           aria-hidden={!showFilters}
-          className={`origin-top overflow-hidden transition-all duration-300 ease-out ${
+          className={`origin-top overflow-hidden transition-all duration-300 ease-out rounded-md border-2 border-gray-light bg-white p-4 ${
             showFilters
-              ? "mt-4 max-h-[800px] translate-y-0 opacity-100 pointer-events-auto"
+              ? "mt-4 max-h-[1000px] translate-y-0 opacity-100 pointer-events-auto  overflow-y-auto"
               : "mt-0 max-h-0 -translate-y-2 opacity-0 pointer-events-none"
           }`}
         >
-          <div className="rounded-md border-2 border-gray-light bg-white p-4">
-            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3">
-              <FilterGroup
-                title="Country"
-                options={countryOptions}
-                selected={selectedCountries}
-                onToggle={(value) => toggleSelection(setSelectedCountries, value)}
-              />
+          <div className="">
+            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3 grid-cols-1">
+              <div className="md:col-span-3">
+                <div className="mb-3 font-semibold text-secondary-dark">Region</div>
+                <div className="flex flex-wrap gap-2">
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("JHEASA")} onChange={() => toggleSelection(setSelectedRegion, "JHEASA")} />
+                    <p className="text-gray-dark/80">JHEASA</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AJCU-NA")} onChange={() => toggleSelection(setSelectedRegion, "AJCU-NA")} />
+                    <p className="text-gray-dark/80">AJCU - NA</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AUSJAL")} onChange={() => toggleSelection(setSelectedRegion, "AUSJAL")} />
+                    <p className="text-gray-dark/80">AUSJAL</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("KIRCHER")} onChange={() => toggleSelection(setSelectedRegion, "KIRCHER")} />
+                    <p className="text-gray-dark/80">KIRCHER</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AJCU-AP")} onChange={() => toggleSelection(setSelectedRegion, "AJCU-AP")} />
+                    <p className="text-gray-dark/80">AJCU - AP</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AJCU-AM")} onChange={() => toggleSelection(setSelectedRegion, "AJCU-AM")} />
+                    <p className="text-gray-dark/80">AJCU - AM</p>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <p className="font-semibold text-secondary-dark">Type of Engineering</p>
+                <MultiSelect
+                  name="engineering"
+                  selected={selectedEngineering}
+                  onChange={onEngineeringChange}
+                  className="w-full"
+                  size="5"
+                >
+                  { (engineeringOptions) ? engineeringOptions.map((engineering, idx) => <option key={"eng-" + idx} value={engineering}>{engineering}</option>) : <></>}
+                </MultiSelect>
+              </div>
+              
+              <div>
+                <p className="font-semibold text-secondary-dark">Country</p>
+                <MultiSelect
+                  name="country"
+                  selected={selectedCountries}
+                  onChange={onCountryChange}
+                  className="w-full"
+                  size="5"
+                >
+                  { (countryOptions) ? countryOptions.map((country, idx) => <option key={"cou-" + idx} value={country}>{country}</option>) : <></>}
+                </MultiSelect>
+              </div>
+
+              <div>
+                <p className="font-semibold text-secondary-dark">University</p>
+                <MultiSelect
+                  name="university"
+                  selected={selectedUniversities}
+                  onChange={onUniversityChange}
+                  className="w-full"
+                  size="5"
+                >
+                  { (universityOptions) ? universityOptions.map((university, idx) => <option key={"uni-" + idx} value={university}>{university}</option>) : <></>}
+                </MultiSelect>
+              </div>
             </fieldset>
           </div>
         </div>
@@ -307,10 +430,7 @@ function FilterGroup({ title, options, selected, onToggle }) {
         <div className="flex flex-col gap-2">
           {options.map((option) => (
             <label key={option} className="checkbox">
-              <input
-                type="checkbox"
-                checked={selected.includes(option)}
-                onChange={() => onToggle(option)}
+              <input type="checkbox" checked={selected.includes(option)} onChange={() => onToggle(option)}
               />
               <p className="text-gray-dark/80">{formatFilterLabel(option)}</p>
             </label>
