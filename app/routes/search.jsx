@@ -38,8 +38,24 @@ const roleNames = new Map([
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select('id, fname, lname, email, image_url, roles, job_position, region, country, institution, major, research_interests, task_force_role, task_force')
+    .select('id, fname, lname, roles, is_seen_by_visitors, engineering_type, position_type, title, tech_interests, general_interests, country, university, region');
   if (data) {
+    for (let i = 0; i < data.length; i++) {
+      data[i].fname = data[i].fname || "";
+      data[i].lname = data[i].lname || "";
+      data[i].roles = data[i].roles || ["member"];
+      data[i].is_seen_by_visitors = data[i].is_seen_by_visitors || true;
+
+      data[i].engineering_type = data[i].engineering_type || [];
+      data[i].position_type = data[i].position_type || [];
+      data[i].title = data[i].title || ""
+      data[i].tech_interests = data[i].tech_interests || [];
+      data[i].general_interests = data[i].general_interests || [];
+      
+      data[i].university = data[i].university || "";
+      data[i].country = data[i].country || "";
+      data[i].region = data[i].region || "";
+    }
     data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
   }
   return data || error;
@@ -83,30 +99,14 @@ export default function SearchRoute({ loaderData }) {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedTaskForces, setSelectedTaskForces] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
   const [selectedMajors, setSelectedMajors] = useState([]);
-
-
-  const taskForceOptionsSet = new Set(loaderData.map((person) => { return (person.task_force != "") ? person.task_force : null }));
-  taskForceOptionsSet.delete(null);
 
   const countryOptionsSet = new Set(loaderData.map((person) => { return (person.country != "") ? person.country : null }));
   countryOptionsSet.delete(null);
 
-  const majorOptionsSet = new Set(loaderData.map((person) => { return (person.major != "") ? person.major : null }));
-  majorOptionsSet.delete(null);
-
-  const taskForceOptions = useMemo(
-    () => Array.from(taskForceOptionsSet).sort(),
-    []
-  );
   const countryOptions = useMemo(
     () => Array.from(countryOptionsSet).sort(),
-    []
-  );
-  const majorOptions = useMemo(
-    () => Array.from(majorOptionsSet).sort(),
     []
   );
 
@@ -119,26 +119,22 @@ export default function SearchRoute({ loaderData }) {
         !q ||
         person?.fname?.toLowerCase().includes(q) ||
         person?.lname?.toLowerCase().includes(q) ||
-        person?.institution?.toLowerCase().includes(q) ||
-        person?.major?.toLowerCase().includes(q) ||
+        person?.university?.toLowerCase().includes(q) ||
+        person?.engineering_type?.toLowerCase().includes(q) ||
         person?.languages?.toLowerCase().includes(q) ||
-        person?.research_interests?.toLowerCase().includes(q);
+        person?.tech_interests?.toLowerCase().includes(q);
 
-      const matchesTaskForce =
-        selectedTaskForces.length === 0 || selectedTaskForces.includes(person.task_force);
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
-      const matchesMajor =
-        selectedMajors.length === 0 || selectedMajors.includes(person.major);
 
-      return matchesQuery && matchesTaskForce && matchesCountry && matchesMajor;
+      return matchesQuery && matchesCountry;
     });
-  }, [query, selectedTaskForces, selectedCountries, selectedMajors]);
+  }, [query, selectedCountries]);
 
   // Reset to page 1 whenever query or filters change
   useEffect(() => {
     setPage(0);
-  }, [query, selectedTaskForces, selectedCountries]);
+  }, [query, selectedCountries]);
 
   const totalPages = Math.ceil(results.length / PAGE_SIZE);
   const startIdx = page * PAGE_SIZE;
@@ -151,7 +147,7 @@ export default function SearchRoute({ loaderData }) {
   }, [page, totalPages]);
 
   const hasQuery = query.trim().length > 0;
-  const hasActiveFilters = selectedTaskForces.length > 0 || selectedCountries.length > 0;
+  const hasActiveFilters = selectedCountries.length > 0;
   const showHeader = hasQuery || hasActiveFilters;
   const isEmptyState = !showHeader;
 
@@ -237,22 +233,10 @@ export default function SearchRoute({ loaderData }) {
           <div className="rounded-md border-2 border-gray-light bg-white p-4">
             <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3">
               <FilterGroup
-                title="Task Force"
-                options={taskForceOptions}
-                selected={selectedTaskForces}
-                onToggle={(value) => toggleSelection(setSelectedTaskForces, value)}
-              />
-              <FilterGroup
                 title="Country"
                 options={countryOptions}
                 selected={selectedCountries}
                 onToggle={(value) => toggleSelection(setSelectedCountries, value)}
-              />
-              <FilterGroup
-                title="Academic Focus"
-                options={majorOptions}
-                selected={selectedMajors}
-                onToggle={(value) => toggleSelection(setSelectedMajors, value)}
               />
             </fieldset>
           </div>
@@ -321,7 +305,7 @@ function PersonResultCard({ person }) {
           handleNavigate();
         }
       }}
-      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-3"
+      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-[310px_auto]"
     >
       <div className="flex items-center gap-4">
         <div
@@ -338,49 +322,63 @@ function PersonResultCard({ person }) {
             <i className="bi bi-person-fill text-[40px] text-secondary-dark/60" aria-hidden="true" />
           )}
         </div>
+
         <div>
-          <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
-          <div className="mt-2">
+          <div className="text-xl font-semibold text-secondary-dark mb-2">{person.fname} {person.lname}</div>
+          <div className="">
             {person.roles.map((role, idx) => {
                 if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
                     return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
                 }
             })}
           </div>
+          <p className="text-disabled-dark">{person.title}</p>
           <div className="mb-1 italic text-secondary-light">
-            {person.job_position}
-            <br />
-            {person.institution}
+            {person.university}
           </div>
         </div>
       </div>
+      
+      <div>
+        <div className="pb-2 border-b-2 border-gray-light grid md:grid-cols-2 grid-cols-1 gap-x-2">
+            <p className="font-semibold text-secondary-dark">
+              {person.engineering_type.map((engineering, idx) => {
+                return (idx > 0) ? ", " + engineering : engineering;
+              })}
+            </p>
 
-      <div className="flex flex-col text-sm text-gray-dark/80 gap-2">
-        <div className="font-semibold text-secondary-dark">
-          {person.region}
-          { person?.region && person?.country && <span> | </span>}
-          {person.country}
-        </div>
-        <div className="">
-          { person?.major && <>
-            <span className="mr-1 italic">Academic Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
-          </>}
-        </div>
+            <p>
+              {person.country}{(person.country.length > 0 && person.region.length > 0) && (" — ") }<span className="font-semibold text-secondary-dark">{person.region}</span>
+            </p>
 
-        <div>
-        { person.task_force && <>
-          <span className="mr-1 italic">Task Force</span> <span className="font-semibold text-secondary-dark">{person.task_force}</span>
-          </>
-        }
-      </div>
+            <p className="text-sm text-gray-dark/70">
+              {person.position_type.map((position, idx) => {
+                  return (idx > 0) ? ", " + position : position;
+              })}
+            </p>
+
+          </div>
+
+          <div className="mt-2">
+            { (person.tech_interests.length > 0 || person.general_interests.length > 0) && 
+              <div className="flex flex-wrap">
+                { (person.tech_interests.length > 0) &&
+                <ul className="mr-12">
+                  {person.tech_interests.map((interest, idx) => {
+                    return <li key={"tech-" + idx}>{interest}</li>
+                  })}
+                </ul>
+                }
+                <ul className="mr-12">
+                  {person.general_interests.map((interest, idx) => {
+                    return <li key={"tech-" + idx}>{interest}</li>
+                  })}
+                </ul>
+              </div>
+              }
+          </div>
       </div>
       
-      <div className="text-sm text-gray-dark/80 md:block hidden">
-        { person?.research_interests && <>
-          <span className="block italic">Research Interests</span> 
-          <p className="font-semibold text-secondary-dark">{person.research_interests}</p>
-        </>}
-      </div>
       
       
     </a>
