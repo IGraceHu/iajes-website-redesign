@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
-import { checkCurrentAuth } from "../helpers/permissions";
+import { checkCurrentAuth, currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import { Menu } from "../components/menu";
 import { Pagination } from "../components/pagination";
 import { Footer } from "../components/footer";
@@ -44,7 +44,7 @@ async function getPeople() {
       data[i].fname = data[i].fname || "";
       data[i].lname = data[i].lname || "";
       data[i].roles = data[i].roles || ["member"];
-      data[i].is_seen_by_visitors = data[i].is_seen_by_visitors || true;
+      data[i].is_seen_by_visitors = data[i].is_seen_by_visitors;
 
       data[i].engineering_type = data[i].engineering_type || [];
       data[i].position_type = data[i].position_type || [];
@@ -90,9 +90,37 @@ const allowedRoles = ["admin-university", "admin-region-jheasa", "admin-region-a
 
 export default function SearchRoute({ loaderData }) {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   
   useEffect(() => {
-      return checkCurrentAuth(setIsAdmin, allowedRoles)
+      // Listen for auth state changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        currentHasPermissions(session?.user.id, allowedRoles).then(
+            function (hasPermissions) { setIsAdmin(hasPermissions); }
+        );
+        if (session?.user.id) {
+          getUserVerified(session?.user.id).then(
+            function (verified) {setIsVerified(verified)}
+          )
+        }
+      });
+  
+      // Check current session on mount
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        currentHasPermissions(session?.user.id, allowedRoles).then(
+            function (hasPermissions) { setIsAdmin(hasPermissions); }
+        );
+        if (session?.user.id) {
+          getUserVerified(session?.user.id).then(
+            function (verified) {setIsVerified(verified)}
+          )
+        }
+        if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
+        setShowPopup(true);
+      }
+      });
+  
+      return () => subscription.unsubscribe();
   }, []);
 
 
@@ -114,6 +142,7 @@ export default function SearchRoute({ loaderData }) {
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     return loaderData.filter((person) => {
+      const isSeen = isVerified || person.is_seen_by_visitors;
 
       const matchesQuery =
         !q ||
@@ -127,7 +156,7 @@ export default function SearchRoute({ loaderData }) {
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
 
-      return matchesQuery && matchesCountry;
+      return isSeen && matchesQuery && matchesCountry;
     });
   }, [query, selectedCountries]);
 
