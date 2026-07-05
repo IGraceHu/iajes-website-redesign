@@ -303,6 +303,14 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       }
     }
 
+    // set disabled field values if profile was edited by admin
+    if (currentUserId != userId) {
+      formData.set('is-seen-by-visitors', draft.is_seen_by_visitors);
+      formData.set('is-contact-by-visitors', draft.is_contact_by_visitors);
+      formData.set('is-contact-by-members', draft.is_contact_by_members);
+      formData.set('is-get-interest-info', draft.is_get_interest_info);
+    }
+
     const update = await updateProfile(userId, formData, cleanLinks);
     if (update === null) {
       setShowPopup(false);
