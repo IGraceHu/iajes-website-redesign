@@ -90,6 +90,7 @@ async function getProfile(userId) {
     profile.is_contact_by_members = profile.is_contact_by_members;
     profile.banner_type = profile.banner_type || 1; 
     profile.biography = profile.biography || "";
+    profile.languages = profile.languages || [];
 
     profile.engineering_type = profile.engineering_type || [];
     profile.position_type = profile.position_type || [];
@@ -134,6 +135,7 @@ async function updateProfile(userId, formData, links) {
       is_contact_by_members: formData.get("is-contact-by-members") || false,
       banner_type: formData.get("banner-type"),
       biography: formData.get("biography"),
+      languages: formData.getAll("languages"),
 
       engineering_type: formData.getAll("engineering-type"),
       position_type: formData.getAll("position-type"),
@@ -917,6 +919,15 @@ export default function ProfileRoute({ loaderData }) {
 
                 <div className="md:text-left text-center md:mt-0 mt-2">
                   <p>{profile.university}, {profile.country} — <span className="font-semibold text-secondary-dark">{profile.region}</span></p>
+                </div>
+
+                <div className="md:text-left text-center mt-2">
+                  <p className="text-sm">
+                    {(profile.languages.length > 0) && <span className="font-semibold text-secondary-dark">Languages: </span>}
+                    {profile.languages.map((language, idx) => {
+                      return (idx > 0) ? ", " + language : language;
+                    })}
+                  </p>
                 </div>
 
               </div>
