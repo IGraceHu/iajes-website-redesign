@@ -422,25 +422,6 @@ export default function SearchRoute({ loaderData }) {
   );
 }
 
-function FilterGroup({ title, options, selected, onToggle }) {
-  if (options.length > 0) {
-    return (
-      <div>
-        <div className="mb-3 font-semibold text-secondary-dark">{title}</div>
-        <div className="flex flex-col gap-2">
-          {options.map((option) => (
-            <label key={option} className="checkbox">
-              <input type="checkbox" checked={selected.includes(option)} onChange={() => onToggle(option)}
-              />
-              <p className="text-gray-dark/80">{formatFilterLabel(option)}</p>
-            </label>
-          ))}
-        </div>
-      </div>
-    );
-  }
-}
-
 function PersonResultCard({ person }) {
   return (
     <a
