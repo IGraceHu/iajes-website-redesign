@@ -96,7 +96,7 @@ export function MultiSelect({
             <select
                 multiple
                 id = {id}
-                className = {"multi-select input input-text " + className}
+                className = {"multi-select input input-text overflow-x-auto " + className}
                 value = {selected}
                 autoComplete = {autoComplete}
                 autoFocus = {autoFocus}

@@ -238,7 +238,7 @@ function LinksEdit({ id, links, setLinks }) {
                   <select id={"link-type-" + id} name={"link-type-" + id} type="text"
                       className={"input input-text w-full"}
                       placeholder="Link Type"
-                      selected={links[id].type || "personal"}
+                      value={links[id].type || "personal"}
                       onChange={(e) => {handleTypeChange(e)}}>
                     <option value="personal">Personal Website</option>
                     <option value="linkedin">LinkedIn</option>
@@ -540,20 +540,20 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             <div>
               <label htmlFor="country">Country</label>
               <select id="country" name="country" className="input-text w-full" defaultValue={draft.country}>
-                <option selected={draft.country == ""} disabled>-- Select your country --</option>
-                { (COUNTRYDATA) ? COUNTRYDATA.map((country, idx) => <option key={"cou-" + idx} value={country} selected={country == draft.country}>{country}</option>) : <></>}
+                <option value="" disabled>-- Select your country --</option>
+                { (COUNTRYDATA) ? COUNTRYDATA.map((country, idx) => <option key={"cou-" + idx} value={country}>{country}</option>) : <></>}
               </select>
             </div>
             <div>
               <label htmlFor="region">Region</label>
               <select id="region" name="region" className="input input-text w-full" defaultValue={draft.region}>
-                  <option selected={draft.region == ""} disabled>-- Select your region --</option>
-                  <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
-                  <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
-                  <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
-                  <option value="KIRCHER" selected={"KIRCHER" == draft.region}>KIRCHER</option>
-                  <option value="AJCU-AP" selected={"AJCU-AP" == draft.region}>AJCU - AP</option>
-                  <option value="AJCU-AM" selected={"AJCU-AM" == draft.region}>AJCU - AM</option>
+                  <option value="" disabled>-- Select your region --</option>
+                  <option value="JHEASA">JHEASA</option>
+                  <option value="AJCU-NA">AJCU - NA</option>
+                  <option value="AUSJAL">AUSJAL</option>
+                  <option value="KIRCHER">KIRCHER</option>
+                  <option value="AJCU-AP">AJCU - AP</option>
+                  <option value="AJCU-AM">AJCU - AM</option>
               </select>
             </div>
             <div className="md:col-span-2">
