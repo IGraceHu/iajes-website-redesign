@@ -899,10 +899,11 @@ export default function ProfileRoute({ loaderData }) {
         {/* This makes the colors able to be used by border cuz Tailwind gets confused if it isnt explicitly written */}
         <span className="border-primary-dark border-secondary-light border-secondary-dark"></span>
         
-        <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-16 shadow-sm relative z-10 border" + bannerClass}>
-          <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
-            <div className="flex flex-col items-center text-center">
-              <div className="relative -mt-8">
+        <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-10 shadow-sm relative z-10 border" + bannerClass}>
+          <div className="grid gap-x-6 gap-y-5 lg:grid-cols-[220px_auto]">
+
+            <div className="flex flex-col items-center text-center p-2">
+              <div className="relative -mt-2">
                 <div className="flex h-36 w-36 items-center justify-center rounded-full border-3 border-primary-dark bg-gray-light overflow-hidden">
                   {profilePhotoContent}
                 </div>
@@ -925,74 +926,106 @@ export default function ProfileRoute({ loaderData }) {
                     }
                 })}
               </div>
-              <p className="mt-1 text-sm text-gray-dark/70">
-                {profile.job_position}{ profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
+              <p className="text-sm text-gray-dark/70">
+                {profile.title}
               </p>
-              <p className="text-sm italic text-gray-dark/60">{profile.tagline}</p>
+              <p className="text-sm text-gray-dark/70">
+                {profile.position_type.map((position, idx) => {
+                    return (idx > 0) ? ", " + position : position;
+                })}
+              </p>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col w-full gap-4 sm:flex-row">
-                { profile?.task_force &&
-                  <a href={"/task-forces/" + userTaskForceUrl} className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-sm hover:border-secondary-light">
-                    <p className="font-semibold text-secondary-dark">{profile.task_force}</p>
-                    { profile?.task_force_role &&
-                    <p className="mt-1 text-gray-dark/70">{profile.task_force_role}</p> }
-                  </a>
-                }
+            <div className="flex flex-col">
+              <div className="pb-3 border-b-2 border-gray-light">
+                <div className="flex md:flex-row flex-col justify-between items-center">
+                  <p className="font-semibold text-secondary-dark">
+                    {profile.engineering_type.map((engineering, idx) => {
+                      return (idx > 0) ? ", " + engineering : engineering;
+                    })}
+                  </p>
+                  <>
+                  { (profile.is_contact_by_members || ((currentUserId != null) && (isVerified))) ?
+                    <button
+                      type="button"
+                      className="md:order-none order-first button flex items-center justify-center gap-3 text-lg font-semibold"
+                      onClick={() => {
+                        window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
+                      }}
+                    >
+                      <i className="bi bi-envelope" aria-hidden="true" />
+                      Contact
+                    </button>
+                    :
+                    (profile.is_contact_by_visitors) ?
+                    <button
+                      type="button"
+                      className="md:order-none order-first button flex items-center justify-center gap-3 text-lg font-semibold"
+                      onClick={() => {
+                        window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
+                      }}
+                    >
+                      <i className="bi bi-envelope" aria-hidden="true" />
+                      Contact
+                    </button>
+                    :
+                    <></>
+                  }
+                  </>
+                </div>
 
-                { (profile?.allow_contact || ((currentUserId != null) && (isVerified))) &&
-                  <button
-                    type="button"
-                    className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"
-                    onClick={() => {
-                      window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
-                    }}
-                  >
-                    <i className="bi bi-envelope" aria-hidden="true" />
-                    Contact
-                  </button>
-                }
+                <div className="">
+                  <p>{profile.university}, {profile.country} — <span className="font-semibold text-secondary-dark">{profile.region}</span></p>
+                </div>
               </div>
 
-              <p className="leading-relaxed text-gray-dark/80">{profile.biography}</p>
+              <div className="py-3">
+                {profile.biography}
+              </div>
+
+              <div className="mt-auto">
+                <button className="button button-light">Resume<i className="ml-2 bi bi-box-arrow-up-right"></i></button>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-              <div className="grid gap-3 text-sm">
-                { profile.region && <InfoRow label="Region" value={profile.region} /> }
-                { profile.country && <InfoRow label="Country" value={profile.country} /> }
-                { profile.languages && <InfoRow label="Languages" value={profile.languages} /> }
-                { profile.institution && <InfoRow label="Institution" value={profile.institution} /> }
-                { profile.major && <InfoRow label="Academic Focus" value={profile.major} /> }
-                { profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} /> }
+            <div className="md:col-span-2 flex justify-between py-3 border-t-2 border-gray-light">
+              { (profile.tech_interests.length > 0 || profile.general_interests.length > 0) && 
+              <div>
+                <h5>Interests</h5>
+                <div className="flex">
+                  { (profile.tech_interests.length > 0) &&
+                  <ul className="mr-12">
+                    {profile.tech_interests.map((interest, idx) => {
+                      return <li key={"tech-" + idx}>{interest}</li>
+                    })}
+                  </ul>
+                  }
+                  <ul className="mr-12">
+                    {profile.general_interests.map((interest, idx) => {
+                      return <li key={"tech-" + idx}>{interest}</li>
+                    })}
+                  </ul>
+                </div>
               </div>
+              }
 
-              <div className="flex items-center gap-4 text-xl text-secondary-light">
-                <SocialIcon label="LinkedIn" href={profile.url_linkedin} icon="bi-linkedin" />
-                <SocialIcon label="Instagram" href={profile.url_instagram} icon="bi-instagram" />
-                <SocialIcon label="X" href={profile.url_twitter} icon="bi-twitter-x" />
-                <SocialIcon label="Facebook" href={profile.url_facebook} icon="bi-facebook" />
-                <SocialIcon label="Website" href={profile.url_website} icon="bi-globe" />
+              { (profile.links.length > 0) && 
+              <div className="md:min-w-75">
+                <h5>Social</h5>
+                {profile.links.map((link, idx) => {
+                  return <SocialLink href={link.url} type={link.type} />
+                })}
               </div>
+              }
             </div>
+
+            
           </div>
         </div>
       </div>
       <Footer />
     </div>
   );
-}
-
-function InfoRow({ label, value }) {
-  if (value !== (null || "")) {
-    return (
-      <div className="grid grid-cols-[70px_1fr] gap-4">
-        <p className="italic text-gray-dark/60 py-0">{label}</p>
-        <p className="font-semibold text-secondary-dark py-0">{value}</p>
-      </div>
-    );
-  }
 }
 
 function IconSquare({ className, title, icon, onClick, small=false, children }) {
@@ -1010,19 +1043,39 @@ function IconSquare({ className, title, icon, onClick, small=false, children }) 
   );
 }
 
-function SocialIcon({ label, href, icon }) {
+function SocialLink({ href, type }) {
   if (href !== null && href !== "") {
-    
+    let icon = "bi-globe";
+    let label = "Personal Website"
+    switch (type) {
+      case "linkedin":
+        icon = "bi-linkedin";
+        label = "LinkedIn";
+        break;
+      case "instagram":
+        icon = "bi-instagram";
+        label = "Instagram";
+        break;
+      case "twitter":
+        icon = "bi-twitter-x";
+        label = "Twitter (X)";
+        break;
+      case "facebook":
+        icon = "bi-facebook";
+        label = "Facebook";
+        break;
+    }
+
     return (
       <a
         href={href}
-        aria-label={label}
-        className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-gray-light bg-white text-secondary-light transition hover:border-primary-light"
+        aria-label={type}
+        className="flex block w-fit mb-2 py-2 px-3 items-center justify-center rounded-md border-2 border-gray-light bg-white text-secondary-light transition-200 hover:border-primary-light"
         onClick={(event) => {
           if (href === "#") event.preventDefault();
         }}
       >
-        <i className={`bi ${icon}`} aria-hidden="true" />
+        <i className={`mr-2 bi ${icon}`} aria-hidden="true" />{label}
       </a>
     );
 
