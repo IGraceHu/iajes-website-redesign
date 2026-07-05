@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Children } from "react";
 
 
@@ -20,9 +20,14 @@ export function MultiSelect({
     required = false,
     size = 8
 }) {
-
-    const [selected, setSelected] = useState(value);
+    const defaultValue = value || [];
+    const [selected, setSelected] = useState(defaultValue);
     const [isChanged, setIsChanged] = useState(false);
+
+    useEffect(() => {
+        // This resets the default value whenever the multiselect is rendered, aka whenever the popup appears.
+        setSelected(defaultValue);
+    }, []);
 
     const options = new Map();
     Children.map(children, child => options.set(child.props.value, child.props.children))

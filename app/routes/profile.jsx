@@ -6,6 +6,7 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { MultiSelect } from "../components/multi-select";
 import { Popup, PopupForm } from "../components/popup";
+import { updateRequired } from "../helpers/form";
 import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import "../styles/profile.css";
 
@@ -162,7 +163,16 @@ async function getProfile(userId) {
 
     profile.tf_interests = profile.tf_interests || [];
 
-    profile.links = profile.links || [];
+    if (data[0].links == "" || data[0].links == null) {
+      data[0].links = [];
+    } else {
+      try {
+        data[0].links = JSON.parse(data[0].links);
+      } catch(e) {
+        data[0].links = [];
+      }
+    }
+    
     profile.resume_pdf_url = profile.resume_pdf_url || "";
 
     return data[0]
@@ -170,30 +180,35 @@ async function getProfile(userId) {
   return error;
 }
 
-async function updateProfile(userId, formData) {
+async function updateProfile(userId, formData, links) {
+  const linksJSON = JSON.stringify(links);
+
   const { error } = await supabase
     .from('users')
     .update({
       fname: formData.get("fname"),
       lname: formData.get("lname"),
-      allow_contact: formData.get("allow-contact") || false,
-      languages: formData.get("languages"),
+      is_seen_by_visitors: formData.get("is-seen-by-visitors"),
+      is_contact_by_visitors: formData.get("is-contact-by-visitors"),
+      is_contact_by_members: formData.get("is-contact-by-members"),
       banner_type: formData.get("banner-type"),
-      tagline: formData.get("tagline"),
-      job_position: formData.get("job-position"),
-      institution: formData.get("institution"),
+      biography: formData.get("biography"),
+
+      engineering_type: formData.getAll("engineering-type"),
+      position_type: formData.getAll("position-type"),
+      title: formData.get("title"),
+      tech_interests: formData.getAll("tech-interests"),
+      general_interests: formData.getAll("general-interests"),
+      is_get_interest_info: formData.get("is-get-interest-info"),
+      
+      university: formData.get("university"),
       country: formData.get("country"),
       region: formData.get("region"),
-      major: formData.get("major"),
-      task_force: formData.get("task-force"),
-      task_force_role: formData.get("task-force-role"),
-      research_interests: formData.get("research-interests"),
-      biography: formData.get("biography"),
-      url_linkedin: formData.get("url-linkedin"),
-      url_instagram: formData.get("url-instagram"),
-      url_twitter: formData.get("url-twitter"),
-      url_facebook: formData.get("url-facebook"),
-      url_website: formData.get("url-website")
+
+      tf_interests: formData.getAll("tf-interests"),
+
+      links: linksJSON,
+      resume_pdf_url: formData.get("resume-pdf-url")
     })
     .eq('id', userId)
   return error;
@@ -305,18 +320,19 @@ function LinksEdit({ id, links, setLinks }) {
     )
 }
 
-function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityList, currentUserId }) {
+function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
-  const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
+  const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
   const [hasError, setHasError] = useState(false);
-  const [draft, setDraft] = useState({});
+  // const [draft, setDraft] = useState({});
+  const draft = profileInfo;
   const [links, setLinks] = useState([])
   const [interestOptions, setInterestOptions] = useState([]);
 
   async function validate(formData) {
     console.log(formData);
     console.log(links);
-    return false;
+    
 
     let isValidated = true;
     const isRequired = {
@@ -329,32 +345,49 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
         break;
       }
     }
+    for (let link of links) {
+      if (link.url == "") {
+          isValidated = false;
+          break;
+      }
+    }
     if (!isValidated) {
       setFormRequired(isRequired);
       return false;
     }
 
-    const update = await updateProfile(userId, formData);
+    const cleanLinks = []
+
+    for (let link of links) {
+      if (link.url.length > 0) {
+          cleanLinks.push(link);
+      }
+    }
+
+    const update = await updateProfile(userId, formData, cleanLinks);
     if (update === null) {
       setShowPopup(false);
       navigate("/profile/" + userId);
     } else {
       setHasError(true);
+      console.log(update);
     }
   }
 
   async function loadInfo() {
-    const profileInfo = await getProfile(userId);
-    setDraft(profileInfo);
-    setLinks(profileInfo.links);
-    setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
+    // const profileInfo = await getProfile(userId);
+    // setDraft(profileInfo);
+    setLinks(draft.links);
+    setFormRequired({ fname: false, lname: false })
+    onEngineeringChange(draft.engineering_type);
+    // console.log(profileInfo);
   }
 
   useEffect(() => {
     if (showPopup) {
       loadInfo();
       setHasError(false);
-      setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
+      setFormRequired({ fname: false, lname: false })
     }
   }, [showPopup])
 
@@ -447,6 +480,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                           /><p>Allow verified IAJES members to contact you?</p>
               </label>
             </div>
+            
             <div>
               <p>Banner Type</p>
               <div className="mt-1">
@@ -465,7 +499,6 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               </div>
             </div>
             
-
             <div className="md:col-span-2">
               <label htmlFor="languages">Languages</label>
               <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
@@ -473,7 +506,6 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 <option value="Other">Other</option>
               </MultiSelect>
             </div>
-            
             
           </div>
         </fieldset>
@@ -484,7 +516,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
             <div className="md:col-span-2">
               <label htmlFor="engineering-type">Type of Engineering</label>
               <MultiSelect id="engineering-type" name="engineering-type" 
-                value={draft?.engineering_type} onChange={onEngineeringChange}
+                value={draft.engineering_type} onChange={onEngineeringChange}
                 className="w-full" size="5">
                   {Array.from(ENGINEERINGDATA.keys()).map(engineeringType => {
                     return <option key={engineeringType} value={engineeringType}>{engineeringType}</option>
@@ -505,7 +537,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
 
             <div>
               <label htmlFor="position-type">Type of Position</label>
-              <MultiSelect id="position-type" name="position-type" value={draft?.position_type} className="w-full" size="4" >
+              <MultiSelect id="position-type" name="position-type" value={draft.position_type} className="w-full" size="4" >
                   <option value="Professor">Professor</option>
                   <option value="Staff">Staff</option>
                   <option value="Researcher">Researcher</option>
@@ -524,9 +556,10 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                   })}
               </MultiSelect>
             </div>
+            
             <div className="md:col-span-2">
               <label htmlFor="general-interests">General Interests</label>
-              <MultiSelect id="general-interests" name="general-interests" value={draft?.general_interests}  className="w-full" size="4" >
+              <MultiSelect id="general-interests" name="general-interests" value={draft.general_interests}  className="w-full" size="4" >
                   <option value="Education">Education</option>
                   <option value="Health">Health</option>
                   <option value="Entrepreneurship">Entrepreneurship</option>
@@ -557,21 +590,21 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
           <div className="mt-3 grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
               <label htmlFor="university">University</label>
-              <select id="university" name="university" className="input-text w-full">
+              <select id="university" name="university" className="input-text w-full" defaultValue={draft.university}>
                 <option selected={draft.university == ""} disabled>-- Select your university --</option>
                 { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.university}>{universityObj.university}</option>) : <></>}
               </select>
             </div>
             <div>
               <label htmlFor="country">Country</label>
-              <select id="country" name="country" className="input-text w-full">
+              <select id="country" name="country" className="input-text w-full" defaultValue={draft.country}>
                 <option selected={draft.country == ""} disabled>-- Select your country --</option>
                 { (COUNTRYDATA) ? COUNTRYDATA.map((country, idx) => <option key={"cou-" + idx} value={country} selected={country == draft.country}>{country}</option>) : <></>}
               </select>
             </div>
             <div>
               <label htmlFor="region">Region</label>
-              <select id="region" name="region" className="input input-text w-full" >
+              <select id="region" name="region" className="input input-text w-full" defaultValue={draft.region}>
                   <option selected={draft.region == ""} disabled>-- Select your region --</option>
                   <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
                   <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
@@ -615,6 +648,7 @@ export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // console.log(loaderData);
 
   const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
@@ -805,7 +839,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} profileInfo={profile} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
       <Popup
         id="profile-photo"
         show={showPhotoPopup}

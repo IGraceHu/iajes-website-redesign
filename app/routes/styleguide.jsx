@@ -391,7 +391,7 @@ Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, co
                             <br />
                             <br />
                             <label htmlFor="form-multiselect">Multi-Select:</label><br />
-                            <MultiSelect id="form-multiselect" className={"input input-text w-full " + formMode}>
+                            <MultiSelect id="form-multiselect" className={"input input-text w-full " + formMode} value={["1", "3"]}>
                                 <option value="1">Option 1</option>
                                 <option value="2">Option 2</option>
                                 <option value="3">Option 3</option>
