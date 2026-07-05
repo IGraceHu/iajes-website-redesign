@@ -330,10 +330,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   const [interestOptions, setInterestOptions] = useState([]);
 
   async function validate(formData) {
-    console.log(formData);
-    console.log(links);
-    
-
     let isValidated = true;
     const isRequired = {
       fname: formData.get('fname') === (null || ""),
@@ -380,7 +376,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
     setLinks(draft.links);
     setFormRequired({ fname: false, lname: false })
     onEngineeringChange(draft.engineering_type);
-    // console.log(profileInfo);
   }
 
   useEffect(() => {
@@ -405,12 +400,10 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
         possibleOptions.push(interest);
       })
     }
-    // console.log(possibleOptions);
     setInterestOptions(possibleOptions);
   }
 
   function onTechInterestChange() {
-    console.log("tech");
   }
 
   function addLink(e) {
@@ -632,11 +625,17 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 { links.map((link, idx) => <LinksEdit key={idx} id={idx} links={links} setLinks={setLinks} />)}
             </div>
             <button className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
-            <label>
-              Resume
-              <br/>
-                <input id="resume-pdf" name="resume-pdf" type="file" />
-            </label>  
+            
+            <div>
+              <label htmlFor="resume-pdf-url">Resume</label>
+                <input
+                  id="resume-pdf-url"
+                  name="resume-pdf-url"
+                  type="text"
+                  className="input-text w-full"
+                  defaultValue={draft.resume_pdf_url} placeholder="Link to resume..."
+                /> 
+              </div>
           </div>        
         </fieldset>
       </div>
@@ -900,7 +899,7 @@ export default function ProfileRoute({ loaderData }) {
         <span className="border-primary-dark border-secondary-light border-secondary-dark"></span>
         
         <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-10 shadow-sm relative z-10 border" + bannerClass}>
-          <div className="grid gap-x-6 gap-y-5 lg:grid-cols-[220px_auto]">
+          <div className="grid gap-x-6 md:gap-y-5 gap-y-1 lg:grid-cols-[220px_auto]">
 
             <div className="flex flex-col items-center text-center p-2">
               <div className="relative -mt-2">
@@ -939,25 +938,17 @@ export default function ProfileRoute({ loaderData }) {
             <div className="flex flex-col">
               <div className="pb-3 border-b-2 border-gray-light">
                 <div className="flex md:flex-row flex-col justify-between items-center">
-                  <p className="font-semibold text-secondary-dark">
+
+                  <p className="font-semibold text-secondary-dark md:mt-0 mt-2">
                     {profile.engineering_type.map((engineering, idx) => {
                       return (idx > 0) ? ", " + engineering : engineering;
                     })}
                   </p>
+
                   <>
-                  { (profile.is_contact_by_members || ((currentUserId != null) && (isVerified))) ?
-                    <button
-                      type="button"
-                      className="md:order-none order-first button flex items-center justify-center gap-3 text-lg font-semibold"
-                      onClick={() => {
-                        window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
-                      }}
-                    >
-                      <i className="bi bi-envelope" aria-hidden="true" />
-                      Contact
-                    </button>
-                    :
-                    (profile.is_contact_by_visitors) ?
+                  { (profile.is_contact_by_members || ((currentUserId != null) && (isVerified))) ||
+                    (profile.is_contact_by_visitors)
+                   ?
                     <button
                       type="button"
                       className="md:order-none order-first button flex items-center justify-center gap-3 text-lg font-semibold"
@@ -972,25 +963,25 @@ export default function ProfileRoute({ loaderData }) {
                     <></>
                   }
                   </>
+
                 </div>
 
-                <div className="">
+                <div className="md:text-left text-center md:mt-0 mt-2">
                   <p>{profile.university}, {profile.country} — <span className="font-semibold text-secondary-dark">{profile.region}</span></p>
                 </div>
+
               </div>
 
               <div className="py-3">
                 {profile.biography}
               </div>
 
-              <div className="mt-auto">
-                <button className="button button-light">Resume<i className="ml-2 bi bi-box-arrow-up-right"></i></button>
-              </div>
             </div>
 
-            <div className="md:col-span-2 flex justify-between py-3 border-t-2 border-gray-light">
+
+            <div className="md:col-span-2 flex flex-wrap justify-between py-3 border-t-2 border-gray-light">
               { (profile.tech_interests.length > 0 || profile.general_interests.length > 0) && 
-              <div>
+              <div className="mr-5 mb-5">
                 <h5>Interests</h5>
                 <div className="flex">
                   { (profile.tech_interests.length > 0) &&
@@ -1010,11 +1001,17 @@ export default function ProfileRoute({ loaderData }) {
               }
 
               { (profile.links.length > 0) && 
-              <div className="md:min-w-75">
+              <div className="mr-5 mb-5">
                 <h5>Social</h5>
                 {profile.links.map((link, idx) => {
-                  return <SocialLink href={link.url} type={link.type} />
+                  return <SocialLink key={"link-" + idx} href={link.url} type={link.type} />
                 })}
+              </div>
+              }
+
+              { (profile.resume_pdf_url.length > 0) && 
+              <div className="relative md:w-auto w-full">
+                <a href={profile.resume_pdf_url} className="block button button-light md:w-auto w-full">Resume<i className="ml-2 bi bi-box-arrow-up-right"></i></a>
               </div>
               }
             </div>
