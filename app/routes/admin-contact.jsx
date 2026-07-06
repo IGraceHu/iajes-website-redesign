@@ -27,9 +27,6 @@ async function getEmailsByUniversity(university) {
     .from('users')
     .select('email')
     .eq('university', university);
-
-    console.log(university);
-    console.log(data);
     
     if (data) {
         const emailList = [];
