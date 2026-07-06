@@ -26,7 +26,10 @@ async function getEmailsByUniversity(university) {
     const { data, error } = await supabase
     .from('users')
     .select('email')
-    .eq('institution', university);
+    .eq('university', university);
+
+    console.log(university);
+    console.log(data);
     
     if (data) {
         const emailList = [];
