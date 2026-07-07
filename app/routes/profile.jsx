@@ -4,8 +4,11 @@ import { supabase } from "../supabase";
 import { Link } from "react-router";
 import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
+import { MultiSelect } from "../components/multi-select";
 import { Popup, PopupForm } from "../components/popup";
+import { updateRequired } from "../helpers/form";
 import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
+import { ROLENAMES, LANGUAGEDATA, ENGINEERINGDATA, COUNTRYDATA } from "../helpers/listdata";
 import "../styles/profile.css";
 import { updateRequired } from "../helpers/form";
 
@@ -23,27 +26,33 @@ export function meta({ loaderData }) {
 
 }
 
-const roleNames = new Map([
-  ["member", "Member"],
-  ["admin-super", "Superadmin"],
-  ["admin-region-jheasa", "Regional Representative (JHEASA)"],
-  ["admin-region-ajcu-na", "Regional Representative (AJCU-NA)"],
-  ["admin-region-ausjal", "Regional Representative (AUSJAL)"],
-  ["admin-region-kircher", "Regional Representative (KIRCHER)"],
-  ["admin-region-ajcu-ap", "Regional Representative (AJCU-AP)"],
-  ["admin-region-ajcu-am", "Regional Representative (AJCU-AM)"],
-  ["admin-tf-rac", "TF Admin (Research & Academic Cooperation)"],
-  ["admin-tf-wis", "TF Admin (Women in STEM)"],
-  ["admin-tf-hea", "TF Admin (Health)"],
-  ["admin-tf-aih", "TF Admin (Artificial Intelligence & Humanity)"],
-  ["admin-tf-esj", "TF Admin (Engineering & Social Justice)"],
-  ["admin-tf-htfi", "TF Admin (Humanitarian Tech & Frugal Innovation)"],
-  ["admin-tf-infr", "TF Admin (Infrastructure)"],
-  ["admin-tf-ene", "TF Admin (Energy)"],
-  ["admin-newsletter", "Newsletter Admin"],
-  ["admin-resources", "Resources Admin"],
-  ["admin-university", "University Representative"]
-]);
+const tempUserData = {
+  fname: "First",
+  lname: "Last",
+  roles: ['member'],
+  is_seen_by_visitors: true,
+  is_contact_by_visitors: true,
+  is_contact_by_members: true,
+  banner_type: 1,
+  biography: "",
+
+  engineering_type: [],
+  position_type: [],
+  title: "",
+  tech_interests: [],
+  general_interests: [],
+  is_get_interest_info: false,
+  
+  university: "",
+  country: "",
+  region: "",
+
+  tf_interests: [],
+
+  links: [],
+  resume_pdf_url: ""
+}
+
 
 async function getTaskForces() {
   const { data, error } = await supabase
@@ -72,33 +81,78 @@ async function getProfile(userId) {
     .from('users')
     .select()
     .eq('id', userId);
-  return data[0] || error;
+  if (data[0]) {
+    const profile = data[0];
+    profile.fname = profile.fname || "";
+    profile.lname = profile.lname || "";
+    profile.roles = profile.roles || ["member"];
+    profile.is_seen_by_visitors = profile.is_seen_by_visitors;
+    profile.is_contact_by_visitors = profile.is_contact_by_visitors;
+    profile.is_contact_by_members = profile.is_contact_by_members;
+    profile.banner_type = profile.banner_type || 1; 
+    profile.biography = profile.biography || "";
+    profile.languages = profile.languages || [];
+
+    profile.engineering_type = profile.engineering_type || [];
+    profile.position_type = profile.position_type || [];
+    profile.title = profile.title || ""
+    profile.tech_interests = profile.tech_interests || [];
+    profile.general_interests = profile.general_interests || [];
+    profile.is_get_interest_info = profile.is_get_interest_info;
+    
+    profile.university = profile.university || "";
+    profile.country = profile.country || "";
+    profile.region = profile.region || "";
+
+    profile.tf_interests = profile.tf_interests || [];
+
+    if (data[0].links == "" || data[0].links == null) {
+      data[0].links = [];
+    } else {
+      try {
+        data[0].links = JSON.parse(data[0].links);
+      } catch(e) {
+        data[0].links = [];
+      }
+    }
+    
+    profile.resume_pdf_url = profile.resume_pdf_url || "";
+
+    return data[0]
+  }
+  return error;
 }
 
-async function updateProfile(userId, formData) {
+async function updateProfile(userId, formData, links) {
+  const linksJSON = JSON.stringify(links);
+
   const { error } = await supabase
     .from('users')
     .update({
       fname: formData.get("fname"),
       lname: formData.get("lname"),
-      allow_contact: formData.get("allow-contact") || false,
-      languages: formData.get("languages"),
+      is_seen_by_visitors: formData.get("is-seen-by-visitors") || false,
+      is_contact_by_visitors: formData.get("is-contact-by-visitors") || false,
+      is_contact_by_members: formData.get("is-contact-by-members") || false,
       banner_type: formData.get("banner-type"),
-      tagline: formData.get("tagline"),
-      job_position: formData.get("job-position"),
-      institution: formData.get("institution"),
+      biography: formData.get("biography"),
+      languages: formData.getAll("languages"),
+
+      engineering_type: formData.getAll("engineering-type"),
+      position_type: formData.getAll("position-type"),
+      title: formData.get("title"),
+      tech_interests: formData.getAll("tech-interests"),
+      general_interests: formData.getAll("general-interests"),
+      is_get_interest_info: formData.get("is-get-interest-info") || false,
+      
+      university: formData.get("university"),
       country: formData.get("country"),
       region: formData.get("region"),
-      major: formData.get("major"),
-      task_force: formData.get("task-force"),
-      task_force_role: formData.get("task-force-role"),
-      research_interests: formData.get("research-interests"),
-      biography: formData.get("biography"),
-      url_linkedin: formData.get("url-linkedin"),
-      url_instagram: formData.get("url-instagram"),
-      url_twitter: formData.get("url-twitter"),
-      url_facebook: formData.get("url-facebook"),
-      url_website: formData.get("url-website")
+
+      tf_interests: formData.getAll("tf-interests"),
+
+      links: linksJSON,
+      resume_pdf_url: formData.get("resume-pdf-url")
     })
     .eq('id', userId)
   return error;
@@ -134,14 +188,21 @@ async function updateProfileImage(userId, imageUrl) {
   return error;
 }
 
+
+
+
+
+
 export async function loader({ params }) {
+  const taskForceList = await getTaskForces();
+  const universityList = await getUniversities();
+  universityList.push({university: "Other"});
+  universityList.push({university: "Not Applicable"});
+
   const person = await getProfile(params.id);
   if (!person) {
     throw new Response("Profile not found", { status: 404 });
   }
-  const taskForceList = await getTaskForces();
-  const universityList = await getUniversities();
-  universityList.push("Other");
   return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
 
@@ -183,23 +244,79 @@ async function checkNewsletterSubscription(email) {
   return !!result.confirmed_at;
 }
 
-function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityList, currentUserId }) {
+
+function LinksEdit({ id, links, setLinks }) {
+  const [linkRequired, setLinkRequired] = useState(false);
+
+    function removeLink(e) {
+        e.preventDefault();
+        setLinks(links.toSpliced(id, 1));
+    }
+
+    function handleTypeChange(e) {
+        setLinks(links.toSpliced(id, 1, {
+            ...links[id],
+            type: e.target.value
+        }));
+    }
+
+    function handleURLChange(e) {
+        setLinks(links.toSpliced(id, 1, {
+            ...links[id],
+            url: e.target.value
+        }));
+        setLinkRequired(e.target.value.length == 0);
+    }
+
+    return (
+        <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
+            <div className="text-sm mb-1 flex justify-between">
+                <div className="text-secondary-dark">Social Link</div>
+                <button className="text-error font-semibold hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeLink(e)}}><i className="bi bi-trash"></i> Remove Link</button>
+            </div>
+            <div className="md:grid grid-cols-[200px_auto] flex flex-col gap-x-5 gap-y-2 pb-2">
+              <div>
+                  <label htmlFor={"link-type-" + id}>Social Link Type:</label><br />
+                  <select id={"link-type-" + id} name={"link-type-" + id} type="text"
+                      className={"input input-text w-full"}
+                      placeholder="Link Type"
+                      value={links[id].type || "personal"}
+                      onChange={(e) => {handleTypeChange(e)}}>
+                    <option value="personal">Personal Website</option>
+                    <option value="linkedin">LinkedIn</option>
+                    <option value="instagram">Instagram</option>
+                    <option value="twitter">Twitter</option>
+                    <option value="facebook">Facebook</option>
+                  </select>
+              </div>
+              <div>
+                  <label htmlFor={"link-url-" + id}>Social Link URL:</label><br />
+                  <input id={"link-url-" + id} name={"link-url-" + id} type="text"
+                      className={"input input-text w-full " + (linkRequired && "input-required")}
+                      placeholder="Link URL"
+                      value={links[id].url}
+                      onChange={(e) => {handleURLChange(e)}} />
+                  <div className="input-error">This field is required.</div>
+              </div>
+            </div>
+        </div>
+    )
+}
+
+function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
-  const [formRequired, setFormRequired] = useState({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false });
+  const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
   const [hasError, setHasError] = useState(false);
-  const [draft, setDraft] = useState({});
   const [subscribeChecked, setSubscribeChecked] = useState(false);
+  const draft = profileInfo;
+  const [links, setLinks] = useState([])
+  const [interestOptions, setInterestOptions] = useState([]);
 
   async function validate(formData) {
     let isValidated = true;
     const isRequired = {
       fname: formData.get('fname') === (null || ""),
       lname: formData.get('lname') === (null || ""),
-      urlLinkedin: (formData.get('url-linkedin') && !formData.get('url-linkedin').match(/https:\/\//)),
-      urlInstagram: (formData.get('url-instagram') && !formData.get('url-instagram').match(/https:\/\//)),
-      urlTwitter: (formData.get('url-twitter') && !formData.get('url-twitter').match(/https:\/\//)),
-      urlFacebook: (formData.get('url-facebook') && !formData.get('url-facebook').match(/https:\/\//)),
-      urlWebsite: (formData.get('url-website') && !formData.get('url-website').match(/https:\/\//))
     }
     for (let value of Object.values(isRequired)) {
       if (value) {
@@ -207,12 +324,35 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
         break;
       }
     }
+    for (let link of links) {
+      if (link.url == "") {
+          isValidated = false;
+          break;
+      }
+    }
     if (!isValidated) {
       setFormRequired(isRequired);
       return false;
     }
 
-    const update = await updateProfile(userId, formData);
+    const cleanLinks = []
+
+    for (let link of links) {
+      if (link.url.length > 0) {
+          cleanLinks.push(link);
+      }
+    }
+
+    // set disabled field values if profile was edited by admin
+    if (currentUserId != userId) {
+      formData.set('is-seen-by-visitors', draft.is_seen_by_visitors);
+      formData.set('is-contact-by-visitors', draft.is_contact_by_visitors);
+      formData.set('is-contact-by-members', draft.is_contact_by_members);
+      formData.set('is-get-interest-info', draft.is_get_interest_info);
+    }
+
+    const update = await updateProfile(userId, formData, cleanLinks);
+
     try {
       const wantsSubscribe = formData.get("subscribe-news") === "on";
       const email = (draft?.email || "").trim().toLowerCase();
@@ -229,15 +369,16 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
       navigate("/profile/" + userId);
     } else {
       setHasError(true);
+      console.log(update);
     }
   }
 
   async function loadInfo() {
-    const profileInfo = await getProfile(userId);
-    setDraft(profileInfo);
-    setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
+    setLinks(draft.links);
+    setFormRequired({ fname: false, lname: false })
+    onEngineeringChange(draft.engineering_type);
     try {
-      const email = (profileInfo?.email || "").trim().toLowerCase();
+      const email = (draft?.email || "").trim().toLowerCase();
       if (email) {
         const subscribed = await checkNewsletterSubscription(email);
         setSubscribeChecked(subscribed);
@@ -251,7 +392,7 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
     if (showPopup) {
       loadInfo();
       setHasError(false);
-      setFormRequired({ fname: false, lname: false, urlLinkedin: false, urlInstagram: false, urlTwitter: false, urlfacebook: false, urlWebsite: false })
+      setFormRequired({ fname: false, lname: false })
     }
   }, [showPopup])
 
@@ -262,18 +403,28 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
     }
   }
 
-  function urlChange(inputName) {
-    const updatedFormRequired = structuredClone(formRequired);
-    updatedFormRequired[inputName] = false;
-    if (updatedFormRequired != formRequired) {
-      setFormRequired(updatedFormRequired);
+  function onEngineeringChange(selected) {
+    const possibleOptions = [];
+    for (let engType of selected) {
+      ENGINEERINGDATA.get(engType).map((interest) => {
+        possibleOptions.push(interest);
+      })
     }
+    setInterestOptions(possibleOptions);
+  }
+
+  function onTechInterestChange() {
+  }
+
+  function addLink(e) {
+        e.preventDefault();
+        setLinks([...links, {url: "", type: "personal"}]);
   }
 
   return (
-    <PopupForm id="profile-edit" className="w-[70vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
-      <h4>Edit Profile</h4>
-      <div className="flex flex-col gap-6">
+    <PopupForm id="profile-edit" className="w-[80vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+       <h4>Edit Profile</h4>
+       <div className="flex flex-col gap-6">
         <fieldset>
           <div className="text-sm font-semibold text-secondary-dark">Personal Information</div>
           <div className="mt-3 grid gap-5 md:grid-cols-2">
@@ -299,36 +450,49 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
               />
               <div className="input-error">This field is required.</div>
             </div>
-            <div className="md:col-span-2">
-              <div className="flex flex-col md:flex-row md:items-center md:gap-6">
-                <label htmlFor="allow-contact" className="checkbox">
-                  <input id="allow-contact" name="allow-contact" type="checkbox"
-                    className={""} defaultChecked={draft.allow_contact}
-                    disabled={currentUserId != userId}
-                  /><p>Allow site visitors without an account and unverified IAJES members to contact you?</p>
-                </label>
 
-                <label htmlFor="subscribe-news" className="checkbox">
-                  <input id="subscribe-news" name="subscribe-news" type="checkbox"
-                    className={""} checked={subscribeChecked} onChange={(e) => setSubscribeChecked(e.target.checked)}
-                    disabled={currentUserId != userId}
-                  /><p>Subscribe to IAJES News</p>
-                </label>
-              </div>
-              <div className="w-full p-2 text-sm text-disabled-light italic">All IAJES members with verified accounts will be able to contact you.</div>
-            </div>
-            <div className="">
-              <label htmlFor="languages">Languages</label>
-              <input
-                id="languages"
-                name="languages"
+            <div className="md:col-span-2">
+              <label htmlFor="biography">Biography</label>
+              <textarea
+                id="biography"
+                name="biography"
                 type="text"
-                className="input-text w-full"
-                defaultValue={draft.languages} placeholder="Languages"
+                className="input-text w-full h-30"
+                defaultValue={draft.biography} placeholder="Biography..."
               />
+
+              <label htmlFor="subscribe-news" className="checkbox">
+                <input id="subscribe-news" name="subscribe-news" type="checkbox"
+                  className={""} checked={subscribeChecked} onChange={(e) => setSubscribeChecked(e.target.checked)}
+                  disabled={currentUserId != userId}
+                /><p>Subscribe to IAJES News</p>
+              </label>
             </div>
+
+            <div className="">
+              <p>Site Visibility</p>
+              <label htmlFor="is-seen-by-visitors" className="checkbox mb-4">
+                  <input id="is-seen-by-visitors" name="is-seen-by-visitors" type="checkbox" 
+                         className={""} defaultChecked={draft.is_seen_by_visitors}
+                         disabled={currentUserId != userId}
+                          /><p>Allow site visitors without an account and unverified IAJES members to see your profile?</p>
+              </label>
+              <label htmlFor="is-contact-by-visitors" className="checkbox mb-4">
+                  <input id="is-contact-by-visitors" name="is-contact-by-visitors" type="checkbox" 
+                         className={""} defaultChecked={draft.is_contact_by_visitors}
+                         disabled={currentUserId != userId}
+                          /><p>Allow site visitors without an account and unverified IAJES members to contact you?</p>
+              </label>
+              <label htmlFor="is-contact-by-members" className="checkbox mb-4">
+                  <input id="is-contact-by-members" name="is-contact-by-members" type="checkbox" 
+                         className={""} defaultChecked={draft.is_contact_by_members}
+                         disabled={currentUserId != userId}
+                          /><p>Allow verified IAJES members to contact you?</p>
+              </label>
+            </div>
+            
             <div>
-              <p>Banner Type:</p>
+              <p>Banner Type</p>
               <div className="mt-1">
                 <label htmlFor="banner-type-0" className="radio-button gray">
                   <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0} /><p>Gray</p>
@@ -344,184 +508,152 @@ function EditPopup({ showPopup, setShowPopup, userId, taskForceList, universityL
                 </label>
               </div>
             </div>
+            
             <div className="md:col-span-2">
-              <label htmlFor="tagline">Tagline</label>
+              <label htmlFor="languages">Languages</label>
+              <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
+                { (LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
+                <option value="Other">Other</option>
+              </MultiSelect>
+            </div>
+            
+          </div>
+        </fieldset>
+
+        <fieldset className="border-t-2 border-gray-light pt-4">
+          <div className="text-sm font-semibold text-secondary-dark">Professional Information</div>
+          <div className="mt-3 grid gap-4 md:grid-cols-2">
+            <div className="md:col-span-2">
+              <label htmlFor="engineering-type">Type of Engineering</label>
+              <MultiSelect id="engineering-type" name="engineering-type" 
+                value={draft.engineering_type} onChange={onEngineeringChange}
+                className="w-full" size="5">
+                  {Array.from(ENGINEERINGDATA.keys()).map(engineeringType => {
+                    return <option key={engineeringType} value={engineeringType}>{engineeringType}</option>
+                  })}
+              </MultiSelect>
+            </div>
+
+            <div>
+              <label htmlFor="title">Title</label>
               <input
-                id="tagline"
-                name="tagline"
+                id="title"
+                name="title"
                 type="text"
                 className="input-text w-full"
-                defaultValue={draft.tagline} placeholder="Tagline"
+                defaultValue={draft.title} placeholder="Title"
               />
             </div>
+
+            <div>
+              <label htmlFor="position-type">Type of Position</label>
+              <MultiSelect id="position-type" name="position-type" value={draft.position_type} className="w-full" size="4" >
+                  <option value="Professor">Professor</option>
+                  <option value="Staff">Staff</option>
+                  <option value="Researcher">Researcher</option>
+                  <option value="Student">Student</option>
+              </MultiSelect>
+            </div>
+
             <div className="md:col-span-2">
-              <label htmlFor="biography">Biography</label>
-              <textarea
-                id="biography"
-                name="biography"
-                type="text"
-                className="input-text w-full h-40"
-                defaultValue={draft.biography} placeholder="Biography..."
-              />
+              <label htmlFor="tech-interests">Technical Interests</label>
+              { (interestOptions.length == 0) && <div className="w-full p-2 text-sm text-disabled-light italic">Please select Type of Engineering options to see Technical Interest options.</div>}
+              <MultiSelect id="tech-interests" name="tech-interests"
+                value={draft?.tech_interests} onChange={onTechInterestChange}
+                className="input input-text w-full" >
+                  {interestOptions.map(interest => {
+                    return <option key={interest} value={interest}>{interest}</option>
+                  })}
+              </MultiSelect>
+            </div>
+            
+            <div className="md:col-span-2">
+              <label htmlFor="general-interests">General Interests</label>
+              <MultiSelect id="general-interests" name="general-interests" value={draft.general_interests}  className="w-full" size="4" >
+                  <option value="Education">Education</option>
+                  <option value="Health">Health</option>
+                  <option value="Entrepreneurship">Entrepreneurship</option>
+                  <option value="Industry Relations/Cooperations">Industry Relations/Cooperations</option>
+                  <option value="Environment">Environment</option>
+                  <option value="Internationalization">Internationalization</option>
+                  <option value="Policies">Policies</option>
+                  <option value="University Management">University Management</option>
+                  <option value="Social Impact">Social Impact</option>
+                  <option value="Rankings and Acreditations">Rankings and Acreditations</option>
+              </MultiSelect>
+            </div>
+
+            <div className="md:col-span-2">
+              <label htmlFor="is-get-interest-info" className="checkbox">
+                <input id="is-get-interest-info" name="is-get-interest-info" type="checkbox" 
+                        className={""} defaultChecked={draft.is_get_interest_info}
+                        disabled={currentUserId != userId}
+                        /><p>Are you interested in receiving information about colleagues with similar areas of interest?</p>
+              </label>
+              <div className="w-full p-2 text-sm text-disabled-light italic">This is a beta functionality that will connect people with similar interests automatically and share professional information to facilitate collaborations among IAJES participants.</div>
             </div>
           </div>
         </fieldset>
 
         <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Academic Information</div>
+          <div className="text-sm font-semibold text-secondary-dark">Affliations</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
-            <div>
-              <label htmlFor="job-position">Job/Position</label>
-              <input
-                id="job-position"
-                name="job-position"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.job_position} placeholder="Job/Position"
-              />
-            </div>
-            <div>
-              <label htmlFor="major">Academic Focus</label>
-              <input
-                id="major"
-                name="major"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.major} placeholder="Academic Focus"
-              />
-            </div>
             <div className="md:col-span-2">
-              <label htmlFor="institution">University</label>
-              <input list="institution" name="institution" className="input-text w-full" placeholder="University" defaultValue={draft.institution} />
-              <datalist
-                id="institution"
-                className="input-text w-full"
-              >
-                {(universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.institution}>{universityObj.university}</option>) : <></>}
-              </datalist>
+              <label htmlFor="university">University</label>
+              <select id="university" name="university" className="input-text w-full" defaultValue={draft.university}>
+                <option selected={draft.university == ""} disabled>-- Select your university --</option>
+                { (universityList) ? universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} selected={universityObj.university == draft.university}>{universityObj.university}</option>) : <></>}
+              </select>
             </div>
             <div>
               <label htmlFor="country">Country</label>
-              <input
-                id="country"
-                name="country"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.country} placeholder="Country"
-              />
+              <select id="country" name="country" className="input-text w-full" defaultValue={draft.country}>
+                <option value="" disabled>-- Select your country --</option>
+                { (COUNTRYDATA) ? COUNTRYDATA.map((country, idx) => <option key={"cou-" + idx} value={country}>{country}</option>) : <></>}
+              </select>
             </div>
             <div>
               <label htmlFor="region">Region</label>
-              <select id="region" name="region" className="input input-text w-full" >
-                <option value="">Select a region</option>
-                <option value="JHEASA" selected={"JHEASA" == draft.region}>JHEASA</option>
-                <option value="AJCU-NA" selected={"AJCU-NA" == draft.region}>AJCU - NA</option>
-                <option value="AUSJAL" selected={"AUSJAL" == draft.region}>AUSJAL</option>
-                <option value="KIRCHER" selected={"KIRCHER" == draft.region}>KIRCHER</option>
-                <option value="AJCU-AP" selected={"AJCU-AP" == draft.region}>AJCU - AP</option>
-                <option value="AJCU-AM" selected={"AJCU-AM" == draft.region}>AJCU - AM</option>
+              <select id="region" name="region" className="input input-text w-full" defaultValue={draft.region}>
+                  <option value="" disabled>-- Select your region --</option>
+                  <option value="JHEASA">JHEASA</option>
+                  <option value="AJCU-NA">AJCU - NA</option>
+                  <option value="AUSJAL">AUSJAL</option>
+                  <option value="KIRCHER">KIRCHER</option>
+                  <option value="AJCU-AP">AJCU - AP</option>
+                  <option value="AJCU-AM">AJCU - AM</option>
               </select>
             </div>
             <div className="md:col-span-2">
-              <label htmlFor="research-interests">Research Interests</label>
-              <textarea
-                id="research-interests"
-                name="research-interests"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.research_interests} placeholder="Research interests..."
-              />
+              <label htmlFor="tf-interests">Are there any Task Forces you would be interested in joining?</label>
+              <MultiSelect id="tf-interests" name="tf-interests" value={draft?.tf_interests} className="w-full" size="4" >
+                  {taskForceList.map(tf => {
+                    return <option key={tf.url} value={tf.name}>{tf.name}</option>
+                  })}
+              </MultiSelect>
             </div>
           </div>
         </fieldset>
 
         <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Task Force</div>
-          <div className="mt-3 grid gap-4 md:grid-cols-2">
+          <div className="text-sm font-semibold text-secondary-dark">Social</div>
+          <div className="mt-3 grid gap-4">
             <div>
-              <label htmlFor="task-force">Task Force</label>
-              <select id="task-force" name="task-force" className="input input-text w-full" >
-                <option value="">None</option>
-                {(taskForceList) ? taskForceList.map((taskForce) => <option key={taskForce.url} value={taskForce.name} selected={taskForce.name == draft.task_force}>{taskForce.name}</option>) : <></>}
-              </select>
+                { links.map((link, idx) => <LinksEdit key={idx} id={idx} links={links} setLinks={setLinks} />)}
             </div>
+            <button className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
+            
             <div>
-              <label htmlFor="task-force-role">Task Force Role</label>
-              <input
-                id="task-force-role"
-                name="task-force-role"
-                type="text"
-                className="input-text w-full"
-                defaultValue={draft.task_force_role} placeholder="Task Force Role"
-              />
-            </div>
-          </div>
-        </fieldset>
-
-        <fieldset className="border-t-2 border-gray-light pt-4">
-          <div className="text-sm font-semibold text-secondary-dark">Social Links</div>
-          <div className="mt-3 grid gap-x-3 gap-y-5 md:grid-cols-2">
-            <div>
-              <label htmlFor="linkedin">LinkedIn</label>
-              <input
-                id="linkedin"
-                name="url-linkedin"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlLinkedin && "input-required")}
-                onChange={() => urlChange("urlLinkedin")}
-                defaultValue={draft.url_linkedin} placeholder="LinkedIn URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div>
-              <label htmlFor="instagram">Instagram</label>
-              <input
-                id="instagram"
-                name="url-instagram"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlInstagram && "input-required")}
-                onChange={() => urlChange("urlInstagram")}
-                defaultValue={draft.url_instagram} placeholder="Instagram URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div>
-              <label htmlFor="x">X (Twitter)</label>
-              <input
-                id="x"
-                name="url-twitter"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlTwitter && "input-required")}
-                onChange={() => urlChange("urlTwittern")}
-                defaultValue={draft.url_twitter} placeholder="X (Twitter) URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div>
-              <label htmlFor="facebook">Facebook</label>
-              <input
-                id="facebook"
-                name="url-facebook"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlFacebook && "input-required")}
-                onChange={() => urlChange("urlFacebook")}
-                defaultValue={draft.url_facebook} placeholder="Facebook URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-            <div className="md:col-span-2">
-              <label htmlFor="website">Website</label>
-              <input
-                id="website"
-                name="url-website"
-                type="text"
-                className={"input input-text w-full " + (formRequired?.urlWebsite && "input-required")}
-                onChange={() => urlChange("urlWebsite")}
-                defaultValue={draft.url_website} placeholder="Website URL"
-              />
-              <div className="input-error">Invalid link.</div>
-            </div>
-          </div>
+              <label htmlFor="resume-pdf-url">Resume</label>
+                <input
+                  id="resume-pdf-url"
+                  name="resume-pdf-url"
+                  type="text"
+                  className="input-text w-full"
+                  defaultValue={draft.resume_pdf_url} placeholder="Link to resume..."
+                /> 
+              </div>
+          </div>        
         </fieldset>
       </div>
     </PopupForm>
@@ -532,6 +664,7 @@ export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
 
+  // console.log(loaderData);
 
   const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
@@ -722,7 +855,7 @@ export default function ProfileRoute({ loaderData }) {
 
   return (
     <div className="min-h-screen bg-white">
-      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
+      <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} profileInfo={profile} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
       <Popup
         id="profile-photo"
         show={showPhotoPopup}
@@ -781,11 +914,12 @@ export default function ProfileRoute({ loaderData }) {
 
         {/* This makes the colors able to be used by border cuz Tailwind gets confused if it isnt explicitly written */}
         <span className="border-primary-dark border-secondary-light border-secondary-dark"></span>
+        
+        <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-10 shadow-sm relative z-10 border" + bannerClass}>
+          <div className="grid gap-x-6 md:gap-y-5 gap-y-1 lg:grid-cols-[220px_auto]">
 
-        <div className={"-mt-16 rounded-md border-2 bg-white p-6 pt-16 shadow-sm relative z-10 border" + bannerClass}>
-          <div className="grid gap-8 lg:grid-cols-[220px_1fr_300px]">
-            <div className="flex flex-col items-center text-center">
-              <div className="relative -mt-8">
+            <div className="flex flex-col items-center text-center p-2">
+              <div className="relative -mt-2">
                 <div className="flex h-36 w-36 items-center justify-center rounded-full border-3 border-primary-dark bg-gray-light overflow-hidden">
                   {profilePhotoContent}
                 </div>
@@ -803,62 +937,112 @@ export default function ProfileRoute({ loaderData }) {
               </h4>
               <div className="text-center">
                 {profile.roles.map((role, idx) => {
-                  if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
-                    return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 last:me-0 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
-                  }
+                    if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
+                        return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 last:me-0 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{ROLENAMES.get(role)}</div>
+                    }
                 })}
               </div>
-              <p className="mt-1 text-sm text-gray-dark/70">
-                {profile.job_position}{profile?.job_position && profile?.institution && <span>, </span>}{profile.institution}
+              <p className="text-sm text-gray-dark/70">
+                {profile.title}
               </p>
-              <p className="text-sm italic text-gray-dark/60">{profile.tagline}</p>
+              <p className="text-sm text-gray-dark/70">
+                {profile.position_type.map((position, idx) => {
+                    return (idx > 0) ? ", " + position : position;
+                })}
+              </p>
             </div>
 
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col w-full gap-4 sm:flex-row">
-                {profile?.task_force &&
-                  <a href={"/task-forces/" + userTaskForceUrl} className="w-full rounded-md border-2 border-primary-light bg-white px-4 py-3 text-sm hover:border-secondary-light">
-                    <p className="font-semibold text-secondary-dark">{profile.task_force}</p>
-                    {profile?.task_force_role &&
-                      <p className="mt-1 text-gray-dark/70">{profile.task_force_role}</p>}
-                  </a>
-                }
+            <div className="flex flex-col">
+              <div className="pb-3 border-b-2 border-gray-light">
+                <div className="flex md:flex-row flex-col justify-between items-center">
 
-                {(profile?.allow_contact || ((currentUserId != null) && (isVerified))) &&
-                  <button
-                    type="button"
-                    className="button flex w-full items-center justify-center gap-3 text-lg font-semibold"
-                    onClick={() => {
-                      window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
-                    }}
-                  >
-                    <i className="bi bi-envelope" aria-hidden="true" />
-                    Contact
-                  </button>
-                }
+                  <p className="font-semibold text-secondary-dark md:mt-0 mt-2">
+                    {profile.engineering_type.map((engineering, idx) => {
+                      return (idx > 0) ? ", " + engineering : engineering;
+                    })}
+                  </p>
+
+                  <>
+                  { (profile.is_contact_by_members || ((currentUserId != null) && (isVerified))) ||
+                    (profile.is_contact_by_visitors)
+                   ?
+                    <button
+                      type="button"
+                      className="md:order-none order-first button flex items-center justify-center gap-3 text-lg font-semibold"
+                      onClick={() => {
+                        window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
+                      }}
+                    >
+                      <i className="bi bi-envelope" aria-hidden="true" />
+                      Contact
+                    </button>
+                    :
+                    <></>
+                  }
+                  </>
+
+                </div>
+
+                <div className="md:text-left text-center md:mt-0 mt-2">
+                  <p>{profile.university}, {profile.country} — <span className="font-semibold text-secondary-dark">{profile.region}</span></p>
+                </div>
+
+                <div className="md:text-left text-center mt-2">
+                  <p className="text-sm">
+                    {(profile.languages.length > 0) && <span className="font-semibold text-secondary-dark">Languages: </span>}
+                    {profile.languages.map((language, idx) => {
+                      return (idx > 0) ? ", " + language : language;
+                    })}
+                  </p>
+                </div>
+
               </div>
 
-              <p className="leading-relaxed text-gray-dark/80">{profile.biography}</p>
+              <div className="py-3">
+                {profile.biography}
+              </div>
+
             </div>
 
-            <div className="flex flex-col gap-5 border-t border-gray-light pt-5 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
-              <div className="grid gap-3 text-sm">
-                {profile.region && <InfoRow label="Region" value={profile.region} />}
-                {profile.country && <InfoRow label="Country" value={profile.country} />}
-                {profile.languages && <InfoRow label="Languages" value={profile.languages} />}
-                {profile.institution && <InfoRow label="Institution" value={profile.institution} />}
-                {profile.major && <InfoRow label="Academic Focus" value={profile.major} />}
-                {profile.research_interests && <InfoRow label="Research Interests" value={profile.research_interests} />}
-              </div>
 
-              <div className="flex items-center gap-4 text-xl text-secondary-light">
-                <SocialIcon label="LinkedIn" href={profile.url_linkedin} icon="bi-linkedin" />
-                <SocialIcon label="Instagram" href={profile.url_instagram} icon="bi-instagram" />
-                <SocialIcon label="X" href={profile.url_twitter} icon="bi-twitter-x" />
-                <SocialIcon label="Facebook" href={profile.url_facebook} icon="bi-facebook" />
-                <SocialIcon label="Website" href={profile.url_website} icon="bi-globe" />
+            <div className="md:col-span-2 flex flex-wrap justify-between py-3 border-t-2 border-gray-light">
+              { (profile.tech_interests.length > 0 || profile.general_interests.length > 0) && 
+              <div className="mr-5 mb-5">
+                <h5>Interests</h5>
+                <div className="flex">
+                  { (profile.tech_interests.length > 0) &&
+                  <ul className="mr-12">
+                    {profile.tech_interests.map((interest, idx) => {
+                      return <li key={"tech-" + idx}>{interest}</li>
+                    })}
+                  </ul>
+                  }
+                  <ul className="mr-12">
+                    {profile.general_interests.map((interest, idx) => {
+                      return <li key={"tech-" + idx}>{interest}</li>
+                    })}
+                  </ul>
+                </div>
               </div>
+              }
+
+              { (profile.links.length > 0) && 
+              <div className="mr-5 mb-5">
+                <h5>Social</h5>
+                {profile.links.map((link, idx) => {
+                  return <SocialLink key={"link-" + idx} href={link.url} type={link.type} />
+                })}
+              </div>
+              }
+
+              { (profile.resume_pdf_url.length > 0) && 
+              <div className="relative md:w-auto w-full">
+                <a href={profile.resume_pdf_url} className="block button button-light md:w-auto w-full">Resume<i className="ml-2 bi bi-box-arrow-up-right"></i></a>
+              </div>
+              }
             </div>
+
+            
           </div>
         </div>
       </div>
@@ -867,18 +1051,7 @@ export default function ProfileRoute({ loaderData }) {
   );
 }
 
-function InfoRow({ label, value }) {
-  if (value !== (null || "")) {
-    return (
-      <div className="grid grid-cols-[70px_1fr] gap-4">
-        <p className="italic text-gray-dark/60 py-0">{label}</p>
-        <p className="font-semibold text-secondary-dark py-0">{value}</p>
-      </div>
-    );
-  }
-}
-
-function IconSquare({ className, title, icon, onClick, small = false, children }) {
+function IconSquare({ className, title, icon, onClick, small=false, children }) {
   const size = small ? "h-10 w-10 " : "h-12 min-w-12 ";
   return (
     <button
@@ -893,19 +1066,39 @@ function IconSquare({ className, title, icon, onClick, small = false, children }
   );
 }
 
-function SocialIcon({ label, href, icon }) {
+function SocialLink({ href, type }) {
   if (href !== null && href !== "") {
+    let icon = "bi-globe";
+    let label = "Personal Website"
+    switch (type) {
+      case "linkedin":
+        icon = "bi-linkedin";
+        label = "LinkedIn";
+        break;
+      case "instagram":
+        icon = "bi-instagram";
+        label = "Instagram";
+        break;
+      case "twitter":
+        icon = "bi-twitter-x";
+        label = "Twitter (X)";
+        break;
+      case "facebook":
+        icon = "bi-facebook";
+        label = "Facebook";
+        break;
+    }
 
     return (
       <a
         href={href}
-        aria-label={label}
-        className="flex h-10 w-10 items-center justify-center rounded-md border-2 border-gray-light bg-white text-secondary-light transition hover:border-primary-light"
+        aria-label={type}
+        className="flex block w-fit mb-2 py-2 px-3 items-center justify-center rounded-md border-2 border-gray-light bg-white text-secondary-light transition-200 hover:border-primary-light"
         onClick={(event) => {
           if (href === "#") event.preventDefault();
         }}
       >
-        <i className={`bi ${icon}`} aria-hidden="true" />
+        <i className={`mr-2 bi ${icon}`} aria-hidden="true" />{label}
       </a>
     );
 
