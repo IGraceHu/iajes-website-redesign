@@ -6,7 +6,6 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { MultiSelect } from "../components/multi-select";
 import { Popup, PopupForm } from "../components/popup";
-import { updateRequired } from "../helpers/form";
 import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import { ROLENAMES, LANGUAGEDATA, ENGINEERINGDATA, COUNTRYDATA } from "../helpers/listdata";
 import "../styles/profile.css";
@@ -457,7 +456,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 id="biography"
                 name="biography"
                 type="text"
-                className="input-text w-full h-30"
+                className="input-text w-full h-30 mb-3"
                 defaultValue={draft.biography} placeholder="Biography..."
               />
 
