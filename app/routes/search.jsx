@@ -1,8 +1,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { supabase } from "../supabase";
-import { checkCurrentAuth } from "../helpers/permissions";
+import { checkCurrentAuth, currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import { Menu } from "../components/menu";
+import { MultiSelect } from "../components/multi-select";
 import { Pagination } from "../components/pagination";
 import { Footer } from "../components/footer";
 
@@ -38,8 +39,24 @@ const roleNames = new Map([
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select('id, fname, lname, email, image_url, roles, job_position, region, country, institution, major, research_interests, task_force_role, task_force')
+    .select('id, fname, lname, image_url, roles, is_seen_by_visitors, engineering_type, position_type, title, tech_interests, general_interests, country, university, region');
   if (data) {
+    for (let i = 0; i < data.length; i++) {
+      data[i].fname = data[i].fname || "";
+      data[i].lname = data[i].lname || "";
+      data[i].roles = data[i].roles || ["member"];
+      data[i].is_seen_by_visitors = data[i].is_seen_by_visitors;
+
+      data[i].engineering_type = data[i].engineering_type || [];
+      data[i].position_type = data[i].position_type || [];
+      data[i].title = data[i].title || ""
+      data[i].tech_interests = data[i].tech_interests || [];
+      data[i].general_interests = data[i].general_interests || [];
+      
+      data[i].university = data[i].university || "";
+      data[i].country = data[i].country || "";
+      data[i].region = data[i].region || "";
+    }
     data.sort((a, b) => { return `${a.fname} ${a.lname}` > `${b.fname} ${b.lname}` ? 1 : -1 });
   }
   return data || error;
@@ -74,71 +91,123 @@ const allowedRoles = ["admin-university", "admin-region-jheasa", "admin-region-a
 
 export default function SearchRoute({ loaderData }) {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   
   useEffect(() => {
-      return checkCurrentAuth(setIsAdmin, allowedRoles)
+      // Listen for auth state changes
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        currentHasPermissions(session?.user.id, allowedRoles).then(
+            function (hasPermissions) { setIsAdmin(hasPermissions); }
+        );
+        if (session?.user.id) {
+          getUserVerified(session?.user.id).then(
+            function (verified) {setIsVerified(verified)}
+          )
+        }
+      });
+  
+      // Check current session on mount
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        currentHasPermissions(session?.user.id, allowedRoles).then(
+            function (hasPermissions) { setIsAdmin(hasPermissions); }
+        );
+        if (session?.user.id) {
+          getUserVerified(session?.user.id).then(
+            function (verified) {setIsVerified(verified)}
+          )
+        }
+        if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
+        setShowPopup(true);
+      }
+      });
+  
+      return () => subscription.unsubscribe();
   }, []);
 
 
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedTaskForces, setSelectedTaskForces] = useState([]);
   const [selectedCountries, setSelectedCountries] = useState([]);
-  const [selectedMajors, setSelectedMajors] = useState([]);
+  const [selectedUniversities, setSelectedUniversities] = useState([]);
+  const [selectedEngineering, setSelectedEngineering] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState([]);
 
 
-  const taskForceOptionsSet = new Set(loaderData.map((person) => { return (person.task_force != "") ? person.task_force : null }));
-  taskForceOptionsSet.delete(null);
+  const countryOptionsSet = new Set();
+  const universityOptionsSet = new Set();
+  const engineeringOptionSet = new Set();
 
-  const countryOptionsSet = new Set(loaderData.map((person) => { return (person.country != "") ? person.country : null }));
+  for (let person of loaderData) {
+    countryOptionsSet.add(person.country);
+    universityOptionsSet.add(person.university);
+    for (let engineering of person.engineering_type) {
+      engineeringOptionSet.add(engineering);
+    }
+  }
+
   countryOptionsSet.delete(null);
+  countryOptionsSet.delete("");
+  universityOptionsSet.delete(null);
+  universityOptionsSet.delete("");
+  engineeringOptionSet.delete(null);
+  engineeringOptionSet.delete("");
 
-  const majorOptionsSet = new Set(loaderData.map((person) => { return (person.major != "") ? person.major : null }));
-  majorOptionsSet.delete(null);
 
-  const taskForceOptions = useMemo(
-    () => Array.from(taskForceOptionsSet).sort(),
-    []
-  );
   const countryOptions = useMemo(
     () => Array.from(countryOptionsSet).sort(),
     []
   );
-  const majorOptions = useMemo(
-    () => Array.from(majorOptionsSet).sort(),
+  const universityOptions = useMemo(
+    () => Array.from(universityOptionsSet).sort(),
     []
   );
+  const engineeringOptions = useMemo(
+    () => Array.from(engineeringOptionSet).sort(),
+    []
+  );
+
+  function includesElements(baseArray, includeArray) {
+    for (let arrayItem of includeArray) {
+      if (baseArray.includes(arrayItem)) {
+        return true;
+      }
+    }
+    return false;
+  }
 
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
     return loaderData.filter((person) => {
+      const isSeen = isVerified || person.is_seen_by_visitors;
 
       const matchesQuery =
         !q ||
         person?.fname?.toLowerCase().includes(q) ||
         person?.lname?.toLowerCase().includes(q) ||
-        person?.institution?.toLowerCase().includes(q) ||
-        person?.major?.toLowerCase().includes(q) ||
+        person?.university?.toLowerCase().includes(q) ||
+        person?.engineering_type?.toLowerCase().includes(q) ||
         person?.languages?.toLowerCase().includes(q) ||
-        person?.research_interests?.toLowerCase().includes(q);
+        person?.tech_interests?.toLowerCase().includes(q);
 
-      const matchesTaskForce =
-        selectedTaskForces.length === 0 || selectedTaskForces.includes(person.task_force);
+      const matchesRegion =
+        selectedRegion.length === 0 || selectedRegion.includes(person.region);
       const matchesCountry =
         selectedCountries.length === 0 || selectedCountries.includes(person.country);
-      const matchesMajor =
-        selectedMajors.length === 0 || selectedMajors.includes(person.major);
+      const matchesUniversity =
+        selectedUniversities.length === 0 || selectedUniversities.includes(person.university);
+      const matchesEngineering =
+        selectedEngineering.length === 0 || includesElements(selectedEngineering, person.engineering_type);
 
-      return matchesQuery && matchesTaskForce && matchesCountry && matchesMajor;
+      return isSeen && matchesQuery && matchesCountry && matchesUniversity && matchesEngineering && matchesRegion;
     });
-  }, [query, selectedTaskForces, selectedCountries, selectedMajors]);
+  }, [query, selectedCountries, selectedUniversities, selectedEngineering, selectedRegion]);
 
   // Reset to page 1 whenever query or filters change
   useEffect(() => {
     setPage(0);
-  }, [query, selectedTaskForces, selectedCountries]);
+  }, [query, selectedCountries, selectedUniversities, selectedEngineering, selectedRegion]);
 
   const totalPages = Math.ceil(results.length / PAGE_SIZE);
   const startIdx = page * PAGE_SIZE;
@@ -151,7 +220,7 @@ export default function SearchRoute({ loaderData }) {
   }, [page, totalPages]);
 
   const hasQuery = query.trim().length > 0;
-  const hasActiveFilters = selectedTaskForces.length > 0 || selectedCountries.length > 0;
+  const hasActiveFilters = (selectedCountries.length > 0) || (selectedUniversities.length > 0) || (selectedEngineering.length > 0);
   const showHeader = hasQuery || hasActiveFilters;
   const isEmptyState = !showHeader;
 
@@ -165,6 +234,18 @@ export default function SearchRoute({ loaderData }) {
       setQuery(value);
     }
   };
+
+  function onCountryChange(countrySelected) {
+    setSelectedCountries(countrySelected);
+  }
+
+  function onUniversityChange(universitySelected) {
+    setSelectedUniversities(universitySelected);
+  }
+
+  function onEngineeringChange(engineeringSelected) {
+    setSelectedEngineering(engineeringSelected);
+  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -228,32 +309,87 @@ export default function SearchRoute({ loaderData }) {
         <div
           id="search-filters"
           aria-hidden={!showFilters}
-          className={`origin-top overflow-hidden transition-all duration-300 ease-out ${
+          className={`origin-top overflow-hidden transition-all duration-300 ease-out rounded-md border-2 border-gray-light bg-white p-4 ${
             showFilters
-              ? "mt-4 max-h-[800px] translate-y-0 opacity-100 pointer-events-auto"
+              ? "mt-4 max-h-[1000px] translate-y-0 opacity-100 pointer-events-auto  overflow-y-auto"
               : "mt-0 max-h-0 -translate-y-2 opacity-0 pointer-events-none"
           }`}
         >
-          <div className="rounded-md border-2 border-gray-light bg-white p-4">
-            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3">
-              <FilterGroup
-                title="Task Force"
-                options={taskForceOptions}
-                selected={selectedTaskForces}
-                onToggle={(value) => toggleSelection(setSelectedTaskForces, value)}
-              />
-              <FilterGroup
-                title="Country"
-                options={countryOptions}
-                selected={selectedCountries}
-                onToggle={(value) => toggleSelection(setSelectedCountries, value)}
-              />
-              <FilterGroup
-                title="Academic Focus"
-                options={majorOptions}
-                selected={selectedMajors}
-                onToggle={(value) => toggleSelection(setSelectedMajors, value)}
-              />
+          <div className="">
+            <fieldset disabled={!showFilters} className="grid gap-6 md:grid-cols-3 grid-cols-1">
+              <div className="md:col-span-3">
+                <div className="mb-3 font-semibold text-secondary-dark">Region</div>
+                <div className="flex flex-wrap gap-2">
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("JHEASA")} onChange={() => toggleSelection(setSelectedRegion, "JHEASA")} />
+                    <p className="text-gray-dark/80">JHEASA</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AJCU-NA")} onChange={() => toggleSelection(setSelectedRegion, "AJCU-NA")} />
+                    <p className="text-gray-dark/80">AJCU - NA</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AUSJAL")} onChange={() => toggleSelection(setSelectedRegion, "AUSJAL")} />
+                    <p className="text-gray-dark/80">AUSJAL</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("KIRCHER")} onChange={() => toggleSelection(setSelectedRegion, "KIRCHER")} />
+                    <p className="text-gray-dark/80">KIRCHER</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AJCU-AP")} onChange={() => toggleSelection(setSelectedRegion, "AJCU-AP")} />
+                    <p className="text-gray-dark/80">AJCU - AP</p>
+                  </label>
+
+                  <label className="checkbox">
+                    <input type="checkbox" checked={selectedRegion.includes("AJCU-AM")} onChange={() => toggleSelection(setSelectedRegion, "AJCU-AM")} />
+                    <p className="text-gray-dark/80">AJCU - AM</p>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <p className="font-semibold text-secondary-dark">Type of Engineering</p>
+                <MultiSelect
+                  name="engineering"
+                  selected={selectedEngineering}
+                  onChange={onEngineeringChange}
+                  className="w-full"
+                  size="5"
+                >
+                  { (engineeringOptions) ? engineeringOptions.map((engineering, idx) => <option key={"eng-" + idx} value={engineering}>{engineering}</option>) : <></>}
+                </MultiSelect>
+              </div>
+              
+              <div>
+                <p className="font-semibold text-secondary-dark">Country</p>
+                <MultiSelect
+                  name="country"
+                  selected={selectedCountries}
+                  onChange={onCountryChange}
+                  className="w-full"
+                  size="5"
+                >
+                  { (countryOptions) ? countryOptions.map((country, idx) => <option key={"cou-" + idx} value={country}>{country}</option>) : <></>}
+                </MultiSelect>
+              </div>
+
+              <div>
+                <p className="font-semibold text-secondary-dark">University</p>
+                <MultiSelect
+                  name="university"
+                  selected={selectedUniversities}
+                  onChange={onUniversityChange}
+                  className="w-full"
+                  size="5"
+                >
+                  { (universityOptions) ? universityOptions.map((university, idx) => <option key={"uni-" + idx} value={university}>{university}</option>) : <></>}
+                </MultiSelect>
+              </div>
             </fieldset>
           </div>
         </div>
@@ -286,28 +422,6 @@ export default function SearchRoute({ loaderData }) {
   );
 }
 
-function FilterGroup({ title, options, selected, onToggle }) {
-  if (options.length > 0) {
-    return (
-      <div>
-        <div className="mb-3 font-semibold text-secondary-dark">{title}</div>
-        <div className="flex flex-col gap-2">
-          {options.map((option) => (
-            <label key={option} className="checkbox">
-              <input
-                type="checkbox"
-                checked={selected.includes(option)}
-                onChange={() => onToggle(option)}
-              />
-              <p className="text-gray-dark/80">{formatFilterLabel(option)}</p>
-            </label>
-          ))}
-        </div>
-      </div>
-    );
-  }
-}
-
 function PersonResultCard({ person }) {
   return (
     <a
@@ -321,7 +435,7 @@ function PersonResultCard({ person }) {
           handleNavigate();
         }
       }}
-      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-3"
+      className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-[310px_auto]"
     >
       <div className="flex items-center gap-4">
         <div
@@ -338,49 +452,63 @@ function PersonResultCard({ person }) {
             <i className="bi bi-person-fill text-[40px] text-secondary-dark/60" aria-hidden="true" />
           )}
         </div>
+
         <div>
-          <div className="text-xl font-semibold text-secondary-dark">{person.fname} {person.lname}</div>
-          <div className="mt-2">
+          <div className="text-xl font-semibold text-secondary-dark mb-2">{person.fname} {person.lname}</div>
+          <div className="">
             {person.roles.map((role, idx) => {
                 if (role.startsWith("admin-region") || role.startsWith("admin-university")) {
                     return <div key={"role-" + idx} className="text-xs inline-block me-2 mb-2 px-2 py-1 shrink-0 text-secondary-light border-2 border-primary-light border-2 rounded-md">{roleNames.get(role)}</div>
                 }
             })}
           </div>
+          <p className="text-disabled-dark">{person.title}</p>
           <div className="mb-1 italic text-secondary-light">
-            {person.job_position}
-            <br />
-            {person.institution}
+            {person.university}
           </div>
         </div>
       </div>
+      
+      <div>
+        <div className="pb-2 border-b-2 border-gray-light grid md:grid-cols-2 grid-cols-1 gap-x-2">
+            <p className="font-semibold text-secondary-dark">
+              {person.engineering_type.map((engineering, idx) => {
+                return (idx > 0) ? ", " + engineering : engineering;
+              })}
+            </p>
 
-      <div className="flex flex-col text-sm text-gray-dark/80 gap-2">
-        <div className="font-semibold text-secondary-dark">
-          {person.region}
-          { person?.region && person?.country && <span> | </span>}
-          {person.country}
-        </div>
-        <div className="">
-          { person?.major && <>
-            <span className="mr-1 italic">Academic Focus</span> <span className="font-semibold text-secondary-dark">{person.major}</span>
-          </>}
-        </div>
+            <p>
+              {person.country}{(person.country.length > 0 && person.region.length > 0) && (" — ") }<span className="font-semibold text-secondary-dark">{person.region}</span>
+            </p>
 
-        <div>
-        { person.task_force && <>
-          <span className="mr-1 italic">Task Force</span> <span className="font-semibold text-secondary-dark">{person.task_force}</span>
-          </>
-        }
-      </div>
+            <p className="text-sm text-gray-dark/70">
+              {person.position_type.map((position, idx) => {
+                  return (idx > 0) ? ", " + position : position;
+              })}
+            </p>
+
+          </div>
+
+          <div className="mt-2">
+            { (person.tech_interests.length > 0 || person.general_interests.length > 0) && 
+              <div className="flex flex-wrap">
+                { (person.tech_interests.length > 0) &&
+                <ul className="mr-12">
+                  {person.tech_interests.map((interest, idx) => {
+                    return <li key={"tech-" + idx}>{interest}</li>
+                  })}
+                </ul>
+                }
+                <ul className="mr-12">
+                  {person.general_interests.map((interest, idx) => {
+                    return <li key={"tech-" + idx}>{interest}</li>
+                  })}
+                </ul>
+              </div>
+              }
+          </div>
       </div>
       
-      <div className="text-sm text-gray-dark/80 md:block hidden">
-        { person?.research_interests && <>
-          <span className="block italic">Research Interests</span> 
-          <p className="font-semibold text-secondary-dark">{person.research_interests}</p>
-        </>}
-      </div>
       
       
     </a>

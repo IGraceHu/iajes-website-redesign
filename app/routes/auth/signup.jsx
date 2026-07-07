@@ -82,12 +82,12 @@ async function signUp(data) {
           created_at: authData.user.created_at,
           last_sign_in: authData.user.last_sign_in_at || new Date().toISOString(),
           email: data.email,
-          role: "member",
+          roles: ["member"],
           verified: isVerified,
           subscribed: data.subscribe,
-          institution: universityDetails?.university,
-          country: universityDetails?.country,
-          region: universityDetails?.region,
+          university: universityDetails?.university || "",
+          country: universityDetails?.country || "",
+          region: universityDetails?.region || "",
         }]);
 
       if (dbError) {
