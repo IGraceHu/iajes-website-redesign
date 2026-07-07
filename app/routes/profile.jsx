@@ -445,7 +445,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             </div>
             
             <div className="md:col-span-2">
-              <label htmlFor="languages">Languages</label>
+              <label htmlFor="languages">Languages <span className="text-disabled-light italic">(Select one or more.)</span></label>
               <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
                 { (LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
                 <option value="Other">Other</option>
@@ -459,7 +459,8 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
           <div className="text-sm font-semibold text-secondary-dark">Professional Information</div>
           <div className="mt-3 grid gap-4 md:grid-cols-2">
             <div className="md:col-span-2">
-              <label htmlFor="engineering-type">Type of Engineering</label>
+              <label htmlFor="engineering-type">Types of Engineering <span className="text-disabled-light italic">(Select one or more.)</span></label>
+              <div className="w-full py-2 text-sm text-disabled-light italic">Please select the type(s) of engineering that best describes your professional background.</div>
               <MultiSelect id="engineering-type" name="engineering-type" 
                 value={draft.engineering_type} onChange={onEngineeringChange}
                 className="w-full" size="5">
@@ -470,7 +471,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             </div>
 
             <div>
-              <label htmlFor="title">Title</label>
+              <label htmlFor="title">Current Professional Title</label>
               <input
                 id="title"
                 name="title"
@@ -481,7 +482,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             </div>
 
             <div>
-              <label htmlFor="position-type">Type of Position</label>
+              <label htmlFor="position-type">Types of Position <span className="text-disabled-light italic">(Select one or more.)</span></label>
               <MultiSelect id="position-type" name="position-type" value={draft.position_type} className="w-full" size="4" >
                   <option value="Professor">Professor</option>
                   <option value="Staff">Staff</option>
@@ -491,8 +492,8 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             </div>
 
             <div className="md:col-span-2">
-              <label htmlFor="tech-interests">Technical Interests</label>
-              { (interestOptions.length == 0) && <div className="w-full p-2 text-sm text-disabled-light italic">Please select Type of Engineering options to see Technical Interest options.</div>}
+              <label htmlFor="tech-interests">Technical Interests <span className="text-disabled-light italic">(Select one or more.)</span></label>
+              { (interestOptions.length == 0) && <div className="w-full py-2 text-sm text-disabled-light italic">Please select Type of Engineering options to see Technical Interest options.</div>}
               <MultiSelect id="tech-interests" name="tech-interests"
                 value={draft?.tech_interests} onChange={onTechInterestChange}
                 className="input input-text w-full" >
@@ -503,7 +504,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             </div>
             
             <div className="md:col-span-2">
-              <label htmlFor="general-interests">General Interests</label>
+              <label htmlFor="general-interests">General Interests <span className="text-disabled-light italic">(Select one or more.)</span></label>
               <MultiSelect id="general-interests" name="general-interests" value={draft.general_interests}  className="w-full" size="4" >
                   <option value="Education">Education</option>
                   <option value="Health">Health</option>
@@ -515,6 +516,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                   <option value="University Management">University Management</option>
                   <option value="Social Impact">Social Impact</option>
                   <option value="Rankings and Acreditations">Rankings and Acreditations</option>
+                  <option value="Other">Other</option>
               </MultiSelect>
             </div>
 
