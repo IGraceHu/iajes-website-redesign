@@ -39,7 +39,7 @@ const roleNames = new Map([
 async function getPeople() {
   const { data, error } = await supabase
     .from('users')
-    .select('id, fname, lname, roles, is_seen_by_visitors, engineering_type, position_type, title, tech_interests, general_interests, country, university, region');
+    .select('id, fname, lname, image_url, roles, is_seen_by_visitors, engineering_type, position_type, title, tech_interests, general_interests, country, university, region');
   if (data) {
     for (let i = 0; i < data.length; i++) {
       data[i].fname = data[i].fname || "";

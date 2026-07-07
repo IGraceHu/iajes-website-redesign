@@ -196,6 +196,7 @@ export async function loader({ params }) {
   const taskForceList = await getTaskForces();
   const universityList = await getUniversities();
   universityList.push({university: "Other"});
+  universityList.push({university: "Not Applicable"});
 
   const person = await getProfile(params.id);
   if (!person) {
