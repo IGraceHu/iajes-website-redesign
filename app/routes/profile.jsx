@@ -10,6 +10,10 @@ import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import { ROLENAMES, LANGUAGEDATA, ENGINEERINGDATA, COUNTRYDATA } from "../helpers/listdata";
 import "../styles/profile.css";
 import { updateRequired } from "../helpers/form";
+// NOTE: adjust this path if newsletter.server.js lives somewhere else in your project.
+// This import (and everything it pulls in, like supabaseAdmin) is safe here because it is
+// only ever called from the `action` export below, which React Router only runs on the server.
+import { isSubscribed, subscribeConfirmedUser, unsubscribeByEmail } from "../server/newsletter.server";
 
 export function meta({ loaderData }) {
   if (loaderData?.person?.fname) {
@@ -32,6 +36,7 @@ const tempUserData = {
   is_seen_by_visitors: true,
   is_contact_by_visitors: true,
   is_contact_by_members: true,
+  is_subscribed: false,
   banner_type: 1,
   biography: "",
 
@@ -116,6 +121,11 @@ async function getProfile(userId) {
     }
     
     profile.resume_pdf_url = profile.resume_pdf_url || "";
+
+    // Newsletter subscription lives in its own admin-only table, so it's
+    // looked up separately here (this function only ever runs server-side,
+    // inside the `loader` below).
+    profile.is_subscribed = profile.email ? await isSubscribed(profile.email) : false;
 
     return data[0]
   }
@@ -205,42 +215,58 @@ export async function loader({ params }) {
   return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
 
+// Called from the client (see validate() in EditPopup) to add/remove the
+// subscriber row. This posts back to this same route, so no new route is
+// needed - React Router just runs the `action` export below on the server.
 async function syncNewsletterSubscription(email, wantsSubscribe) {
   if (!email || !email.includes("@")) {
     return null;
   }
 
-  const response = await fetch("/profile-subscribe", {
+  const body = new FormData();
+  body.set("intent", "sync-newsletter");
+  body.set("email", email);
+  body.set("subscribe", wantsSubscribe ? "true" : "false");
+
+  const response = await fetch(window.location.pathname, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ op: wantsSubscribe ? "subscribe" : "unsubscribe", email }),
+    body,
   });
 
   const result = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(result.message || "Unable to update newsletter subscription.");
+  if (!response.ok || result?.error) {
+    throw new Error(result?.error || "Unable to update newsletter subscription.");
   }
 
   return result;
 }
 
-async function checkNewsletterSubscription(email) {
-  if (!email || !email.includes("@")) {
-    return false;
+// Server-side action for this route. Handles the newsletter add/remove so
+// the service-role supabaseAdmin client never has to touch the browser.
+export async function action({ request }) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "sync-newsletter") {
+    const email = (formData.get("email") || "").toString().trim().toLowerCase();
+    const wantsSubscribe = formData.get("subscribe") === "true";
+
+    if (!email || !email.includes("@")) {
+      return Response.json({ error: "A valid email is required." }, { status: 400 });
+    }
+
+    try {
+      const result = wantsSubscribe
+        ? await subscribeConfirmedUser(email)
+        : await unsubscribeByEmail(email);
+      return Response.json(result);
+    } catch (err) {
+      console.error("Newsletter sync error:", err);
+      return Response.json({ error: "Unable to update newsletter subscription." }, { status: 500 });
+    }
   }
 
-  const response = await fetch("/profile-subscribe", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ op: "check", email }),
-  });
-
-  const result = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    throw new Error(result.message || "Unable to check newsletter subscription.");
-  }
-
-  return !!result.confirmed_at;
+  return Response.json({ error: "Unknown intent." }, { status: 400 });
 }
 
 
@@ -306,7 +332,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
   const [hasError, setHasError] = useState(false);
-  const [subscribeChecked, setSubscribeChecked] = useState(false);
   const draft = profileInfo;
   const [links, setLinks] = useState([])
   const [interestOptions, setInterestOptions] = useState([]);
@@ -348,6 +373,9 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       formData.set('is-contact-by-visitors', draft.is_contact_by_visitors);
       formData.set('is-contact-by-members', draft.is_contact_by_members);
       formData.set('is-get-interest-info', draft.is_get_interest_info);
+      // disabled checkboxes aren't included in FormData at all, so without this
+      // an admin saving someone else's profile would silently unsubscribe them
+      formData.set('subscribe-news', draft.is_subscribed ? 'on' : '');
     }
 
     const update = await updateProfile(userId, formData, cleanLinks);
@@ -355,10 +383,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
     try {
       const wantsSubscribe = formData.get("subscribe-news") === "on";
       const email = (draft?.email || "").trim().toLowerCase();
-      const result = await syncNewsletterSubscription(email, wantsSubscribe);
-      if (result?.success) {
-        alert(wantsSubscribe ? "Successfully subscribed to IAJES News." : "Successfully unsubscribed from IAJES News.");
-      }
+      await syncNewsletterSubscription(email, wantsSubscribe);
     } catch (err) {
       console.error('Subscription update error', err);
     }
@@ -376,15 +401,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
     setLinks(draft.links);
     setFormRequired({ fname: false, lname: false })
     onEngineeringChange(draft.engineering_type);
-    try {
-      const email = (draft?.email || "").trim().toLowerCase();
-      if (email) {
-        const subscribed = await checkNewsletterSubscription(email);
-        setSubscribeChecked(subscribed);
-      }
-    } catch (err) {
-      console.error('Error checking subscription', err);
-    }
   }
 
   useEffect(() => {
@@ -462,7 +478,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
 
               <label htmlFor="subscribe-news" className="checkbox">
                 <input id="subscribe-news" name="subscribe-news" type="checkbox"
-                  className={""} checked={subscribeChecked} onChange={(e) => setSubscribeChecked(e.target.checked)}
+                  className={""} defaultChecked={draft.is_subscribed}
                   disabled={currentUserId != userId}
                 /><p>Subscribe to IAJES News</p>
               </label>
@@ -511,11 +527,11 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             <div className="md:col-span-2">
               <label htmlFor="languages">Languages</label>
               <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
-                { (LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
+                {(LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
                 <option value="Other">Other</option>
               </MultiSelect>
             </div>
-            
+
           </div>
         </fieldset>
 

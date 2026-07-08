@@ -46,6 +46,8 @@ export async function publishNewsletter(newsletterId) {
     return { sent: (subscribers || []).length };
 }
 
+// FOR LANDING and NEWSLETTER SUBSCRIPTION FORMS
+
 export async function sendConfirmationEmail(email, subscriber_token) {
     const subject = "IAJES News - Confirm Subscription";
     const confirmUrl = `https://iajes-website--iajes-site.us-east4.hosted.app/subscribe?token=${subscriber_token}`;
@@ -128,5 +130,82 @@ export async function unsubscribeByToken(token) {
         .delete()
         .eq("subscriber_token", token);
     if (error) throw error;
+    return { unsubscribed: true };
+}
+
+// FOR PROFILE & SIGNUP SUBSCRIPTION CHECKBOXES
+
+//check if user is subscribed
+export async function isSubscribed(email) {
+    const { data, error } = await supabaseAdmin
+        .from("newsletter subscribers")
+        .select("email")
+        .eq("email", email)
+        .not("confirmed_at", "is", null) //CHECK
+        .limit(1)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    return !!data; // !! makes into a boolean (double NOT)
+}
+
+export async function subscribeConfirmedUser(email) {
+    const { data, error } = await supabaseAdmin
+        .from("newsletter subscribers")
+        .select("subscriber_token, confirmed_at")
+        .eq("email", email)
+        .limit(1)
+        .maybeSingle();
+
+    if (error) throw error;
+
+    const now = new Date().toISOString();
+
+    // Already subscribed and confirmed //CHECK
+    if (data?.confirmed_at) {
+        return { subscribed: true, already: true };
+    }
+
+    // Exists but hasn't been confirmed yet
+    if (data) {
+        const { error: updateError } = await supabaseAdmin
+            .from("newsletter subscribers")
+            .update({ confirmed_at: now })
+            .eq("email", email);
+
+        if (updateError) throw updateError;
+
+        return { subscribed: true, confirmedExisting: true };
+    }
+
+    // Doesn't exist yet
+    const token =
+        globalThis.crypto?.randomUUID?.() ??
+        require("crypto").randomUUID();
+
+    const { error: insertError } = await supabaseAdmin
+        .from("newsletter subscribers")
+        .insert([
+            {
+                email,
+                subscriber_token: token,
+                confirmed_at: now,
+            },
+        ]);
+
+    if (insertError) throw insertError;
+
+    return { subscribed: true, created: true };
+}
+
+export async function unsubscribeByEmail(email) {
+    const { error } = await supabaseAdmin
+        .from("newsletter subscribers")
+        .delete()
+        .eq("email", email);
+
+    if (error) throw error;
+
     return { unsubscribed: true };
 }
