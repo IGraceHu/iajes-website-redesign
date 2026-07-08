@@ -373,6 +373,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       formData.set('is-contact-by-visitors', draft.is_contact_by_visitors);
       formData.set('is-contact-by-members', draft.is_contact_by_members);
       formData.set('is-get-interest-info', draft.is_get_interest_info);
+      
       // disabled checkboxes aren't included in FormData at all, so without this
       // an admin saving someone else's profile would silently unsubscribe them
       formData.set('subscribe-news', draft.is_subscribed ? 'on' : '');

@@ -140,7 +140,6 @@ async function signUp(data) {
           email: data.email,
           roles: ["member"],
           verified: isVerified,
-          subscribed: data.subscribe,
           university: universityDetails?.university || "",
           country: universityDetails?.country || "",
           region: universityDetails?.region || "",
