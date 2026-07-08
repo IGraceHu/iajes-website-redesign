@@ -2,7 +2,8 @@ import { Menu } from "../components/menu"
 import { Footer } from "../components/footer.jsx"
 import { Subscribe } from "../components/subscribe.jsx"
 import { NewsletterList } from "../components/newsletter-components.jsx"
-import { useState, useMemo } from "react"
+import { checkCurrentAuth } from "../helpers/permissions"
+import { useState, useMemo, useEffect } from "react"
 
 // Shared mock archive used for viewer and archive controls
 const MOCK_ARCHIVE = [
@@ -66,13 +67,22 @@ export function meta() {
     ];
 }
 
-export function NewsletterViewer({ latestDate }) {
+export function NewsletterViewer({ latestDate, isNewsletterAdmin }) {
     return (
         <>
             <div className="flex flex-col items-center lg:px-40 px-10 py-20 duration-200">
                 <div className="w-full space-y-5">
-                    <h1>IAJES News</h1>
-                    <div className="text-sm text-gray-dark">{latestDate || "—"}</div>
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <h1>IAJES News</h1>
+                            <div className="text-sm text-gray-dark">{latestDate || "—"}</div>
+                        </div>
+                        {isNewsletterAdmin && (
+                            <a href="/newsletter/drafts" className="button button-light whitespace-nowrap">
+                                Newsletter Drafts
+                            </a>
+                        )}
+                    </div>
                     <div className="flex flex-row justify-center">
                         <div className="h-[90vh] w-full bg-gray-light rounded-md">
                             <p>Newsletter PDF Viewer</p>
@@ -180,6 +190,11 @@ export function NewsletterArchive({ onSelect = () => { } }) {
 
 export default function Newsletter() {
     const [mode, setMode] = useState("member");
+    const [isNewsletterAdmin, setIsNewsletterAdmin] = useState(false);
+
+    useEffect(() => {
+        return checkCurrentAuth(setIsNewsletterAdmin, ["admin-newsletter"]);
+    }, []);
 
     const latestDate = useMemo(() => {
         const all = MOCK_ARCHIVE.flatMap((g) => g.newsletters);
@@ -190,7 +205,7 @@ export default function Newsletter() {
 
     return (
         <div className="bg-white items-center text-black">
-            <Menu currentEndUrl="/newsletter"/>
+            <Menu currentEndUrl="/newsletter" />
             <div className="lg:px-40 px-10 py-20 duration-200 flex items-center justify-end space-x-2 hidden">
                 <div className="text-sm text-gray-600">Debug mode:</div>
                 <button className={`button ${mode === 'member' ? 'button' : 'button-light'}`} onClick={() => setMode('member')}>Member</button>
@@ -198,7 +213,7 @@ export default function Newsletter() {
                 <button className={`button ${mode === 'admin' ? 'button' : 'button-light'}`} onClick={() => setMode('admin')}>Admin</button>
             </div>
 
-            <NewsletterViewer latestDate={latestDate} />
+            <NewsletterViewer latestDate={latestDate} isNewsletterAdmin={isNewsletterAdmin} />
             <Subscribe />
             <NewsletterArchive />
             <Footer />

@@ -3,6 +3,9 @@ import { NavLink, useNavigate } from "react-router";
 import { Popup } from "../../components/popup";
 import { updateRequired } from "../../helpers/form";
 import { supabase } from "../../supabase";
+// This import (and everything it pulls in, like supabaseAdmin) is safe here because it is
+// only ever called from the `action` export below, which React Router only runs on the server.
+import { subscribeConfirmedUser, unsubscribeByEmail } from "../../server/newsletter.server";
 
 export function meta() {
   return [
@@ -23,6 +26,59 @@ async function getUniversityDetailsByEmailDomain(emailDomain) {
 }
 
 
+// Posts back to this same route, so no new route is needed - React Router
+// just runs the `action` export below on the server.
+async function syncNewsletterSubscription(email, wantsSubscribe) {
+  if (!email || !email.includes("@")) {
+    return null;
+  }
+
+  const body = new FormData();
+  body.set("intent", "sync-newsletter");
+  body.set("email", email);
+  body.set("subscribe", wantsSubscribe ? "true" : "false");
+
+  const response = await fetch(window.location.pathname, {
+    method: "POST",
+    body,
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result?.error) {
+    throw new Error(result?.error || "Unable to update newsletter subscription.");
+  }
+
+  return result;
+}
+
+// Server-side action for this route. Handles the newsletter add so the
+// service-role supabaseAdmin client never has to touch the browser.
+export async function action({ request }) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "sync-newsletter") {
+    const email = (formData.get("email") || "").toString().trim().toLowerCase();
+    const wantsSubscribe = formData.get("subscribe") === "true";
+
+    if (!email || !email.includes("@")) {
+      return Response.json({ error: "A valid email is required." }, { status: 400 });
+    }
+
+    try {
+      const result = wantsSubscribe
+        ? await subscribeConfirmedUser(email)
+        : await unsubscribeByEmail(email);
+      return Response.json(result);
+    } catch (err) {
+      console.error("Newsletter sync error:", err);
+      return Response.json({ error: "Unable to update newsletter subscription." }, { status: 500 });
+    }
+  }
+
+  return Response.json({ error: "Unknown intent." }, { status: 400 });
+}
+
 /*
   Returns { success: true } once user is authenticated
   Returns { success: false, message: "..." } if an error has occurred
@@ -31,9 +87,9 @@ async function signUp(data) {
   try {
     const emailDomain = data.email.slice(data.email.indexOf("@"));
     const { data: verifiedEmailDomain, error: domainError } = await supabase
-    .from('verified email domains')
-    .select()
-    .eq('domain', emailDomain);
+      .from('verified email domains')
+      .select()
+      .eq('domain', emailDomain);
     if (domainError) {
       return domainError;
     }
@@ -84,7 +140,6 @@ async function signUp(data) {
           email: data.email,
           roles: ["member"],
           verified: isVerified,
-          subscribed: data.subscribe,
           university: universityDetails?.university || "",
           country: universityDetails?.country || "",
           region: universityDetails?.region || "",
@@ -93,6 +148,15 @@ async function signUp(data) {
       if (dbError) {
         console.error("Error syncing to users table:", dbError);
         return { success: false, message: "Account was created but failed to save user profile. Please try signing in." };
+      }
+
+      // If user opted into newsletter during sign up, ensure newsletter subscribers contains a confirmed row
+      if (data.subscribe) {
+        try {
+          await syncNewsletterSubscription(data.email, true);
+        } catch (err) {
+          console.error('Error syncing newsletter subscription on signup', err);
+        }
       }
     }
 

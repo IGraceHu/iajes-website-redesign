@@ -22,3 +22,11 @@ runConfig:
   # See https://firebase.google.com/docs/app-hosting/configure#secret-parameters
   # - variable: MY_SECRET
   #   secret: mySecretRef
+
+# UNUSED, only necessary if we use Google Secret Manager
+# env:
+#   - variable: SUPABASE_URL
+#     secret: SUPABASE_URL
+
+#   - variable: SUPABASE_SERVICE_ROLE_KEY
+#     secret: SUPABASE_SERVICE_ROLE_KEY

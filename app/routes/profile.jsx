@@ -6,10 +6,14 @@ import { Menu } from "../components/menu";
 import { Footer } from "../components/footer";
 import { MultiSelect } from "../components/multi-select";
 import { Popup, PopupForm } from "../components/popup";
-import { updateRequired } from "../helpers/form";
 import { currentHasPermissions, getUserVerified } from "../helpers/permissions";
 import { ROLENAMES, LANGUAGEDATA, ENGINEERINGDATA, COUNTRYDATA } from "../helpers/listdata";
 import "../styles/profile.css";
+import { updateRequired } from "../helpers/form";
+// NOTE: adjust this path if newsletter.server.js lives somewhere else in your project.
+// This import (and everything it pulls in, like supabaseAdmin) is safe here because it is
+// only ever called from the `action` export below, which React Router only runs on the server.
+import { isSubscribed, subscribeConfirmedUser, unsubscribeByEmail } from "../server/newsletter.server";
 
 export function meta({ loaderData }) {
   if (loaderData?.person?.fname) {
@@ -19,10 +23,10 @@ export function meta({ loaderData }) {
     ];
   }
   return [
-      { title: "Profile" },
-      { name: "", content: "" },
-    ];
-  
+    { title: "Profile" },
+    { name: "", content: "" },
+  ];
+
 }
 
 const tempUserData = {
@@ -32,6 +36,7 @@ const tempUserData = {
   is_seen_by_visitors: true,
   is_contact_by_visitors: true,
   is_contact_by_members: true,
+  is_subscribed: false,
   banner_type: 1,
   biography: "",
 
@@ -117,6 +122,11 @@ async function getProfile(userId) {
     
     profile.resume_pdf_url = profile.resume_pdf_url || "";
 
+    // Newsletter subscription lives in its own admin-only table, so it's
+    // looked up separately here (this function only ever runs server-side,
+    // inside the `loader` below).
+    profile.is_subscribed = profile.email ? await isSubscribed(profile.email) : false;
+
     return data[0]
   }
   return error;
@@ -200,11 +210,65 @@ export async function loader({ params }) {
 
   const person = await getProfile(params.id);
   if (!person) {
-        throw new Response("Profile not found", { status: 404 });
-    }
-  
+    throw new Response("Profile not found", { status: 404 });
+  }
   return { person: person, taskForceList: taskForceList, universityList: universityList };
 }
+
+// Called from the client (see validate() in EditPopup) to add/remove the
+// subscriber row. This posts back to this same route, so no new route is
+// needed - React Router just runs the `action` export below on the server.
+async function syncNewsletterSubscription(email, wantsSubscribe) {
+  if (!email || !email.includes("@")) {
+    return null;
+  }
+
+  const body = new FormData();
+  body.set("intent", "sync-newsletter");
+  body.set("email", email);
+  body.set("subscribe", wantsSubscribe ? "true" : "false");
+
+  const response = await fetch(window.location.pathname, {
+    method: "POST",
+    body,
+  });
+
+  const result = await response.json().catch(() => ({}));
+  if (!response.ok || result?.error) {
+    throw new Error(result?.error || "Unable to update newsletter subscription.");
+  }
+
+  return result;
+}
+
+// Server-side action for this route. Handles the newsletter add/remove so
+// the service-role supabaseAdmin client never has to touch the browser.
+export async function action({ request }) {
+  const formData = await request.formData();
+  const intent = formData.get("intent");
+
+  if (intent === "sync-newsletter") {
+    const email = (formData.get("email") || "").toString().trim().toLowerCase();
+    const wantsSubscribe = formData.get("subscribe") === "true";
+
+    if (!email || !email.includes("@")) {
+      return Response.json({ error: "A valid email is required." }, { status: 400 });
+    }
+
+    try {
+      const result = wantsSubscribe
+        ? await subscribeConfirmedUser(email)
+        : await unsubscribeByEmail(email);
+      return Response.json(result);
+    } catch (err) {
+      console.error("Newsletter sync error:", err);
+      return Response.json({ error: "Unable to update newsletter subscription." }, { status: 500 });
+    }
+  }
+
+  return Response.json({ error: "Unknown intent." }, { status: 400 });
+}
+
 
 function LinksEdit({ id, links, setLinks }) {
   const [linkRequired, setLinkRequired] = useState(false);
@@ -268,7 +332,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
   const [hasError, setHasError] = useState(false);
-  // const [draft, setDraft] = useState({});
   const draft = profileInfo;
   const [links, setLinks] = useState([])
   const [interestOptions, setInterestOptions] = useState([]);
@@ -310,9 +373,22 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       formData.set('is-contact-by-visitors', draft.is_contact_by_visitors);
       formData.set('is-contact-by-members', draft.is_contact_by_members);
       formData.set('is-get-interest-info', draft.is_get_interest_info);
+      
+      // disabled checkboxes aren't included in FormData at all, so without this
+      // an admin saving someone else's profile would silently unsubscribe them
+      formData.set('subscribe-news', draft.is_subscribed ? 'on' : '');
     }
 
     const update = await updateProfile(userId, formData, cleanLinks);
+
+    try {
+      const wantsSubscribe = formData.get("subscribe-news") === "on";
+      const email = (draft?.email || "").trim().toLowerCase();
+      await syncNewsletterSubscription(email, wantsSubscribe);
+    } catch (err) {
+      console.error('Subscription update error', err);
+    }
+
     if (update === null) {
       setShowPopup(false);
       navigate("/profile/" + userId);
@@ -323,8 +399,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   }
 
   async function loadInfo() {
-    // const profileInfo = await getProfile(userId);
-    // setDraft(profileInfo);
     setLinks(draft.links);
     setFormRequired({ fname: false, lname: false })
     onEngineeringChange(draft.engineering_type);
@@ -339,10 +413,10 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   }, [showPopup])
 
   function checkEmpty(value, inputName) {
-      const updatedFormRequired = updateRequired(value, inputName, formRequired);
-      if (updatedFormRequired != formRequired) {
-        setFormRequired(updatedFormRequired);
-      }
+    const updatedFormRequired = updateRequired(value, inputName, formRequired);
+    if (updatedFormRequired != formRequired) {
+      setFormRequired(updatedFormRequired);
+    }
   }
 
   function onEngineeringChange(selected) {
@@ -399,9 +473,16 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 id="biography"
                 name="biography"
                 type="text"
-                className="input-text w-full h-30"
+                className="input-text w-full h-30 mb-3"
                 defaultValue={draft.biography} placeholder="Biography..."
               />
+
+              <label htmlFor="subscribe-news" className="checkbox">
+                <input id="subscribe-news" name="subscribe-news" type="checkbox"
+                  className={""} defaultChecked={draft.is_subscribed}
+                  disabled={currentUserId != userId}
+                /><p>Subscribe to IAJES News</p>
+              </label>
             </div>
 
             <div className="">
@@ -430,16 +511,16 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
               <p>Banner Type</p>
               <div className="mt-1">
                 <label htmlFor="banner-type-0" className="radio-button gray">
-                      <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0}/><p>Gray</p>
+                  <input id="banner-type-0" type="radio" name="banner-type" value="0" defaultChecked={draft.banner_type == 0} /><p>Gray</p>
                 </label>
                 <label htmlFor="banner-type-1" className="radio-button green">
-                    <input id="banner-type-1" type="radio" name="banner-type" value="1" defaultChecked={draft.banner_type == 1}/><p>Green</p>
+                  <input id="banner-type-1" type="radio" name="banner-type" value="1" defaultChecked={draft.banner_type == 1} /><p>Green</p>
                 </label>
                 <label htmlFor="banner-type-2" className="radio-button blue">
-                    <input id="banner-type-2" type="radio" name="banner-type" value="2" defaultChecked={draft.banner_type == 2}/><p>Blue</p>
+                  <input id="banner-type-2" type="radio" name="banner-type" value="2" defaultChecked={draft.banner_type == 2} /><p>Blue</p>
                 </label>
                 <label htmlFor="banner-type-3" className="radio-button dark-blue">
-                    <input id="banner-type-3" type="radio" name="banner-type" value="3" defaultChecked={draft.banner_type == 3}/><p>Dark Blue</p>
+                  <input id="banner-type-3" type="radio" name="banner-type" value="3" defaultChecked={draft.banner_type == 3} /><p>Dark Blue</p>
                 </label>
               </div>
             </div>
@@ -447,11 +528,11 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             <div className="md:col-span-2">
               <label htmlFor="languages">Languages <span className="text-disabled-light italic">(Select one or more.)</span></label>
               <MultiSelect id="languages" name="languages" value={draft?.languages} className="w-full" size="6" >
-                { (LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
+                {(LANGUAGEDATA) ? LANGUAGEDATA.map((language, idx) => <option key={"lan-" + idx} value={language}>{language}</option>) : <></>}
                 <option value="Other">Other</option>
               </MultiSelect>
             </div>
-            
+
           </div>
         </fieldset>
 
@@ -641,11 +722,11 @@ export default function ProfileRoute({ loaderData }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setCurrentUserId(session?.user.id ?? null);
       currentHasPermissions(session?.user.id).then(
-          function (hasPermissions) { setIsAdmin(hasPermissions); }
+        function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
       if (session?.user.id) {
         getUserVerified(session?.user.id).then(
-          function (verified) {setIsVerified(verified)}
+          function (verified) { setIsVerified(verified) }
         )
       }
     });
@@ -654,16 +735,16 @@ export default function ProfileRoute({ loaderData }) {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setCurrentUserId(session?.user.id ?? null);
       currentHasPermissions(session?.user.id).then(
-          function (hasPermissions) { setIsAdmin(hasPermissions); }
+        function (hasPermissions) { setIsAdmin(hasPermissions); }
       );
       if (session?.user.id) {
         getUserVerified(session?.user.id).then(
-          function (verified) {setIsVerified(verified)}
+          function (verified) { setIsVerified(verified) }
         )
       }
       if (searchParams.get('new') && (session?.user.id == basePerson?.id)) {
-      setShowPopup(true);
-    }
+        setShowPopup(true);
+      }
     });
 
     return () => subscription.unsubscribe();
@@ -838,7 +919,7 @@ export default function ProfileRoute({ loaderData }) {
         </div>
         <div className={"relative h-[220px] rounded-md overflow-hidden bg" + bannerClass} aria-label="Profile banner placeholder">
           <div className={"relative w-full opacity-50"}>
-              <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
+            <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
           </div>
           {(currentUserId == profile.id) || isAdmin ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
