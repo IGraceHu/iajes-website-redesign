@@ -222,8 +222,7 @@ export function Menu({ currentEndUrl }) {
           </button>
           <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">
             <img className="h-[2.5rem]" src="/assets/logo.svg" />
-            <p id="logo-title" className="ml-2 text-secondary-light text-xs w-47" style={{fontWeight: 400}}>International Association of Jesuit Engineering and Sciences Schools</p>
-            {/* <img className="h-[1.5rem] ml-4 md:hidden block" src="/assets/logo-iajes-text.svg" /> */}
+            <p id="logo-title" className="ml-2 text-secondary-light text-[0.6rem] sm:text-xs w-fit" style={{fontWeight: 400}}>International Association of Jesuit<br/>Engineering and Sciences Schools</p>
           </NavLink>
 
 
