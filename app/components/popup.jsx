@@ -74,7 +74,7 @@ export function Popup({ id, className, show, setShow, buttons, closePopup = null
     return (
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
-                <div className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
+                <div className={"sm:mt-10 sm:min-w-lg sm:max-w-[90vw] sm:min-h-50 max-h-[95vh] sm:max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
                     <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>
@@ -155,7 +155,7 @@ export function PopupForm({ id, className, show, setShow, validate, hasError, ne
     return (
         <div id={popupId} className="fixed top-0 left-0 size-full flex items-center justify-center duration-200 z-999 invisible opacity-0">
             <div className="z-1">
-                <form id={popupId + "-form"} encType={encType} onSubmit={handleSubmit} className={"mt-10 min-w-lg max-w-[90vw] min-h-50 max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
+                <form id={popupId + "-form"} encType={encType} onSubmit={handleSubmit} className={"sm:mt-10 sm:min-w-lg sm:max-w-[90vw] sm:min-h-50 max-h-[95vh] sm:max-h-[85vh] p-4 bg-white rounded-md shadow-md duration-200 flex flex-col justify-between " + className}>
                     <div className="overflow-y-auto overflow-x-hidden w-full relative">
                         {children}
                     </div>
