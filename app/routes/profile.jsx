@@ -438,7 +438,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   }
 
   return (
-    <PopupForm id="profile-edit" className="w-[80vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
+    <PopupForm id="profile-edit" className="sm:w-[80vw]" show={showPopup} setShow={setShowPopup} validate={validate} hasError={hasError}>
        <h4>Edit Profile</h4>
        <div className="flex flex-col gap-6">
         <fieldset>
