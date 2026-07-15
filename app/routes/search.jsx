@@ -182,14 +182,18 @@ export default function SearchRoute({ loaderData }) {
     return loaderData.filter((person) => {
       const isSeen = isVerified || person.is_seen_by_visitors;
 
-      const matchesQuery =
-        !q ||
-        person?.fname?.toLowerCase().includes(q) ||
-        person?.lname?.toLowerCase().includes(q) ||
-        person?.university?.toLowerCase().includes(q) ||
-        person?.engineering_type?.toLowerCase().includes(q) ||
-        person?.languages?.toLowerCase().includes(q) ||
-        person?.tech_interests?.toLowerCase().includes(q);
+      const personInfo = (person.fname + "," +
+          person.lname + "," +
+          person.university + "," +
+          person.title + "," +
+          person.engineering_type.toString() + "," +
+          person.position_type.toString() + "," +
+          person.tech_interests.toString() + "," +
+          person.general_interests.toString() + "," +
+          person.country + "," +
+          person.region).toLowerCase();
+
+      const matchesQuery = !q || personInfo.includes(q);
 
       const matchesRegion =
         selectedRegion.length === 0 || selectedRegion.includes(person.region);
@@ -275,7 +279,7 @@ export default function SearchRoute({ loaderData }) {
               value={query}
               onChange={handleQueryChange}
               onInput={handleQueryChange}
-              placeholder="Search people, institutions, or research interests"
+              placeholder="Search people, universities, or interests..."
               className="w-full bg-transparent text-sm text-gray-dark outline-none"
             />
             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
