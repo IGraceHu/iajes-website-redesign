@@ -279,7 +279,7 @@ export default function SearchRoute({ loaderData }) {
               value={query}
               onChange={handleQueryChange}
               onInput={handleQueryChange}
-              placeholder="Search people, institutions, or research interests"
+              placeholder="Search people, universities, or interests..."
               className="w-full bg-transparent text-sm text-gray-dark outline-none"
             />
             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
