@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { Children } from "react";
 
+function hasTouchSupport() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
 
 export function MultiSelect({
     id = "",
@@ -24,6 +27,40 @@ export function MultiSelect({
     const [selected, setSelected] = useState(defaultValue);
     const [isChanged, setIsChanged] = useState(false);
 
+    // Okay So
+    // There is a difference between how desktop handles multiselect and how mobile handles multiselect
+    // Because on mobile, when you click on a select it pops up a little screen INDEPENDENT of the website itself
+    // For accessibility purposes and all that
+    // There are two big things that change because of this
+
+    // 1. onClick and onChange functions fire differently
+    //    On Desktop, onChange fires first, then onClick slightly after. onChange is tied to the
+    //    select element, onClick is usually tied to the child option element because presumably
+    //    the user is clicking on the select options
+    //    On mobile, onClick fires when the user clicks on the select bar, and ONLY onChange fires
+    //    whenever the user toggles one of the options. onClick DOES NOT FIRE
+
+    // 2. onChange e.target.selectedOptions will return differently
+    //    Okay technically this is not true. Technically they still work the same, however.
+    //    On desktop, because this is a vanilla select, if the user is not holding down SHIFT,
+    //    clicking an option will remove all other options previously picked.
+    //    So the select element will be like
+    //    Option 1 & 3 are selected -> User clicks Option 2 -> Option 1 & 3 are unselected and Option 2 is selected
+    //    -> select returns only Option 2 because only Option 2 is selected.
+    //    And we bypass this by doing set things to it via controlled element and stuff
+    //    HOWEVER
+    //    On mobile, because they have a much more user accessible select, the flow goes more like
+    //    Option 1 & 3 are selected -> User clicks Option 2 -> Option 1, 2, & 3 are all now selected
+    //    -> select returns options 1, 2, & 3
+    //    Like a respectable multiselect
+    //    Unfortunately this respectable behavior fricks with the bypass for the disrespectable desktop behavior
+
+    // Yeah so no2 is a big issue. Thats why we have the hasTouchSupport function up there and down in 
+    // onChangeSelf. It's not completely foolproof, but it should work for mobile devices and technically
+    // doesn't break functionality if a desktop is mistaken as mobile, because then it would just be
+    // vanilla behavior.
+
+
     useEffect(() => {
         // This resets the default value whenever the multiselect is rendered, aka whenever the popup appears.
         setSelected(defaultValue);
@@ -37,18 +74,22 @@ export function MultiSelect({
         e.preventDefault;
         let newSelected = [];
 
-        if (e.target.selectedOptions.length == 0) {
-            setSelected(newSelected)
-        } else {
-            const clickedOptions = new Set();
-            for (let option of e.target.selectedOptions) {
-                clickedOptions.add(option.value);
+        if (!hasTouchSupport()) {
+            if (e.target.selectedOptions.length > 0) {
+                const clickedOptions = new Set();
+                for (let option of e.target.selectedOptions) {
+                    clickedOptions.add(option.value);
+                }
+                const selectedOptions = new Set(selected).symmetricDifference(clickedOptions);
+                newSelected = Array.from(selectedOptions);
             }
-            const selectedOptions = new Set(selected).symmetricDifference(clickedOptions);
-            newSelected = Array.from(selectedOptions);
-
-            setSelected(newSelected);
+        } else {
+            for (let option of e.target.selectedOptions) {
+                newSelected.push(option.value);
+            }
         }
+
+        setSelected(newSelected);
         
         onChange(newSelected);
         setTimeout(() => {
