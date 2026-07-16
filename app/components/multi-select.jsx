@@ -82,8 +82,6 @@ export function MultiSelect({
                 }
                 const selectedOptions = new Set(selected).symmetricDifference(clickedOptions);
                 newSelected = Array.from(selectedOptions);
-                
-                testclickel.innerHTML += "<br>newSelected: " + newSelected;
             }
         } else {
             for (let option of e.target.selectedOptions) {
