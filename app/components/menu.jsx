@@ -228,7 +228,7 @@ export function Menu({ currentEndUrl }) {
 
           <div className="relative flex items-center justify-end hidden md:flex shrink-0">
             <div className="menu-dropdown-container">
-              <div className={"menu-dropdown-button link p-4" + (isGroupActive.whatWeDo ? " active" : "")}>
+              <div className={"menu-dropdown-button link py-4 lg:px-4 px-2" + (isGroupActive.whatWeDo ? " active" : "")}>
                 What We Do
               </div>
               <div className="menu-dropdown -mt-[240px] py-1">
@@ -244,12 +244,12 @@ export function Menu({ currentEndUrl }) {
               </div>
             </div>
 
-            <NavLink to="/task-forces" className="link p-4">
+            <NavLink to="/task-forces" className="link py-4 lg:px-4 px-2">
               Task Forces
             </NavLink>
 
             <div className="menu-dropdown-container">
-              <div className={"menu-dropdown-button link p-4" + (isGroupActive.resources ? " active" : "")}>
+              <div className={"menu-dropdown-button link py-4 lg:px-4 px-2" + (isGroupActive.resources ? " active" : "")}>
                 Resources
               </div>
               <div className="menu-dropdown -mt-[220px] py-1">
@@ -263,7 +263,7 @@ export function Menu({ currentEndUrl }) {
             </div>
 
             <div className="menu-dropdown-container">
-              <div className={"menu-dropdown-button link p-4" + (isGroupActive.meetings ? " active" : "")}>
+              <div className={"menu-dropdown-button link py-4 lg:px-4 px-2" + (isGroupActive.meetings ? " active" : "")}>
                 Meetings
               </div>
               <div className="menu-dropdown w-45 -mt-[220px] py-1">
@@ -276,7 +276,7 @@ export function Menu({ currentEndUrl }) {
               </div>
             </div>
 
-            <NavLink to="/search" end className="link p-4">
+            <NavLink to="/search" end className="link py-4 lg:px-4 px-2">
               People
             </NavLink>
 
