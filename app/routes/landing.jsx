@@ -444,7 +444,7 @@ export default function Landing({ loaderData }) {
 
           <div id="about" className="flex pb-30">
             <div className="mr-10 mb-10">
-              <H1Left stretch>What is IAJES?</H1Left>
+              <H1Left>What is IAJES?</H1Left>
               <p>
                 The International Association of Jesuit Engineering and Science Schools (IAJES) is a global collaborative network of Jesuit universities that brings together engineering and science schools to advance academic excellence, interdisciplinary research, and socially responsible innovation.
                 <br /><br />

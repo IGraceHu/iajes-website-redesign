@@ -481,14 +481,12 @@ Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, co
 
                 <div className="mt-10">
                     <h2>Breaks</h2>
-                    <p>Breaks and Heading Breaks are in the graphics.jsx component. Left headings can stretch across the screen or stretch 60% of the way.</p>
+                    <p>Breaks and Heading Breaks are in the graphics.jsx component.</p>
                     <Break />
                     <H1Middle>Heading 1 Middle</H1Middle>
                     <H1Left>Heading 1 Left</H1Left>
-                    <H1Left stretch>Heading 1 Left</H1Left>
                     <H2Middle>Heading 2 Middle</H2Middle>
                     <H2Left>Heading 2 Left</H2Left>
-                    <H2Left stretch>Heading 2 Left</H2Left>
                 </div>
 
             </div>
