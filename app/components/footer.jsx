@@ -169,16 +169,16 @@ export function Footer() {
             ))}
           </div>
 
-          <div className="mt-4 flex flex-col gap-3 border-t-2 border-primary-light pt-4 text-sm lg:flex-row lg:items-center lg:justify-between">
-            <p className="!mb-0 text-white">
+          <div className="text-white mt-4 flex flex-col gap-3 border-t-2 border-primary-light pt-4 text-sm lg:flex-row lg:items-center lg:justify-between">
+            <p className="!mb-0">
               © {currentYear} International Association of Jesuit Engineering and Science Schools (IAJES). All
               rights reserved. Content is provided for informational purposes.
             </p>
-            <span className="text-white">Privacy Policy</span>
+            <span>Site translation is powered by Google Translate and may make mistakes</span>
           </div>
 
           <div className="mt-3 flex flex-col items-center justify-center gap-3 border-t-2 border-primary-light pt-3 text-center text-xs text-white sm:flex-row">
-            <span>Anisha Malani, Isabelle Hu, Justin Fan, and Nicolas Gibson |</span>
+            <span>Anisha Malani, Isabelle Hu, Justin Fan, and Nicolas Gibson</span>
             <span className="inline-flex min-h-12 items-center rounded-md bg-white p-2">
               <img
                 className="h-8 w-auto max-w-[220px]"
