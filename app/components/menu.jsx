@@ -238,9 +238,9 @@ export function Menu({ currentEndUrl }) {
                 <NavLink to="/organizational-structure" end className="link py-3 px-4 pr-10">
                   Organizational Structure
                 </NavLink>
-                <NavLink to="/newsletter" className="link py-3 px-4 pr-10">
+                {/* <NavLink to="/newsletter" className="link py-3 px-4 pr-10">
                   Newsletter
-                </NavLink>
+                </NavLink> */}
               </div>
             </div>
 
@@ -348,9 +348,9 @@ export function Menu({ currentEndUrl }) {
                 <NavLink to="/organizational-structure" end className="link py-2 px-4">
                   Organizational Structure
                 </NavLink>
-                <NavLink to="/newsletter" end className="link py-2 px-4">
+                {/* <NavLink to="/newsletter" end className="link py-2 px-4">
                   Newsletter
-                </NavLink>
+                </NavLink> */}
               </div>
             </div>
 

@@ -10,7 +10,7 @@ const navigationLinks = [
   { label: "Webinars", href: "/webinars" },
   { label: "Regional Meetings", href: "/regional-meetings" },
   { label: "International Meetings", href: "/international-meetings" },
-  { label: "Newsletter", href: "/newsletter" },
+  // { label: "Newsletter", href: "/newsletter" },
   { label: "People", href: "/search" },
 ];
 
@@ -146,7 +146,7 @@ export function Footer() {
               </p>
             </div>
 
-            <div>
+            {/* <div>
               <h6 className="!text-primary-light mb-2">Stay Informed</h6>
               <p className="text-sm leading-6 text-white">
                 Get updates on international meetings, task force activity, and newly released resources.
@@ -154,7 +154,7 @@ export function Footer() {
               <a href="/newsletter" className="button button-light mt-1 inline-block text-sm">
                 Newsletter
               </a>
-            </div>
+            </div> */}
           </div>
 
           <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 border-t-2 border-primary-light pt-4 text-center text-sm">
