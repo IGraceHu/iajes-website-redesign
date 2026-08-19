@@ -161,7 +161,7 @@ async function updateProfile(userId, formData, links) {
       tf_interests: formData.getAll("tf-interests"),
 
       links: linksJSON,
-      resume_pdf_url: formData.get("resume-pdf-url")
+      // resume_pdf_url: formData.get("resume-pdf-url")
     })
     .eq('id', userId)
   return error;
@@ -331,6 +331,7 @@ function LinksEdit({ id, links, setLinks }) {
 function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+  const [resumeErrorMessage, setResumeErrorMessage] = useState("");
   const [hasError, setHasError] = useState(false);
   const draft = profileInfo;
   const [links, setLinks] = useState([])
@@ -435,6 +436,15 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   function addLink(e) {
         e.preventDefault();
         setLinks([...links, {url: "", type: "personal"}]);
+  }
+
+  function onResumeChange(e) {
+    if (e.target.files[0].size > 1572864) {
+       e.target.value = "";
+       setResumeErrorMessage("File is too large.");
+    } else {
+      setResumeErrorMessage("");
+    }
   }
 
   return (
@@ -662,15 +672,14 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             <button className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
             
             <div>
-              <label htmlFor="resume-pdf-url">Resume</label>
-                <input
-                  id="resume-pdf-url"
-                  name="resume-pdf-url"
-                  type="text"
-                  className="input-text w-full"
-                  defaultValue={draft.resume_pdf_url} placeholder="Link to resume..."
-                /> 
-              </div>
+              <label>
+                  Resume (PDF Upload):
+                  <p className="text-sm text-disabled-dark">Max file size is 1.5MB. Leave empty to keep existing PDF.</p>
+                  <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" 
+                      className={" " + (resumeErrorMessage && "input-required")} />
+                  <div className="input-error">{resumeErrorMessage}</div>
+              </label>
+            </div>
           </div>        
         </fieldset>
       </div>
