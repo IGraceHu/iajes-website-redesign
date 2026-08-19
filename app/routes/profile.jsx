@@ -1153,12 +1153,23 @@ export default function ProfileRoute({ loaderData }) {
               </div>
               }
 
-              { (profile.resume_pdf_url.length > 0) && 
-              <div className="relative md:w-auto w-full">
-                <a href={profile.resume_pdf_url} className="block button button-light md:w-auto w-full">Resume<i className="ml-2 bi bi-box-arrow-up-right"></i></a>
-              </div>
-              }
+              
             </div>
+
+            { (profile.resume_pdf_url.length > 0) && 
+              <div className="md:col-span-2 py-3 text-center border-t-2 border-gray-light">
+                <h5>Resume</h5>
+                <div className="flex justify-center">
+                  <iframe
+                    src={profile.resume_pdf_url}
+                    className="w-full lg:max-w-[75%]"
+                    style={{ height: '80vh' }}
+                    title="Resume"
+                  />
+                </div>
+              </div>
+            }
+            
 
             
           </div>
