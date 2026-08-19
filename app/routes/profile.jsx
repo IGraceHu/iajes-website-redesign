@@ -15,6 +15,11 @@ import { updateRequired } from "../helpers/form";
 // only ever called from the `action` export below, which React Router only runs on the server.
 import { isSubscribed, subscribeConfirmedUser, unsubscribeByEmail } from "../server/newsletter.server";
 
+
+const STORAGEPATH = "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/user-resumes/";
+// This is used to check if uploaded files are old or new
+
+
 export function meta({ loaderData }) {
   if (loaderData?.person?.fname) {
     return [
@@ -55,6 +60,21 @@ const tempUserData = {
 
   links: [],
   resume_pdf_url: ""
+}
+
+function extractVideoResourcePath(url) {
+    if (!url) return null;
+    const parts = url.split('/user-resumes/');
+    return parts.length > 1 ? parts[parts.length - 1] : null;
+}
+
+async function removeVideoResourceFiles(urls) {
+    const paths = urls.map(extractVideoResourcePath).filter(Boolean);
+    if (paths.length === 0) return;
+    const { error } = await supabase.storage.from('user-resumes').remove(paths);
+    if (error) {
+        console.error("Error deleting files from storage:", error);
+    }
 }
 
 
@@ -132,8 +152,54 @@ async function getProfile(userId) {
   return error;
 }
 
-async function updateProfile(userId, formData, links) {
+async function updateProfile(userId, formData, links, existingResumePdfUrl) {
   const linksJSON = JSON.stringify(links);
+
+  const filesToRemoveOnSuccess = [];
+  let resumePdfUrl = formData.get("resume-pdf-url") || "";
+  // If the given resume pdf url does not match the exisiting one, that means we have a new one
+  console.log(resumePdfUrl);
+  if (resumePdfUrl) {
+    console.log("resumePdfUrl exists");
+    if (resumePdfUrl != existingResumePdfUrl) {
+      console.log("upload file");
+      const resumeFile = formData.get("resume-upload");
+      if (resumeFile && resumeFile.name && resumeFile.size > 0) {
+
+        const path = `${userId}/${Date.now()}-${resumeFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        const { error: uploadError } = await supabase.storage
+          .from('user-resumes')
+          .upload(path, resumeFile);
+
+        if (uploadError) {
+          console.error("Error uploading resume PDF:", uploadError);
+          return { error: uploadError };
+        }
+
+        const { data, error: urlError } = supabase.storage
+            .from('user-resumes')
+            .getPublicUrl(path);
+
+        if (urlError) {
+            console.error("Error getting resume PDF URL:", urlError);
+            return urlError;
+        }
+
+        if (existingResumePdfUrl) {
+            filesToRemoveOnSuccess.push(existingResumePdfUrl);
+        }
+        resumePdfUrl = data.publicUrl;
+      }
+    }
+  } else {
+    console.log("delete resume");
+    // if the given resume pdf url is empty, that means we have to remove it
+    filesToRemoveOnSuccess.push(existingResumePdfUrl);
+  }
+
+
+
+
 
   const { error } = await supabase
     .from('users')
@@ -161,9 +227,12 @@ async function updateProfile(userId, formData, links) {
       tf_interests: formData.getAll("tf-interests"),
 
       links: linksJSON,
-      // resume_pdf_url: formData.get("resume-pdf-url")
+      resume_pdf_url: resumePdfUrl
     })
     .eq('id', userId)
+
+  await removeVideoResourceFiles(filesToRemoveOnSuccess);
+
   return error;
 }
 
@@ -381,7 +450,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       formData.set('subscribe-news', draft.is_subscribed ? 'on' : '');
     }
 
-    const update = await updateProfile(userId, formData, cleanLinks);
+    const update = await updateProfile(userId, formData, cleanLinks, draft.resume_pdf_url);
 
     try {
       const wantsSubscribe = formData.get("subscribe-news") === "on";
@@ -692,14 +761,14 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
               { resumePdfUrl &&
               <>
                 <div className="inline-block text-sm my-1">
-                  Current PDF: {resumePdfUrl}
+                  Current PDF: {resumePdfUrl.startsWith(STORAGEPATH) ? resumePdfUrl.slice(STORAGEPATH.length + 36) : resumePdfUrl}
                   <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash"></i> Remove PDF</button>
                 </div>
               </>
                 
               }
 
-              <input id="resume-pdf-url" name="resume-pdf-url" type="text" className="hidden" value={resumePdfUrl} disabled />
+              <input id="resume-pdf-url" name="resume-pdf-url" type="text" className="hidden" value={resumePdfUrl} />
 
             </div>
           </div>        
