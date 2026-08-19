@@ -768,7 +768,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 
               }
 
-              <input id="resume-pdf-url" name="resume-pdf-url" type="text" className="hidden" value={resumePdfUrl} />
+              <input id="resume-pdf-url" name="resume-pdf-url" type="text" className="hidden" readOnly value={resumePdfUrl} />
 
             </div>
           </div>        
