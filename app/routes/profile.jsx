@@ -331,6 +331,7 @@ function LinksEdit({ id, links, setLinks }) {
 function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+  const [resumePdfUrl, setResumePdfUrl] = useState("");
   const [resumeErrorMessage, setResumeErrorMessage] = useState("");
   const [hasError, setHasError] = useState(false);
   const draft = profileInfo;
@@ -403,6 +404,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
     setLinks(draft.links);
     setFormRequired({ fname: false, lname: false })
     onEngineeringChange(draft.engineering_type);
+    setResumePdfUrl(draft.resume_pdf_url);
   }
 
   useEffect(() => {
@@ -444,7 +446,13 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
        setResumeErrorMessage("File is too large.");
     } else {
       setResumeErrorMessage("");
+      setResumePdfUrl(e.target.files[0].name);
     }
+  }
+
+  function removeResume() {
+    document.getElementById("resume-upload").value = "";
+    setResumePdfUrl("");
   }
 
   return (
@@ -676,9 +684,23 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                   Resume (PDF Upload):
                   <p className="text-sm text-disabled-dark">Max file size is 1.5MB. Leave empty to keep existing PDF.</p>
                   <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" 
-                      className={" " + (resumeErrorMessage && "input-required")} />
+                      className={" " + (resumeErrorMessage && "input-required")} defaultValue={resumePdfUrl} />
                   <div className="input-error">{resumeErrorMessage}</div>
               </label>
+
+
+              { resumePdfUrl &&
+              <>
+                <div className="inline-block text-sm my-1">
+                  Current PDF: {resumePdfUrl}
+                  <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash"></i> Remove PDF</button>
+                </div>
+              </>
+                
+              }
+
+              <input id="resume-pdf-url" name="resume-pdf-url" type="text" className="hidden" value={resumePdfUrl} disabled />
+
             </div>
           </div>        
         </fieldset>
