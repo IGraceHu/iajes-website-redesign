@@ -358,12 +358,12 @@ export default function VideoResource({ loaderData }) {
                     </div>
                 ) : <></>}
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                    <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                    <iframe src={loaderData.video_url} title={loaderData.title + " Video Resource Video"} width="100%" height="100%"></iframe>
                 </div>
                 <div dangerouslySetInnerHTML={{__html: marked.parse(loaderData.video_description)}}></div>
 
                 <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
-                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" />}
+                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt={"Image of " + loaderData.speaker} />}
                     <div className="w-full md:w-70 shrink-0 grow-0 m-3">
                         <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
                         <p className="text-disabled-light">{loaderData.speaker_university}</p>

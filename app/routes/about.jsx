@@ -159,7 +159,7 @@ function QuoteAndMapSection() {
             {/* Google MyMaps Embed */}
             <div className="rounded-lg overflow-hidden">
                 <div className="w-full">
-                    <iframe src="https://www.google.com/maps/d/embed?mid=10WMSaIkegY3WEWSkuEVXd8kfRII&ehbc=2E312F" width="100%" height="480" style={{ border: "none", minHeight: 300, }}></iframe>
+                    <iframe src="https://www.google.com/maps/d/embed?mid=10WMSaIkegY3WEWSkuEVXd8kfRII&ehbc=2E312F" title="Google Maps embed showing the 67 universities affiliated with IAJES across the world." width="100%" height="480" style={{ border: "none", minHeight: 300, }}></iframe>
                 </div>
             </div>
         </div>
@@ -190,15 +190,11 @@ function SpeakerHighlightSection() {
                         “The International Association of Jesuit Universities finds its purpose and gives meaning to what it does by living and promoting collaboration and solidarity within and from the university institutions that make it up. It is a matter of making the best possible use of the enormous potential for collaboration and solidarity that exists in the universities that make up this network. Little by little we have been embarking on this path. As we move forward we recognize the advantages of collaboration and solidarity. We are learning better ways to take advantage of the resources we have, which are always scarce for the magnitude of the task...”
                     </blockquote>
                     <div className="flex gap-4 flex-row">
-                        <a href="https://drive.google.com/file/d/1ViiIfKjNLUwg05wkEASFJuoK5OKpIh0E/view?usp=sharing" target="blank" className="w-1/2 flex align-middle">
-                            <button className="button w-full mt-2">
-                                View Fr. Sosa's Full Speech
-                            </button>
+                        <a href="https://drive.google.com/file/d/1ViiIfKjNLUwg05wkEASFJuoK5OKpIh0E/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="w-1/2 flex justify-center items-center button">
+                            View Fr. Sosa's Full Speech
                         </a>
-                        <a href="https://drive.google.com/file/d/1FOSxR-BrZIzmQss7Nm6iR3pDgmPjd4pU/view?usp=sharing" target="blank" className="w-1/2 flex align-middle">
-                            <button className="button w-full mt-2">
-                                Lea el discurso completo del Padre Sosa
-                            </button>
+                        <a href="https://drive.google.com/file/d/1FOSxR-BrZIzmQss7Nm6iR3pDgmPjd4pU/view?usp=sharing" target="_blank" rel="noopener noreferrer" className="w-1/2 flex justify-center items-center button">
+                            Lea el discurso completo del Padre Sosa
                         </a>
                     </div>
                 </div>

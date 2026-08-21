@@ -1417,9 +1417,7 @@ function MeetingSection({ meeting }) {
                         onClick={() => handleImageStep(-1)}
                         aria-label="Previous photo"
                       >
-                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
-                          <polyline points="14,1 2,12 14,23" />
-                        </svg>
+                        <i className="bi bi-chevron-left text-[1.8rem]"></i>
                         <span className="font-semibold">Previous</span>
                       </button>
                       <button
@@ -1429,9 +1427,7 @@ function MeetingSection({ meeting }) {
                         aria-label="Next photo"
                       >
                         <span className="font-semibold">Next</span>
-                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
-                          <polyline points="2,1 14,12 2,23" />
-                        </svg>
+                        <i className="bi bi-chevron-right text-[1.8rem]"></i>
                       </button>
                     </div>
                   ) : null}

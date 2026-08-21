@@ -16,14 +16,14 @@ const urbanMobilityWebinar = (
     <div>
         <p className="text-md font-semibold">First webinar of the "Infrastructure" Task Force</p>
         <div className="w-full overflow-hidden my-5 lg:h-[70vw] h-[110vw]">
-            <iframe src="https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview" width="100%" height="100%"></iframe>
+            <iframe src="https://drive.google.com/file/d/1Ut8BdPVqqPD4pwC-0O8GlRbJ-4dLIqTj/preview" title="PDF Details of the 'Urban mobility in the Perspective of Integral Ecology & Digitalisation' webinar." width="100%" height="100%"></iframe>
         </div>
         <h4>Speakers</h4>
         <div>
             <div className="flex flex-col gap-5 p-5 bg-teal-50">
                 <div className="flex">
                     <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="/img/webinars/urban_nicolas_rincon_garcia.png" />
+                        <img className="w-full h-full" src="/img/webinars/urban_nicolas_rincon_garcia.png" alt="Image of Nicolas Rincon Garcia" />
                     </div>
                     <div className="">
                         <h6>Nicolas Rincon Garcia</h6>
@@ -34,13 +34,13 @@ const urbanMobilityWebinar = (
                 </div>
 
                 <div className="self-center w-full lg:h-[25vw] h-[35vw]">
-                    <iframe src="https://drive.google.com/file/d/1lUJKXjJmHK1_bKm8q9g6wBo7kdkUYZyA/preview" width="100%" height="100%"></iframe>
+                    <iframe src="https://drive.google.com/file/d/1lUJKXjJmHK1_bKm8q9g6wBo7kdkUYZyA/preview" title="Nicolas Rincon Garcia's webinar slides on Transport Observatory & Data Sciences." width="100%" height="100%"></iframe>
                 </div>
             </div>
             <div className="flex flex-col gap-5 p-5">
                 <div className="flex">
                     <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="/img/webinars/urban_marcus_meyers.png" />
+                        <img className="w-full h-full" src="/img/webinars/urban_marcus_meyers.png" alt="Image of Marcus Mayers" />
                     </div>
                     <div className="">
                         <h6>Marcus Mayers</h6>
@@ -51,13 +51,13 @@ const urbanMobilityWebinar = (
                 </div>
 
                 <div className="self-center w-full lg:h-[25vw] h-[35vw]">
-                    <iframe src="https://drive.google.com/file/d/1cxvV09iHECCd-3OgESWC3XUvbvdrg_wa/preview" width="100%" height="100%"></iframe>
+                    <iframe src="https://drive.google.com/file/d/1cxvV09iHECCd-3OgESWC3XUvbvdrg_wa/preview" title="Marcus Mayers's webinar slides on Train infrastructure rehabilitation in Colombia." width="100%" height="100%"></iframe>
                 </div>
             </div>
             <div className="flex flex-col gap-5 p-5 bg-teal-50">
                 <div className="flex">
                     <div className="h-40 mr-5 shrink-0">
-                        <img className="w-full h-full" src="/img/webinars/urban_karla_denis_castro_leite.png" />
+                        <img className="w-full h-full" src="/img/webinars/urban_karla_denis_castro_leite.png" alt="Image of Karla Denis Castro Leite" />
                     </div>
                     <div className="">
                         <h6>Karla Denis Castro Leite</h6>
@@ -68,7 +68,7 @@ const urbanMobilityWebinar = (
                 </div>
 
                 <div className="self-center w-full lg:h-[25vw] h-[35vw]">
-                    <iframe src="https://drive.google.com/file/d/1cgb_yN5sV9TYrb11zTbJOlHwmBYx91Su/preview" width="100%" height="100%"></iframe>
+                    <iframe src="https://drive.google.com/file/d/1cgb_yN5sV9TYrb11zTbJOlHwmBYx91Su/preview" title="Karla Denis Castro Leite's webinar slides on The role of citizen participation in the implementation of public policies for sustainable mobility: the case of the bicycle office in Pernambuco, Brazil." width="100%" height="100%"></iframe>
                 </div>
             </div>
         </div>
@@ -82,7 +82,7 @@ const firstTaskForceWebinar = (
             <i className="bi bi-arrow-right ml-2 mt-1"></i>
         </a>
         <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
-            <iframe src="https://drive.google.com/file/d/1IYsGuviohJKb8AxZim83DMQocxrY7AtJ/preview" width="100%" height="100%"></iframe>
+            <iframe src="https://drive.google.com/file/d/1IYsGuviohJKb8AxZim83DMQocxrY7AtJ/preview" title="PDF Details of the 'Research and Academic Cooperation Task Force' webinar" width="100%" height="100%"></iframe>
         </div>
     </div>
 );
@@ -94,17 +94,17 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="/img/webinars/embody_lanny_vincent.jpg" />
+                <img className="w-full h-full" src="/img/webinars/embody_lanny_vincent.jpg" alt="Image of Lanny Vincent" />
             </div>
             <div>
                 <h6>Lanny Vincent</h6>
                 <p>Adjunct Lecturer Innovation Theology, Intrapreneurship, Collaborative Creativity, Systems Thinking, Design and innovation - Santa Clara University (SCU)</p>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/1xmWGxc7kqXWLgDOKV1FZrRV0WPhvNg-I/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/1xmWGxc7kqXWLgDOKV1FZrRV0WPhvNg-I/preview" title="Lanny Vincent's Slides" width="100%" height="100%"></iframe>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/14oPb6ghOh4iWYLcb1SEHU4o1xK7SxcDu/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/14oPb6ghOh4iWYLcb1SEHU4o1xK7SxcDu/preview" title="Lanny Vincent's Webinar Recording" width="100%" height="100%"></iframe>
             </div>
         </div>
         <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
@@ -115,17 +115,17 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="/img/webinars/embody_celina_andino.png" />
+                <img className="w-full h-full" src="/img/webinars/embody_celina_andino.png" alt="Image of Celina Andino" />
             </div>
             <div>
                 <h6>Celina Andino</h6>
                 <p>Program Director of Product Design Master degree - Universidad Centroamericana "José Simeón Cañas" - San Salvador</p>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/1PPphj1Jz2nDfz95wGfEHrovSr8OZZ3Nc/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/1PPphj1Jz2nDfz95wGfEHrovSr8OZZ3Nc/preview" title="Celina Andino's Slides" width="100%" height="100%"></iframe>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/1knDXu15fi872jEJw5pI6ZMiepZquc3m0/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/1knDXu15fi872jEJw5pI6ZMiepZquc3m0/preview" title="Celina Andino's Webinar Recording" width="100%" height="100%"></iframe>
             </div>
         </div>
         <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
@@ -136,17 +136,17 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="/img/webinars/embody_carlos_toto_oppus.png" />
+                <img className="w-full h-full" src="/img/webinars/embody_carlos_toto_oppus.png" alt="Image of Carlos Toto Oppus" />
             </div>
             <div>
                 <h6>Carlos Toto Oppus</h6>
                 <p>Director, Ateneo Innovation Center - Computer Engineering - Manila</p>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/1U492PBs5fdmd1MNklb2GZiyVdUFl83ZJ/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/1U492PBs5fdmd1MNklb2GZiyVdUFl83ZJ/preview" title="Carlos Toto Oppus's Slides" width="100%" height="100%"></iframe>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/11-9mcORt9-VmuMtJINaxyS82fCx9wLgX/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/11-9mcORt9-VmuMtJINaxyS82fCx9wLgX/preview" title="Carlos Toto Oppus's Webinar Recording" width="100%" height="100%"></iframe>
             </div>
         </div>
         <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
@@ -157,24 +157,24 @@ const embodyEcologyWebinar = (
         </div>
         <div className="p-5 grid grid-cols-2 gap-5 place-items-center">
             <div className="h-40">
-                <img className="w-full h-full" src="/img/webinars/embody_tonya_nilsson.jpg" />
+                <img className="w-full h-full" src="/img/webinars/embody_tonya_nilsson.jpg" alt="Image of Tonya Nilsson" />
             </div>
             <div>
                 <h6>Tonya Nilsson</h6>
                 <p>Senior Lecturer - Civil - environment and  sustainable Engineering - Santa Clara University (SCU)</p>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/1SCHpSQWDXHP3lPZ_xMQpw9-PYAUjcssD/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/1SCHpSQWDXHP3lPZ_xMQpw9-PYAUjcssD/preview" title="Tonya Nilsson's Slides" width="100%" height="100%"></iframe>
             </div>
             <div>
-                <iframe src="https://drive.google.com/file/d/1hTtjruvo0Z81bTeILPPpGiKfDnD1zfP5/preview" width="100%" height="100%"></iframe>
+                <iframe src="https://drive.google.com/file/d/1hTtjruvo0Z81bTeILPPpGiKfDnD1zfP5/preview" title="Tonya Nilsson's Webinar Recording" width="100%" height="100%"></iframe>
             </div>
         </div>
 
         <div className="mb-5 p-1 bg-secondary-light text-center text-white rounded-md"></div>
         <h4>Q & A Session</h4>
         <div className="w-full lg:h-[30vw] h-[50vw]">
-            <iframe src="https://drive.google.com/file/d/1orgU9xY3zrZiBoB77ISVc6sPy7F-a5xF/preview" width="100%" height="100%"></iframe>
+            <iframe src="https://drive.google.com/file/d/1orgU9xY3zrZiBoB77ISVc6sPy7F-a5xF/preview" title="Webinar Q & A Session Recording" width="100%" height="100%"></iframe>
         </div>
     </div>
 );
@@ -182,12 +182,12 @@ const embodyEcologyWebinar = (
 const covidWebinar = (
     <div>
         <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
-            <iframe src="https://drive.google.com/file/d/1a1DNVV1_tafmCm3nnEVz_Ych1lBbQigA/preview" width="100%" height="100%"></iframe>
+            <iframe src="https://drive.google.com/file/d/1a1DNVV1_tafmCm3nnEVz_Ych1lBbQigA/preview" title="PDF Details of the 'Covid 19, Opened New Doors for Web-Cooperation' webinar" width="100%" height="100%"></iframe>
         </div>
         <br />
         <h4>Webinar Recording</h4>
         <div className="w-full lg:h-[30vw] h-[50vw]">
-            <iframe src="https://drive.google.com/file/d/18giFFUSupFJ9baMfzWFXgCOWqdn1RHqu/preview" width="100%" height="100%"></iframe>
+            <iframe src="https://drive.google.com/file/d/18giFFUSupFJ9baMfzWFXgCOWqdn1RHqu/preview" title="Webinar video recording" width="100%" height="100%"></iframe>
         </div>
     </div>
 );
@@ -195,7 +195,7 @@ const covidWebinar = (
 const icamWebinar = (
     <div>
         <p>
-            <img className="xl:float-right xl:w-sm mb-5" src="/img/webinars/icam_intro.png" />
+            <img className="xl:float-right xl:w-sm mb-5" src="/img/webinars/icam_intro.png" alt='Details of the Icam "Parcours Ouvert" Engineering program webinar' />
             <strong>In 2017, Icam launched the “Parcours Ouvert”</strong> - Considering the changing profile of the younger generation and the complexity of the issues that engineers will have to address in the coming years, Icam has taken a bold step forward in the pedagogical innovation. The “Parcours ouvert” is built on five founding principles:
             <ul className="my-2 ml-2 list-disc list-inside">
                 <li>Larger scale of student profiles</li>
@@ -209,21 +209,21 @@ const icamWebinar = (
             <strong>In this activity, we</strong> introduce the "Parcours Ouvert" to the broader IAJES community with the hopes of obtaining feedback from participants on the design of the program, and to stimulate discussions on topics of common interest. This online event will include an introduction to the "Parcours ouvert" program followed by exchanges based on the questions.
         </p>
         <div className="w-full my-5 lg:h-[30vw] h-[50vw]">
-            <iframe src="https://drive.google.com/file/d/1wCNq24bStjSvzrJb3Bf_LIZS4t8vcLOo/preview" width="100%" height="100%"></iframe>
+            <iframe src="https://drive.google.com/file/d/1wCNq24bStjSvzrJb3Bf_LIZS4t8vcLOo/preview" title="Webinar video recording" width="100%" height="100%"></iframe>
         </div>
         <h4>Collection of words at the end of the webinar</h4>
         <div className="grid grid-cols-2 gap-2 text-center items-top justify-items-top">
             <p>First Session</p>
             <p>Second Session</p>
-            <img src="/img/webinars/icam_words_1.png" />
-            <img src="/img/webinars/icam_words_2.png" />
+            <img src="/img/webinars/icam_words_1.png" alt="Collection of words at the end of webinar's first session." />
+            <img src="/img/webinars/icam_words_2.png" alt="Collection of words at the end of webinar's second session." />
         </div>
     </div>
 );
 
 const bostonWebinar = (
     <div>
-        <img className="float-right" src="/img/webinars/boston_image.png" />
+        <img className="float-right" src="/img/webinars/boston_image.png" alt="Image for the Boston College Human Centered Engineering Program" />
         <ul className="my-2 ml-2 list-disc list-inside">
             <li>THE PRESENTATION - Human-centered Engineering at BC</li>
 

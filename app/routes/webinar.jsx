@@ -497,14 +497,14 @@ export default function Webinar({ loaderData }) {
                             src={loaderData.pdf_url}
                             className="w-full lg:max-w-[75%]"
                             style={{ height: '80vh' }}
-                            title="Webinar Details PDF"
+                            title={loaderData.title + " Webinar details PDF"}
                         />
                     </div>
                 }
                 <br />
                 { loaderData?.video_url &&
                     <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                        <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                        <iframe src={loaderData.video_url} title={loaderData.title + " Webinar Video"} width="100%" height="100%"></iframe>
                     </div>
                 }
 
@@ -514,7 +514,7 @@ export default function Webinar({ loaderData }) {
                 { loaderData.speakers.map((speaker, idx) => 
                     <div key={idx} className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col lg:flex-row place-items-center justify-between">
                         <div className="flex flex-row place-items-center lg:mb-0 mb-5 text-center">
-                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt="" />}
+                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt={"Image of " + speaker.name} />}
                             
                             <div className="shrink-0 grow-0 m-3 lg:text-left text-center">
                                 <p className="font-semibold mr-2"><i>{speaker.name}</i></p>
