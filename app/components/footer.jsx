@@ -97,7 +97,7 @@ export function Footer() {
                 <a
                   href="https://iaju.org/"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="inline-flex min-h-14 items-center rounded-md bg-white p-2 duration-200 hover:opacity-70"
                 >
                   <img
@@ -133,7 +133,7 @@ export function Footer() {
                     key={social.label}
                     href={social.href}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     aria-label={social.label}
                     className="!text-white duration-200 hover:!text-primary-light"
                   >

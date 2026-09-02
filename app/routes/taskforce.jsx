@@ -272,7 +272,7 @@ function MemberCard({ memberData }) {
     <div className="text-center w-full flex flex-col justify-end">
       { memberData?.image_url &&
         <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
-          <img className="min-w-full min-h-full object-cover" src={memberData.image_url} />
+          <img className="min-w-full min-h-full object-cover" src={memberData.image_url} alt={"Image of" + memberData.name} />
         </div>
       }
       { memberData.iajes_url ? 
@@ -299,7 +299,7 @@ function ProjectCard({ projectData }) {
         <div dangerouslySetInnerHTML={{__html: marked.parse(projectData.details)}}></div>
         { projectData.image_url &&
           <div className="rounded-md md:max-h-50 overflow-hidden">
-            <img className="rounded-md object-cover" src={projectData.image_url} />
+            <img className="rounded-md object-cover" src={projectData.image_url} alt="Project Image" />
           </div>
         }
       </div>

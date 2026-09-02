@@ -894,7 +894,7 @@ function SpeakerCard({ speaker }) {
                   key={`${speaker.name}-${label}-${index}`}
                   href={href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark duration-200 hover:bg-teal-50"
                 >
                   {label}
@@ -1310,7 +1310,7 @@ function MeetingSection({ meeting }) {
             <a
               href={meeting.meetingWebsite}
               target="_blank"
-              rel="noreferrer"
+              rel="noopener noreferrer"
               className="button inline-flex items-center"
             >
               Visit meeting website

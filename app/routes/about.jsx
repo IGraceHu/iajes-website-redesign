@@ -211,12 +211,12 @@ function OriginTimelineSection() {
                 <p className="text-gray-dark mb-6">
                     As agreed, the Governing Board, elected at the Bhubaneswar Summit in July 2024, wrote a roadmap for the development of IAJES. This road map had to find the right balance to allow the development of the association, the realization of the actions, the right rhythm of the events, the necessary involvement of the members, and the close relationship with IAJU. It had been validated with the Governing Board on December, 2024.
                 </p>
-                <a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="blank">
-                    <button className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
+                <a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="_blank" rel="noopener noreferrer">
+                    <div className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
                         <span className="mx-auto">
                             <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right"></i></span>
                         </span>
-                    </button>
+                    </div>
                 </a>
             </div>
 

@@ -755,7 +755,7 @@ export default function RegionalMeetingDetail() {
                         <div className="flex flex-wrap gap-2 mt-1">
                             {editForm.allImages.map((img, idx) => img.toDelete ? null : (
                                 <div key={img.id || `new-${idx}`} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
-                                    <img src={img.resource_url || img.url} className="w-24 h-24 object-contain" />
+                                    <img src={img.resource_url || img.url} className="w-24 h-24 object-contain" alt={"Gallery Image " + (idx + 1)} />
                                     <div className="absolute top-1 left-1 flex gap-1">
                                         <button
                                             type="button"
@@ -949,6 +949,7 @@ export default function RegionalMeetingDetail() {
                         key={current}
                         src={images[current].resource_url}
                         className={`w-full h-full object-contain ${animating ? (direction === 'next' ? 'carousel-exit-left' : 'carousel-exit-right') : (direction ? (direction === 'next' ? 'carousel-enter-right' : 'carousel-enter-left') : '')}`}
+                        alt={`Photo ${current + 1} of ${images.length}`}
                     />
                     <div className="absolute bottom-4 left-4 text-white text-xs p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         Photo {current + 1} of {images.length}

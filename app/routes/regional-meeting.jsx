@@ -901,7 +901,7 @@ export default function RegionalMeeting() {
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     {addForm.allImages.map((img, idx) => img.toDelete ? null : (
                                         <div key={idx} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
-                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-contain" />
+                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-contain" alt={"Gallery Image " + (idx + 1)} />
 
                                             {/* reorder */}
                                             <div className="absolute top-1 left-1 flex gap-1">
@@ -1131,7 +1131,7 @@ export default function RegionalMeeting() {
                                 <div className="flex flex-wrap gap-2 mt-2">
                                     {editForm.allImages.map((img, idx) => img.toDelete ? null : (
                                         <div key={idx} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
-                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-contain" />
+                                            <img src={img.url || img.resource_url} className="w-24 h-24 object-contain" alt={"Gallery Image " + (idx + 1)} />
 
                                             {/* reorder */}
                                             <div className="absolute top-1 left-1 flex gap-1">
@@ -1303,8 +1303,8 @@ export default function RegionalMeeting() {
                                 >
                                     {!thumbnails[mtg.id] && (
                                         <div className="highlight-header relative bg-secondary-light grow h-full rounded-md overflow-hidden duration-200" style={{ minHeight: '200px' }}>
-                                            <img className="absolute -bottom-30 -right-15 size-100" src="/assets/logo.svg" />
-                                            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="/assets/landing-disc-4a.svg" />
+                                            <img className="absolute -bottom-30 -right-15 size-100" src="/assets/logo.svg" alt="" />
+                                            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="/assets/landing-disc-4a.svg" alt="" />
                                         </div>
                                     )}
                                 </Link>

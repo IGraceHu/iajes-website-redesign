@@ -919,7 +919,7 @@ export default function ProfileRoute({ loaderData }) {
         </div>
         <div className={"relative h-[220px] rounded-md overflow-hidden bg" + bannerClass} aria-label="Profile banner placeholder">
           <div className={"relative w-full opacity-50"}>
-            <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
+            <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" alt="" />
           </div>
           {(currentUserId == profile.id) || isAdmin ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">
