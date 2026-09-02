@@ -274,7 +274,7 @@ export default function SearchRoute({ loaderData }) {
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
-            <label for="search-input" hidden>Search people, universities, or interests...</label>
+            <label htmlFor="search-input" hidden>Search people, universities, or interests...</label>
             <input
               id="search-input"
               value={query}

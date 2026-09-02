@@ -290,17 +290,15 @@ function Webinar({ info }) {
 }
 
 function WebinarButton({ className, title, date, active = false, onClick }) {
-    let buttonClasses = "webinar-list-button w-full p-4 flex justify-between items-center border-x-2 border-t-2 border-gray-light text-left hover:bg-teal-50 hover:cursor-pointer duration-200";
+    let buttonClasses = "block webinar-list-button w-full p-4 flex justify-between items-center border-x-2 border-t-2 border-gray-light text-left hover:bg-teal-50 hover:cursor-pointer duration-200";
     buttonClasses += (active) ? " active" : "";
     return (
-        <a href="#webinar" className="block">
-            <button className={buttonClasses + " " + className} onClick={onClick}>
-                <div>
-                    <p className="mr-5 font-semibold text-secondary-dark lg:block inline">{title}</p>
-                    <p className="text-s text-disabled-light lg:block inline"><i>{date}</i></p>
-                </div>
-                <i className="bi bi-chevron-double-right duration-500 text-white" style={{ fontSize: "1.8rem" }}></i>
-            </button>
+        <a href="#webinar" role="button" className={buttonClasses + " " + className} onClick={onClick}>
+            <div>
+                <p className="mr-5 font-semibold text-secondary-dark lg:block inline">{title}</p>
+                <p className="text-s text-disabled-light lg:block inline"><i>{date}</i></p>
+            </div>
+            <i className="bi bi-chevron-double-right duration-500 text-white" style={{ fontSize: "1.8rem" }}></i>
         </a>
     )
 }

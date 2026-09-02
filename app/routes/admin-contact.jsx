@@ -131,8 +131,8 @@ export default function AdminContact({ loaderData }) {
                     <div className="mt-4">
                         <label htmlFor="university" className="text-secondary-dark"><strong>University</strong></label>
                         <br />
-                        <select id="university" name="university" className="input input-text" onChange={e => setSelectedUni(e.target.value)}>
-                            <option value="" disabled selected>Select a university</option>
+                        <select id="university" name="university" className="input input-text" value="" onChange={e => setSelectedUni(e.target.value)}>
+                            <option value="" disabled>Select a university</option>
                             { (loaderData.universityList) ? loaderData.universityList.map((universityObj, idx) => <option key={"uni-" + idx} value={universityObj.university} >{universityObj.university}</option>) : <></>}
                         </select>
                         <button className="button ms-4" onClick={copyEmailsByUniversity}>Get emails</button>
@@ -143,8 +143,8 @@ export default function AdminContact({ loaderData }) {
                     <div className="mt-4">
                         <label htmlFor="region" className="text-secondary-dark"><strong>Region</strong></label>
                         <br />
-                        <select id="region" name="region" className="input input-text" onChange={e => setSelectedRegion(e.target.value)}>
-                            <option value="" disabled selected>Select a region</option>
+                        <select id="region" name="region" className="input input-text" value="" onChange={e => setSelectedRegion(e.target.value)}>
+                            <option value="" disabled>Select a region</option>
                             <option value="JHEASA">JHEASA</option>
                             <option value="AJCU-NA">AJCU - NA</option>
                             <option value="AUSJAL">AUSJAL</option>
