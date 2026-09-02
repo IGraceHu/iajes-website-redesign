@@ -123,7 +123,7 @@ function Carousel() {
     carouselEl.push(
       <div key={i} className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
 
-        {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
+        {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" alt="" />}
 
         <div className="relative z-1 size-full box-border mt-40 ml-40">
           {/* <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p> */}
@@ -222,7 +222,7 @@ function LinkCards() {
             <p className="text-white">{content.title}</p>
           </div>
 
-          {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 top-0 size-full object-cover" />}
+          {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 top-0 size-full object-cover" alt="" />}
 
         </a>
         <div className="about-card-border z-4 absolute top-0"></div>
@@ -391,11 +391,11 @@ function HighlightContent({ content, side = false }) {
       <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
 
         {content?.image_url ?
-          <img src={content.image_url} className="size-full object-cover duration-200" />
+          <img src={content.image_url} className="size-full object-cover duration-200" alt="" />
           :
           <>
-            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
-            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
+            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" alt="" />
+            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" alt="" />
           </>
         }
       </div>
@@ -480,11 +480,11 @@ export default function Landing({ loaderData }) {
         <div id="effects" className="w-full shrink-0 -ml-[100%] z-0">
           {/* Discs */}
           <div id="landing-discs" className="absolute w-full z-0 lg:opacity-60 opacity-30 duration-200">
-            <img id="landing-disc-1" src="assets/landing-disc-2a.svg" />
-            <img id="landing-disc-2" src="assets/landing-disc-2b.svg" />
-            <img id="landing-disc-3" src="assets/landing-disc-3.svg" />
-            <img id="landing-disc-4" src="assets/landing-disc-4b.svg" />
-            <img id="landing-disc-5" src="assets/landing-disc-4a.svg" />
+            <img id="landing-disc-1" src="assets/landing-disc-2a.svg" alt="" />
+            <img id="landing-disc-2" src="assets/landing-disc-2b.svg" alt="" />
+            <img id="landing-disc-3" src="assets/landing-disc-3.svg" alt="" />
+            <img id="landing-disc-4" src="assets/landing-disc-4b.svg" alt="" />
+            <img id="landing-disc-5" src="assets/landing-disc-4a.svg" alt="" />
           </div>
 
           {/* Background Lines */}

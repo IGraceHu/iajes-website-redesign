@@ -522,6 +522,7 @@ export default function AdminRoles({ loaderData }) {
                                         type="button"
                                         className={"button button-light flex float-right ml-2"}
                                         onClick={() => {setShowEditPopup(true)}}
+                                        aria-label="Edit Roles"
                                         >
                                         <p className="text-base mr-3 md:block hidden">Edit Roles</p>
                                         <i className={`bi bi-pencil`} />
@@ -570,11 +571,17 @@ export default function AdminRoles({ loaderData }) {
                                     <div className="grid md:grid-cols-2 gap-2 gap-x-10">
                                         {pageMembers.map((member) => (
                                             <div key={member?.fname} className="flex p-2 items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-                                                <button className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" onClick={() => {setFocusMember(member); setShowEditPopup(true)}}>
-                                                <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
-                                                <i className="bi bi-pencil"></i>
+                                                <button 
+                                                    className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" 
+                                                    onClick={() => {setFocusMember(member); setShowEditPopup(true)}}
+                                                    aria-label={"Edit " + member?.fname + "'s roles"}
+                                                >
+                                                    <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
+                                                    <i className="bi bi-pencil"></i>
                                                 </button>
-                                                <a className="button-icon" href={`/profile/${member.id}`}><i className="bi bi-box-arrow-up-right"></i></a>
+                                                <a className="button-icon" href={`/profile/${member.id}`} aria-label={"View " + member?.fname + " " + member?.lname}>
+                                                    <i className="bi bi-box-arrow-up-right"></i>
+                                                </a>
                                             </div>
                                         ))}
                                     </div>

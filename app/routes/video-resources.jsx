@@ -109,10 +109,10 @@ function ResourceCard({ resourceInfo }) {
             <a href={"video-resource/" + resourceInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
                     {resourceInfo.video_thumbnail ?
-                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} />
+                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} alt="" />
                         :
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" alt="" />
                             <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{resourceInfo.title}</h5>
                             <p style={{ color: "var(--color-white)" }}>{resourceInfo.date.replace(/-/g, '\/')}</p>
                         </div>
