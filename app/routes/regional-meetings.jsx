@@ -128,7 +128,7 @@ function RegionalCard({ region, imageUrl }) {
                         <img className="min-w-full h-full object-cover grow-0 shrink-0" src={imageUrl} alt={region.name} />
                     ) : (
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" alt="" />
                         </div>
                     )}
                 </div>
@@ -267,7 +267,7 @@ export default function RegionalMeetings() {
                                     </div>
                                     <div className="w-full h-32 rounded-md mb-2 overflow-hidden bg-slate-100 flex items-center justify-center">
                                         {previewUrl ? (
-                                            <img src={previewUrl} alt={region.name} className="min-w-full h-full object-cover" />
+                                            <img src={previewUrl} alt={region.name} className="min-w-full h-full object-cover" alt={region.name + " thumbnail"} />
                                         ) : (
                                             <span className="text-sm text-gray-dark italic">
                                                 {pending.toDelete ? "Will be removed on save" : "No thumbnail"}

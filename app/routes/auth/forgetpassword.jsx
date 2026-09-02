@@ -111,7 +111,7 @@ export default function ForgetPassword() {
 
       <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" alt="" />
         </NavLink>
       </div>
 

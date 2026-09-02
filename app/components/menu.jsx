@@ -221,7 +221,7 @@ export function Menu({ currentEndUrl }) {
             <i className="bi bi-list text-[1.7rem]"></i>
           </button>
           <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">
-            <img className="h-[2.5rem]" src="/assets/logo.svg" />
+            <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES Logo" />
             <p id="logo-title" className="ml-2 text-secondary-light text-[0.6rem] sm:text-xs w-fit" style={{fontWeight: 400}}>International Association of Jesuit<br/>Engineering and Sciences Schools</p>
           </NavLink>
 
@@ -290,7 +290,7 @@ export function Menu({ currentEndUrl }) {
             <div className="menu-dropdown-container">
               <div className="menu-dropdown-button rounded-full border-2 border-primary-dark overflow-hidden bg-primary-dark size-11 my-1.5 ml-2 mr-4 flex items-center justify-center text-white hover:text-primary-light hover:border-secondary-light hover:bg-secondary-light duration-200 cursor-pointer">
                 {(userInfo?.image_url != null && userInfo?.image_url != "") ?
-                  <img className="hover:opacity-90 duration-200 min-w-full min-h-full object-cover" src={userInfo.image_url} />
+                  <img className="hover:opacity-90 duration-200 min-w-full min-h-full object-cover" src={userInfo.image_url} alt={`Image of ${userInfo.fname} ${userInfo.lname}`} />
                   :
                   <i className="bi bi-person-fill text-[1.5rem]"></i>}
               </div>
@@ -300,7 +300,7 @@ export function Menu({ currentEndUrl }) {
                   <div className="mr-4">
                     <div className="rounded-full bg-primary-dark size-15 border-2 border-primary-dark overflow-hidden flex items-center justify-center">
                       {(userInfo?.image_url != null && userInfo?.image_url != "") ?
-                        <img className="min-w-full min-h-full object-cover" src={userInfo.image_url} />
+                        <img className="min-w-full min-h-full object-cover" src={userInfo.image_url} alt={`Image of ${userInfo.fname} ${userInfo.lname}`} />
                         :
                         <i className="bi bi-person-fill text-[2rem] text-white"></i>}
                     </div>
