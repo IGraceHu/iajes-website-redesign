@@ -533,14 +533,14 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
           {currentTeamMembers.map(member => <div key={member.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-            <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(member)}>
+            <button type="button" className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(member)}>
               <p className="pr-5 mr-auto" style={{ color: "black" }}>{member.name}</p>
               <i className="bi bi-pencil-square"></i>
             </button>
-            <button className="button-icon button-red" onClick={() => handleDeleteMemberPopup(member)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+            <button type="button" className="button-icon button-red" onClick={() => handleDeleteMemberPopup(member)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
           </div>)}
         </div>
-        <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup(null)}>Add a team member</button>
+        <button type="button" className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup(null)}>Add a team member</button>
       </Popup>
 
       <Popup id="tf-delete-member" show={showDeletePopup} setShow={setShowDeletePopup} nested
@@ -730,14 +730,14 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
         <h4>Edit Task Force Projects</h4>
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
             {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-              <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
+              <button type="button" className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
                 <p className="pr-5 mr-auto text-left" style={{ color: "black" }}>{project.name}</p>
                 <i className="bi bi-pencil-square"></i>
               </button>
-              <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+              <button type="button" className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
             </div>)}
           </div>
-          <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup(null)}>Add a project</button>
+          <button type="button" className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup(null)}>Add a project</button>
       </Popup>
 
       <Popup id="tf-delete-project" show={showDeletePopup} setShow={setShowDeletePopup} nested

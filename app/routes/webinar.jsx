@@ -260,7 +260,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -456,7 +456,7 @@ export default function Webinar({ loaderData }) {
                             <div>
                                 { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
                             </div>
-                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
+                            <button type="button" className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>

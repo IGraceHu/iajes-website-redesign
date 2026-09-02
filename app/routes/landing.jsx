@@ -335,7 +335,7 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
         <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
           {currentHighlights.map(highlight =>
             <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-              <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
+              <button type="button" className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
                 <i className="bi bi-pencil-square"></i>
               </button>

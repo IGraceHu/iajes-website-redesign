@@ -274,6 +274,7 @@ export default function SearchRoute({ loaderData }) {
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
           <div className="flex w-full max-w-[450px] items-center gap-2 rounded-md border-2 border-primary-light bg-white px-4 py-2 focus-within:bg-teal-50">
             <i className="bi bi-search text-gray-dark/60" aria-hidden="true" />
+            <label for="search-input" hidden>Search people, universities, or interests...</label>
             <input
               id="search-input"
               value={query}
@@ -284,7 +285,7 @@ export default function SearchRoute({ loaderData }) {
             />
             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
                     onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-              <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+              <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-label="Clear Query" />
             </button>
           </div>
 
@@ -430,15 +431,7 @@ function PersonResultCard({ person }) {
   return (
     <a
       href={`/profile/${person.id}`}
-      role="link"
-      tabIndex={0}
-      aria-label={`View profile for ${person.fname}`}
-      onKeyDown={(event) => {
-        if (event.key === "Enter" || event.key === " ") {
-          event.preventDefault();
-          handleNavigate();
-        }
-      }}
+      aria-label={`View profile for ${person.fname} ${person.lname}`}
       className="grid cursor-pointer gap-6 rounded-md border-2 border-gray-light bg-teal-50 p-6 transition hover:shadow-md md:grid-cols-[310px_auto]"
     >
       <div className="flex items-center gap-4">

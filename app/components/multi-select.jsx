@@ -130,7 +130,7 @@ export function MultiSelect({
                     if (options.get(optionValue) == null) {
                         removeOption(optionValue);
                     } else {
-                        return <div key={optionValue} className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }}></i></div>
+                        return <div key={optionValue} className="multi-select-chip" onClick={() => {removeOption(optionValue)}}>{options.get(optionValue)} <i className="bi bi-x my-auto ml-1" style={{ fontSize: "1.5rem" }} aria-label="Remove"></i></div>
                     }
                 })}
             </div>

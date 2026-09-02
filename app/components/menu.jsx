@@ -217,7 +217,10 @@ export function Menu({ currentEndUrl }) {
         </div>
 
         <div className="relative flex items-center content-center md:justify-start justify-between shadow-sm z-1 duration-200">
-          <button onClick={() => setSideMenuActive(!sideMenuActive)} className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1">
+          <button onClick={() => setSideMenuActive(!sideMenuActive)} 
+            className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1"
+            aria-label="Side Menu"
+          >
             <i className="bi bi-list text-[1.7rem]"></i>
           </button>
           <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">

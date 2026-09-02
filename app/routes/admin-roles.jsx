@@ -265,7 +265,7 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
                 <>
                     <h4>{member?.fname || null} {member?.lname || null}'s roles</h4>
 
-                    <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
+                    <button type="button" className="button button-light float-right" onClick={clearChecked}>Clear All</button>
 
                         <label className="checkbox">
                             <input
@@ -574,7 +574,7 @@ export default function AdminRoles({ loaderData }) {
                                                 <button 
                                                     className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" 
                                                     onClick={() => {setFocusMember(member); setShowEditPopup(true)}}
-                                                    aria-label={"Edit " + member?.fname + "'s roles"}
+                                                    aria-label={`Edit ${member?.fname} ${member?.lname}'s roles`}
                                                 >
                                                     <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
                                                     <i className="bi bi-pencil"></i>
