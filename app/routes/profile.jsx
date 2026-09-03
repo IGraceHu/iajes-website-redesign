@@ -15,6 +15,11 @@ import { updateRequired } from "../helpers/form";
 // only ever called from the `action` export below, which React Router only runs on the server.
 import { isSubscribed, subscribeConfirmedUser, unsubscribeByEmail } from "../server/newsletter.server";
 
+
+const STORAGEPATH = "https://mnjmyajjyxaoemhexhyt.supabase.co/storage/v1/object/public/user-resumes/";
+// This is used to check if uploaded files are old or new
+
+
 export function meta({ loaderData }) {
   if (loaderData?.person?.fname) {
     return [
@@ -55,6 +60,21 @@ const tempUserData = {
 
   links: [],
   resume_pdf_url: ""
+}
+
+function extractVideoResourcePath(url) {
+    if (!url) return null;
+    const parts = url.split('/user-resumes/');
+    return parts.length > 1 ? parts[parts.length - 1] : null;
+}
+
+async function removeVideoResourceFiles(urls) {
+    const paths = urls.map(extractVideoResourcePath).filter(Boolean);
+    if (paths.length === 0) return;
+    const { error } = await supabase.storage.from('user-resumes').remove(paths);
+    if (error) {
+        console.error("Error deleting files from storage:", error);
+    }
 }
 
 
@@ -132,8 +152,50 @@ async function getProfile(userId) {
   return error;
 }
 
-async function updateProfile(userId, formData, links) {
+async function updateProfile(userId, formData, links, existingResumePdfUrl) {
   const linksJSON = JSON.stringify(links);
+
+  const filesToRemoveOnSuccess = [];
+  let resumePdfUrl = formData.get("resume-pdf-url") || "";
+  // If the given resume pdf url does not match the exisiting one, that means we have a new one
+  if (resumePdfUrl) {
+    if (resumePdfUrl != existingResumePdfUrl) {
+      const resumeFile = formData.get("resume-upload");
+      if (resumeFile && resumeFile.name && resumeFile.size > 0) {
+
+        const path = `${userId}/${Date.now()}-${resumeFile.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+        const { error: uploadError } = await supabase.storage
+          .from('user-resumes')
+          .upload(path, resumeFile);
+
+        if (uploadError) {
+          console.error("Error uploading resume PDF:", uploadError);
+          return { error: uploadError };
+        }
+
+        const { data, error: urlError } = supabase.storage
+            .from('user-resumes')
+            .getPublicUrl(path);
+
+        if (urlError) {
+            console.error("Error getting resume PDF URL:", urlError);
+            return urlError;
+        }
+
+        if (existingResumePdfUrl) {
+            filesToRemoveOnSuccess.push(existingResumePdfUrl);
+        }
+        resumePdfUrl = data.publicUrl;
+      }
+    }
+  } else {
+    // if the given resume pdf url is empty, that means we have to remove it
+    filesToRemoveOnSuccess.push(existingResumePdfUrl);
+  }
+
+
+
+
 
   const { error } = await supabase
     .from('users')
@@ -161,9 +223,12 @@ async function updateProfile(userId, formData, links) {
       tf_interests: formData.getAll("tf-interests"),
 
       links: linksJSON,
-      resume_pdf_url: formData.get("resume-pdf-url")
+      resume_pdf_url: resumePdfUrl
     })
     .eq('id', userId)
+
+  await removeVideoResourceFiles(filesToRemoveOnSuccess);
+
   return error;
 }
 
@@ -331,6 +396,8 @@ function LinksEdit({ id, links, setLinks }) {
 function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList, universityList, currentUserId }) {
   const navigate = useNavigate();
   const [formRequired, setFormRequired] = useState({ fname: false, lname: false });
+  const [resumePdfUrl, setResumePdfUrl] = useState("");
+  const [resumeErrorMessage, setResumeErrorMessage] = useState("");
   const [hasError, setHasError] = useState(false);
   const draft = profileInfo;
   const [links, setLinks] = useState([])
@@ -379,7 +446,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       formData.set('subscribe-news', draft.is_subscribed ? 'on' : '');
     }
 
-    const update = await updateProfile(userId, formData, cleanLinks);
+    const update = await updateProfile(userId, formData, cleanLinks, draft.resume_pdf_url);
 
     try {
       const wantsSubscribe = formData.get("subscribe-news") === "on";
@@ -394,7 +461,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       navigate("/profile/" + userId);
     } else {
       setHasError(true);
-      console.log(update);
     }
   }
 
@@ -402,6 +468,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
     setLinks(draft.links);
     setFormRequired({ fname: false, lname: false })
     onEngineeringChange(draft.engineering_type);
+    setResumePdfUrl(draft.resume_pdf_url);
   }
 
   useEffect(() => {
@@ -435,6 +502,21 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
   function addLink(e) {
         e.preventDefault();
         setLinks([...links, {url: "", type: "personal"}]);
+  }
+
+  function onResumeChange(e) {
+    if (e.target.files[0].size > 1572864) {
+       e.target.value = "";
+       setResumeErrorMessage("File is too large.");
+    } else {
+      setResumeErrorMessage("");
+      setResumePdfUrl(e.target.files[0].name);
+    }
+  }
+
+  function removeResume() {
+    document.getElementById("resume-upload").value = "";
+    setResumePdfUrl("");
   }
 
   return (
@@ -662,15 +744,28 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             <button className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
             
             <div>
-              <label htmlFor="resume-pdf-url">Resume</label>
-                <input
-                  id="resume-pdf-url"
-                  name="resume-pdf-url"
-                  type="text"
-                  className="input-text w-full"
-                  defaultValue={draft.resume_pdf_url} placeholder="Link to resume..."
-                /> 
-              </div>
+              <label>
+                  Resume (PDF Upload):
+                  <p className="text-sm text-disabled-dark">Max file size is 1.5MB. Leave empty to keep existing PDF.</p>
+                  <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" disabled={currentUserId != userId}
+                      className={" " + (resumeErrorMessage && "input-required")} defaultValue={resumePdfUrl} />
+                  <div className="input-error">{resumeErrorMessage}</div>
+              </label>
+
+
+              { resumePdfUrl &&
+              <>
+                <div className="inline-block text-sm my-1">
+                  Current PDF: {resumePdfUrl.startsWith(STORAGEPATH) ? resumePdfUrl.slice(STORAGEPATH.length + 36) : resumePdfUrl}
+                  <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash"></i> Remove PDF</button>
+                </div>
+              </>
+                
+              }
+
+              <input id="resume-pdf-url" name="resume-pdf-url" type="text" className="hidden" readOnly value={resumePdfUrl} />
+
+            </div>
           </div>        
         </fieldset>
       </div>
@@ -1053,12 +1148,23 @@ export default function ProfileRoute({ loaderData }) {
               </div>
               }
 
-              { (profile.resume_pdf_url.length > 0) && 
-              <div className="relative md:w-auto w-full">
-                <a href={profile.resume_pdf_url} className="block button button-light md:w-auto w-full">Resume<i className="ml-2 bi bi-box-arrow-up-right"></i></a>
-              </div>
-              }
+              
             </div>
+
+            { ((profile.is_contact_by_members && (currentUserId != null)) && (profile.resume_pdf_url.length > 0)) && 
+              <div className="md:col-span-2 py-3 text-center border-t-2 border-gray-light">
+                <h5>Resume</h5>
+                <div className="flex justify-center">
+                  <iframe
+                    src={profile.resume_pdf_url}
+                    className="w-full lg:max-w-[75%]"
+                    style={{ height: '80vh' }}
+                    title="Resume"
+                  />
+                </div>
+              </div>
+            }
+            
 
             
           </div>
