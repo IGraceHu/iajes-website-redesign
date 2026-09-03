@@ -158,11 +158,8 @@ async function updateProfile(userId, formData, links, existingResumePdfUrl) {
   const filesToRemoveOnSuccess = [];
   let resumePdfUrl = formData.get("resume-pdf-url") || "";
   // If the given resume pdf url does not match the exisiting one, that means we have a new one
-  console.log(resumePdfUrl);
   if (resumePdfUrl) {
-    console.log("resumePdfUrl exists");
     if (resumePdfUrl != existingResumePdfUrl) {
-      console.log("upload file");
       const resumeFile = formData.get("resume-upload");
       if (resumeFile && resumeFile.name && resumeFile.size > 0) {
 
@@ -192,7 +189,6 @@ async function updateProfile(userId, formData, links, existingResumePdfUrl) {
       }
     }
   } else {
-    console.log("delete resume");
     // if the given resume pdf url is empty, that means we have to remove it
     filesToRemoveOnSuccess.push(existingResumePdfUrl);
   }
@@ -465,7 +461,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
       navigate("/profile/" + userId);
     } else {
       setHasError(true);
-      console.log(update);
     }
   }
 
