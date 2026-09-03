@@ -79,7 +79,7 @@ const firstTaskForceWebinar = (
     <div>
         <a href="/task-forces/research-and-academic-cooperation" className="button block w-md">
             Research and Academic Cooperation Task Force
-            <i className="bi bi-arrow-right ml-2 mt-1"></i>
+            <i className="bi bi-arrow-right ml-2 mt-1" aria-hidden="true"></i>
         </a>
         <div className="w-full my-5 lg:h-[70vw] h-[110vw]">
             <iframe src="https://drive.google.com/file/d/1IYsGuviohJKb8AxZim83DMQocxrY7AtJ/preview" title="PDF Details of the 'Research and Academic Cooperation Task Force' webinar" width="100%" height="100%"></iframe>
@@ -298,7 +298,7 @@ function WebinarButton({ className, title, date, active = false, onClick }) {
                 <p className="mr-5 font-semibold text-secondary-dark lg:block inline">{title}</p>
                 <p className="text-s text-disabled-light lg:block inline"><i>{date}</i></p>
             </div>
-            <i className="bi bi-chevron-double-right duration-500 text-white" style={{ fontSize: "1.8rem" }}></i>
+            <i className="bi bi-chevron-double-right duration-500 text-white" aria-hidden="true" style={{ fontSize: "1.8rem" }}></i>
         </a>
     )
 }
@@ -361,7 +361,7 @@ export default function Webinars() {
 
                 <div className={cn("z-2 h-0 sticky -bottom-20 lg:-mt-20 mt-3 float-right text-end opacity-0 duration-500", showScrollContainer && "opacity-100 h-50")}>
                     <div>
-                        <button className="button button-light lg:-mr-25" onClick={() => window.scrollTo(0, 0)}><i className="bi bi-chevron-double-up duration-500" style={{ fontSize: "1.2rem" }}></i></button>
+                        <button className="button button-light lg:-mr-25" aria-label="Back to top" onClick={() => window.scrollTo(0, 0)}><i className="bi bi-chevron-double-up duration-500" aria-hidden="true" style={{ fontSize: "1.2rem" }}></i></button>
                     </div>
                 </div>
             </div>

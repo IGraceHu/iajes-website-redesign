@@ -214,7 +214,7 @@ function OriginTimelineSection() {
                 <a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="_blank" rel="noopener noreferrer">
                     <div className="button mt-6 w-full md:w-auto text-lg font-semibold inline-flex items-center px-4 py-3">
                         <span className="mx-auto">
-                            <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right"></i></span>
+                            <span>View the IAJES 2025-2026 Roadmap</span><span className="ml-2"><i className="bi bi-arrow-up-right" aria-label="Open Roadmap in new tab"></i></span>
                         </span>
                     </div>
                 </a>

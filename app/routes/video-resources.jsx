@@ -302,7 +302,7 @@ export default function VideoResources({ loaderData }) {
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
                     <h1>Video Resources</h1>
-                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new video resource</button>}
+                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3" aria-hidden="true"></i>Create new video resource</button>}
                 </div>
                 <p>
                     Here you will find some videos provided by members of our network that you can use for your own training and also share with your students.

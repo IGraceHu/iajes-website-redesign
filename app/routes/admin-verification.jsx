@@ -161,7 +161,7 @@ export default function AdminVerification({ loaderData }) {
             { isAdmin ? 
                 <div>
                     <a href="/admin-options" className="banner-breadcrumb on-white">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-label="Clear Query"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
                     <h2>Manage User Verification</h2>
@@ -181,8 +181,9 @@ export default function AdminVerification({ loaderData }) {
                                     className="w-full bg-transparent text-sm text-gray-dark outline-none"
                                     />
                                     <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
-                                            onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-                                    <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                                            onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}
+                                            aria-label="Clear Query">
+                                    <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-hidden="true" />
                                     </button>
                                 </div>
                             </div>

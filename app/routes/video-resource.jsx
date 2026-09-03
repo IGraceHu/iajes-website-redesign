@@ -340,7 +340,7 @@ export default function VideoResource({ loaderData }) {
             <Banner type="blue">
                 <div className="relative z-1">
                     <a href="/video-resources" className="banner-breadcrumb">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>VIDEO RESOURCES</strong>
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>

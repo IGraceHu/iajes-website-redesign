@@ -362,7 +362,7 @@ function LinksEdit({ id, links, setLinks }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm mb-1 flex justify-between">
                 <div className="text-secondary-dark">Social Link</div>
-                <button type="button" className="text-error font-semibold hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeLink(e)}}><i className="bi bi-trash"></i> Remove Link</button>
+                <button type="button" className="text-error font-semibold hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeLink(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Link</button>
             </div>
             <div className="md:grid grid-cols-[200px_auto] flex flex-col gap-x-5 gap-y-2 pb-2">
               <div>
@@ -757,7 +757,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
               <>
                 <div className="inline-block text-sm my-1">
                   Current PDF: {resumePdfUrl.startsWith(STORAGEPATH) ? resumePdfUrl.slice(STORAGEPATH.length + 36) : resumePdfUrl}
-                  <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash"></i> Remove PDF</button>
+                  <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash" aria-hidden="true"></i> Remove PDF</button>
                 </div>
               </>
                 

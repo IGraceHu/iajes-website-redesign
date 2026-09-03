@@ -337,7 +337,7 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
             <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
               <button type="button" className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
-                <i className="bi bi-pencil-square"></i>
+                <i className="bi bi-pencil-square" aria-label={"Edit " + highlight.title}></i>
               </button>
             </div>
           )}
@@ -450,7 +450,7 @@ export default function Landing({ loaderData }) {
                 <br /><br />
                 Rooted in the Jesuit educational tradition and aligned with the Universal Apostolic Preferences, IAJES fosters international cooperation to form engineers and scientists committed to addressing complex global challenges, promoting human dignity, and contributing to a more just, equitable, and sustainable world through technology and knowledge.
               </p>
-              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]"></i></a>
+              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]" aria-hidden="true"></i></a>
             </div>
             <div className="text-white flex justify-center">
               <LinkCards />

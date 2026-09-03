@@ -200,7 +200,7 @@ export function Menu({ currentEndUrl }) {
             className="mr-3 flex items-center text-zinc-400 hover:text-[#0A66C2] transition-colors"
             aria-label="LinkedIn"
           >
-            <i className="bi bi-linkedin text-[0.9rem]"></i>
+            <i className="bi bi-linkedin text-[0.9rem]" aria-hidden="true"></i>
           </a>
           {/* Google Translate Dropdown */}
           <select
@@ -221,7 +221,7 @@ export function Menu({ currentEndUrl }) {
             className="relative md:hidden block px-4 text-primary-dark hover:cursor-pointer hover:text-secondary-light duration-200 bg-white z-1"
             aria-label="Side Menu"
           >
-            <i className="bi bi-list text-[1.7rem]"></i>
+            <i className="bi bi-list text-[1.7rem]" aria-hidden="true"></i>
           </button>
           <NavLink to="/" end className="relative duration-200 flex items-center hover:opacity-70 md:px-4 bg-white z-1 my-1 md:mr-auto shrink-0">
             <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES Logo" />
@@ -295,7 +295,7 @@ export function Menu({ currentEndUrl }) {
                 {(userInfo?.image_url != null && userInfo?.image_url != "") ?
                   <img className="hover:opacity-90 duration-200 min-w-full min-h-full object-cover" src={userInfo.image_url} alt={`Image of ${userInfo.fname} ${userInfo.lname}`} />
                   :
-                  <i className="bi bi-person-fill text-[1.5rem]"></i>}
+                  <i className="bi bi-person-fill text-[1.5rem]" aria-hidden="true"></i>}
               </div>
               <div id="profile-dropdown" className="menu-dropdown right-3 py-1 -mt-[220px]">
                 <div className="text-sm py-3 px-3 mx-2 mb-2 border-b-2 border-primary-light flex items-center">
@@ -305,7 +305,7 @@ export function Menu({ currentEndUrl }) {
                       {(userInfo?.image_url != null && userInfo?.image_url != "") ?
                         <img className="min-w-full min-h-full object-cover" src={userInfo.image_url} alt={`Image of ${userInfo.fname} ${userInfo.lname}`} />
                         :
-                        <i className="bi bi-person-fill text-[2rem] text-white"></i>}
+                        <i className="bi bi-person-fill text-[2rem] text-white" aria-hidden="true"></i>}
                     </div>
                   </div>
                   <div className="pr-6">

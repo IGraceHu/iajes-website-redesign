@@ -260,7 +260,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -474,7 +474,7 @@ export default function Webinar({ loaderData }) {
             <Banner type="blue">
                 <div className="relative z-1">
                     <a href="/webinars" className="banner-breadcrumb">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>WEBINARS</strong>
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>

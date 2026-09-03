@@ -420,7 +420,7 @@ export default function AdminRoles({ loaderData }) {
             { isAdmin ? 
                 <div>
                     <a href="/admin-options" className="banner-breadcrumb on-white">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
                     <h2>Manage Roles and Permissions</h2>
@@ -525,7 +525,7 @@ export default function AdminRoles({ loaderData }) {
                                         aria-label="Edit Roles"
                                         >
                                         <p className="text-base mr-3 md:block hidden">Edit Roles</p>
-                                        <i className={`bi bi-pencil`} />
+                                        <i className={`bi bi-pencil`} aria-hidden="true" />
                                     </button>
                                     <a href={`/profile/${focusMember.id}`} className="text-xl font-semibold text-secondary-dark hover:text-primary-dark hover:cursor-pointer duration-200">{focusMember?.fname} {focusMember?.lname}</a>
                                     <div className="text-sm text-gray-dark/70">{focusMember.email}</div>
@@ -557,8 +557,9 @@ export default function AdminRoles({ loaderData }) {
                             className="w-full bg-transparent text-sm text-gray-dark outline-none"
                             />
                             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
-                                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}
+                                    aria-label="Clear Query">
+                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-hidden="true" />
                             </button>
                         </div>
                         <div className="my-2">
@@ -577,10 +578,10 @@ export default function AdminRoles({ loaderData }) {
                                                     aria-label={`Edit ${member?.fname} ${member?.lname}'s roles`}
                                                 >
                                                     <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
-                                                    <i className="bi bi-pencil"></i>
+                                                    <i className="bi bi-pencil" aria-hidden="true"></i>
                                                 </button>
                                                 <a className="button-icon" href={`/profile/${member.id}`} aria-label={"View " + member?.fname + " " + member?.lname}>
-                                                    <i className="bi bi-box-arrow-up-right"></i>
+                                                    <i className="bi bi-box-arrow-up-right" aria-hidden="true"></i>
                                                 </a>
                                             </div>
                                         ))}

@@ -121,7 +121,7 @@ export default function AdminContact({ loaderData }) {
             { isAdmin ? 
                 <div>
                     <a href="/admin-options" className="banner-breadcrumb on-white">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
                     <h2>Mass Contact</h2>

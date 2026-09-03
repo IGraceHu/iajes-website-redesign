@@ -1417,7 +1417,7 @@ function MeetingSection({ meeting }) {
                         onClick={() => handleImageStep(-1)}
                         aria-label="Previous photo"
                       >
-                        <i className="bi bi-chevron-left text-[1.8rem]"></i>
+                        <i className="bi bi-chevron-left text-[1.8rem]" aria-hidden="true"></i>
                         <span className="font-semibold">Previous</span>
                       </button>
                       <button
@@ -1427,7 +1427,7 @@ function MeetingSection({ meeting }) {
                         aria-label="Next photo"
                       >
                         <span className="font-semibold">Next</span>
-                        <i className="bi bi-chevron-right text-[1.8rem]"></i>
+                        <i className="bi bi-chevron-right text-[1.8rem]" aria-hidden="true"></i>
                       </button>
                     </div>
                   ) : null}

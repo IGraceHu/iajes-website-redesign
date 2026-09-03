@@ -209,7 +209,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -432,7 +432,7 @@ export default function Webinars({ loaderData }) {
                         
                     <div className="flex items-center">
                         <a href="/webinars/archive" className="button button-light block">Archive</a>
-                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new webinar</button>}
+                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3" aria-hidden="true"></i>Create new webinar</button>}
                     </div>
                 </div>
                 <p>
