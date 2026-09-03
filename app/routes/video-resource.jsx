@@ -268,7 +268,7 @@ export default function VideoResource({ loaderData }) {
                                     placeholder="Video title"
                                     defaultValue={loaderData.title}
                                     onChange={(e) => checkEmpty(e.target.value, "vidResourceTitle")} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.vidResourceTitle}>This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="vid-resource-date">Video resource date:</label><br />
                                 {/* Expected format for <input type="date"> is YYYY-MM-DD */}
@@ -289,7 +289,7 @@ export default function VideoResource({ loaderData }) {
                                 placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/.../preview"
                                 defaultValue={loaderData.video_url}
                                 onChange={(e) => checkEmpty(e.target.value, "vidResourceLink")} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.vidResourceLink}>This field is required.</div>
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
                             <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
@@ -307,7 +307,7 @@ export default function VideoResource({ loaderData }) {
                                         placeholder="Name"
                                         defaultValue={loaderData.speaker}
                                         onChange={(e) => checkEmpty(e.target.value, "vidResourceSpeakerName")} />
-                                    <div className="input-error">This field is required.</div>
+                                    <div className="input-error" aria-hidden={!formRequired?.vidResourceSpeakerName}>This field is required.</div>
                                 </div>
                                 <div>
                                     <label htmlFor="vid-resource-speaker-uni">University:</label><br />

@@ -386,7 +386,7 @@ function LinksEdit({ id, links, setLinks }) {
                       placeholder="Link URL"
                       value={links[id].url}
                       onChange={(e) => {handleURLChange(e)}} />
-                  <div className="input-error">This field is required.</div>
+                  <div className="input-error" aria-hidden={!linkRequired}>This field is required.</div>
               </div>
             </div>
         </div>
@@ -535,7 +535,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 defaultValue={draft.fname} placeholder="First name" onChange={(e) => checkEmpty(e.target.value, "fname")}
               />
-              <div className="input-error">This field is required.</div>
+              <div className="input-error" aria-hidden={!formRequired?.fname}>This field is required.</div>
             </div>
             <div className="relative">
               <label htmlFor="last-name">Last Name</label>
@@ -546,7 +546,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 defaultValue={draft.lname} placeholder="Last name" onChange={(e) => checkEmpty(e.target.value, "lname")}
               />
-              <div className="input-error">This field is required.</div>
+              <div className="input-error" aria-hidden={!formRequired?.lname}>This field is required.</div>
             </div>
 
             <div className="md:col-span-2">
@@ -749,7 +749,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                   <p className="text-sm text-disabled-dark">Max file size is 1.5MB. Leave empty to keep existing PDF.</p>
                   <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" disabled={currentUserId != userId}
                       className={" " + (resumeErrorMessage && "input-required")} defaultValue={resumePdfUrl} />
-                  <div className="input-error">{resumeErrorMessage}</div>
+                  <div className="input-error" aria-hidden={resumeErrorMessage == ""}>{resumeErrorMessage}</div>
               </label>
 
 

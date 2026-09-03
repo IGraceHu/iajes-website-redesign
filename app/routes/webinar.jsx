@@ -270,7 +270,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                         placeholder="Name"
                         value={speakers[id].name}
                         onChange={(e) => {handleNameChange(e)}} />
-                    <div className="input-error">This field is required.</div>
+                    <div className="input-error" aria-hidden={!nameRequired}>This field is required.</div>
                 </div>
                 <div>
                     <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
@@ -416,7 +416,7 @@ export default function Webinar({ loaderData }) {
                                     placeholder="Title"
                                     defaultValue={loaderData.title}
                                     onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.webinarTitle}>This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="webinar-date">Date:</label><br />
                                 <input id="webinar-date" name="webinar-date" type="date" defaultValue={loaderData.date} className="input input-text w-full" />

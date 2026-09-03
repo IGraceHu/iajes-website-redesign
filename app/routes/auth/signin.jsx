@@ -113,7 +113,7 @@ export default function SignIn() {
           <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
-          <div className="input-error">Please enter a valid email address.</div>
+          <div className="input-error" aria-hidden={!formRequired?.email}>Please enter a valid email address.</div>
 
           <br /><br />
 
@@ -124,7 +124,7 @@ export default function SignIn() {
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "pwd")} />
-          <div className="input-error">Please enter your password.</div>
+          <div className="input-error" aria-hidden={!formRequired?.pwd}>Please enter your password.</div>
 
           <br /><br />
 

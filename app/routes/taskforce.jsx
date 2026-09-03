@@ -554,7 +554,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <input id="edit-person-name" name="name" type="text" className={"input input-text w-full " + (formRequired?.name && "input-required")}
                placeholder="Name" onChange={(e) => checkEmpty(e.target.value, "name")}
                defaultValue={focusMember?.name} />
-        <div className="input-error">This field is required.</div>
+        <div className="input-error" aria-hidden={!formRequired?.name}>This field is required.</div>
         
         <br /><br />
         <label htmlFor="edit-member-role">Task Force Role:</label><br />
@@ -576,7 +576,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <input id="edit-member-url" name="iajes-url" type="text" className={"input input-text w-full " + (formRequired?.iajesUrl && "input-required")}
                placeholder="/profile/..." onChange={iajesUrlChange}
                defaultValue={focusMember?.iajes_url} />
-        <div className="input-error">Invalid profile URL. IAJES profile URL must start with /profile/</div>
+        <div className="input-error" aria-hidden={!formRequired?.iajesUrl}>Invalid profile URL. IAJES profile URL must start with /profile/</div>
         <br /><br />
 
         <label htmlFor="edit-member-image">Image:</label><br />
@@ -753,7 +753,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
             <input id="edit-project-name" name="name" type="text" className={"input input-text md:w-70 w-full " + (formRequired?.name && "input-required")} 
                    placeholder="Project name" onChange={(e) => checkEmpty(e.target.value, "name")}
                    defaultValue={focusProject?.name} />
-            <div className="input-error">This field is required.</div>
+            <div className="input-error" aria-hidden={!formRequired?.name}>This field is required.</div>
           </div>
           <div>
             <label htmlFor="edit-project-img">Image:</label><br />

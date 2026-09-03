@@ -353,13 +353,13 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
               className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
               placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
               defaultValue={focusHighlight.title} />
-            <div className="input-error">This field is required.</div>
+            <div className="input-error" aria-hidden={!formRequired?.title}>This field is required.</div>
           </div>
           <label>
             Image:<br />
             <input id="edit-highlight-img" name="image-url" type="file" accept="image/*"
               className={formRequired?.imageUrl ? "input-required" : ""} />
-            <div className="input-error">Please select an image file.</div>
+            <div className="input-error" aria-hidden={!formRequired?.imageUrl}>Please select an image file.</div>
           </label>
         </div>
         <div>
@@ -368,7 +368,7 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
             className={"input input-text w-full " + (formRequired?.url && "input-required")}
             placeholder="https://..." onChange={urlChange}
             defaultValue={focusHighlight.url} />
-          <div className="input-error">Invalid link.</div>
+          <div className="input-error" aria-hidden={!formRequired?.url}>Invalid link.</div>
         </div>
         <br />
         <div className="">
@@ -377,7 +377,7 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
             className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
             placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
             defaultValue={focusHighlight.details} ></textarea>
-          <div className="input-error">This field is required.</div>
+          <div className="input-error" aria-hidden={!formRequired?.details}>This field is required.</div>
         </div>
       </PopupForm>
     </>

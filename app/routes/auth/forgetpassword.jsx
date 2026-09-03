@@ -84,7 +84,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
         <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Enter your email address"
           className={"input-text w-full " + (emailRequired && "input-required")}
           onChange={(e) => checkEmpty(e.target.value)} />
-        <div className="input-error">Please enter a valid email address.</div>
+        <div className="input-error" aria-hidden={!emailRequired}>Please enter a valid email address.</div>
 
         <br /><br />
 

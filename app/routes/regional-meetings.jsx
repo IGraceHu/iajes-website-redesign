@@ -267,7 +267,7 @@ export default function RegionalMeetings() {
                                     </div>
                                     <div className="w-full h-32 rounded-md mb-2 overflow-hidden bg-slate-100 flex items-center justify-center">
                                         {previewUrl ? (
-                                            <img src={previewUrl} alt={region.name} className="min-w-full h-full object-cover" alt={region.name + " thumbnail"} />
+                                            <img src={previewUrl} alt={region.name} className="min-w-full h-full object-cover" />
                                         ) : (
                                             <span className="text-sm text-gray-dark italic">
                                                 {pending.toDelete ? "Will be removed on save" : "No thumbnail"}

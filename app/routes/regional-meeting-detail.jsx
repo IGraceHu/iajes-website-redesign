@@ -650,13 +650,13 @@ export default function RegionalMeetingDetail() {
                     <div>
                         <label>Title:</label>
                         <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" placeholder="Title" value={editForm?.title || ''} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
-                        <div className="input-error">This field is required.</div>
+                        <div className="input-error" aria-hidden={!formRequired?.editTitle}>This field is required.</div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
                             <label>Date:</label>
                             <input name="date" className={"input input-text w-full " + (formRequired?.editDate && "input-required")} type="date" value={toInputDateFormat(editForm?.date)} onChange={e => { setEditForm({ ...editForm, date: fromInputDateFormat(e.target.value) }); checkEmpty(e.target.value, "editDate"); }} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.editDate}>This field is required.</div>
                         </div>
                         <div>
                             <label>Location:</label>

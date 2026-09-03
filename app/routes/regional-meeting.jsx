@@ -845,13 +845,13 @@ export default function RegionalMeeting() {
                         <div>
                             <label>Title:</label>
                             <input name="title" className={"input input-text w-full " + (formRequired?.addTitle && "input-required")} type="text" placeholder="Title" value={addForm.title} onChange={e => { setAddForm({ ...addForm, title: e.target.value }); checkEmpty(e.target.value, "addTitle"); }} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.addTitle}>This field is required.</div>
                         </div>
                         <div className="grid md:grid-cols-2 gap-4">
                             <div>
                                 <label>Date:</label>
                                 <input name="date" className={"input input-text w-full " + (formRequired?.addDate && "input-required")} type="date" placeholder="Date" value={toInputDateFormat(addForm.date)} onChange={e => { setAddForm({ ...addForm, date: fromInputDateFormat(e.target.value) }); checkEmpty(e.target.value, "addDate"); }} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.addDate}>This field is required.</div>
                             </div>
                             <div>
                                 <label>Location:</label>
@@ -1021,13 +1021,13 @@ export default function RegionalMeeting() {
                         <div>
                             <label>Title:</label>
                             <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" placeholder="Title" value={editForm.title} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.editTitle}>This field is required.</div>
                         </div>
                         <div className="grid md:grid-cols-2 gap-4">
                             <div>
                                 <label>Date:</label>
                                 <input name="date" className={"input input-text w-full " + (formRequired?.editDate && "input-required")} type="date" placeholder="Date" value={toInputDateFormat(editForm.date)} onChange={e => { setEditForm({ ...editForm, date: fromInputDateFormat(e.target.value) }); checkEmpty(e.target.value, "editDate"); }} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.editTitle}>This field is required.</div>
                             </div>
                             <div>
                                 <label>Location:</label>
