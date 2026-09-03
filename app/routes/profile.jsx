@@ -752,7 +752,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
               <label>
                   Resume (PDF Upload):
                   <p className="text-sm text-disabled-dark">Max file size is 1.5MB. Leave empty to keep existing PDF.</p>
-                  <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" 
+                  <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" disabled={currentUserId != userId}
                       className={" " + (resumeErrorMessage && "input-required")} defaultValue={resumePdfUrl} />
                   <div className="input-error">{resumeErrorMessage}</div>
               </label>
@@ -1156,7 +1156,7 @@ export default function ProfileRoute({ loaderData }) {
               
             </div>
 
-            { (profile.resume_pdf_url.length > 0) && 
+            { ((profile.is_contact_by_members && (currentUserId != null)) && (profile.resume_pdf_url.length > 0)) && 
               <div className="md:col-span-2 py-3 text-center border-t-2 border-gray-light">
                 <h5>Resume</h5>
                 <div className="flex justify-center">
