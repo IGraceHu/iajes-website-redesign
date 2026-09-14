@@ -1,77 +1,20 @@
 # Senior Design: IAJES Website Redesign
 
-[Old Respository](https://github.com/CSEN194Lab-F2025/senior-design-2025-2026-1060_csen_iajeswebsiteredesign)
+This is a site redesign for the International Association of Jesuit Engineering and Sciences Schools (IAJES), created by Santa Clara University students, sponsored by SCU's Frugal Innovation Hub (FIH).
 
-- 📖 [React Router docs](https://reactrouter.com/)
+**Features:**
+- User authentication and accounts
+- Administrative user management
+- Dynamic site data and information
+- Newsletter generation and distribution
+- Database storage and user authentication powered by Supabase
 
-## Getting Started
+---
 
-### Installation
-
-Install the dependencies:
-
-```bash
-npm install
-```
-
-### Development
-
-Start the development server with HMR:
-
-```bash
-npm run dev
-```
-
-Your application will be available at `http://localhost:5173`.
-
-## Building for Production
-
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
-
-```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
-```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
+This site is built with React and [Tailwind CSS](https://tailwindcss.com/) using the JavaScript-only React Router v7 Template. (This template is now outdated and no longer available.)
 
 ---
 
 Built with ❤️ using React Router.
+
+[Old Respository](https://github.com/CSEN194Lab-F2025/senior-design-2025-2026-1060_csen_iajeswebsiteredesign)
