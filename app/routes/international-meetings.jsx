@@ -7,6 +7,130 @@ export function meta() {
   return [{ title: "International Meetings" }];
 }
 
+const MILESTONE_2026 = [
+  "The International Association of Jesuit Engineering Schools (IAJES) gathers engineering leaders, faculty, and partners from Jesuit institutions around the world to collaborate on shared goals for education, research, and social transformation. Held every two years, the Summit serves as a global platform for strengthening the network of Jesuit engineering schools and advancing the collective mission of forming engineers for and with others.",
+  "The 5th IAJES Summit, hosted by Ateneo de Manila University, will bring together delegates from Asia-Pacific, Europe, Africa, and the Americas for three days of strategic dialogue, knowledge sharing, and collaborative engagement. With the theme \"Down from the Hill: Engineering a Shared Future,\" the Summit highlights the call for Jesuit engineering institutions to move beyond traditional boundaries—translating academic excellence, ethical leadership, and human-centered innovation into meaningful impact for communities.",
+  "This year's gathering will feature:",
+  "• Task-Force presentations",
+  "• Key discussions",
+  "• Workshop and networking spaces",
+  "• Cultural and community engagement events",
+  "Guided by the Jesuit tradition of magis, the Summit invites participants to collectively envision and build a future where engineering contributes to justice, sustainability, and the common good.",
+];
+
+const PROGRAM_2026 = [];
+
+const PROGRAM_LINK_2026 = {
+  prefix: "Program details are available on the",
+  label: "IAJES Manila Summit website",
+  href: "https://iajes2026.ateneo.edu/home",
+};
+
+const PROGRAM_SCHEDULE_2026 = [
+  {
+    day: "Tuesday July 7, 2026",
+    masterOfCeremony: "Ingrid Yvonne A. Madrial",
+    items: [
+      { time: "11:30-12:00", title: "Room Preparations", room: "", keyPersons: "" },
+      { time: "12:00-13:00", title: "Lunch", room: "CTC 414", keyPersons: "" },
+      { time: "13:00-15:00", title: "Board Meeting (IAJES Governing Board Meeting only)", room: "CTC 507", keyPersons: "" },
+      { time: "15:00-15:30", title: "PM Snack", room: "CTC 507", keyPersons: "" },
+      { time: "15:30-18:00", title: "Board Meeting (IAJES Governing Board Meeting only)", room: "CTC 507", keyPersons: "" },
+      { time: "18:00-19:00", title: "Dinner with IAJES ASIA", room: "CTC 414", keyPersons: "" },
+    ],
+  },
+  {
+    day: "Wednesday July 8, 2026",
+    theme: "Inspiration",
+    masterOfCeremony: "Ingrid Yvonne A. Madrial",
+    items: [
+      { time: "8:30-9:30", title: "Summit Registration, AM Snack", room: "Escaler", keyPersons: "Registration: SOSE Staff" },
+      {
+        time: "9:30-10:30",
+        title: "Opening Session",
+        room: "Escaler",
+        keyPersons: "Speaking: Fr. Bobby Yap (Ateneo President) and/or VHPE Dr. Bo Peep, Carlos Rivas (IAJES President), Fr. Fernando Ponce \n Awarding: Raphael Guerrero (Dean of ADMU) \n Organizing: Jan Kevin Galicia (ADMU)",
+        subitems: [
+          "9:30-9:40: Opening Session (National Anthem, Song for Mary)",
+          "9:40-9:50: Message from Ateneo President",
+          "9:50-10:00: Message from IAJES President",
+          "10:00-10:20: Keynote Speech from Fr. Ponce",
+          "10:20-10:30: Certificates and PhotoOps",
+        ],
+      },
+      {
+        time: "10:30-12:00",
+        title: "Regional Reports and Question and Answer",
+        room: "Escaler",
+        keyPersons: "Speaking: 6 Regional Leaders \n Q&A Facility & Awarding: Dr. Celeste M. Ojeda (ADNU) \n Organizing: Geremy Fernandez",
+        subitems: [
+          "10:30-10:40: Report from North America",
+          "10:40-10:50: Report from Africa and Madagascar",
+          "10:50-11:00: Report from South Asia",
+          "11:00-11:10: Report from Asia Pacific",
+          "11:10-11:20: Report from Latin America",
+          "11:20-11:30: Report from Europe",
+          "11:30-11:50: Question and Answer",
+        ],
+      },
+      { time: "12:00-13:30", title: "Lunch", room: "CTC 413, 414", keyPersons: "" },
+      { time: "13:30-15:00", title: "Collaborative Working Session 1: Regions Split", room: "Breakout Rooms: CTC 108, CTC 507, CTC 514", keyPersons: "Facilitating: Regional Heads" },
+      { time: "15:00-15:30", title: "PM Snack", room: "Escaler", keyPersons: "" },
+      {
+        time: "15:30-17:20",
+        title: "Ateneo Info Session",
+        room: "Escaler",
+        keyPersons: "Speaking: 6 Regional Leaders \n Q&A Facility & Awarding: Dr. Shierlyn Paclijan (XU) \n Organizing: Rafi Jayme (student of ADMU)",
+        subitems: [
+          "15:30-15:40: Report from AIC",
+          "15:40-16:10: Report from ARISE",
+          "16:10-16:30: Report from OSCI",
+          "16:30-16:50: Report from AIPO",
+          "16:50-17:20: Question and Answer",
+        ],
+      },
+      { time: "17:20-18:00", title: "Walk and Short Break", room: "", keyPersons: "" },
+      { time: "18:00-19:30", title: "Cultural Program and Dinner", room: "CTC 413, 414", keyPersons: "" },
+    ],
+  },
+  {
+    day: "Thursday July 9, 2026",
+    theme: "Reflection",
+    masterOfCeremony: "Engr. April M. Salazar",
+    items: [
+      { time: "8:00-9:00", title: "AM Snack", room: "CTC 413, 414", keyPersons: "" },
+      { time: "9:00-9:10", title: "Refresher", room: "CTC 413, 414", keyPersons: "" },
+      { time: "9:10-9:40", title: "Connecting the dots", room: "CTC 413, 414", keyPersons: "Speaking: John Rose, SJ" },
+      { time: "9:40-12:00", title: "Task Force and Project Reports", room: "CTC 413, 414", keyPersons: "Speaking: Task Force Leaders \n Q&A Facility and Awarding: Dr. Ricardo Jose Guerrero \n Organizing: Elijah Duran", subitems: ["Speaker 1: Arpita Jena", "Speaker 2: Bryan Ranger", "Video 3: Nicolas Rincon Garcia", "Speaker 4: Maria Segui-Gomez", "Speaker 5: Carlos Rivas (website presentation)", "Special Presentation: Mateo Lopez Victoria"] },
+      { time: "12:00-13:30", title: "Lunch", room: "CTC 413, 414", keyPersons: "" },
+      { time: "13:30-15:00", title: "Collaborative Working Session 2: Action - Exploring opportunities and experiences with the Task Forces and Projects", room: "CTC 507, 514, 413, 414", keyPersons: "Ushering: Elijah Duran, Cena Mendi, Sam Santos" },
+      { time: "15:00-15:30", title: "PM Snack", room: "CTC 413, 414", keyPersons: "" },
+      { time: "15:45-17:30", title: "Ateneo Wild Tour, Ateneo Art Gallery Batch 1, Ateneo Art Gallery Batch 2", room: "Wild Tour (walking), Art Gallery (e-jeep pickup CTC back entrance)", keyPersons: "Ushering Ateneo Wild: Joshua Pellosis \n Ushering Art Gallery: Chino Marable, Got Patacsil" },
+      { time: "17:30-18:30", title: "Dinner", room: "CTC 413, 414", keyPersons: "" },
+    ],
+  },
+  {
+    day: "Friday July 10, 2026",
+    theme: "Action",
+    masterOfCeremony: "Ingrid Yvonne A. Madrial + Engr. April M. Salazar",
+    items: [
+      { time: "8:00-9:00", title: "AM Snack", room: "CTC 413, 414", keyPersons: "" },
+      { time: "9:00-9:10", title: "Refresher", room: "CTC 413, 414", keyPersons: "" },
+      { time: "9:10-9:40", title: "Connecting the dots", room: "CTC 413, 414", keyPersons: "Speaking: Fr. Kasirajan Selvarajan Casimiir" },
+      { time: "9:40-11:00", title: "IAJES' future development: Presentation of commitments for the next 2 years by the regional representatives and the Task Force leaders", room: "CTC 413, 414", keyPersons: "Representatives per Region" },
+      { time: "11:00-12:00", title: "Closing Meeting", room: "CTC 413, 414", keyPersons: "Carlos Rivas" },
+      { time: "12:00-13:30", title: "Lunch", room: "CTC 413, 414", keyPersons: "" },
+    ],
+  },
+  {
+    day: "Saturday July 11, 2026",
+    theme: "Optional Tour",
+    items: [{ title: "Intramuros Tour" }],
+  },
+];
+
+/* 2024 */
+
 const MILESTONE_2024 = [
   "Jesuit Engineering Perspective for an Improved Global Future",
   "The gathering in Bhubaneswar will mark a significant moment in shaping the future trajectory of our network",
@@ -25,8 +149,13 @@ const MILESTONE_2024 = [
 const PROGRAM_2024 = [
   "This program reflects our hope that everyone will make the most of the three days we spend together",
   "Program details",
-  "More information on the IAJES Bhubaneswar Summit website",
 ];
+
+const PROGRAM_LINK_2024 = {
+  prefix: "More information is available at the",
+  label: "IAJES Bhubaneswar Summit website",
+  href: "https://xim.edu.in/iajes-summit/schedule.html",
+};
 
 const PROGRAM_SCHEDULE_2024 = [
   {
@@ -100,6 +229,8 @@ const PROGRAM_SCHEDULE_2024 = [
     ],
   },
 ];
+
+/* 2022 */
 
 const PROGRAM_SCHEDULE_2022 = [
   {
@@ -184,6 +315,8 @@ const PROGRAM_2022 = [
   "All of us thank the extraordinary work done by Prof. Sunand Bhattacharya, Prof. Glenn Gaudette and their teams, not only for the logistics but also for their professionalism and for choosing speakers and offering very nice ideas that help the summit to be a great success.",
   "Finally, in the closing session, Joseph Christie SJ encouraged all of us to work according to what happened those 3 days at Boston College, to split our experience among all our colleagues, and to work all together putting our engineering knowledge and common sense at the service of people for building a better common house. Prof. Rosa Nomen, the elected president, closes the event, saying that we, IAJES members, have the strength, energy, and desire to work together, but we need the support of our institutions by giving us time and recognition to let this network consolidate and grow.",
 ];
+
+/* 2019 */
 
 const MILESTONE_2019 = [
   "2nd IAJES Conference Cali July 2019",
@@ -331,6 +464,8 @@ const PRECONF_2019 = [
   "New Engineering Labs building",
   "Research in Javeriana-Bogota",
 ];
+
+/* 2018 */
 
 const MILESTONE_2018 = [
   "Conference Bilbao 2018",
@@ -636,11 +771,12 @@ const BILBAO_PROGRAM_SECTIONS = [
   },
 ];
 
-const imagePaths = (year, count) =>
+const imagePaths = (year, count, extension = "jpg") =>
   Array.from({ length: count }, (_, index) =>
-    "/img/international-meetings/" + year + "/" + String(index + 1).padStart(3, "0") + ".jpg"
+    "/img/international-meetings/" + year + "/" + String(index + 1).padStart(3, "0") + "." + extension
   );
 
+const IMAGES_2026 = imagePaths("2026", 5, "png");
 const IMAGES_2024 = imagePaths("2024", 79);
 const IMAGES_2022 = imagePaths("2022", 26);
 const IMAGES_2019_ALL = imagePaths("2019", 50);
@@ -648,6 +784,7 @@ const IMAGES_2019_PRE = IMAGES_2019_ALL.slice(0, 4);
 const IMAGES_2019 = IMAGES_2019_ALL.slice(4);
 const IMAGES_2018 = imagePaths("2018", 10);
 
+const HERO_2026 = IMAGES_2026[0];
 const HERO_2024 = IMAGES_2024[0];
 const HERO_2022 = IMAGES_2022[0];
 const HERO_2019 = IMAGES_2019_ALL[0];
@@ -663,6 +800,7 @@ const VIDEO_2018 = [
   "https://drive.google.com/file/d/1a2ESlTC_9U3fob6af4yG5pryP7Fa-azF/preview",
   "https://drive.google.com/file/d/1DPGtEIsxP2goMENikpeDKnK3eyyFCfU8/preview",
 ];
+const VIDEO_2026 = [];
 
 const MILESTONE_2018_INTRO = MILESTONE_2018.slice(1, 4);
 const MILESTONE_2019_BODY = MILESTONE_2019.slice(3);
@@ -725,7 +863,6 @@ function createUpcomingMeeting(config) {
     title: config?.title?.trim() || label,
     date: config?.date?.trim(),
     location: config?.location?.trim(),
-    meetingWebsite: config?.meetingWebsite?.trim(),
     heroImage: config?.heroImage?.trim() || HERO_2024,
     milestone: overview,
     mainProgram: {
@@ -749,6 +886,24 @@ const UPCOMING_MEETINGS = hasUpcomingMeeting(internationalMeetingTemplate)
 
 const ARCHIVE_MEETINGS = [
   {
+    id: "manila-2026",
+    label: "5th Conference - Manila 2026",
+    title: "5th Conference - Manila 2026",
+    date: "July 8-10, 2026",
+    location: "Ateneo de Manila University, Philippines",
+    heroImage: HERO_2026,
+    milestone: MILESTONE_2026,
+    mainProgram: {
+      text: PROGRAM_2026,
+      link: PROGRAM_LINK_2026,
+      schedule: PROGRAM_SCHEDULE_2026,
+    },
+    media: {
+      videos: VIDEO_2026,
+      images: IMAGES_2026,
+    },
+  },
+  {
     id: "bhubaneshwar-2024",
     label: "4th Conference - Bhubaneswar 2024",
     title: "4th Conference - Bhubaneswar 2024",
@@ -758,6 +913,7 @@ const ARCHIVE_MEETINGS = [
     milestone: MILESTONE_2024,
     mainProgram: {
       text: PROGRAM_2024,
+      link: PROGRAM_LINK_2024,
       schedule: PROGRAM_SCHEDULE_2024,
     },
     media: {
@@ -1218,6 +1374,21 @@ function MeetingSection({ meeting }) {
             </div>
           ) : null}
 
+          {meeting.mainProgram?.link ? (
+            <p className="mt-3 text-gray-dark/80">
+              {meeting.mainProgram.link.prefix} {" "}
+              <a
+                href={meeting.mainProgram.link.href}
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-secondary-dark underline"
+              >
+                {meeting.mainProgram.link.label}
+              </a>
+              .
+            </p>
+          ) : null}
+
           {hasMainProgramSchedule ? (
             <div className="mt-4 rounded-md bg-teal-50 px-4 py-3">
               <div className="text-sm font-semibold text-secondary-dark">Program schedule</div>
@@ -1233,29 +1404,59 @@ function MeetingSection({ meeting }) {
                         <i>{day.theme}</i>
                       </p>
                     ) : null}
+                    {day.masterOfCeremony ? (
+                      <p className="mt-1 mb-0 text-sm text-gray-dark/70">
+                        <span className="font-semibold">Master of Ceremony:</span> {day.masterOfCeremony}
+                      </p>
+                    ) : null}
                     <div className="mt-2 flex flex-col gap-1.5">
                       {day.items.map((item, index) => {
                         const isObject = typeof item === "object";
                         const title = isObject ? item.title : item;
                         const subitems = isObject ? item.subitems : null;
+                        const hasScheduleDetails =
+                          isObject && (item.time || item.room || item.keyPersons);
                         const tone = isObject && item.tone ? item.tone : "default";
                         const toneStyle = scheduleToneStyles[tone] || scheduleToneStyles.default;
 
                         return (
                           <div key={`${meeting.id}-schedule-${day.day}-${index}`}>
-                            <p className={`mb-0 ${toneStyle.title}`}>{title}</p>
-                            {subitems?.length ? (
-                              <div className="mt-0.5 flex flex-col gap-0.5 pl-2">
-                                {subitems.map((subitem, subIndex) => (
-                                  <p
-                                    key={`${meeting.id}-schedule-${day.day}-${index}-${subIndex}`}
-                                    className={`mb-0 ${toneStyle.subitem}`}
-                                  >
-                                    - {subitem}
-                                  </p>
-                                ))}
+                            {hasScheduleDetails ? (
+                              <div className="grid gap-1 rounded-md border border-gray-light bg-white p-2 md:grid-cols-[7rem_minmax(0,1.5fr)_minmax(9rem,0.75fr)_minmax(12rem,1fr)] md:items-start md:gap-3">
+                                <p className={`mb-0 text-xs ${toneStyle.title}`}>{item.time || ""}</p>
+                                <p className={`mb-0 ${toneStyle.title}`}>{title}</p>
+                                <p className="mb-0 text-xs text-gray-dark/70">
+                                  <span className="font-semibold md:hidden">Room: </span>{item.room || ""}
+                                </p>
+                                <p className="mb-0 text-xs text-gray-dark/70">
+                                  <span className="font-semibold md:hidden">Key persons: </span>{item.keyPersons || ""}
+                                </p>
+                                {subitems?.length ? (
+                                  <div className="border-t border-gray-light pt-2 md:col-span-4">
+                                    <ul className="list-disc space-y-1 pl-5 text-sm text-gray-dark/80">
+                                      {subitems.map((subitem, subIndex) => (
+                                        <li key={`${meeting.id}-schedule-${day.day}-${index}-${subIndex}`}>
+                                          {subitem}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                ) : null}
                               </div>
-                            ) : null}
+                            ) : (
+                              <div>
+                                <p className={`mb-0 ${toneStyle.title}`}>{title}</p>
+                                {subitems?.length ? (
+                                  <ul className="mt-0.5 list-disc space-y-1 pl-5 text-sm text-gray-dark/80">
+                                    {subitems.map((subitem, subIndex) => (
+                                      <li key={`${meeting.id}-schedule-${day.day}-${index}-${subIndex}`}>
+                                        {subitem}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : null}
+                              </div>
+                            )}
                           </div>
                         );
                       })}
@@ -1304,21 +1505,6 @@ function MeetingSection({ meeting }) {
           ) : null}
 
         </SectionDropdown>
-
-        {meeting.meetingWebsite ? (
-          <SectionDropdown title="Meeting Website">
-            <a
-              href={meeting.meetingWebsite}
-              target="_blank"
-              rel="noreferrer"
-              className="button inline-flex items-center"
-            >
-              Visit meeting website
-              <i className="bi bi-arrow-up-right ml-2" aria-hidden="true" />
-            </a>
-            <p className="mt-3 text-gray-dark/70">{meeting.meetingWebsite}</p>
-          </SectionDropdown>
-        ) : null}
 
         {meeting.attendees?.embed ? (
           <SectionDropdown title="List of attendees">
