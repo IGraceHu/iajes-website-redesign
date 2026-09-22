@@ -577,7 +577,7 @@ export default function AdminRoles({ loaderData }) {
                                                     onClick={() => {setFocusMember(member); setShowEditPopup(true)}}
                                                     aria-label={`Edit ${member?.fname} ${member?.lname}'s roles`}
                                                 >
-                                                    <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
+                                                    <p className="pr-5 mr-auto text-left" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
                                                     <i className="bi bi-pencil" aria-hidden="true"></i>
                                                 </button>
                                                 <a className="button-icon" href={`/profile/${member.id}`} aria-label={"View " + member?.fname + " " + member?.lname}>

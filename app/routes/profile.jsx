@@ -113,7 +113,7 @@ async function getProfile(userId) {
     profile.is_seen_by_visitors = profile.is_seen_by_visitors;
     profile.is_contact_by_visitors = profile.is_contact_by_visitors;
     profile.is_contact_by_members = profile.is_contact_by_members;
-    profile.banner_type = profile.banner_type || 1; 
+    profile.banner_type = profile.banner_type || 0; 
     profile.biography = profile.biography || "";
     profile.languages = profile.languages || [];
 
