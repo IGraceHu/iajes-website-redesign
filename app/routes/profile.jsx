@@ -777,8 +777,6 @@ export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // console.log(loaderData);
-
   const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
   const [showPopup, setShowPopup] = useState(false);

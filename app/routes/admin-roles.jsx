@@ -138,8 +138,6 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
         setWarningMessage(" ");
     }, [show])
 
-    // console.log(checkedRoles);
-
     function updateChecked(role) {
         setCheckedRoles({
             ...checkedRoles,
@@ -189,8 +187,6 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
             return;
         }
 
-        // console.log(memberNewRoles);
-
         const update = await updateMemberRoles(member.id, memberNewRoles);
         if (update === null) {
             setShow(false);
@@ -205,7 +201,6 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
     }
 
     async function removeAdmin() {
-        console.log(member.id);
         const update = await updateMemberRoles(member.id, ["member"]);
         if (update === null) {
             setShow(false);

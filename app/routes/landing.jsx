@@ -309,7 +309,6 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
       setShowHighlightPopup(false);
     } else {
       setHasError(true);
-      console.log(updatedHighlight);
     }
   }
 
