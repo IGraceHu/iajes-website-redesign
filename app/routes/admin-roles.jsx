@@ -138,8 +138,6 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
         setWarningMessage(" ");
     }, [show])
 
-    // console.log(checkedRoles);
-
     function updateChecked(role) {
         setCheckedRoles({
             ...checkedRoles,
@@ -189,8 +187,6 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
             return;
         }
 
-        // console.log(memberNewRoles);
-
         const update = await updateMemberRoles(member.id, memberNewRoles);
         if (update === null) {
             setShow(false);
@@ -205,7 +201,6 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
     }
 
     async function removeAdmin() {
-        console.log(member.id);
         const update = await updateMemberRoles(member.id, ["member"]);
         if (update === null) {
             setShow(false);
@@ -265,7 +260,7 @@ function RolesEdit({ show, setShow, member, reload, currentUserId, loseMemberFoc
                 <>
                     <h4>{member?.fname || null} {member?.lname || null}'s roles</h4>
 
-                    <button className="button button-light float-right" onClick={clearChecked}>Clear All</button>
+                    <button type="button" className="button button-light float-right" onClick={clearChecked}>Clear All</button>
 
                         <label className="checkbox">
                             <input
@@ -420,7 +415,7 @@ export default function AdminRoles({ loaderData }) {
             { isAdmin ? 
                 <div>
                     <a href="/admin-options" className="banner-breadcrumb on-white">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>ADMIN OPTIONS</strong>
                     </a>
                     <h2>Manage Roles and Permissions</h2>
@@ -522,9 +517,10 @@ export default function AdminRoles({ loaderData }) {
                                         type="button"
                                         className={"button button-light flex float-right ml-2"}
                                         onClick={() => {setShowEditPopup(true)}}
+                                        aria-label="Edit Roles"
                                         >
                                         <p className="text-base mr-3 md:block hidden">Edit Roles</p>
-                                        <i className={`bi bi-pencil`} />
+                                        <i className={`bi bi-pencil`} aria-hidden="true" />
                                     </button>
                                     <a href={`/profile/${focusMember.id}`} className="text-xl font-semibold text-secondary-dark hover:text-primary-dark hover:cursor-pointer duration-200">{focusMember?.fname} {focusMember?.lname}</a>
                                     <div className="text-sm text-gray-dark/70">{focusMember.email}</div>
@@ -556,8 +552,9 @@ export default function AdminRoles({ loaderData }) {
                             className="w-full bg-transparent text-sm text-gray-dark outline-none"
                             />
                             <button className="size-5 duration-200 relative hover:cursor-pointer hover:text-primary-dark text-gray-dark/60"
-                                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}>
-                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" />
+                                    onClick={() => {document.getElementById("search-input").value = ""; setQuery("");}}
+                                    aria-label="Clear Query">
+                            <i className="bi bi-x text-[1.5rem] absolute -top-2 -left-1" aria-hidden="true" />
                             </button>
                         </div>
                         <div className="my-2">
@@ -570,11 +567,17 @@ export default function AdminRoles({ loaderData }) {
                                     <div className="grid md:grid-cols-2 gap-2 gap-x-10">
                                         {pageMembers.map((member) => (
                                             <div key={member?.fname} className="flex p-2 items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-                                                <button className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" onClick={() => {setFocusMember(member); setShowEditPopup(true)}}>
-                                                <p className="pr-5 mr-auto" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
-                                                <i className="bi bi-pencil"></i>
+                                                <button 
+                                                    className="button-icon mr-5 flex justify-between grow-2 h-[100%] items-center" 
+                                                    onClick={() => {setFocusMember(member); setShowEditPopup(true)}}
+                                                    aria-label={`Edit ${member?.fname} ${member?.lname}'s roles`}
+                                                >
+                                                    <p className="pr-5 mr-auto text-left" style={{ color: "black" }}>{member?.fname} {member?.lname}</p>
+                                                    <i className="bi bi-pencil" aria-hidden="true"></i>
                                                 </button>
-                                                <a className="button-icon" href={`/profile/${member.id}`}><i className="bi bi-box-arrow-up-right"></i></a>
+                                                <a className="button-icon" href={`/profile/${member.id}`} aria-label={"View " + member?.fname + " " + member?.lname}>
+                                                    <i className="bi bi-box-arrow-up-right" aria-hidden="true"></i>
+                                                </a>
                                             </div>
                                         ))}
                                     </div>

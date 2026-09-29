@@ -128,7 +128,7 @@ function RegionalCard({ region, imageUrl }) {
                         <img className="min-w-full h-full object-cover grow-0 shrink-0" src={imageUrl} alt={region.name} />
                     ) : (
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="../assets/landing-disc-4a.svg" alt="" />
                         </div>
                     )}
                 </div>
@@ -282,13 +282,13 @@ export default function RegionalMeetings() {
                                             onChange={e => handleFileSelect(region.url, e.target.files[0])}
                                         />
                                         {pending.file && (
-                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" title="Cancel selection" onClick={() => handleClearPending(region.url)}>
-                                                <i className="bi bi-x-lg"></i>
+                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label="Cancel selection" onClick={() => handleClearPending(region.url)}>
+                                                <i className="bi bi-x-lg" aria-hidden="true"></i>
                                             </button>
                                         )}
                                         {!pending.file && existingUrl && !pending.toDelete && (
-                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" title="Remove thumbnail" onClick={() => handleMarkDelete(region.url)}>
-                                                <i className="bi bi-trash"></i>
+                                            <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label="Remove thumbnail" onClick={() => handleMarkDelete(region.url)}>
+                                                <i className="bi bi-trash" aria-hidden="true"></i>
                                             </button>
                                         )}
                                         {pending.toDelete && (
@@ -319,7 +319,7 @@ export default function RegionalMeetings() {
                         {canEdit && (
                             <div className="flex justify-end mb-4">
                                 <button className="button button-light" onClick={openEditPopup}>
-                                    Edit Thumbnails <i className="bi bi-pencil ml-1"></i>
+                                    Edit Thumbnails <i className="bi bi-pencil ml-1" aria-hidden="true"></i>
                                 </button>
                             </div>
                         )}

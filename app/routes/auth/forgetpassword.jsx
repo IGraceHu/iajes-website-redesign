@@ -84,7 +84,7 @@ function ResetForm({ setShowPopup, setPopupMessage, setFormSuccess }) {
         <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Enter your email address"
           className={"input-text w-full " + (emailRequired && "input-required")}
           onChange={(e) => checkEmpty(e.target.value)} />
-        <div className="input-error">Please enter a valid email address.</div>
+        <div className="input-error" aria-hidden={!emailRequired}>Please enter a valid email address.</div>
 
         <br /><br />
 
@@ -111,7 +111,7 @@ export default function ForgetPassword() {
 
       <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES Homepage" />
         </NavLink>
       </div>
 

@@ -58,7 +58,7 @@ export function MDText({ parentDefinedCurrentView = 0, setParentDefinedCurrentVi
                     </div>
                 }
                 <div className="mt-1 ml-auto">
-                    <button className={"button " + (currentView() != 2 && "button-light")} onClick={toggleHelp}>Help<i className="bi bi-question-circle ml-1.5"></i></button>
+                    <button className={"button " + (currentView() != 2 && "button-light")} onClick={toggleHelp}>Help<i className="bi bi-question-circle ml-1.5" aria-hidden="true"></i></button>
                 </div>
             </div>
 

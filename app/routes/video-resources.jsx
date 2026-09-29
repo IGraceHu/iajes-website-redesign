@@ -109,10 +109,10 @@ function ResourceCard({ resourceInfo }) {
             <a href={"video-resource/" + resourceInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
                     {resourceInfo.video_thumbnail ?
-                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} />
+                        <img className="min-w-full grow-0 shrink-0" src={resourceInfo?.video_thumbnail} alt="" />
                         :
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" alt="" />
                             <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{resourceInfo.title}</h5>
                             <p style={{ color: "var(--color-white)" }}>{resourceInfo.date.replace(/-/g, '\/')}</p>
                         </div>
@@ -239,7 +239,7 @@ export default function VideoResources({ loaderData }) {
                                     className={"input input-text w-full " + (formRequired?.vidResourceTitle && "input-required")}
                                     placeholder="Video title"
                                     onChange={(e) => checkEmpty(e.target.value, "vidResourceTitle")} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.vidResourceTitle}>This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="vid-resource-date">Video resource date:</label><br />
                                 <input id="vid-resource-date" name="vid-resource-date" type="date" className="input input-text w-full" defaultValue={todayString} />
@@ -258,7 +258,7 @@ export default function VideoResources({ loaderData }) {
                                 className={"input input-text w-full " + (formRequired?.vidResourceLink && "input-required")}
                                 placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/.../preview"
                                 onChange={(e) => checkEmpty(e.target.value, "vidResourceLink")} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.vidResourceLink}>This field is required.</div>
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
                             <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
@@ -275,7 +275,7 @@ export default function VideoResources({ loaderData }) {
                                         className={"input input-text w-full " + (formRequired?.vidResourceSpeakerName && "input-required")}
                                         placeholder="Name"
                                         onChange={(e) => checkEmpty(e.target.value, "vidResourceSpeakerName")} />
-                                    <div className="input-error">This field is required.</div>
+                                    <div className="input-error" aria-hidden={!formRequired?.vidResourceSpeakerName}>This field is required.</div>
                                 </div>
                                 <div>
                                     <label htmlFor="vid-resource-speaker-uni">University:</label><br />
@@ -302,7 +302,7 @@ export default function VideoResources({ loaderData }) {
             <div className="py-20 px-10 lg:px-40 duration-200">
                 <div className="flex justify-between md:items-center md:flex-row flex-col md:mb-0 mb-5">
                     <h1>Video Resources</h1>
-                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new video resource</button>}
+                    {isAdmin && <button className="button" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3" aria-hidden="true"></i>Create new video resource</button>}
                 </div>
                 <p>
                     Here you will find some videos provided by members of our network that you can use for your own training and also share with your students.

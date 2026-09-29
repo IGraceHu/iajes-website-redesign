@@ -113,7 +113,7 @@ async function getProfile(userId) {
     profile.is_seen_by_visitors = profile.is_seen_by_visitors;
     profile.is_contact_by_visitors = profile.is_contact_by_visitors;
     profile.is_contact_by_members = profile.is_contact_by_members;
-    profile.banner_type = profile.banner_type || 1; 
+    profile.banner_type = profile.banner_type || 0; 
     profile.biography = profile.biography || "";
     profile.languages = profile.languages || [];
 
@@ -362,7 +362,7 @@ function LinksEdit({ id, links, setLinks }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm mb-1 flex justify-between">
                 <div className="text-secondary-dark">Social Link</div>
-                <button className="text-error font-semibold hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeLink(e)}}><i className="bi bi-trash"></i> Remove Link</button>
+                <button type="button" className="text-error font-semibold hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeLink(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Link</button>
             </div>
             <div className="md:grid grid-cols-[200px_auto] flex flex-col gap-x-5 gap-y-2 pb-2">
               <div>
@@ -386,7 +386,7 @@ function LinksEdit({ id, links, setLinks }) {
                       placeholder="Link URL"
                       value={links[id].url}
                       onChange={(e) => {handleURLChange(e)}} />
-                  <div className="input-error">This field is required.</div>
+                  <div className="input-error" aria-hidden={!linkRequired}>This field is required.</div>
               </div>
             </div>
         </div>
@@ -535,7 +535,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 defaultValue={draft.fname} placeholder="First name" onChange={(e) => checkEmpty(e.target.value, "fname")}
               />
-              <div className="input-error">This field is required.</div>
+              <div className="input-error" aria-hidden={!formRequired?.fname}>This field is required.</div>
             </div>
             <div className="relative">
               <label htmlFor="last-name">Last Name</label>
@@ -546,7 +546,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 defaultValue={draft.lname} placeholder="Last name" onChange={(e) => checkEmpty(e.target.value, "lname")}
               />
-              <div className="input-error">This field is required.</div>
+              <div className="input-error" aria-hidden={!formRequired?.lname}>This field is required.</div>
             </div>
 
             <div className="md:col-span-2">
@@ -741,7 +741,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
             <div>
                 { links.map((link, idx) => <LinksEdit key={idx} id={idx} links={links} setLinks={setLinks} />)}
             </div>
-            <button className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
+            <button type="button" className="button button-light" onClick={(e) => addLink(e)}>Add Social Link</button>
             
             <div>
               <label>
@@ -749,7 +749,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
                   <p className="text-sm text-disabled-dark">Max file size is 1.5MB. Leave empty to keep existing PDF.</p>
                   <input id="resume-upload" name="resume-upload" onChange={onResumeChange} type="file" accept=".pdf" disabled={currentUserId != userId}
                       className={" " + (resumeErrorMessage && "input-required")} defaultValue={resumePdfUrl} />
-                  <div className="input-error">{resumeErrorMessage}</div>
+                  <div className="input-error" aria-hidden={resumeErrorMessage == ""}>{resumeErrorMessage}</div>
               </label>
 
 
@@ -757,7 +757,7 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
               <>
                 <div className="inline-block text-sm my-1">
                   Current PDF: {resumePdfUrl.startsWith(STORAGEPATH) ? resumePdfUrl.slice(STORAGEPATH.length + 36) : resumePdfUrl}
-                  <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash"></i> Remove PDF</button>
+                  <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200 ml-2" onClick={removeResume}><i className="bi bi-trash" aria-hidden="true"></i> Remove PDF</button>
                 </div>
               </>
                 
@@ -776,8 +776,6 @@ function EditPopup({ showPopup, setShowPopup, userId, profileInfo, taskForceList
 export default function ProfileRoute({ loaderData }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isAdmin, setIsAdmin] = useState(false);
-
-  // console.log(loaderData);
 
   const basePerson = loaderData.person || {};
   const [profile, setProfile] = useState(basePerson);
@@ -1014,7 +1012,7 @@ export default function ProfileRoute({ loaderData }) {
         </div>
         <div className={"relative h-[220px] rounded-md overflow-hidden bg" + bannerClass} aria-label="Profile banner placeholder">
           <div className={"relative w-full opacity-50"}>
-            <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" />
+            <img className="absolute w-50 transform-[rotate(30deg)_rotateY(180deg)] -top-25 -left-5" src="/assets/landing-disc-4b.svg" alt="" />
           </div>
           {(currentUserId == profile.id) || isAdmin ? (
             <div className="absolute right-5 top-5 flex flex-col gap-3">

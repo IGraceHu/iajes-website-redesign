@@ -34,7 +34,7 @@ function TaskForceSection({taskForceInfo}) {
                 <p>{taskForceInfo.short_desc}</p>
             </div>
             { taskForceInfo?.image_url && 
-            <img className="w-100 h-full min-h-50 max-h-75" src={taskForceInfo.image_url} />}
+            <img className="w-100 h-full min-h-50 max-h-75" src={taskForceInfo.image_url} alt="Task Force Image" />}
         </div>
     )
 }

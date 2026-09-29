@@ -650,13 +650,13 @@ export default function RegionalMeetingDetail() {
                     <div>
                         <label>Title:</label>
                         <input name="title" className={"input input-text w-full " + (formRequired?.editTitle && "input-required")} type="text" placeholder="Title" value={editForm?.title || ''} onChange={e => { setEditForm({ ...editForm, title: e.target.value }); checkEmpty(e.target.value, "editTitle"); }} />
-                        <div className="input-error">This field is required.</div>
+                        <div className="input-error" aria-hidden={!formRequired?.editTitle}>This field is required.</div>
                     </div>
                     <div className="grid md:grid-cols-2 gap-4">
                         <div>
                             <label>Date:</label>
                             <input name="date" className={"input input-text w-full " + (formRequired?.editDate && "input-required")} type="date" value={toInputDateFormat(editForm?.date)} onChange={e => { setEditForm({ ...editForm, date: fromInputDateFormat(e.target.value) }); checkEmpty(e.target.value, "editDate"); }} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.editDate}>This field is required.</div>
                         </div>
                         <div>
                             <label>Location:</label>
@@ -688,10 +688,10 @@ export default function RegionalMeetingDetail() {
                             <button
                                 type="button"
                                 className="text-red-600 cursor-pointer shrink-0"
-                                title="Remove PDF"
+                                aria-label="Remove PDF"
                                 onClick={() => setEditForm({ ...editForm, deleteAgendaPdf: true })}
                             >
-                                <i className="bi bi-trash"></i>
+                                <i className="bi bi-trash" aria-hidden="true"></i>
                             </button>
                         </div>
                     ) : editForm?.deleteAgendaPdf ? (
@@ -704,7 +704,7 @@ export default function RegionalMeetingDetail() {
                         <div className="flex items-center gap-2 mt-1">
                             <input name="agendaPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, agendaPdf: e.target.files[0], deleteAgendaPdf: false })} />
                             {editForm?.agendaPdf && (
-                                <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, agendaPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label="Remove Agenda PDF" onClick={() => setEditForm({ ...editForm, agendaPdf: null })}><i className="bi bi-x-lg" aria-hidden="true"></i></button>
                             )}
                         </div>
                     )}
@@ -719,10 +719,10 @@ export default function RegionalMeetingDetail() {
                             <button
                                 type="button"
                                 className="text-red-600 cursor-pointer shrink-0"
-                                title="Remove PDF"
+                                aria-label="Remove PDF"
                                 onClick={() => setEditForm({ ...editForm, deleteReportPdf: true })}
                             >
-                                <i className="bi bi-trash"></i>
+                                <i className="bi bi-trash" aria-hidden="true"></i>
                             </button>
                         </div>
                     ) : editForm?.deleteReportPdf ? (
@@ -735,7 +735,7 @@ export default function RegionalMeetingDetail() {
                         <div className="flex items-center gap-2 mt-1">
                             <input name="reportPdf" className="w-full" type="file" accept=".pdf" onChange={e => setEditForm({ ...editForm, reportPdf: e.target.files[0], deleteReportPdf: false })} />
                             {editForm?.reportPdf && (
-                                <button type="button" className="text-red-600 cursor-pointer shrink-0" onClick={() => setEditForm({ ...editForm, reportPdf: null })}><i className="bi bi-x-lg"></i></button>
+                                <button type="button" className="text-red-600 cursor-pointer shrink-0" aria-label="Remove Report PDF" onClick={() => setEditForm({ ...editForm, reportPdf: null })}><i className="bi bi-x-lg" aria-hidden="true"></i></button>
                             )}
                         </div>
                     )}
@@ -755,7 +755,7 @@ export default function RegionalMeetingDetail() {
                         <div className="flex flex-wrap gap-2 mt-1">
                             {editForm.allImages.map((img, idx) => img.toDelete ? null : (
                                 <div key={img.id || `new-${idx}`} className="relative p-2" style={{ border: '2px solid var(--color-primary-dark)', borderRadius: 'var(--radius-md)' }}>
-                                    <img src={img.resource_url || img.url} className="w-24 h-24 object-contain" />
+                                    <img src={img.resource_url || img.url} className="w-24 h-24 object-contain" alt={"Gallery Image " + (idx + 1)} />
                                     <div className="absolute top-1 left-1 flex gap-1">
                                         <button
                                             type="button"
@@ -767,8 +767,9 @@ export default function RegionalMeetingDetail() {
                                                 setEditForm({ ...editForm, allImages: updated });
                                             }}
                                             disabled={idx === 0}
+                                            aria-label="Move photo forward"
                                         >
-                                            <i className="bi bi-arrow-left"></i>
+                                            <i className="bi bi-arrow-left" aria-hidden="true"></i>
                                         </button>
                                         <button
                                             type="button"
@@ -780,8 +781,9 @@ export default function RegionalMeetingDetail() {
                                                 setEditForm({ ...editForm, allImages: updated });
                                             }}
                                             disabled={idx === editForm.allImages.length - 1}
+                                            aria-label="Move photo back"
                                         >
-                                            <i className="bi bi-arrow-right"></i>
+                                            <i className="bi bi-arrow-right" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                     <button
@@ -797,8 +799,9 @@ export default function RegionalMeetingDetail() {
                                                 setEditForm({ ...editForm, allImages: updated });
                                             }
                                         }}
+                                        aria-label="Remove Photo"
                                     >
-                                        <i className="bi bi-trash"></i>
+                                        <i className="bi bi-trash" aria-hidden="true"></i>
                                     </button>
                                     <span className="absolute bottom-1 left-1 bg-black/50 rounded-md text-white text-xs p-1">{idx + 1}</span>
                                 </div>
@@ -833,8 +836,9 @@ export default function RegionalMeetingDetail() {
                                                 setEditForm({ ...editForm, allVideos: updated });
                                             }}
                                             disabled={idx === 0}
+                                            aria-label="Move photo forward"
                                         >
-                                            <i className="bi bi-arrow-left"></i>
+                                            <i className="bi bi-arrow-left" aria-hidden="true"></i>
                                         </button>
                                         <button
                                             type="button"
@@ -846,8 +850,9 @@ export default function RegionalMeetingDetail() {
                                                 setEditForm({ ...editForm, allVideos: updated });
                                             }}
                                             disabled={idx === editForm.allVideos.length - 1}
+                                            aria-label="Move photo back"
                                         >
-                                            <i className="bi bi-arrow-right"></i>
+                                            <i className="bi bi-arrow-right" aria-hidden="true"></i>
                                         </button>
                                     </div>
                                     <button
@@ -863,8 +868,9 @@ export default function RegionalMeetingDetail() {
                                                 setEditForm({ ...editForm, allVideos: updated });
                                             }
                                         }}
+                                        aria-label="Remove photo"
                                     >
-                                        <i className="bi bi-trash"></i>
+                                        <i className="bi bi-trash" aria-hidden="true"></i>
                                     </button>
                                     <span className="absolute bottom-1 left-1 bg-black/50 rounded-md text-white text-xs p-1">{idx + 1}</span>
                                 </div>
@@ -942,13 +948,15 @@ export default function RegionalMeetingDetail() {
                         onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-zinc-50)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(-3px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-zinc-400)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(0)'; }}
                         onClick={() => go('prev')}
+                        aria-label="To previous photo"
                     >
-                        <i className="bi bi-chevron-left"></i>
+                        <i className="bi bi-chevron-left" aria-hidden="true"></i>
                     </button>
                     <img
                         key={current}
                         src={images[current].resource_url}
                         className={`w-full h-full object-contain ${animating ? (direction === 'next' ? 'carousel-exit-left' : 'carousel-exit-right') : (direction ? (direction === 'next' ? 'carousel-enter-right' : 'carousel-enter-left') : '')}`}
+                        alt={`Photo ${current + 1} of ${images.length}`}
                     />
                     <div className="absolute bottom-4 left-4 text-white text-xs p-2 rounded" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
                         Photo {current + 1} of {images.length}
@@ -959,8 +967,9 @@ export default function RegionalMeetingDetail() {
                         onMouseEnter={e => { e.currentTarget.style.color = 'var(--color-zinc-50)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(3px)'; }}
                         onMouseLeave={e => { e.currentTarget.style.color = 'var(--color-zinc-400)'; e.currentTarget.style.transform = 'translateY(-50%) translateX(0)'; }}
                         onClick={() => go('next')}
+                        aria-label="To next photo"
                     >
-                        <i className="bi bi-chevron-right"></i>
+                        <i className="bi bi-chevron-right" aria-hidden="true"></i>
                     </button>
                 </div>
                 {images[current].caption && (
@@ -986,12 +995,12 @@ export default function RegionalMeetingDetail() {
             <Menu currentEndUrl="/regional-meetings" />
             <Banner>
                 <a href="/regional-meetings" className="banner-breadcrumb">
-                    <i className="bi bi-caret-left-fill"></i>
+                    <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                     <strong>REGIONAL MEETINGS</strong>
                 </a>
                 <br />
                 <a href={`/regional-meetings/${regionName}`} className="banner-breadcrumb">
-                    <i className="bi bi-caret-left-fill"></i>
+                    <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                     <strong>{regionName}</strong>
                 </a>
                 <h1 style={{ color: "white" }}>{meetingData.name}</h1>
@@ -1000,8 +1009,8 @@ export default function RegionalMeetingDetail() {
 
             <div className="py-20 px-10 lg:px-40">
                 <div className="flex justify-end mb-4">
-                    {canEdit && <button className="button button-light" onClick={openEditPopup}>Edit Meeting <i className="bi bi-pencil ml-1"></i></button>}
-                    {canEdit && <button className="button button-light button-delete ml-4" onClick={() => setShowDeletePopup(true)}>Delete Meeting <i className="bi bi-trash ml-1"></i></button>}
+                    {canEdit && <button className="button button-light" onClick={openEditPopup}>Edit Meeting <i className="bi bi-pencil ml-1" aria-hidden="true"></i></button>}
+                    {canEdit && <button className="button button-light button-delete ml-4" onClick={() => setShowDeletePopup(true)}>Delete Meeting <i className="bi bi-trash ml-1" aria-hidden="true"></i></button>}
                 </div>
                 {sections === 0 && (
                     <div className="flex items-center justify-center h-96 text-gray-400 text-xl text-center">
@@ -1022,15 +1031,16 @@ export default function RegionalMeetingDetail() {
                                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                                     {meetingData.meeting_report_url && (
                                         <a href={meetingData.meeting_report_url} className="button button-light">
-                                            Meeting Report <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                            Meeting Report <i className="bi bi-box-arrow-up-right ml-2" aria-hidden="true"></i>
                                         </a>
                                     )}
                                     {meetingData.meeting_report_pdf_url && (
                                         <button
                                             className={`button ${previewingPdf === "report" ? "button" : "button-light"}`}
                                             onClick={() => setPreviewingPdf(previewingPdf === "report" ? null : "report")}
+                                            aria-label="Preview Report PDF"
                                         >
-                                            <i className={`bi ${previewingPdf === "report" ? "bi-eye-slash" : "bi-eye"} mr-2`}></i>
+                                            <i className={`bi ${previewingPdf === "report" ? "bi-eye-slash" : "bi-eye"} mr-2`} aria-hidden="true"></i>
                                             {previewingPdf === "report" ? "Hide" : "Preview"}
                                         </button>
                                     )}
@@ -1054,15 +1064,16 @@ export default function RegionalMeetingDetail() {
                                 <div className="mt-6 flex flex-col sm:flex-row gap-4 justify-center items-center flex-wrap">
                                     {meetingData.agenda_url && (
                                         <a href={meetingData.agenda_url} className="button button-light">
-                                            Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2"></i>
+                                            Meeting Agenda <i className="bi bi-box-arrow-up-right ml-2" aria-hidden="true"></i>
                                         </a>
                                     )}
                                     {meetingData.agenda_pdf_url && (
                                         <button
                                             className={`button ${previewingPdf === "agenda" ? "button" : "button-light"}`}
                                             onClick={() => setPreviewingPdf(previewingPdf === "agenda" ? null : "agenda")}
+                                            aria-label="Preview Agenda PDF"
                                         >
-                                            <i className={`bi ${previewingPdf === "agenda" ? "bi-eye-slash" : "bi-eye"} mr-2`}></i>
+                                            <i className={`bi ${previewingPdf === "agenda" ? "bi-eye-slash" : "bi-eye"} mr-2`} aria-hidden="true"></i>
                                             {previewingPdf === "agenda" ? "Hide" : "Preview"}
                                         </button>
                                     )}

@@ -68,12 +68,12 @@ export function Footer() {
                 key={pillar.label}
                 className="flex min-h-24 flex-col items-center justify-center rounded-md border-2 border-primary-light px-3 py-3 text-center lg:rounded-none lg:border-y-0 lg:border-r-0"
               >
-                <i className={`bi ${pillar.icon} text-3xl text-white`} />
+                <i className={`bi ${pillar.icon} text-3xl text-white`} aria-hidden="true" />
                 {pillar.label === "Engineering & Science" ? (
-                  <i className="bi bi-flask text-lg text-primary-light -mt-3 ml-8" />
+                  <i className="bi bi-flask text-lg text-primary-light -mt-3 ml-8" aria-hidden="true" />
                 ) : null}
                 {pillar.label === "Driving Social Innovation" ? (
-                  <i className="bi bi-leaf text-lg text-primary-light -mt-3 ml-8" />
+                  <i className="bi bi-leaf text-lg text-primary-light -mt-3 ml-8" aria-hidden="true" />
                 ) : null}
                 <h6 className="!mb-0 !text-white mt-2 !text-base">
                   {pillar.lines.map((line) => (
@@ -97,7 +97,7 @@ export function Footer() {
                 <a
                   href="https://iaju.org/"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="inline-flex min-h-14 items-center rounded-md bg-white p-2 duration-200 hover:opacity-70"
                 >
                   <img
@@ -133,11 +133,11 @@ export function Footer() {
                     key={social.label}
                     href={social.href}
                     target="_blank"
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     aria-label={social.label}
                     className="!text-white duration-200 hover:!text-primary-light"
                   >
-                    <i className={`bi ${social.icon}`}></i>
+                    <i className={`bi ${social.icon}`} aria-hidden="true"></i>
                   </a>
                 ))}
               </div>

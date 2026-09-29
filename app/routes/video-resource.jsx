@@ -268,7 +268,7 @@ export default function VideoResource({ loaderData }) {
                                     placeholder="Video title"
                                     defaultValue={loaderData.title}
                                     onChange={(e) => checkEmpty(e.target.value, "vidResourceTitle")} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.vidResourceTitle}>This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="vid-resource-date">Video resource date:</label><br />
                                 {/* Expected format for <input type="date"> is YYYY-MM-DD */}
@@ -289,7 +289,7 @@ export default function VideoResource({ loaderData }) {
                                 placeholder="e.g. https://www.youtube.com/embed/VIDEO_ID or https://drive.google.com/file/d/.../preview"
                                 defaultValue={loaderData.video_url}
                                 onChange={(e) => checkEmpty(e.target.value, "vidResourceLink")} />
-                            <div className="input-error">This field is required.</div>
+                            <div className="input-error" aria-hidden={!formRequired?.vidResourceLink}>This field is required.</div>
                             <br /><br />
                             <label htmlFor="vid-resource-desc">Video description:</label><br />
                             <MDText parentDefinedCurrentView={mdCurrentView} setParentDefinedCurrentView={setMdCurrentView}
@@ -307,7 +307,7 @@ export default function VideoResource({ loaderData }) {
                                         placeholder="Name"
                                         defaultValue={loaderData.speaker}
                                         onChange={(e) => checkEmpty(e.target.value, "vidResourceSpeakerName")} />
-                                    <div className="input-error">This field is required.</div>
+                                    <div className="input-error" aria-hidden={!formRequired?.vidResourceSpeakerName}>This field is required.</div>
                                 </div>
                                 <div>
                                     <label htmlFor="vid-resource-speaker-uni">University:</label><br />
@@ -340,7 +340,7 @@ export default function VideoResource({ loaderData }) {
             <Banner type="blue">
                 <div className="relative z-1">
                     <a href="/video-resources" className="banner-breadcrumb">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>VIDEO RESOURCES</strong>
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
@@ -358,12 +358,12 @@ export default function VideoResource({ loaderData }) {
                     </div>
                 ) : <></>}
                 <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                    <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                    <iframe src={loaderData.video_url} title={loaderData.title + " Video Resource Video"} width="100%" height="100%"></iframe>
                 </div>
                 <div dangerouslySetInnerHTML={{__html: marked.parse(loaderData.video_description)}}></div>
 
                 <div className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col md:flex-row place-items-center">
-                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt="" />}
+                    {loaderData.speaker_image && <img className="mx-auto w-50 shrink-0 grow-0" src={loaderData.speaker_image} alt={"Image of " + loaderData.speaker} />}
                     <div className="w-full md:w-70 shrink-0 grow-0 m-3">
                         <p className="font-semibold mr-2"><i>{loaderData.speaker}</i></p>
                         <p className="text-disabled-light">{loaderData.speaker_university}</p>

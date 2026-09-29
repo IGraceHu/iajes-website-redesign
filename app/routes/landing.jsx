@@ -123,7 +123,7 @@ function Carousel() {
     carouselEl.push(
       <div key={i} className="carousel-item absolute w-screen h-full bg-zinc-900 overflow-hidden">
 
-        {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" />}
+        {content.image_url && <img src={content.image_url} className="absolute z-0 size-full object-cover" alt="" />}
 
         <div className="relative z-1 size-full box-border mt-40 ml-40">
           {/* <p ><span dangerouslySetInnerHTML={{ __html: content.text }} /></p> */}
@@ -222,7 +222,7 @@ function LinkCards() {
             <p className="text-white">{content.title}</p>
           </div>
 
-          {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 top-0 size-full object-cover" />}
+          {content.imageURL != null && <img src={content.imageURL} className="absolute z-0 top-0 size-full object-cover" alt="" />}
 
         </a>
         <div className="about-card-border z-4 absolute top-0"></div>
@@ -309,7 +309,6 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
       setShowHighlightPopup(false);
     } else {
       setHasError(true);
-      console.log(updatedHighlight);
     }
   }
 
@@ -335,9 +334,9 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
         <div className="grid grid-cols-1 gap-y-5 max-h-100 overflow-y-auto">
           {currentHighlights.map(highlight =>
             <div key={highlight.title} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-              <button className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
+              <button type="button" className="button-icon py-2 flex justify-between w-full h-[100%] items-center block" onClick={() => handleShowHighlightPopup(highlight)}>
                 <p className="pr-5 mr-auto" style={{ color: "black" }}>{highlight.title}</p>
-                <i className="bi bi-pencil-square"></i>
+                <i className="bi bi-pencil-square" aria-label={"Edit " + highlight.title}></i>
               </button>
             </div>
           )}
@@ -353,13 +352,13 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
               className={"input input-text md:w-80 w-full " + (formRequired?.title && "input-required")}
               placeholder="Title" onChange={(e) => checkEmpty(e.target.value, "title")}
               defaultValue={focusHighlight.title} />
-            <div className="input-error">This field is required.</div>
+            <div className="input-error" aria-hidden={!formRequired?.title}>This field is required.</div>
           </div>
           <label>
             Image:<br />
             <input id="edit-highlight-img" name="image-url" type="file" accept="image/*"
               className={formRequired?.imageUrl ? "input-required" : ""} />
-            <div className="input-error">Please select an image file.</div>
+            <div className="input-error" aria-hidden={!formRequired?.imageUrl}>Please select an image file.</div>
           </label>
         </div>
         <div>
@@ -368,7 +367,7 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
             className={"input input-text w-full " + (formRequired?.url && "input-required")}
             placeholder="https://..." onChange={urlChange}
             defaultValue={focusHighlight.url} />
-          <div className="input-error">Invalid link.</div>
+          <div className="input-error" aria-hidden={!formRequired?.url}>Invalid link.</div>
         </div>
         <br />
         <div className="">
@@ -377,7 +376,7 @@ function EditHighlights({ showPopup, setShowPopup, highlightList }) {
             className={"input input-text w-full h-60 " + (formRequired?.details && "input-required")}
             placeholder="Highlight details..." onChange={(e) => checkEmpty(e.target.value, "details")}
             defaultValue={focusHighlight.details} ></textarea>
-          <div className="input-error">This field is required.</div>
+          <div className="input-error" aria-hidden={!formRequired?.details}>This field is required.</div>
         </div>
       </PopupForm>
     </>
@@ -391,11 +390,11 @@ function HighlightContent({ content, side = false }) {
       <div className="highlight-header relative bg-secondary-light grow h-fit rounded-md mb-2 overflow-hidden duration-200">
 
         {content?.image_url ?
-          <img src={content.image_url} className="size-full object-cover duration-200" />
+          <img src={content.image_url} className="size-full object-cover duration-200" alt="" />
           :
           <>
-            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" />
-            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" />
+            <img className="absolute -bottom-30 -right-15 size-100" src="assets/logo.svg" alt="" />
+            <img className="disc absolute -top-20 -left-40 size-100 transform-[rotate(20deg)_rotateY(180deg)] opacity-30" src="assets/landing-disc-4a.svg" alt="" />
           </>
         }
       </div>
@@ -450,7 +449,7 @@ export default function Landing({ loaderData }) {
                 <br /><br />
                 Rooted in the Jesuit educational tradition and aligned with the Universal Apostolic Preferences, IAJES fosters international cooperation to form engineers and scientists committed to addressing complex global challenges, promoting human dignity, and contributing to a more just, equitable, and sustainable world through technology and knowledge.
               </p>
-              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]"></i></a>
+              <a className="my-4 block w-fit button button-light flex items-center" href="/about"><span>Learn more</span> <i className="bi bi-arrow-right ml-2 pt-[2px]" aria-hidden="true"></i></a>
             </div>
             <div className="text-white flex justify-center">
               <LinkCards />
@@ -480,11 +479,11 @@ export default function Landing({ loaderData }) {
         <div id="effects" className="w-full shrink-0 -ml-[100%] z-0">
           {/* Discs */}
           <div id="landing-discs" className="absolute w-full z-0 lg:opacity-60 opacity-30 duration-200">
-            <img id="landing-disc-1" src="assets/landing-disc-2a.svg" />
-            <img id="landing-disc-2" src="assets/landing-disc-2b.svg" />
-            <img id="landing-disc-3" src="assets/landing-disc-3.svg" />
-            <img id="landing-disc-4" src="assets/landing-disc-4b.svg" />
-            <img id="landing-disc-5" src="assets/landing-disc-4a.svg" />
+            <img id="landing-disc-1" src="assets/landing-disc-2a.svg" alt="" />
+            <img id="landing-disc-2" src="assets/landing-disc-2b.svg" alt="" />
+            <img id="landing-disc-3" src="assets/landing-disc-3.svg" alt="" />
+            <img id="landing-disc-4" src="assets/landing-disc-4b.svg" alt="" />
+            <img id="landing-disc-5" src="assets/landing-disc-4a.svg" alt="" />
           </div>
 
           {/* Background Lines */}

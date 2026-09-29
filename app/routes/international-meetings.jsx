@@ -1050,7 +1050,7 @@ function SpeakerCard({ speaker }) {
                   key={`${speaker.name}-${label}-${index}`}
                   href={href}
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="rounded-md border-2 border-gray-light bg-white px-3 py-1 text-xs font-semibold text-secondary-dark duration-200 hover:bg-teal-50"
                 >
                   {label}
@@ -1506,6 +1506,21 @@ function MeetingSection({ meeting }) {
 
         </SectionDropdown>
 
+        {meeting.meetingWebsite ? (
+          <SectionDropdown title="Meeting Website">
+            <a
+              href={meeting.meetingWebsite}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="button inline-flex items-center"
+            >
+              Visit meeting website
+              <i className="bi bi-arrow-up-right ml-2" aria-hidden="true" />
+            </a>
+            <p className="mt-3 text-gray-dark/70">{meeting.meetingWebsite}</p>
+          </SectionDropdown>
+        ) : null}
+
         {meeting.attendees?.embed ? (
           <SectionDropdown title="List of attendees">
             <div className="overflow-hidden rounded-md border-2 border-gray-light bg-white">
@@ -1603,9 +1618,7 @@ function MeetingSection({ meeting }) {
                         onClick={() => handleImageStep(-1)}
                         aria-label="Previous photo"
                       >
-                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
-                          <polyline points="14,1 2,12 14,23" />
-                        </svg>
+                        <i className="bi bi-chevron-left text-[1.8rem]" aria-hidden="true"></i>
                         <span className="font-semibold">Previous</span>
                       </button>
                       <button
@@ -1615,9 +1628,7 @@ function MeetingSection({ meeting }) {
                         aria-label="Next photo"
                       >
                         <span className="font-semibold">Next</span>
-                        <svg height="24" width="16" className="fill-none stroke-current" style={{ strokeWidth: 3 }}>
-                          <polyline points="2,1 14,12 2,23" />
-                        </svg>
+                        <i className="bi bi-chevron-right text-[1.8rem]" aria-hidden="true"></i>
                       </button>
                     </div>
                   ) : null}

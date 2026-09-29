@@ -146,10 +146,10 @@ function WebinarCard({ webinarInfo }) {
             <a href={"webinars/" + webinarInfo.id} className="block w-full p-2 border-2 border-transparent hover:border-primary-light duration-200 rounded-md">
                 <div className="w-full lg:h-[14vw] sm:h-[28vw] h-[52vw] rounded-md mb-2 overflow-hidden bg-primary-dark flex items-center">
                     {webinarInfo.thumbnail_url ?
-                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.thumbnail_url} />
+                        <img className="min-w-full grow-0 shrink-0" src={webinarInfo?.thumbnail_url} alt={webinarInfo.title + " thumbnail"} />
                         :
                         <div className="relative w-full h-full p-5">
-                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" />
+                            <img className="w-[50%] absolute -right-20 -bottom-20 z-0" src="/assets/landing-disc-4a.svg" alt="" />
                             <h5 className="relative z-1" style={{ color: "var(--color-white)" }}>{webinarInfo.title}</h5>
                             <p style={{ color: "var(--color-white)" }}>{webinarInfo?.date.replace(/-/g, '\/')}</p>
                         </div>
@@ -209,7 +209,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -219,7 +219,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                         placeholder="Name"
                         value={speakers[id].name}
                         onChange={(e) => {handleNameChange(e)}} />
-                    <div className="input-error">This field is required.</div>
+                    <div className="input-error" aria-hidden={!nameRequired}>This field is required.</div>
                 </div>
                 <div>
                     <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
@@ -378,7 +378,7 @@ export default function Webinars({ loaderData }) {
                                     className={"input input-text w-full " + (formRequired?.webinarTitle && "input-required")}
                                     placeholder="Title"
                                     onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.webinarTitle}>This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="webinar-date">Date:</label><br />
                                 <input id="webinar-date" name="webinar-date" type="date" className="input input-text w-full" defaultValue={todayString} />
@@ -416,7 +416,7 @@ export default function Webinars({ loaderData }) {
                             <div>
                                 { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
                             </div>
-                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
+                            <button type="button" className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
@@ -432,7 +432,7 @@ export default function Webinars({ loaderData }) {
                         
                     <div className="flex items-center">
                         <a href="/webinars/archive" className="button button-light block">Archive</a>
-                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3"></i>Create new webinar</button>}
+                        {isAdmin && <button className="button ml-5" onClick={handleShowCreatePopupForm}><i className="bi bi-plus-lg mr-3" aria-hidden="true"></i>Create new webinar</button>}
                     </div>
                 </div>
                 <p>

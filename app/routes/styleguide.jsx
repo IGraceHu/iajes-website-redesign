@@ -144,7 +144,7 @@ Markdown uses the [Markdown] flavor and [Marked] parser. **In all situations, co
                        className={"input input-text w-full " + (formRequired?.popupRequired && "input-required")} 
                        placeholder="Enter text here..."
                        onChange={(e) => checkEmpty(e.target.value, "popupRequired")} />
-                <div className="input-error">This field is required.</div>
+                <div className="input-error" aria-hidden={!formRequired?.popupRequired}>This field is required.</div>
                 <br/>
             </PopupForm>
 

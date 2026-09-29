@@ -385,7 +385,7 @@ function RolesSection() {
             title: "Remarks:",
             description: (
                 <ul>
-                    <li className="role-line">The Governing Board proposed a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="blank"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This roadmap must have the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, and a close relationship with IAJU.</li>
+                    <li className="role-line">The Governing Board proposed a <span className="text-primary-dark hover:text-primary-light duration-200"><a href="https://drive.google.com/file/d/1iKkEcnoYDr-sKSSxQ1f8OZREJHpVlYNU/view?usp=sharing" target="_blank" rel="noopener noreferrer"><strong>roadmap</strong></a> <i className="bi bi-box-arrow-up-right" aria-hidden="true"></i></span> for the development of IAJES (vision, ambition, objectives, organization). This roadmap must have the right balance to allow the development of the association, the realization of the actions (task force, projects), the right rhythm of the events (annual or biennial gathering, extraordinary meetings of the committees), the necessary involvement of the members, and a close relationship with IAJU.</li>
                     <li className="role-line">Each member negotiates with his university the time necessary for the good realization of his mission. The university is thus involved in conscience in the development of IAJES. This commitment could eventually take the form of a mission letter written by the university.</li>
                     <li className="role-line">This prior negotiation with one's university is essential for roles with responsibilities such as: President, Vice President, Regional Committee Chair, Operational Committee Chair, Secretary, Past President, Regional Leader, Task Force and Project Leader, University Representative.</li>
                     <li className="role-line">It is desirable that the different roles be taken on for a given time and by members from different regions in order to promote the international development of the network.</li>
@@ -399,8 +399,8 @@ function RolesSection() {
         <div className="bg-secondary-dark py-20 px-0 lg:px-0 relative overflow-hidden">
             {/* Decorative discs */}
             <div className="absolute top-0 left-0 w-full h-full z-0 pointer-events-none">
-                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="/assets/landing-disc-2a.svg" />
-                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="/assets/landing-disc-4b.svg" />
+                <img className="absolute w-50 -top-20 -right-15 opacity-20" src="/assets/landing-disc-2a.svg" alt="" />
+                <img className="absolute w-60 top-15 -left-30 -rotate-20 opacity-20" src="/assets/landing-disc-4b.svg" alt="" />
             </div>
 
             <div className="text-center mb-12 px-10 lg:px-40 relative z-10">

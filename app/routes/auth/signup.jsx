@@ -249,7 +249,7 @@ export default function SignUp() {
 
       <div className="relative flex justify-center content-center p-2 shadow-sm z-1">
         <NavLink to="/" end className="relative duration-200 hover:opacity-70 px-4 bg-white z-1">
-          <img className="h-[2.5rem]" src="/assets/logo.svg" />
+          <img className="h-[2.5rem]" src="/assets/logo.svg" alt="IAJES Homepage" />
         </NavLink>
       </div>
 
@@ -262,14 +262,14 @@ export default function SignUp() {
               <input id="fname" name="fname" type="text" defaultValue={state?.fname} placeholder="First name"
                 className={"input-text w-full " + (formRequired?.fname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "fname")} />
-              <div className="input-error">This field is required.</div>
+              <div className="input-error" aria-hidden={!formRequired?.fname}>This field is required.</div>
             </div>
             <div>
               <label htmlFor="lname">Last name:</label><br />
               <input id="lname" name="lname" type="text" defaultValue={state?.lname} placeholder="Last name"
                 className={"input-text w-full " + (formRequired?.lname && "input-required")}
                 onChange={(e) => checkEmpty(e.target.value, "lname")} />
-              <div className="input-error">This field is required.</div>
+              <div className="input-error" aria-hidden={!formRequired?.lname}>This field is required.</div>
             </div>
           </div>
 
@@ -278,7 +278,7 @@ export default function SignUp() {
           <input id="email" name="email" type="text" defaultValue={state?.email} placeholder="Email"
             className={"input-text w-full " + (formRequired?.email && "input-required")}
             onChange={(e) => checkEmpty(e.target.value, "email")} />
-          <div className="input-error">Please enter a valid email address.</div>
+          <div className="input-error" aria-hidden={!formRequired?.email}>Please enter a valid email address.</div>
 
           <br /><br />
 
@@ -286,7 +286,7 @@ export default function SignUp() {
           <input id="pwd" name="pwd" type="password" defaultValue={state?.pwd} placeholder="Password"
             className={"input-text w-full " + (formRequired?.pwd && "input-required")}
             onChange={(e) => { checkPassword(); checkEmpty(e.target.value, "pwd"); }} />
-          <div className="input-error">Please enter a password.</div>
+          <div className="input-error" aria-hidden={!formRequired?.pwd}>Please enter a password.</div>
 
           <br /><br />
 
@@ -294,7 +294,7 @@ export default function SignUp() {
           <input id="re-pwd" name="re-pwd" type="password" defaultValue={state?.rePwd} placeholder="Re-enter Password"
             className={"input-text w-full " + (formRequired?.rePwd && "input-required")}
             onChange={checkPassword} />
-          <div className="input-error">Passwords must match.</div>
+          <div className="input-error" aria-hidden={!formRequired?.rePwd}>Passwords must match.</div>
 
           <br /><br />
 

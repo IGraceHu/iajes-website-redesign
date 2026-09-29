@@ -272,7 +272,7 @@ function MemberCard({ memberData }) {
     <div className="text-center w-full flex flex-col justify-end">
       { memberData?.image_url &&
         <div className="max-w-50 w-full max-h-50 m-5 mx-auto bg-gray-light overflow-hidden">
-          <img className="min-w-full min-h-full object-cover" src={memberData.image_url} />
+          <img className="min-w-full min-h-full object-cover" src={memberData.image_url} alt={"Image of" + memberData.name} />
         </div>
       }
       { memberData.iajes_url ? 
@@ -299,7 +299,7 @@ function ProjectCard({ projectData }) {
         <div dangerouslySetInnerHTML={{__html: marked.parse(projectData.details)}}></div>
         { projectData.image_url &&
           <div className="rounded-md md:max-h-50 overflow-hidden">
-            <img className="rounded-md object-cover" src={projectData.image_url} />
+            <img className="rounded-md object-cover" src={projectData.image_url} alt="Project Image" />
           </div>
         }
       </div>
@@ -533,14 +533,14 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <h4>Edit Task Force Team</h4>
         <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 my-5 overflow-y-auto">
           {currentTeamMembers.map(member => <div key={member.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-            <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(member)}>
+            <button type="button" className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowMemberPopup(member)}>
               <p className="pr-5 mr-auto" style={{ color: "black" }}>{member.name}</p>
-              <i className="bi bi-pencil-square"></i>
+              <i className="bi bi-pencil-square" aria-label={"Edit " + member.name}></i>
             </button>
-            <button className="button-icon button-red" onClick={() => handleDeleteMemberPopup(member)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+            <button type="button" className="button-icon button-red" aria-label={"Remove " + member.name} onClick={() => handleDeleteMemberPopup(member)}><i className="bi bi-x" style={{ fontSize: "2rem" }} aria-hidden="true"></i></button>
           </div>)}
         </div>
-        <button className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup(null)}>Add a team member</button>
+        <button type="button" className="button button-light mx-auto block my-5" onClick={() => handleShowMemberPopup(null)}>Add a team member</button>
       </Popup>
 
       <Popup id="tf-delete-member" show={showDeletePopup} setShow={setShowDeletePopup} nested
@@ -554,7 +554,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <input id="edit-person-name" name="name" type="text" className={"input input-text w-full " + (formRequired?.name && "input-required")}
                placeholder="Name" onChange={(e) => checkEmpty(e.target.value, "name")}
                defaultValue={focusMember?.name} />
-        <div className="input-error">This field is required.</div>
+        <div className="input-error" aria-hidden={!formRequired?.name}>This field is required.</div>
         
         <br /><br />
         <label htmlFor="edit-member-role">Task Force Role:</label><br />
@@ -576,7 +576,7 @@ function EditTeam({showPopup, setShowPopup, taskForceUrl, teamMembers}) {
         <input id="edit-member-url" name="iajes-url" type="text" className={"input input-text w-full " + (formRequired?.iajesUrl && "input-required")}
                placeholder="/profile/..." onChange={iajesUrlChange}
                defaultValue={focusMember?.iajes_url} />
-        <div className="input-error">Invalid profile URL. IAJES profile URL must start with /profile/</div>
+        <div className="input-error" aria-hidden={!formRequired?.iajesUrl}>Invalid profile URL. IAJES profile URL must start with /profile/</div>
         <br /><br />
 
         <label htmlFor="edit-member-image">Image:</label><br />
@@ -730,14 +730,14 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
         <h4>Edit Task Force Projects</h4>
           <div className="grid md:grid-cols-2 grid-cols-1 gap-y-5 gap-x-10 max-h-100 overflow-y-auto">
             {currentProjects.map(project => <div key={project.name} className="flex items-center hover:bg-teal-50 duration-200 px-5 rounded-sm">
-              <button className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
+              <button type="button" className="button-icon mr-2 flex justify-between grow-2 h-[100%] items-center" onClick={() => handleShowProjectPopup(project)}>
                 <p className="pr-5 mr-auto text-left" style={{ color: "black" }}>{project.name}</p>
-                <i className="bi bi-pencil-square"></i>
+                <i className="bi bi-pencil-square" aria-label={"Edit " + project.name}></i>
               </button>
-              <button className="button-icon button-red" onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" style={{ fontSize: "2rem" }}></i></button>
+              <button type="button" className="button-icon button-red" aria-label={"Remove " + project.name} onClick={() => handleDeleteProjectPopup(project)}><i className="bi bi-x" aria-hidden="true" style={{ fontSize: "2rem" }}></i></button>
             </div>)}
           </div>
-          <button className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup(null)}>Add a project</button>
+          <button type="button" className="button button-light mx-auto block my-5" onClick={() => handleShowProjectPopup(null)}>Add a project</button>
       </Popup>
 
       <Popup id="tf-delete-project" show={showDeletePopup} setShow={setShowDeletePopup} nested
@@ -753,7 +753,7 @@ function EditProjects({showPopup, setShowPopup, taskForceUrl, projects}) {
             <input id="edit-project-name" name="name" type="text" className={"input input-text md:w-70 w-full " + (formRequired?.name && "input-required")} 
                    placeholder="Project name" onChange={(e) => checkEmpty(e.target.value, "name")}
                    defaultValue={focusProject?.name} />
-            <div className="input-error">This field is required.</div>
+            <div className="input-error" aria-hidden={!formRequired?.name}>This field is required.</div>
           </div>
           <div>
             <label htmlFor="edit-project-img">Image:</label><br />
@@ -834,7 +834,7 @@ export default function TaskForce({ loaderData }) {
       <Menu />
       <Banner>
         <a href="/task-forces" className="banner-breadcrumb">
-            <i className="bi bi-caret-left-fill"></i>
+            <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
             <strong>TASK FORCES</strong>
         </a>
         <h1 style={{ color: "white" }}>{taskForceData.name}</h1>

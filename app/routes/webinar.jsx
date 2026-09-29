@@ -260,7 +260,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
         <div className="px-2 py-4 first:pt-0 border-b-2 border-primary-light last:border-0">
             <div className="text-sm font-semibold mb-2 flex justify-between">
                 <div className="text-secondary-dark">Speaker Details</div>
-                <button className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash"></i> Remove Speaker</button>
+                <button type="button" className="text-error hover:text-error-dark hover:cursor-pointer duration-200" onClick={(e) => {removeSpeaker(e)}}><i className="bi bi-trash" aria-hidden="true"></i> Remove Speaker</button>
             </div>
             <div className="md:grid grid-cols-2 flex flex-col gap-5">
                 <div>
@@ -270,7 +270,7 @@ function SpeakerEdit({ id, speakers, setSpeakers }) {
                         placeholder="Name"
                         value={speakers[id].name}
                         onChange={(e) => {handleNameChange(e)}} />
-                    <div className="input-error">This field is required.</div>
+                    <div className="input-error" aria-hidden={!nameRequired}>This field is required.</div>
                 </div>
                 <div>
                     <label htmlFor={"webinar-speaker-position-" + id}>Position:</label><br />
@@ -416,7 +416,7 @@ export default function Webinar({ loaderData }) {
                                     placeholder="Title"
                                     defaultValue={loaderData.title}
                                     onChange={(e) => checkEmpty(e.target.value, "webinarTitle")} />
-                                <div className="input-error">This field is required.</div>
+                                <div className="input-error" aria-hidden={!formRequired?.webinarTitle}>This field is required.</div>
                                 <br /><br />
                                 <label htmlFor="webinar-date">Date:</label><br />
                                 <input id="webinar-date" name="webinar-date" type="date" defaultValue={loaderData.date} className="input input-text w-full" />
@@ -456,7 +456,7 @@ export default function Webinar({ loaderData }) {
                             <div>
                                 { speakers.map((speaker, idx) => <SpeakerEdit key={idx} id={idx} speakers={speakers} setSpeakers={setSpeakers} />)}
                             </div>
-                            <button className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
+                            <button type="button" className="button button-light" onClick={(e) => addSpeaker(e)}>Add Speaker</button>
                         </fieldset>
                     </PopupForm>
                     <Popup id="resolve" className="text-center" show={showResolvePopup} setShow={setShowResolvePopup} closePopup={closeResolvePopup} nested stayOnBlur>
@@ -474,7 +474,7 @@ export default function Webinar({ loaderData }) {
             <Banner type="blue">
                 <div className="relative z-1">
                     <a href="/webinars" className="banner-breadcrumb">
-                        <i className="bi bi-caret-left-fill"></i>
+                        <i className="bi bi-caret-left-fill" aria-hidden="true"></i>
                         <strong>WEBINARS</strong>
                     </a>
                     <h1 style={{ color: "white", textTransform: "none !important" }}>{loaderData.title}</h1>
@@ -497,14 +497,14 @@ export default function Webinar({ loaderData }) {
                             src={loaderData.pdf_url}
                             className="w-full lg:max-w-[75%]"
                             style={{ height: '80vh' }}
-                            title="Webinar Details PDF"
+                            title={loaderData.title + " Webinar details PDF"}
                         />
                     </div>
                 }
                 <br />
                 { loaderData?.video_url &&
                     <div className="mb-5 w-full lg:h-[40vw] h-[50vw]">
-                        <iframe src={loaderData.video_url} width="100%" height="100%"></iframe>
+                        <iframe src={loaderData.video_url} title={loaderData.title + " Webinar Video"} width="100%" height="100%"></iframe>
                     </div>
                 }
 
@@ -514,7 +514,7 @@ export default function Webinar({ loaderData }) {
                 { loaderData.speakers.map((speaker, idx) => 
                     <div key={idx} className="relative mt-5 rounded-md border-2 border-gray-light p-5 flex flex-col lg:flex-row place-items-center justify-between">
                         <div className="flex flex-row place-items-center lg:mb-0 mb-5 text-center">
-                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt="" />}
+                            {speaker?.image_url && speaker.image_url.length > 0 && <img className="mx-auto w-50 shrink-0 grow-0 rounded-md mr-5" src={speaker.image_url} alt={"Image of " + speaker.name} />}
                             
                             <div className="shrink-0 grow-0 m-3 lg:text-left text-center">
                                 <p className="font-semibold mr-2"><i>{speaker.name}</i></p>
