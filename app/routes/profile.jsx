@@ -964,6 +964,14 @@ export default function ProfileRoute({ loaderData }) {
     <i className="bi bi-person-fill text-[64px] text-secondary-dark/60" aria-hidden="true" />
   );
 
+  const copyEmailToClipboard = (email) => {
+    navigator.clipboard.writeText(email).then(() => {
+      alert("Email copied to clipboard!");
+    }).catch((err) => {
+      console.error("Failed to copy email: ", err);
+    });
+  };
+
   return (
     <div className="min-h-screen bg-white">
       <EditPopup showPopup={showPopup} setShowPopup={setShowPopup} userId={profile.id} profileInfo={profile} taskForceList={loaderData.taskForceList} universityList={loaderData.universityList} currentUserId={currentUserId} />
@@ -1082,6 +1090,7 @@ export default function ProfileRoute({ loaderData }) {
                       className="md:order-none order-first button flex items-center justify-center gap-3 text-lg font-semibold"
                       onClick={() => {
                         window.location.href = `mailto:${profile.email}?subject=IAJES%20Connection`;
+                        copyEmailToClipboard(profile.email);
                       }}
                     >
                       <i className="bi bi-envelope" aria-hidden="true" />
