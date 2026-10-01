@@ -18,7 +18,7 @@ export function meta() {
 async function sendReset(data) {
   try {
     const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
-      redirectTo: window.location.origin + "/signin",
+      redirectTo: window.location.origin + "/reset-password",
     });
 
     if (error) {
@@ -118,7 +118,7 @@ export default function ForgetPassword() {
       <div className="lg:px-40 px-10 py-20 duration-200 flex flex-col items-center">
         <h4>Reset your password</h4>
         {!formSuccess && <ResetForm setShowPopup={setShowPopup} setPopupMessage={setPopupMessage} setFormSuccess={setFormSuccess} />}
-        {formSuccess && <p className="pb-5 text-center w-sm">A password reset link has been sent to your email. Please click on the link in the email to reset your password.</p>}
+        {formSuccess && <p className="pb-5 text-center w-sm">A password reset link has been sent to your email. Open the link to choose a new password.</p>}
       </div>
       <div className="bg-primary-dark h-20 w-full"></div>
     </div>

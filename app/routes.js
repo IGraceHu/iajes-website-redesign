@@ -14,6 +14,7 @@ export default [
     route("signin", "routes/auth/signin.jsx"),
     route("signup", "routes/auth/signup.jsx"),
     route("forget-password", "routes/auth/forgetpassword.jsx"),
+    route("reset-password", "routes/auth/resetpassword.jsx"),
     route("search", "routes/search.jsx"),
     route("profile/:id", "routes/profile.jsx"),
     route("profile-subscribe/", "routes/profile-subscribe.jsx"),
