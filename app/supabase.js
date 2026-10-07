@@ -7,3 +7,19 @@ const supabasePublishableKey = 'sb_publishable_Ol570DKt8LQVAH74Lyqxgg_FNrNlL1m';
 
 // Create Supabase client
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+let passwordRecoveryCallbackPending = false;
+
+supabase.auth.onAuthStateChange((event, session) => {
+	if (event === "PASSWORD_RECOVERY" && session) {
+		passwordRecoveryCallbackPending = true;
+	} else if (event === "SIGNED_OUT") {
+		passwordRecoveryCallbackPending = false;
+	}
+});
+
+export function consumePasswordRecoveryCallback() {
+	const isPending = passwordRecoveryCallbackPending;
+	passwordRecoveryCallbackPending = false;
+	return isPending;
+}
